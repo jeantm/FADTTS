@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+    <category>PROJECT</category>
+    <title>FADTTS</title>
+    <version>1.0.0</version>
+    <contributor>Jean Noel</contributor>
+    <description>Interface to help researchers working on FADTTS</description>
+
+    <parameters>
+    </parameters>
+
+</executable>

@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="FADTTS_Icons">
+        <file>koIconOut.xpm</file>
+        <file>okIconOut.xpm</file>
+        <file>warningIconOut.xpm</file>
+    </qresource>
+</RCC>
