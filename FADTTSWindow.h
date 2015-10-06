@@ -1,35 +1,50 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef FADTTSWINDOW_H
+#define FADTTSWINDOW_H
 
-#include <QMainWindow>
+#include "FADTTSWindowConfig.h"
 #include "EditInputDialog.h"
 #include "InfoDialog.h"
 #include "Data.h"
 #include "Processing.h"
+#include "ScriptMatlab.h"
 
 
-namespace Ui {
-class MainWindow;
-}
-
-class MainWindow : public QMainWindow
+class FADTTSWindow : public FADTTSWindowConfig
 {
     Q_OBJECT
     
 public:
-    explicit MainWindow( QWidget *parent = 0 );
-    ~MainWindow();
+    /********* Configuration & Events *********/
+    FADTTSWindow();
+
+    ~FADTTSWindow();
 
 
 private slots:
+    /********* Configuration & Events *********/
+    void SaveParaConfigFile();
+
+    void LoadParaConfigFile();
+
+    void SaveSoftConfigFile();
+
+    void LoadSoftConfigFile();
+
+
+    void closeEvent(QCloseEvent *event);
+
+
     /*************** Input Tab ***************/
-    void on_inputAddDataFiles_pushButton_clicked();
+    void AddFiles();
 
-    void on_inputInfo_pushButton_clicked();
+    void AddFile( const QString& prefID );
 
-    void on_outputDir_pushButton_clicked();
+    void UpdateInputLineEdit( const QString& prefID );
 
-    void on_para_outputDir_lineEdit_textChanged( const QString& textLineEdit );
+    void EditFile( const QString& prefID );
+
+
+    void DisplayInfoInputFiles();
 
 
     void UpdateLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID );
@@ -38,47 +53,46 @@ private slots:
 
     void UpdateSubjectColumnIDAfterFileEdition( const int& newSubjectColumnIDAfterFileEdition );
 
-    void AddFile( const QString& );
-
-    void EditFile( const QString& );
-
-    void UpdateInputLineEdit( const QString& );
-
 
     /*************** Subjects Tab ***************/
-    void on_loadInputSubjectList_PushButton_clicked();
+    void LoadInputSubjectFiles();
 
-    void on_reset_pushButton_clicked();
+    void ResetInputSubjectFiles();
 
-    void on_para_inputSubjectList_lineEdit_textChanged( const QString& textLineEdit );
+    void UpdateInputSubjectListLineEdit( const QString& textLineEdit );
 
-    void on_saveCheckedSubjectList_pushButton_clicked();
+    void SaveCheckedSubjectList();
 
 
-    void on_checkAllVisible_pushButton_clicked();
+    void CheckAllSubjectsVisible();
 
-    void on_unCheckAllVisible_pushButton_clicked();
+    void UnCheckAllSubjectsVisible();
 
-    void on_sortedSubjects_listWidget_itemClicked( QListWidgetItem *item );
-
-    void on_para_search_lineEdit_textEdited();
-
-    void on_caseSensitive_checkBox_toggled( bool checked );
+    void SelectSubject( QListWidgetItem *item );
 
 
     void SortSubjects();
 
+    void Search();
+
+    void SetCaseSensitivity( bool checked );
+
 
     /***************** Parameters  Tab *****************/
-    void on_covariates_listWidget_itemClicked( QListWidgetItem *item );
+    void SelectCovariates( QListWidgetItem *item );
 
-    void on_covariatesCheckAll_pushButton_clicked();
+    void CheckAllCovariates();
 
-    void on_covariatesUncheckAll_pushButton_clicked();
+    void UnCheckAllCovariates();
 
 
     /******************** Run  Tab ********************/
-    void on_run_pushButton_clicked();
+    void SetOutputDir();
+
+    void UpdateOutputDirLineEdit( const QString& textLineEdit );
+
+
+    void RunFADTTS();
 
 
 private:
@@ -92,7 +106,7 @@ private:
 
     static const int m_IconSize;
 
-    Ui::MainWindow *m_mainUi;
+    Ui::FADTTSWindow *m_mainUi;
 
     EditInputDialog *m_editInputDialog;
 
@@ -124,17 +138,27 @@ private:
 
     Processing m_processing;
 
+    ScriptMatlab m_scriptMatlab;
 
-    /***************** Other *****************/
+
+    /********* Configuration & Events *********/
     void Init();
+
+    void InitMenuBar();
 
     void InitInputTab();
 
     void InitSubjectTab();
 
+    void InitParametersTab();
+
+    void InitRunTab();
+
+
     void UpdateCurrentDirEditInputDialog(const QString newfilePath, QString& currentDir );
 
     QDir UpdateCurrentDir(const QString newfilePath, QString& currentDir );
+
 
     void WarningPopUp( const QString warningText );
 
@@ -146,15 +170,18 @@ private:
     /*************** Input Tab ***************/
     void AddFiles( const QStringList fileList );
 
+
+    void LaunchEditInputWindow( QString prefID );
+
+
     void UpdateFileInformation( const QString prefID );
 
-    bool IsMatrixDimensionOK( const QList<QStringList> data ); // Move
+    bool IsMatrixDimensionOK( const QList<QStringList> data );
+
 
     void DisplayIcon( const QString prefID , const QPixmap icon );
 
     void SetInfoSubjectColumnID();
-
-    void LaunchEditInputWindow( QString prefID );
 
 
     /*************** Subjects Tab ***************/
@@ -166,19 +193,20 @@ private:
 
     void DisplaySortedSubjectList( const QStringList subjectListRef, const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectList );
 
-    void Search();
-
+    void DisplayNbrSubjectsSelected();
 
     /*************** Parameters Tab ***************/
-    void DisplayCovariatesList();
+    void DisplayCovariatesList( QStringList covariatesList );
 
 
     /*************** Run Tab ***************/
     QString GenerateSelectedSubjectList();
 
-    QStringList GetSelectedInputFiles();
+    QMap<QString, bool> GetSelectedInputFiles();
 
-    QList<int> GetSelectedCovariates();
+    QMap<int, QString> GetSelectedCovariates();
+
+    QStringList GetSelectedPrefixes();
 };
 
-#endif // MAINWINDOW_H
+#endif // FADTTSWINDOW_H

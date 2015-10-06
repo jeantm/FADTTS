@@ -17,21 +17,23 @@ class Processing
 public:
     Processing();
 
-    QStringList GenerateMatlabInputFiles( QStringList selectedInputFiles, QString selectedSubjectListFile,
-                                  int subjectCovariatesColumnId, QList<int> selectedCovariates, QString currentFileOutputDir );
+    QStringList GetSubjectListFromInputFile( QString subjectListFile, int subjectCovariatesColumnId );
 
-    QStringList GetSelectedSubjectList( QString selectedSubjectListFile );
+    QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectsCovariatesColumnId );
 
-    QStringList GetSubjectListFromDataFile( QString subjectListFile, int subjectCovariatesColumnId );
-
-    QStringList GetRefSubjectListFromSelectedInputFiles( QStringList selectedInputFiles, int subjectsCovariatesColumnId );
-
-    void ResetProcessing();
+    QMap< QString, QMap<QString, bool> > FindSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectList );
 
     void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjectList,
                                            QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath );
 
-    QMap< QString, QMap<QString, bool> > FindSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectList );
+
+    /***************** Run *****************/
+    QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
+                                  int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates, QString currentOutputDir );
+
+    QStringList GetSelectedSubjectList( QString selectedSubjectListFile );
+
+    void ResetProcessing();
 
 
 private:
@@ -39,7 +41,9 @@ private:
 
     QString m_selectedSubjectListFile;
 
-    QStringList m_matlabInputFiles, m_selectedSubjectList, m_selectedInputFiles;
+    QStringList m_selectedSubjectList;
+
+    QMap<QString, bool> m_selectedInputFiles, m_matlabInputFiles;
 
 };
 

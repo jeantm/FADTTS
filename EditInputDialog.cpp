@@ -298,13 +298,12 @@ void EditInputDialog::closeEvent( QCloseEvent *event )
 {
     if( m_rowDeleted || m_columnDeleted )
     {
-        QMessageBox msgBox;
-        msgBox.setText( tr( "The data have been modified." ) );
-        msgBox.setInformativeText( tr( "Do you want to save your changes?" ) );
-        msgBox.setStandardButtons( QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel );
-        msgBox.setDefaultButton( QMessageBox::Save );
-        int ret = msgBox.exec();
-        switch( ret )
+        QMessageBox::StandardButton closeMBox = QMessageBox::question( this,
+                                                                       tr( "Edit File" ),
+                                                                       tr( "The data have been modified.<br>Do you want to save your changes?" ),
+                                                                       QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+                                                                       QMessageBox::Save );
+        switch( closeMBox )
         {
         case QMessageBox::Save:
         {

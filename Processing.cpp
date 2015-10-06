@@ -6,23 +6,26 @@ Processing::Processing()
 {
 }
 
-QStringList Processing::GenerateMatlabInputFiles( QStringList selectedInputFiles, QString selectedSubjectListFile,
-                                   int subjectCovariatesColumnId, QList<int> selectedCovariates, QString currentFileOutputDir )
+QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
+                                   int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates, QString currentOutputDir )
 {
     m_selectedInputFiles = selectedInputFiles;
     QStringList selectedSubjectList = GetSelectedSubjectList( selectedSubjectListFile );
-    foreach (QString inputFile, selectedInputFiles)
+
+
+    QMap<QString, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
+    while( iterSelectedInputFile != selectedInputFiles.end() )
     {
-        QStringList subject = GetSubjectListFromDataFile( inputFile, subjectCovariatesColumnId );
-        QFile matlabFile( currentFileOutputDir + "/" +
-                       QFileInfo( QFile( inputFile ) ).fileName().split( "." ).first() +
+        QStringList inputFileSubjects = GetSubjectListFromInputFile( iterSelectedInputFile.key(), subjectCovariatesColumnId );
+        QFile matlabInputFile( currentOutputDir + "/" +
+                       QFileInfo( QFile( iterSelectedInputFile.key() ) ).fileName().split( "." ).first() +
                        "_M.txt" );
-        if( matlabFile.open( QIODevice::WriteOnly ) )
+        if( matlabInputFile.open( QIODevice::WriteOnly ) )
         {
-            QTextStream tsM( &matlabFile );
+            QTextStream tsM( &matlabInputFile );
             QStringList rowData;
 
-            QFile file( inputFile );
+            QFile file( iterSelectedInputFile.key() );
             file.open( QIODevice::ReadOnly );
             QTextStream ts( &file );
             QList<QStringList> data;
@@ -41,14 +44,17 @@ QStringList Processing::GenerateMatlabInputFiles( QStringList selectedInputFiles
                     QString currentSubject = data.at( r ).at( subjectCovariatesColumnId );
 
                     rowData.clear();
-                    if( subject.count( currentSubject ) == 1 )
+                    if( selectedSubjectList.contains( currentSubject ) && inputFileSubjects.count( currentSubject ) == 1 )
                     {
-                        foreach ( int covID, selectedCovariates )
+                        QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
+                        while( iterCovariate != selectedCovariates.constEnd() )
                         {
-                            if( covID != subjectCovariatesColumnId )
+                            int covID = iterCovariate.key();
+                            if( covID != -1 && covID != subjectCovariatesColumnId )
                             {
                                 rowData << data.at( r ).at( covID );
                             }
+                            ++iterCovariate;
                         }
                         tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
                     }
@@ -64,8 +70,8 @@ QStringList Processing::GenerateMatlabInputFiles( QStringList selectedInputFiles
                 QList<int> subjectID;
                 for( int c = 0; c < nbColumns; ++c )
                 {
-                    QString CurrentSubject = data.at( 0 ).at( c );
-                    if( ( c == 0 || ( selectedSubjectList.contains( CurrentSubject ) && subject.count( CurrentSubject ) == 1 ) ) )
+                    QString currentSubject = data.at( 0 ).at( c );
+                    if( ( c == 0 || ( selectedSubjectList.contains( currentSubject ) && inputFileSubjects.count( currentSubject ) == 1 ) ) )
                     {
                         subjectID.append( c );
                     }
@@ -86,11 +92,12 @@ QStringList Processing::GenerateMatlabInputFiles( QStringList selectedInputFiles
                     tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
                 }
             }
-            matlabFile.flush();
-            matlabFile.close();
+            matlabInputFile.flush();
+            matlabInputFile.close();
 
-            m_matlabInputFiles.append( matlabFile.fileName() );
+            m_matlabInputFiles.insert( matlabInputFile.fileName(), iterSelectedInputFile.value() );
         }
+        ++iterSelectedInputFile;
     }
     return m_matlabInputFiles;
 }
@@ -111,7 +118,7 @@ QStringList Processing::GetSelectedSubjectList( QString selectedSubjectListFile 
     return m_selectedSubjectList;
 }
 
-QStringList Processing::GetSubjectListFromDataFile( QString subjectListFile, int subjectCovariatesColumnId )
+QStringList Processing::GetSubjectListFromInputFile( QString subjectListFile, int subjectCovariatesColumnId )
 {
     QStringList subjectList;
     QFile file( subjectListFile );
@@ -145,12 +152,13 @@ QStringList Processing::GetSubjectListFromDataFile( QString subjectListFile, int
     return subjectList;
 }
 
-QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QStringList selectedInputFiles, int subjectCovariatesColumnId )
+QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId )
 {
     QStringList refSubjectList;
-    foreach( QString inputFile, selectedInputFiles )
+    QMap<QString, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
+    while( iterSelectedInputFile != selectedInputFiles.end() )
     {
-        QStringList currentSubjectList = GetSubjectListFromDataFile( inputFile, subjectCovariatesColumnId );
+        QStringList currentSubjectList = GetSubjectListFromInputFile( iterSelectedInputFile.key(), subjectCovariatesColumnId );
         foreach( QString subject, currentSubjectList )
         {
             if( !refSubjectList.contains( subject ) )
@@ -158,6 +166,7 @@ QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QStringList sel
                 refSubjectList.append( subject );
             }
         }
+        ++iterSelectedInputFile;
     }
     return refSubjectList;
 }
