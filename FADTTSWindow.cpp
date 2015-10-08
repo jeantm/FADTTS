@@ -171,7 +171,7 @@ void FADTTSWindow::InitInputTab()
     m_inputTabAddFilePushButtonMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputsTab_inputRDfile_pushButton );
     m_inputTabAddFilePushButtonMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputsTab_inputMDfile_pushButton );
     m_inputTabAddFilePushButtonMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputsTab_inputFAfile_pushButton );
-    m_inputTabAddFilePushButtonMap.insert( m_data.GetCovariatesPrefix(), this->inputsTab_inputCOMPfile_pushButton );
+    m_inputTabAddFilePushButtonMap.insert( m_data.GetCovariatePrefix(), this->inputsTab_inputCOMPfile_pushButton );
     QSignalMapper *signalMapperAddFile = new QSignalMapper( this );
     connect( signalMapperAddFile, SIGNAL( mapped( const QString& ) ), this, SLOT( AddFile( const QString& ) ) );
     for( int i = 0; i < m_data.GetPrefixList().size(); ++i )
@@ -186,7 +186,7 @@ void FADTTSWindow::InitInputTab()
     m_inputTabFilePathLineEditMap.insert( m_data.GetRadialDiffusivityPrefix(), this->para_inputsTab_inputRDfile_lineEdit );
     m_inputTabFilePathLineEditMap.insert( m_data.GetMeanDiffusivityPrefix(), this->para_inputsTab_inputMDfile_lineEdit );
     m_inputTabFilePathLineEditMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->para_inputsTab_inputFAfile_lineEdit );
-    m_inputTabFilePathLineEditMap.insert( m_data.GetCovariatesPrefix(), this->para_inputsTab_inputCOMPfile_lineEdit );
+    m_inputTabFilePathLineEditMap.insert( m_data.GetCovariatePrefix(), this->para_inputsTab_inputCOMPfile_lineEdit );
     QSignalMapper *signalMapperUpdateLineEdit = new QSignalMapper(this);
     connect( signalMapperUpdateLineEdit, SIGNAL( mapped( const QString& ) ), this, SLOT( UpdateInputLineEdit( const QString& ) ) );
     for( int i = 0; i < m_data.GetPrefixList().size(); ++i )
@@ -200,7 +200,7 @@ void FADTTSWindow::InitInputTab()
     m_inputTabIconLabelMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputsTab_iconInputRDFile_label );
     m_inputTabIconLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputsTab_iconInputMDFile_label );
     m_inputTabIconLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputsTab_iconInputFAFile_label );
-    m_inputTabIconLabelMap.insert( m_data.GetCovariatesPrefix(), this->inputsTab_iconInputCOMPFile_label );
+    m_inputTabIconLabelMap.insert( m_data.GetCovariatePrefix(), this->inputsTab_iconInputCOMPFile_label );
 
     /// Map of PushButtons to edit the files and
     /// SignalMapper to link them to the slot EditFile()
@@ -208,7 +208,7 @@ void FADTTSWindow::InitInputTab()
     m_inputTabEditFilePushButtonMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputsTab_editInputRDfile_pushButton );
     m_inputTabEditFilePushButtonMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputsTab_editInputMDfile_pushButton );
     m_inputTabEditFilePushButtonMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputsTab_editInputFAfile_pushButton );
-    m_inputTabEditFilePushButtonMap.insert( m_data.GetCovariatesPrefix(), this->inputsTab_editInputCOMPfile_pushButton );
+    m_inputTabEditFilePushButtonMap.insert( m_data.GetCovariatePrefix(), this->inputsTab_editInputCOMPfile_pushButton );
     QSignalMapper *signalMapperEditFile = new QSignalMapper( this );
     connect( signalMapperEditFile, SIGNAL( mapped( const QString& ) ), this, SLOT( EditFile( const QString& ) ) );
     for( int i = 0; i < m_data.GetPrefixList().size(); ++i )
@@ -220,9 +220,9 @@ void FADTTSWindow::InitInputTab()
     connect( this->inputsTab_inputInfo_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayInfoInputFiles() ) );
 
     /// Signal/Slot connection to receive updates from m_editInputDialog
-    connect( m_editInputDialog, SIGNAL( FilePathChanged( QString, QString ) ), this, SLOT( UpdateLineEditAfterFileEdition( QString , QString ) ) );
-    connect( m_editInputDialog, SIGNAL( CovariatesChanged( QStringList ) ), this, SLOT( UpdateCovariatesAfterFileEdition( QStringList ) ) );
-    connect( m_editInputDialog, SIGNAL( SubjectColumnIDChanged( int ) ), this, SLOT( UpdateSubjectColumnIDAfterFileEdition( int ) ) );
+    connect( m_editInputDialog, SIGNAL( FilePathChanged( const QString&, const QString& ) ), this, SLOT( UpdateLineEditAfterFileEdition( const QString& , const QString& ) ) );
+    connect( m_editInputDialog, SIGNAL( CovariatesChanged( const QMap<int, QString>& ) ), this, SLOT( UpdateCovariatesAfterFileEdition( const QMap<int, QString>& ) ) );
+    connect( m_editInputDialog, SIGNAL( SubjectColumnIDChanged( const int& ) ), this, SLOT( UpdateSubjectColumnIDAfterFileEdition( int ) ) );
 }
 
 void FADTTSWindow::InitSubjectTab()
@@ -233,7 +233,7 @@ void FADTTSWindow::InitSubjectTab()
     m_paramTabFileCheckBoxMap.insert( m_data.GetRadialDiffusivityPrefix(), this->para_subjectsTab_rdInput_checkBox );
     m_paramTabFileCheckBoxMap.insert( m_data.GetMeanDiffusivityPrefix(), this->para_subjectsTab_mdInput_checkBox );
     m_paramTabFileCheckBoxMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->para_subjectsTab_faInput_checkBox );
-    m_paramTabFileCheckBoxMap.insert( m_data.GetCovariatesPrefix(), this->para_subjectsTab_compInput_checkBox );
+    m_paramTabFileCheckBoxMap.insert( m_data.GetCovariatePrefix(), this->para_subjectsTab_compInput_checkBox );
     QSignalMapper *signalMapperSelectFile = new QSignalMapper(this);
     connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SortSubjects() ) );
     connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SyncUiToModelStructure() ) );
@@ -248,7 +248,7 @@ void FADTTSWindow::InitSubjectTab()
     m_paramTabFileSizeLabelMap.insert( m_data.GetRadialDiffusivityPrefix(),this->subjectsTab_rdInputSize_label );
     m_paramTabFileSizeLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->subjectsTab_mdInputSize_label );
     m_paramTabFileSizeLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->subjectsTab_faInputSize_label );
-    m_paramTabFileSizeLabelMap.insert( m_data.GetCovariatesPrefix(), this->subjectsTab_compInputSize_label );
+    m_paramTabFileSizeLabelMap.insert( m_data.GetCovariatePrefix(), this->subjectsTab_compInputSize_label );
 
 
     connect( this->subjectsTab_loadInputSubjectList_PushButton, SIGNAL( clicked() ), this, SLOT( LoadInputSubjectFiles() ) );
@@ -272,6 +272,7 @@ void FADTTSWindow::InitParametersTab()
     connect( this->para_parametersTab_omnibus_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
     connect( this->para_parametersTab_testIndependent_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
     connect( this->para_parametersTab_nbrPermutations_spinBox, SIGNAL( valueChanged( int ) ), this, SLOT( SyncUiToModelStructure() ) );
+    this->para_parametersTab_nbrPermutations_spinBox->setMaximum( 2000 );
 }
 
 void FADTTSWindow::InitRunTab()
@@ -368,7 +369,7 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
         UpdateCurrentDirEditInputDialog( filePath, m_currentFileInputDir );
     }
 
-    if( prefID == m_data.GetCovariatesPrefix() )
+    if( prefID == m_data.GetCovariatePrefix() )
     {
         m_editInputDialog->ResetSubjectColumnID();   /// By default Subjects are on 1st column
     }
@@ -419,7 +420,7 @@ void FADTTSWindow::UpdateLineEditAfterFileEdition( const QString& newFilePathAft
     m_inputTabFilePathLineEditMap[ prefID ]->setText( newFilePathAfterFileEdition );
 }
 
-void FADTTSWindow::UpdateCovariatesAfterFileEdition( const QStringList& newCovariatesAfterFileEdition )
+void FADTTSWindow::UpdateCovariatesAfterFileEdition( const QMap<int, QString>& newCovariatesAfterFileEdition )
 {
     m_data.ClearCovariatesList();
     m_data.SetCovariatesList() = newCovariatesAfterFileEdition;
@@ -434,7 +435,7 @@ void FADTTSWindow::UpdateSubjectColumnIDAfterFileEdition( const int&  newSubject
     m_data.SetSubjectColumnID( newSubjectColumnIDAfterFileEdition );
 
     SetInfoSubjectColumnID();
-    UpdateFileInformation( m_data.GetCovariatesPrefix() );
+    UpdateFileInformation( m_data.GetCovariatePrefix() );
     SortSubjects();
 }
 
@@ -523,7 +524,7 @@ void FADTTSWindow::UpdateFileInformation( const QString prefID )
             m_data.SetFilename( prefID ) = filePath;
             m_data.ClearSubjects( prefID );
 
-            if( prefID == m_data.GetCovariatesPrefix() )
+            if( prefID == m_data.GetCovariatePrefix() )
             {
                 m_data.SetNbrRows( prefID ) = nbRows-1;
                 m_data.SetNbrColumns( prefID ) = nbColumns-1;
@@ -534,7 +535,7 @@ void FADTTSWindow::UpdateFileInformation( const QString prefID )
                 {
                     if( c != m_data.GetSubjectColumnID() )
                     {
-                        m_data.AddCovariate( data.at( 0 ).at( c ) );
+                        m_data.AddCovariate( c, data.at( 0 ).at( c ) );
                     }
                 }
                 /// Intercept representes everything that has not been classified in one of the previous
@@ -599,7 +600,7 @@ void FADTTSWindow::DisplayIcon( const QString prefID, const QPixmap icon )
 
 void FADTTSWindow::SetInfoSubjectColumnID()
 {
-    QString filePath = m_inputTabFilePathLineEditMap[ m_data.GetCovariatesPrefix() ]->text();
+    QString filePath = m_inputTabFilePathLineEditMap[ m_data.GetCovariatePrefix() ]->text();
     if( !filePath.isEmpty() && QFile( filePath ).open( QIODevice::ReadOnly ) )
     {
         QFile( filePath ).close();
@@ -1034,17 +1035,19 @@ void FADTTSWindow::UnCheckAllCovariates()
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::DisplayCovariatesList( QStringList covariatesList )
+void FADTTSWindow::DisplayCovariatesList( QMap<int, QString> covariatesList )
 {
     m_covariatesListWidget->clear();
     if( !( covariatesList.isEmpty() ) )
     {
-        foreach( QString covar, covariatesList )
+        QMap<int, QString>::ConstIterator covariate = covariatesList.begin();
+        while( covariate != covariatesList.end() )
         {
-            QListWidgetItem *covariateItem = new QListWidgetItem( covar, m_covariatesListWidget );
+            QListWidgetItem *covariateItem = new QListWidgetItem( covariate.value(), m_covariatesListWidget );
             covariateItem->setCheckState( Qt::Checked );
             covariateItem->setFlags( Qt::ItemIsEnabled );
             m_covariatesListWidget->addItem( covariateItem );
+            ++covariate;
         }
     }
 }
@@ -1107,40 +1110,44 @@ void FADTTSWindow::RunFADTTS()
 {
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
 
-    if( m_data.GetFilename( m_data.GetCovariatesPrefix() ).isEmpty() || this->para_inputsTab_fiberName_lineEdit->text().isEmpty() || selectedCovariates.count() == 0  )
-    {
-        QString warningText = "<b>FADTTS will not be executed for the following reason(s):</b><br>";
-        if( this->para_inputsTab_fiberName_lineEdit->text().isEmpty() )
-        {
-            warningText.append( "- No fiber name provided <i>Inputs Tab</i><br>" );
-        }
-        if( m_data.GetFilename( m_data.GetCovariatesPrefix() ).isEmpty() )
-        {
-            warningText.append( "- No correct input covariate file provided<i>Inputs Tab</i><br>" );
-        }
-        if( selectedCovariates.count() == 0 )
-        {
-            warningText.append( "- Select at least 1 covariate <i>Parameters Tab</i><br>" );
-        }
-        WarningPopUp( warningText );
-    }
-    else
-    {
+//    if( this->para_inputsTab_fiberName_lineEdit->text().isEmpty() || !this->para_subjectsTab_compInput_checkBox->isChecked() || selectedCovariates.count() == 0  )
+//    {
+//        QString warningText = "<b>FADTTS will not be executed for the following reason(s):</b><br>";
+//        if( this->para_inputsTab_fiberName_lineEdit->text().isEmpty() )
+//        {
+//            warningText.append( "- No fiber name provided<br><i>Inputs Tab</i><br>" );
+//        }
+//        if( !this->para_subjectsTab_compInput_checkBox->isChecked() )
+//        {
+//            warningText.append( "- No correct input covariate file provided and/or selected<br><i>Inputs Tab / Parameters Tab</i><br>" );
+//        }
+//        if( selectedCovariates.count() == 0 )
+//        {
+//            warningText.append( "- Select at least 1 covariate<br><i>Parameters Tab</i><br>" );
+//        }
+//        WarningPopUp( warningText );
+//    }
+//    else
+//    {
         m_processing.ResetProcessing();
 
         QMap<QString, bool> selectedInputFiles = GetSelectedInputFiles();
 
+        qDebug() << "selectedInputFiles" << selectedInputFiles;
+
         QString selectedSubjectListFilePath = GenerateSelectedSubjectList();
+        qDebug() << "selectedInputFiles" << selectedInputFiles;
 
 
         QStringList selectedPrefixes = GetSelectedPrefixes();
 
         QMap<QString, bool> matlabInputFiles = m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
                                                        m_data.GetSubjectColumnID(), selectedCovariates, m_data.GetOutputDir() );
+        qDebug() << "matlabInputFiles" << matlabInputFiles;
 
         m_scriptMatlab.GenerateMatlabScript( this->para_inputsTab_fiberName_lineEdit->text(), selectedPrefixes, matlabInputFiles,
                                              selectedCovariates, this->para_parametersTab_nbrPermutations_spinBox->value(), m_data.GetOutputDir() );
-    }
+//    }
 }
 
 
@@ -1148,19 +1155,22 @@ void FADTTSWindow::RunFADTTS()
 QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
 {
     QMap<QString, bool> selectedInputFiles;
+    int i = 0;
     foreach ( QString prefID, m_data.GetPrefixList() )
     {
+        QString encoding = QString( "%1" ).arg( i, 2, 10, QChar( '0' ) ).append( "?" );
         if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() )
         {
-            if( prefID != m_data.GetCovariatesPrefix() )
+            if( prefID != m_data.GetCovariatePrefix() )
             {
-                selectedInputFiles.insert( m_data.GetFilename( prefID ), false );
+                selectedInputFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), false );
             }
             else
             {
-                selectedInputFiles.insert( m_data.GetFilename( prefID ), true );
+                selectedInputFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), true );
             }
         }
+    i++;
     }
     return selectedInputFiles;
 }
@@ -1185,17 +1195,29 @@ QString FADTTSWindow::GenerateSelectedSubjectList()
 
 QMap<int, QString> FADTTSWindow::GetSelectedCovariates()
 {
+    QMap<int, QString> covariatesMap = m_data.GetCovariatesList();
     QMap<int, QString> selectedCovariates;
-    selectedCovariates.insert( -1, "Intercept" );
+
     QListWidget *list = m_covariatesListWidget;
-    for( int i = 0; i < list->count(); i++ )
+    for( int i = 1; i < list->count(); i++ )
     {
         QListWidgetItem *currentItem = list->item( i );
-        if( !currentItem->text().contains( "Intercept" ) && currentItem->checkState() == Qt::Checked )
+        if( currentItem->checkState() == Qt::Checked )
         {
-            selectedCovariates.insert( i, currentItem->text() );
+            QMap<int, QString>::ConstIterator iterCovar = covariatesMap.begin();
+
+            while( iterCovar != covariatesMap.end() )
+            {
+                if( currentItem->text() == iterCovar.value() )
+                {
+                    selectedCovariates.insert( iterCovar.key(), iterCovar.value() );
+                }
+                ++iterCovar;
+            }
         }
     }
+    selectedCovariates.insert( -1, "Intercept" );
+
     return selectedCovariates;
 }
 
@@ -1205,7 +1227,7 @@ QStringList FADTTSWindow::GetSelectedPrefixes()
     QStringList selectedPrefixes;
     foreach ( QString prefID, m_data.GetPrefixList() )
     {
-        if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() )
+        if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() &&  prefID != m_data.GetCovariatePrefix() )
         {
             selectedPrefixes.append( prefID );
         }

@@ -15,6 +15,8 @@ EditInputDialog::EditInputDialog( QWidget *parent ) :
     m_rowDeleted = false;
     m_columnDeleted = false;
 
+    m_subjectColumnID = 0;
+
 //    m_dataTableWidget->
 }
 
@@ -131,29 +133,6 @@ void EditInputDialog::on_saveFile_pushButton_clicked()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-void EditInputDialog::IsCOMPFile( const QStringList strList )
-{
-    bool ok;
-    foreach( QString str, strList )
-    {
-        if( str.endsWith( '"' ) )
-        {
-            str.chop( 1 );
-        }
-        if( str.startsWith( '"' ) )
-        {
-            str.remove( 0, 1 );
-        }
-        str.toFloat( &ok );
-        if( !ok )
-        {
-            m_isCOMP = !ok;
-            return;
-        }
-    }
-    m_isCOMP = !ok;
-}
-
 void EditInputDialog::UploadData()
 {
     QFile importedCSV( m_inputFile );
@@ -167,7 +146,10 @@ void EditInputDialog::UploadData()
         list << ts.readLine().split( m_csvSeparator );
     }
     importedCSV.close();
-    IsCOMPFile( list.at( 1 ) );
+
+    Processing process;
+    m_isCOMP = process.IsCOMPFile( list.at( 1 ) );
+
     m_ui->para_subjectColumn_spinBox->setMaximum( list.at( 0 ).count() );
 
     m_dataTableWidget->setRowCount( list.count() );  // number of stringlists gives row count
@@ -203,7 +185,7 @@ void EditInputDialog::RefreshFileInfo()
     int nbRows = m_dataTableWidget->rowCount();
     int nbColumns = m_dataTableWidget->columnCount();
 
-    if( m_prefix == m_data->GetCovariatesPrefix() )
+    if( m_prefix == m_data->GetCovariatePrefix() )
     {
         m_ui->para_subjectColumn_spinBox->setHidden( false );
         m_ui->subjectColumn_label->setHidden( false );
@@ -221,10 +203,10 @@ void EditInputDialog::RefreshFileInfo()
                 {
                     QString cov = m_dataTableWidget->item( 0, c )->text();
                     str.append( tr( qPrintable( "<br>-  " + cov ) ) );
-                    m_covariates.append( cov );
+                    m_covariates.insert( c, cov );
                 }
             }
-            m_covariates.prepend( tr( "Intercept" ) );
+            m_covariates.insert( -1, tr( "Intercept" ) );
             emit CovariatesChanged( m_covariates );
         }
         else
@@ -274,7 +256,6 @@ bool EditInputDialog::SaveCSVFile()
         exportedCSV.close();
         emit FilePathChanged( filePath, m_prefix );
         m_inputFile = filePath;
-        qDebug() << "Emit OK" << filePath << " || " << QFileInfo( QFile( filePath ) ).fileName() << "||"  <<  m_prefix;
         m_columnDeleted = false;
         m_rowDeleted = false;
         return true;

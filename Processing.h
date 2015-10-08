@@ -17,7 +17,7 @@ class Processing
 public:
     Processing();
 
-    QStringList GetSubjectListFromInputFile( QString subjectListFile, int subjectCovariatesColumnId );
+    QStringList GetSubjectListFromInputFile( QString inputFile, int subjectCovariatesColumnId );
 
     QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectsCovariatesColumnId );
 
@@ -25,6 +25,8 @@ public:
 
     void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjectList,
                                            QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath );
+
+    bool IsCOMPFile( const QStringList strList );
 
 
     /***************** Run *****************/

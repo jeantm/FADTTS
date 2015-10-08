@@ -29,7 +29,7 @@ public:
 
     QString GetFractionalAnisotropyPrefix() const;
 
-    QString GetCovariatesPrefix() const;
+    QString GetCovariatePrefix() const;
 
 
     QMap<QString, QString> GetFilenameMap() const;
@@ -52,7 +52,7 @@ public:
 
     int GetNbrSubjects( QString pref ) const;
 
-    QStringList GetCovariatesList() const;
+    QMap<int, QString> GetCovariatesList() const;
 
 
     int GetSubjectColumnID() const;
@@ -77,7 +77,7 @@ public:
 
     int& SetNbrSubjects( QString pref );
 
-    QStringList& SetCovariatesList( );
+    QMap<int, QString>& SetCovariatesList( );
 
 
     QString& SetCovariatesPrefix();
@@ -92,7 +92,7 @@ public:
 
     void AddSubject( QString prefID, QString subjectID );
 
-    void AddCovariate( QString covariate );
+    void AddCovariate( int colunmID , QString covariate );
 
     void AddIntercept();
 
@@ -111,13 +111,15 @@ private:
     m_axialDiffusivityPrefix, m_radialDiffusivityPrefix,
     m_meanDiffusivityPrefix, m_fractionalAnisotropyPrefix, m_covariatesPrefix;
 
-    QStringList m_covariatesList, m_PrefixList;
+    QStringList m_PrefixList;
 
     QMap<QString, QStringList> m_SubjectsMap;
 
     QMap<QString, QString> m_filenameMap;
 
     QMap<QString, int> m_NbrRowsMap, m_NbrColumnsMap, m_NbrSubjectsMap;
+
+    QMap<int, QString> m_covariatesList;
 };
 
 #endif // DATA_H

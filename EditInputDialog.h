@@ -3,8 +3,9 @@
 
 #include <QtCore>
 #include <QtGui>
-#include "Data.h"
 
+#include "Data.h"
+#include "Processing.h"
 
 namespace Ui {
 class EditInputDialog;
@@ -36,7 +37,7 @@ public:
 signals:
     void FilePathChanged( const QString&, const QString&  );
 
-    void CovariatesChanged( const QStringList&  );
+    void CovariatesChanged( const QMap<int, QString>&  );
 
     void SubjectColumnIDChanged( const int& );
 
@@ -60,7 +61,7 @@ private:
 
     QString m_prefix, m_inputFile, m_currentInputDir;
 
-    QStringList m_covariates;
+    QMap<int, QString> m_covariates;
 
     bool m_rowDeleted, m_columnDeleted, m_isCOMP;
 
@@ -68,8 +69,6 @@ private:
 
     Data *m_data;
 
-
-    void IsCOMPFile( const QStringList strList );
 
     void UploadData();
 

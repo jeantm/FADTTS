@@ -53,14 +53,17 @@ QString InfoDialog::GetFileInfo( const QString p )
 
         str.clear();
         str.append( tr( qPrintable( "<b>Filename</b> " + QFileInfo( QFile( filename ) ).fileName() + "<br>" ) ) );
-        if( p == m_data->GetCovariatesPrefix() )
+        if( p == m_data->GetCovariatePrefix() )
         {
             str.append( tr( qPrintable( "<b>Number of test subjects</b>  " + QString::number( m_data->GetNbrSubjects( p ) ) + "<br>" ) ) );
             str.append( tr( qPrintable( "<b>Data matrix</b>  " + QString::number( nbRows ) + "x" + QString::number( nbColumns ) + "<br>" ) ) );
             str.append( tr( qPrintable( "<b>Number of COMP</b>  " + QString::number( m_data->GetCovariatesList().size()-1 ) ) ) );
-            for( int c = 1; c < m_data->GetCovariatesList().size(); ++c )
+            for( int c = 0; c < m_data->GetCovariatesList().size(); ++c )
             {
-                str.append( tr( qPrintable( "<br>-  " + m_data->GetCovariatesList().at( c ) ) ) );
+                if( c != m_data->GetSubjectColumnID() )
+                {
+                    str.append( tr( qPrintable( "<br>-  " + m_data->GetCovariatesList().value( c ) ) ) );
+                }
             }
         }
         else
@@ -82,5 +85,5 @@ void InfoDialog::SetInfoFileLabelMap()
     m_fileInfoLabelMap.insert( m_data->GetRadialDiffusivityPrefix(), m_ui->rdFileInfo_label );
     m_fileInfoLabelMap.insert( m_data->GetMeanDiffusivityPrefix(), m_ui->mdFileInfo_label );
     m_fileInfoLabelMap.insert( m_data->GetFractionalAnisotropyPrefix(), m_ui->faFileInfo_label );
-    m_fileInfoLabelMap.insert( m_data->GetCovariatesPrefix(), m_ui->compFileInfo_label );
+    m_fileInfoLabelMap.insert( m_data->GetCovariatePrefix(), m_ui->compFileInfo_label );
 }

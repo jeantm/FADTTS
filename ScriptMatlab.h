@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QMap>
 #include <QTextStream>
+#include <QDate>
+#include <QTime>
 
 #include "para_Model_FADTTS.h"
 #include "soft_Model_FADTTS.h"
@@ -22,6 +24,8 @@ public :
 
 
    void InitScriptMatlab();
+
+   void SetHeader();
 
    void SetFiberName( QString fiberName );
 

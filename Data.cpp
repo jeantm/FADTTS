@@ -39,7 +39,7 @@ QString Data::GetFractionalAnisotropyPrefix() const
     return m_fractionalAnisotropyPrefix;
 }
 
-QString Data::GetCovariatesPrefix() const
+QString Data::GetCovariatePrefix() const
 {
     return m_covariatesPrefix;
 }
@@ -95,7 +95,7 @@ int Data::GetNbrSubjects( QString pref ) const
     return m_NbrSubjectsMap[ pref ];
 }
 
-QStringList Data::GetCovariatesList() const
+QMap<int, QString> Data::GetCovariatesList() const
 {
     return m_covariatesList;
 }
@@ -150,7 +150,7 @@ int& Data::SetNbrSubjects( QString pref )
     return m_NbrSubjectsMap[ pref ];
 }
 
-QStringList& Data::SetCovariatesList()
+QMap<int, QString>& Data::SetCovariatesList()
 {
     return m_covariatesList;
 }
@@ -200,14 +200,14 @@ void Data::AddSubject( QString prefID, QString subjectID )
     m_SubjectsMap[ prefID ].append( tr( qPrintable( subjectID ) ) );
 }
 
-void Data::AddCovariate( QString covariate )
+void Data::AddCovariate( int colunmID, QString covariate )
 {
-    m_covariatesList.append( tr( qPrintable( covariate ) ) );
+    m_covariatesList.insert( colunmID, covariate );
 }
 
 void Data::AddIntercept()
 {
-    m_covariatesList.prepend( tr( "Intercept" ) );
+    m_covariatesList.insert( -1, tr( "Intercept" ) );
 }
 
 void Data::ClearFileInformation( QString prefID )

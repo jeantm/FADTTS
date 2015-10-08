@@ -11,6 +11,8 @@ void ScriptMatlab::GenerateMatlabScript( QString fiberName, QStringList selected
 {
     InitScriptMatlab();
 
+    SetHeader();
+
     SetFiberName( fiberName );
 
     SetDiffusionProperties( selectedPrefixes );
@@ -41,6 +43,13 @@ void ScriptMatlab::InitScriptMatlab()
     matlabScriptRef.close();
 }
 
+void ScriptMatlab::SetHeader()
+{
+    m_script.replace( "$version$", "V01.01.01" );
+    m_script.replace( "$date$", QDate::currentDate().toString( "MM.dd.yyyy" ) );
+    m_script.replace( "$time$", QTime::currentTime().toString( "h:mm ap" ) );
+}
+
 void ScriptMatlab::SetFiberName( QString fiberName )
 {
     m_script.replace( "$fiberName$", fiberName );
@@ -53,12 +62,15 @@ void ScriptMatlab::SetDiffusionProperties( QStringList selectedPrefixes )
     int i = 1;
     foreach (QString prefix, selectedPrefixes)
     {
-        diffusionProperties.append( "Dnames{" + QString::number( i ) + "}='" + prefix + "';\n" );
+        diffusionProperties.append( "Dnames{" + QString::number( i ) + "}='" + prefix.toUpper() + "';\n" );
         allProperties.append( prefix.toUpper() );
         i++;
     }
     m_script.replace( "$diffusionProperties$", diffusionProperties );
-    m_script.replace( "$allProperties$", allProperties );
+    if( !allProperties.isEmpty() )
+    {
+        m_script.replace( "$allProperties$", "params{1}='" + allProperties + "';" );
+    }
 }
 
 void ScriptMatlab::SetNbrPermutation( int nbrPermutation )
@@ -90,13 +102,15 @@ void ScriptMatlab::SetInputFiles( QMap<QString, bool> matlabInputFiles )
     {
         if( iterMatlabInputFile.value() == false )
         {
-            diffusionFiles.append( "\tdataFiber" + QString::number( i ) + "All=dlmread('" + QFileInfo( QFile( iterMatlabInputFile.key() ) ).fileName() +"','" + m_csvSeparator + "',1,0);\n" );
-            diffusionFiles.append( "\tdiffusionFiles{" + QString::number( i ) + "}=dataFiber" + QString::number( i ) + "All(:,2:end);\n" );
+            diffusionFiles.append( "dataFiber" + QString::number( i ) + "All="
+                                   "dlmread('" + QFileInfo( QFile( iterMatlabInputFile.key().split( "?" ).last() ) ).fileName() + "','" + m_csvSeparator + "',1,0);\n" );
+            diffusionFiles.append( "diffusionFiles{" + QString::number( i ) + "}=dataFiber" + QString::number( i ) + "All(:,2:end);\n" );
             i++;
         }
         else
         {
-            m_script.replace( "$matlabCOMPInputFile$", "data2=dlmread('" + QFileInfo( QFile( iterMatlabInputFile.key() ) ).fileName() + "','" + m_csvSeparator + "',0,1);\n" );
+            m_script.replace( "$matlabCOMPInputFile$", "data2="
+                              "dlmread('" + QFileInfo( QFile( iterMatlabInputFile.key().split( "?" ).last() ) ).fileName() + "','" + m_csvSeparator + "',0,1);\n" );
         }
         ++iterMatlabInputFile;
     }

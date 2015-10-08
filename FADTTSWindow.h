@@ -49,7 +49,7 @@ private slots:
 
     void UpdateLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID );
 
-    void UpdateCovariatesAfterFileEdition( const QStringList& newCovariatesAfterFileEdition );
+    void UpdateCovariatesAfterFileEdition( const QMap<int, QString>& newCovariatesAfterFileEdition );
 
     void UpdateSubjectColumnIDAfterFileEdition( const int& newSubjectColumnIDAfterFileEdition );
 
@@ -196,7 +196,7 @@ private:
     void DisplayNbrSubjectsSelected();
 
     /*************** Parameters Tab ***************/
-    void DisplayCovariatesList( QStringList covariatesList );
+    void DisplayCovariatesList( QMap<int, QString> covariatesList );
 
 
     /*************** Run Tab ***************/
