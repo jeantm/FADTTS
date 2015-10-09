@@ -270,7 +270,7 @@ void FADTTSWindow::InitParametersTab()
     connect( this->parametersTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllCovariates() ) );
 
     connect( this->para_parametersTab_omnibus_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
-    connect( this->para_parametersTab_testIndependent_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
+    connect( this->para_parametersTab_postHoc_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
     connect( this->para_parametersTab_nbrPermutations_spinBox, SIGNAL( valueChanged( int ) ), this, SLOT( SyncUiToModelStructure() ) );
     this->para_parametersTab_nbrPermutations_spinBox->setMaximum( 2000 );
 }
@@ -746,6 +746,7 @@ void FADTTSWindow::SortSubjects()
     QString subjectListFilename = this->para_subjectsTab_inputSubjectList_lineEdit->text();
     QStringList refSubjectList = GetRefSubjectList( subjectListFilename );
     QMap<QString, QStringList> subjectListFromSelectedInputFile = GetAllSubjectsFromSelectedInputFiles();
+
     QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.FindSubjectInInputFile( refSubjectList, subjectListFromSelectedInputFile );
 
     QStringList matchedSubjectList;
@@ -1133,20 +1134,17 @@ void FADTTSWindow::RunFADTTS()
 
         QMap<QString, bool> selectedInputFiles = GetSelectedInputFiles();
 
-        qDebug() << "selectedInputFiles" << selectedInputFiles;
-
         QString selectedSubjectListFilePath = GenerateSelectedSubjectList();
-        qDebug() << "selectedInputFiles" << selectedInputFiles;
-
 
         QStringList selectedPrefixes = GetSelectedPrefixes();
 
         QMap<QString, bool> matlabInputFiles = m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
-                                                       m_data.GetSubjectColumnID(), selectedCovariates, m_data.GetOutputDir() );
-        qDebug() << "matlabInputFiles" << matlabInputFiles;
+                                                                                      m_data.GetSubjectColumnID(), selectedCovariates,
+                                                                                      m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text() );
 
-        m_scriptMatlab.GenerateMatlabScript( this->para_inputsTab_fiberName_lineEdit->text(), selectedPrefixes, matlabInputFiles,
-                                             selectedCovariates, this->para_parametersTab_nbrPermutations_spinBox->value(), m_data.GetOutputDir() );
+        m_scriptMatlab.GenerateMatlabScript( m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text(), selectedPrefixes,
+                                             matlabInputFiles, selectedCovariates, this->para_parametersTab_nbrPermutations_spinBox->value(),
+                                             this->para_parametersTab_omnibus_checkBox->isChecked(), this->para_parametersTab_postHoc_checkBox->isChecked() );
 //    }
 }
 
@@ -1177,7 +1175,7 @@ QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
 
 QString FADTTSWindow::GenerateSelectedSubjectList()
 {
-    QFile selectedSubjects( m_data.GetOutputDir() + "/subjectList.txt" );
+    QFile selectedSubjects( m_data.GetOutputDir() + "/" + this->para_inputsTab_fiberName_lineEdit->text() + "_subjectList.txt" );
     if( selectedSubjects.open( QIODevice::WriteOnly ) )
     {
         QTextStream tsSelectedSubjects( &selectedSubjects );

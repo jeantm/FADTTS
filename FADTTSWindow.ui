@@ -1157,7 +1157,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="para_parametersTab_testIndependent_checkBox">
+               <widget class="QCheckBox" name="para_parametersTab_postHoc_checkBox">
                 <property name="text">
                  <string>Post Hoc / Test Independently</string>
                 </property>
@@ -1426,7 +1426,7 @@
   <tabstop>parametersTab_covariatesUncheckAll_pushButton</tabstop>
   <tabstop>para_parametersTab_covariates_listWidget</tabstop>
   <tabstop>para_parametersTab_omnibus_checkBox</tabstop>
-  <tabstop>para_parametersTab_testIndependent_checkBox</tabstop>
+  <tabstop>para_parametersTab_postHoc_checkBox</tabstop>
   <tabstop>runTab_outputDir_pushButton</tabstop>
   <tabstop>para_runTab_outputDir_lineEdit</tabstop>
   <tabstop>runTab_matlab_pushButton</tabstop>

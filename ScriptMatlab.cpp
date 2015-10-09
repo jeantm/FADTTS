@@ -6,8 +6,8 @@ ScriptMatlab::ScriptMatlab()
 {
 }
 
-void ScriptMatlab::GenerateMatlabScript( QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
-                                         QMap<int,QString> selectedCovariates, int nbrPermutation, QString outputDir )
+void ScriptMatlab::GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
+                                         QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
 {
     InitScriptMatlab();
 
@@ -17,13 +17,17 @@ void ScriptMatlab::GenerateMatlabScript( QString fiberName, QStringList selected
 
     SetDiffusionProperties( selectedPrefixes );
 
-    SetNbrPermutation( nbrPermutation );
+    SetNbrPermutations( nbrPermutations );
 
     SetCovariatesList( selectedCovariates );
 
     SetInputFiles( matlabInputFiles );
 
-    QFile matlabScript( outputDir + "/matlabScriptTest.m" );
+    SetOmnibus( omnibus );
+
+    SetPostHoc( postHoc );
+
+    QFile matlabScript( outputDir + "/" + fiberName + "_ScriptFADTTS.m" );
     if( matlabScript.open( QIODevice::WriteOnly ) )
     {
         QTextStream ts( &matlabScript );
@@ -52,67 +56,111 @@ void ScriptMatlab::SetHeader()
 
 void ScriptMatlab::SetFiberName( QString fiberName )
 {
-    m_script.replace( "$fiberName$", fiberName );
+    m_script.replace( "$inputFiberName$", "fiberName = '" + fiberName + "';\n" );
 }
 
 void ScriptMatlab::SetDiffusionProperties( QStringList selectedPrefixes )
 {
-    QString diffusionProperties;
-    QString allProperties;
-    int i = 1;
-    foreach (QString prefix, selectedPrefixes)
+    if( !selectedPrefixes.isEmpty() )
     {
-        diffusionProperties.append( "Dnames{" + QString::number( i ) + "}='" + prefix.toUpper() + "';\n" );
-        allProperties.append( prefix.toUpper() );
-        i++;
+        QString inputDiffusionProperties;
+        QString inputAllProperties;
+        QString diffusionProperties;
+
+        int i = 1;
+        foreach (QString prefix, selectedPrefixes)
+        {
+            inputDiffusionProperties.append( prefix.toUpper() + " = '" + prefix.toUpper() + "';\n" );
+            inputAllProperties.append( prefix.toUpper() );
+
+            diffusionProperties.append( "Dnames{ " + QString::number( i ) + " } = " + prefix.toUpper() + ";\n" );
+
+            i++;
+        }
+
+        m_script.replace( "$inputDiffusionProperties$", inputDiffusionProperties );
+        m_script.replace( "$inputAllProperties$", "allProperties = '" + inputAllProperties + "';" );
+
+        m_script.replace( "$diffusionProperties$", diffusionProperties );
+        m_script.replace( "$allProperties$", "params{ 1 } = allProperties;" );
     }
-    m_script.replace( "$diffusionProperties$", diffusionProperties );
-    if( !allProperties.isEmpty() )
+    else
     {
-        m_script.replace( "$allProperties$", "params{1}='" + allProperties + "';" );
+        m_script.replace( "$inputDiffusionProperties$", "" );
+        m_script.replace( "$inputAllProperties$", "" );
+
+        m_script.replace( "$diffusionProperties$", "" );
+        m_script.replace( "$allProperties$", "" );
     }
+
 }
 
-void ScriptMatlab::SetNbrPermutation( int nbrPermutation )
+void ScriptMatlab::SetNbrPermutations( int nbrPermutations )
 {
-    m_script.replace( "$nbrPermutation$", QString::number( nbrPermutation ) );
+    m_script.replace( "$inputNbrPermutations$", "nbrPermutations = " + QString::number( nbrPermutations ) + ";" );
 }
 
 void ScriptMatlab::SetCovariatesList( QMap<int, QString> selectedCovariates )
 {
-    m_script.replace( "$nbrCovariates$", QString::number( selectedCovariates.count() ) );
-    QString str;
+    m_script.replace( "$inputNbrCovariates$", "nbrCovariates = " + QString::number( selectedCovariates.count() ) + ";" );
+    QString strInputCovar;
+    QString strCovar;
     int i = 1;
     QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
     while( iterCovariate != selectedCovariates.constEnd() )
     {
-        str.append( "Pnames{" + QString::number( i ) + "}='" + iterCovariate.value() + "';\n" );
+        strInputCovar.append( iterCovariate.value() + " = '" + iterCovariate.value() + "';\n" );
+        strCovar.append( "Pnames{ " + QString::number( i ) + " } = " + iterCovariate.value() + ";\n" );
         ++iterCovariate;
         i++;
     }
-    m_script.replace( "$covariates$", str );
+    m_script.replace( "$inputCovariates$", strInputCovar );
+    m_script.replace( "$covariates$", strCovar );
 }
 
 void ScriptMatlab::SetInputFiles( QMap<QString, bool> matlabInputFiles )
 {
+    QString inputDiffusionFiles;
     QString diffusionFiles;
+
     int i = 1;
     QMap<QString, bool>::ConstIterator iterMatlabInputFile = matlabInputFiles.begin();
     while( iterMatlabInputFile != matlabInputFiles.constEnd() )
     {
+        QString filename = QFileInfo( QFile( iterMatlabInputFile.key().split( "?" ).last() ) ).fileName();
         if( iterMatlabInputFile.value() == false )
         {
-            diffusionFiles.append( "dataFiber" + QString::number( i ) + "All="
-                                   "dlmread('" + QFileInfo( QFile( iterMatlabInputFile.key().split( "?" ).last() ) ).fileName() + "','" + m_csvSeparator + "',1,0);\n" );
-            diffusionFiles.append( "diffusionFiles{" + QString::number( i ) + "}=dataFiber" + QString::number( i ) + "All(:,2:end);\n" );
+            inputDiffusionFiles.append( filename.split( "." ).first() + " = strcat( folder, '/" + filename + "' );\n" );
+            diffusionFiles.append( "dataFiber" + QString::number( i ) + "All = dlmread( " + filename.split( "." ).first() +
+                                   ", '" + m_csvSeparator + "', 1, 0 );\n" );
+            diffusionFiles.append( "diffusionFiles{ " + QString::number( i ) + " } = dataFiber" + QString::number( i ) + "All( :, 2:end );\n" );
             i++;
         }
         else
         {
-            m_script.replace( "$matlabCOMPInputFile$", "data2="
-                              "dlmread('" + QFileInfo( QFile( iterMatlabInputFile.key().split( "?" ).last() ) ).fileName() + "','" + m_csvSeparator + "',0,1);\n" );
+            m_script.replace( "$inputMatlabCOMPInputFile$", filename.split( "." ).first() + " = strcat( folder, '/" + filename + "' );" );
+            m_script.replace( "$matlabCOMPInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", '" + m_csvSeparator + "', 1, 1);\n" );
         }
         ++iterMatlabInputFile;
     }
-    m_script.replace( "$diffusionFiles$", diffusionFiles );
+    if( !inputDiffusionFiles.isEmpty() )
+    {
+        m_script.replace( "$inputDiffusionFiles$", inputDiffusionFiles );
+        m_script.replace( "$diffusionFiles$", diffusionFiles );
+    }
+    else
+    {
+        m_script.replace( "$inputDiffusionFiles$", "" );
+        m_script.replace( "$diffusionFiles$", "" );
+    }
+}
+
+void ScriptMatlab::SetOmnibus( bool omnibus )
+{
+    m_script.replace( "$inputOmnibus$", "omnibus = " + QString::number( omnibus ) + ";" );
+}
+
+void ScriptMatlab::SetPostHoc( bool postHoc )
+{
+    m_script.replace( "$inputPostHoc$", "postHoc = " + QString::number( postHoc ) + ";" );
 }

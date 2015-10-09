@@ -7,7 +7,8 @@ Processing::Processing()
 }
 
 QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
-                                   int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates, QString currentOutputDir )
+                                                          int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates,
+                                                          QString currentOutputDir, QString fiberName )
 {
     m_selectedInputFiles = selectedInputFiles;
     QStringList selectedSubjectList = GetSelectedSubjectList( selectedSubjectListFile );
@@ -17,12 +18,9 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
         QString encoding = iterSelectedInputFile.key().split( "?" ).first();
-        qDebug() << encoding;
         QString fileName = iterSelectedInputFile.key().split( "?" ).last();
-        qDebug() << fileName;
-        QFile matlabInputFile( currentOutputDir + "/" +
-                               QFileInfo( QFile( fileName  ) ).fileName().split( "." ).first() +
-                               "_M.txt" );
+        QFile matlabInputFile( currentOutputDir + "/" + fiberName + "_" +
+                               QFileInfo( QFile( fileName  ) ).fileName().split( "." ).first() + ".txt" );
         if( matlabInputFile.open( QIODevice::WriteOnly ) )
         {
             QTextStream tsM( &matlabInputFile );
@@ -186,7 +184,7 @@ QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, b
     QMap<QString, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
-        QStringList currentSubjectList = GetSubjectListFromInputFile( iterSelectedInputFile.key(), subjectCovariatesColumnId );
+        QStringList currentSubjectList = GetSubjectListFromInputFile( iterSelectedInputFile.key().split( "?" ).last(), subjectCovariatesColumnId );
         foreach( QString subject, currentSubjectList )
         {
             if( !refSubjectList.contains( subject ) )
@@ -196,6 +194,7 @@ QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, b
         }
         ++iterSelectedInputFile;
     }
+
     return refSubjectList;
 }
 
@@ -210,7 +209,7 @@ void Processing::ResetProcessing()
 
 
 void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjectList,
-                                       QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath )
+                                      QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath )
 {
     QFile subjectListFile( subjectListFilePath );
     QMap< QString, QMap<QString, bool> >::ConstIterator iterCheckedSubject = checkedSubject.begin();

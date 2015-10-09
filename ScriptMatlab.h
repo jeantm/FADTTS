@@ -19,8 +19,8 @@ public :
 
    // Set Functions
 
-   void GenerateMatlabScript( QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
-                              QMap<int,QString> selectedCovariates, int nbrPermutation, QString outputDir );
+   void GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
+                              QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc );
 
 
    void InitScriptMatlab();
@@ -31,11 +31,15 @@ public :
 
    void SetDiffusionProperties( QStringList selectedPrefixes );
 
-   void SetNbrPermutation( int nbrPermutation );
+   void SetNbrPermutations( int nbrPermutation );
 
    void SetCovariatesList( QMap<int, QString> selectedCovariates );
 
    void SetInputFiles( QMap<QString, bool> matlabInputFiles );
+
+   void SetOmnibus( bool omnibus );
+
+   void SetPostHoc( bool postHoc );
 
 
 private :

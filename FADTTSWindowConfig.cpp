@@ -51,7 +51,7 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     m_para_m->setpara_parametersTab_covariates_listWidget( itemList ) ;
 
     m_para_m->setpara_parametersTab_omnibus_checkBox( para_parametersTab_omnibus_checkBox->checkState() );
-    m_para_m->setpara_parametersTab_testIndependent_checkBox( para_parametersTab_testIndependent_checkBox->checkState() );
+    m_para_m->setpara_parametersTab_postHoc_checkBox( para_parametersTab_postHoc_checkBox->checkState() );
 
     m_para_m->setpara_parametersTab_nbrPermutations_spinBox( para_parametersTab_nbrPermutations_spinBox->value() );
 
@@ -117,7 +117,7 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_para_m->setpara_parametersTab_covariates_listWidget( itemList ) ;
 
         m_para_m->setpara_parametersTab_omnibus_checkBox( para_parametersTab_omnibus_checkBox->checkState() );
-        m_para_m->setpara_parametersTab_testIndependent_checkBox( para_parametersTab_testIndependent_checkBox->checkState() );
+        m_para_m->setpara_parametersTab_postHoc_checkBox( para_parametersTab_postHoc_checkBox->checkState() );
 
         m_para_m->setpara_parametersTab_nbrPermutations_spinBox( para_parametersTab_nbrPermutations_spinBox->value() );
 
@@ -181,7 +181,7 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     }
 
     para_parametersTab_omnibus_checkBox->setChecked( m_para_m->getpara_parametersTab_omnibus_checkBox() );
-    para_parametersTab_testIndependent_checkBox->setChecked( m_para_m->getpara_parametersTab_testIndependent_checkBox() );
+    para_parametersTab_postHoc_checkBox->setChecked( m_para_m->getpara_parametersTab_postHoc_checkBox() );
 
     para_parametersTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parametersTab_nbrPermutations_spinBox() );
 
@@ -244,7 +244,7 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         }
 
         para_parametersTab_omnibus_checkBox->setChecked( m_para_m->getpara_parametersTab_omnibus_checkBox() );
-        para_parametersTab_testIndependent_checkBox->setChecked( m_para_m->getpara_parametersTab_testIndependent_checkBox() );
+        para_parametersTab_postHoc_checkBox->setChecked( m_para_m->getpara_parametersTab_postHoc_checkBox() );
 
         para_parametersTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parametersTab_nbrPermutations_spinBox() );
 

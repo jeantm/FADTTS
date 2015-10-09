@@ -24,14 +24,15 @@ public:
     QMap< QString, QMap<QString, bool> > FindSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectList );
 
     void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjectList,
-                                           QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath );
+                              QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath );
 
     bool IsCOMPFile( const QStringList strList );
 
 
     /***************** Run *****************/
     QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
-                                  int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates, QString currentOutputDir );
+                                                  int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates,
+                                                  QString currentOutputDir, QString fiberName );
 
     QStringList GetSelectedSubjectList( QString selectedSubjectListFile );
 
