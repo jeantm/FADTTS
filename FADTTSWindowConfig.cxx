@@ -5,7 +5,7 @@ FADTTSWindowConfig::FADTTSWindowConfig( QWidget *parent, Qt::WFlags f ):
 {
     this->setupUi( this ) ;
     m_sync = false ;
-    m_para_m = 0;
+//    m_para_m = 0;
 }
 
 void FADTTSWindowConfig::SyncUiToModelStructure()

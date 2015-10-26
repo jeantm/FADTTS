@@ -1,16 +1,20 @@
 #ifndef FADTTSWINDOW_H
 #define FADTTSWINDOW_H
 
+#include <QSharedPointer>
+
 #include "FADTTSWindowConfig.h"
+#include "Data.h"
 #include "EditInputDialog.h"
 #include "InfoDialog.h"
-#include "Data.h"
 #include "Processing.h"
-#include "ScriptMatlab.h"
+#include "MatlabScript.h"
 
 
 class FADTTSWindow : public FADTTSWindowConfig
 {
+    friend class TestFADTTSWindow;
+
     Q_OBJECT
     
 public:
@@ -35,7 +39,7 @@ private slots:
 
 
     /*************** Input Tab ***************/
-    void AddFiles();
+    void AddMultipleFiles();
 
     void AddFile( const QString& prefID );
 
@@ -55,7 +59,7 @@ private slots:
 
 
     /*************** Subjects Tab ***************/
-    void LoadInputSubjectFiles();
+    void LoadInputSubjectFile();
 
     void ResetInputSubjectFiles();
 
@@ -91,6 +95,8 @@ private slots:
 
     void UpdateOutputDirLineEdit( const QString& textLineEdit );
 
+    void SetMatlabExe(); /******** WARNING BAD CODING. FUNCTION NEEDS TO BE CORRECTED ********/
+
 
     void RunFADTTS();
 
@@ -108,11 +114,17 @@ private:
 
     Ui::FADTTSWindow *m_mainUi;
 
-    EditInputDialog *m_editInputDialog;
+    QSharedPointer<EditInputDialog> m_editInputDialog;
 
-    InfoDialog *m_infoDialog;
+    QSharedPointer<InfoDialog> m_infoDialog;
 
     QListWidget *m_sortedSubjectListWidget, *m_covariatesListWidget;
+
+//    QLabel *m_adInputSizeLabel, *m_rdInputSizeLabel, *m_mdInputSizeLabel,
+//    *m_faInputSizeLabel, *m_compInputSizeLabel;
+
+//    QCheckBox *m_adInputSizeCheckBox, *m_rdInputSizeCheckBox, *m_mdInputSizeCheckBox,
+//    *m_faInputSizeCheckBox, *m_compInputSizeCheckBox;
 
     QPixmap m_okPixmap;
     QPixmap m_koPixmap;
@@ -132,13 +144,13 @@ private:
 
     Qt::CaseSensitivity caseSensitivity;
 
-    QString m_currentFileInputDir, m_currentSubjectListInputDir;
+    QString m_currentFileInputDir, m_currentSubjectListInputDir, m_currentMatlabExeDir;
 
     Data m_data;
 
     Processing m_processing;
 
-    ScriptMatlab m_scriptMatlab;
+    MatlabScript m_matlabScript;
 
 
     /********* Configuration & Events *********/
@@ -187,10 +199,6 @@ private:
     /*************** Subjects Tab ***************/
     void UpdateAvailableFileParamTab();
 
-    QStringList GetRefSubjectList( const QString subjectListFilePath ); // Move
-
-    QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles(); // Move
-
     void DisplaySortedSubjectList( const QStringList subjectListRef, const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectList );
 
     void DisplayNbrSubjectsSelected();
@@ -200,13 +208,14 @@ private:
 
 
     /*************** Run Tab ***************/
-    QString GenerateSelectedSubjectList();
+    QStringList GetSelectedPrefixes();
 
     QMap<QString, bool> GetSelectedInputFiles();
 
     QMap<int, QString> GetSelectedCovariates();
 
-    QStringList GetSelectedPrefixes();
+    QString GenerateSelectedSubjectList();
+
 };
 
 #endif // FADTTSWINDOW_H

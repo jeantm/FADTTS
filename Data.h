@@ -10,9 +10,7 @@ class Data : public QObject
     Q_OBJECT
 
 public:
-
     explicit Data(QObject *parent = 0);
-
 
     /***************************************/
     /*************** Getters ***************/
@@ -58,8 +56,6 @@ public:
     int GetSubjectColumnID() const;
 
     QMap<QString, QString >::ConstIterator GetFilenameMapIterator();
-
-    QMap<QString, QStringList >::ConstIterator GetSubjectsMapIterator();
 
 
     /***************************************/

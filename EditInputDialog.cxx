@@ -9,19 +9,14 @@ EditInputDialog::EditInputDialog( QWidget *parent ) :
 {
     m_ui->setupUi( this );
 
-    m_dataTableWidget = new QTableWidget;
-    m_dataTableWidget = m_ui->data_tableWidget;
-    m_dataTableWidget->setEditTriggers( QAbstractItemView::NoEditTriggers );
-    m_rowDeleted = false;
-    m_columnDeleted = false;
-
-    m_subjectColumnID = 0;
-
-//    m_dataTableWidget->
+    InitEditInputDialog();
 }
 
 EditInputDialog::~EditInputDialog()
 {
+    delete m_subjectColumnSpinBox;
+    delete m_fileInformationLabel;
+    delete m_subjectColumnLabel;
     delete m_dataTableWidget;
     delete m_ui;
 }
@@ -57,14 +52,16 @@ void EditInputDialog::SetCurrentInputDir( const QString &newCurrentInputDir )
 
 void EditInputDialog::ResetSubjectColumnID()
 {
-    m_ui->para_subjectColumn_spinBox->setValue( 1 );
+    m_subjectColumnSpinBox->setValue( 1 );
+    /** Row and Column ID start at 1 for data display only.
+     *  Otherwise they start at 0 (data modification, ...). **/
 }
 
 
 /***************************************************************/
 /************************ Private slots ************************/
 /***************************************************************/
-void EditInputDialog::on_deleteRows_pushButton_clicked()
+void EditInputDialog::DeleteRows()
 {
     QItemSelection selection( m_dataTableWidget->selectionModel()->selection() );
 
@@ -90,7 +87,7 @@ void EditInputDialog::on_deleteRows_pushButton_clicked()
     RefreshFileInfo();
 }
 
-void EditInputDialog::on_deleteColumns_pushButton_clicked()
+void EditInputDialog::DeleteColumns()
 {
     QItemSelection selection( m_dataTableWidget->selectionModel()->selection() );
 
@@ -116,14 +113,16 @@ void EditInputDialog::on_deleteColumns_pushButton_clicked()
     RefreshFileInfo();
 }
 
-void EditInputDialog::on_para_subjectColumn_spinBox_valueChanged( int idColumn )
+void EditInputDialog::ChangeSubjectColumnID( int idColumn )
 {
+    /** Allow the user to manage the position of the subjects in the data file.
+     *  This position is transmited to the main window in anticipation of further data processing **/
     m_subjectColumnID = idColumn-1;
     emit SubjectColumnIDChanged( m_subjectColumnID );
     RefreshFileInfo();
 }
 
-void EditInputDialog::on_saveFile_pushButton_clicked()
+void EditInputDialog::Save()
 {
     SaveCSVFile();
     RefreshFileInfo();
@@ -133,34 +132,50 @@ void EditInputDialog::on_saveFile_pushButton_clicked()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
+void EditInputDialog::InitEditInputDialog()
+{
+    m_dataTableWidget = new QTableWidget;
+    m_dataTableWidget = m_ui->data_tableWidget;
+    m_dataTableWidget->setEditTriggers( QAbstractItemView::NoEditTriggers ); /** User unable to do any data modification in the tableWidget - except delete **/
+
+    m_subjectColumnSpinBox = new QSpinBox;
+    m_subjectColumnSpinBox = m_ui->para_subjectColumn_spinBox;
+
+    m_fileInformationLabel = new QLabel;
+    m_fileInformationLabel = m_ui->fileInformation_label;
+
+    m_subjectColumnLabel = new QLabel;
+    m_subjectColumnLabel = m_ui->subjectColumn_label;
+
+    m_rowDeleted = false;
+    m_columnDeleted = false;
+    m_subjectColumnID = 0;
+
+    connect( m_ui->deleteRows_pushButton, SIGNAL( clicked() ), SLOT( DeleteRows() ) );
+    connect( m_ui->deleteColumns_pushButton, SIGNAL( clicked() ), SLOT( DeleteColumns() ) );
+    connect( m_subjectColumnSpinBox, SIGNAL( valueChanged( int ) ), SLOT( ChangeSubjectColumnID( int ) ) );
+    connect( m_ui->saveFile_pushButton, SIGNAL( clicked() ), SLOT( Save() ) );
+
+}
+
 void EditInputDialog::UploadData()
 {
-    QFile importedCSV( m_inputFile );
-    importedCSV.open( QIODevice::ReadOnly );
-    QTextStream ts( &importedCSV );
-    QList<QStringList> list;
+    Processing process;
+    QList<QStringList> data = process.GetDataFromFile( m_inputFile );
+    m_isCOMP = process.IsCOMPFile( data.at( 1 ) );
     int row = 0, col = 0;
 
-    while( !ts.atEnd() )
-    {
-        list << ts.readLine().split( m_csvSeparator );
-    }
-    importedCSV.close();
+    m_subjectColumnSpinBox->setMaximum( data.at( 0 ).count() ); /** Limite the column seleection to the number of covariates **/
 
-    Processing process;
-    m_isCOMP = process.IsCOMPFile( list.at( 1 ) );
-
-    m_ui->para_subjectColumn_spinBox->setMaximum( list.at( 0 ).count() );
-
-    m_dataTableWidget->setRowCount( list.count() );  // number of stringlists gives row count
-    m_dataTableWidget->setColumnCount( list.at( 0 ).count() );  // count of entries from intial stringlist for column count
+    m_dataTableWidget->setRowCount( data.count() ); /** The number of StringLists gives the number of row **/
+    m_dataTableWidget->setColumnCount( data.at( 0 ).count() ); /** The number of String from intial StringList gives the number of column **/
 
     m_dataTableWidget->setUpdatesEnabled( false );
-    foreach( QStringList l, list )
+    foreach( QStringList l, data )
     {
         foreach( QString str, l )
         {
-            // remove quotes if str quoted
+            /** Remove quotes if str quoted **/
             if( str.endsWith( '"' ) )
             {
                 str.chop( 1 );
@@ -178,84 +193,92 @@ void EditInputDialog::UploadData()
 
 void EditInputDialog::RefreshFileInfo()
 {
+    /** Refresh the file edition window and update the information displayed.
+     *  Called everytime a modification is made **/
+
     QString str;
-    m_ui->para_subjectColumn_spinBox->setHidden( true );
-    m_ui->subjectColumn_label->setHidden( true );
+    m_subjectColumnSpinBox->setHidden( true );
+    m_subjectColumnLabel->setHidden( true );
 
     int nbRows = m_dataTableWidget->rowCount();
     int nbColumns = m_dataTableWidget->columnCount();
 
-    if( m_prefix == m_data->GetCovariatePrefix() )
+    str.append( tr( qPrintable( "<br><br><b>Filename</b> " + QFileInfo( QFile( m_inputFile ) ).fileName() + "<br>" ) ) );
+    if( nbRows == 0 || nbColumns == 0 )
     {
-        m_ui->para_subjectColumn_spinBox->setHidden( false );
-        m_ui->subjectColumn_label->setHidden( false );
-
-        if( m_isCOMP )
-        {
-            str.append( tr( qPrintable( "<br><br><b>Filename</b> " + QFileInfo( QFile( m_inputFile ) ).fileName() + "<br>" ) ) );
-            str.append( tr( qPrintable( "<br><b>Number of test subjects</b>  " + QString::number( nbRows-1 ) + "<br>" ) ) );
-            str.append( tr( qPrintable( "<br><b>Data matrix</b>  " + QString::number( nbRows-1 ) + "x" + QString::number( nbColumns-1 ) + "<br>" ) ) );
-            str.append( tr( qPrintable( "<br><b>Number of covariates</b>  " + QString::number( nbColumns-1 ) ) ) );
-            m_covariates.clear();
-            for( int c = 0; c < nbColumns; ++c )
-            {
-                if( c != m_subjectColumnID )
-                {
-                    QString cov = m_dataTableWidget->item( 0, c )->text();
-                    str.append( tr( qPrintable( "<br>-  " + cov ) ) );
-                    m_covariates.insert( c, cov );
-                }
-            }
-            m_covariates.insert( -1, tr( "Intercept" ) );
-            emit CovariatesChanged( m_covariates );
-        }
-        else
-        {
-            str.append( tr( qPrintable( "<br><center><i>WARNING<br><br>Please make sure you have uploaded<br>a " + m_prefix + " file</i></center>" ) ) );
-        }
+        str.append( tr( qPrintable( "<br>No data to display" ) ) );
     }
     else
     {
-        if( m_data->GetPrefixList().contains( m_prefix ) )
+        if( m_prefix == m_data->GetCovariatePrefix() )
         {
-            if( !m_isCOMP )
+            /** Subject column selection only available for covariate files **/
+            m_subjectColumnSpinBox->setHidden( false );
+            m_subjectColumnLabel->setHidden( false );
+
+            if( m_isCOMP ) /** The file matches the expected file structure **/
             {
-                str.append( tr( qPrintable( "<br><br><b>Filename</b> " + QFileInfo( QFile( m_inputFile ) ).fileName() + "<br>" ) ) );
-                str.append( tr( qPrintable( "<br><b>Number of subjects</b>  " + QString::number( nbColumns-1 ) + "<br>" ) ) );
+                str.append( tr( qPrintable( "<br><b>Number of test subjects</b>  " + QString::number( nbRows-1 ) + "<br>" ) ) );
+                str.append( tr( qPrintable( "<br><b>Data matrix</b>  " + QString::number( nbRows-1 ) + "x" + QString::number( nbColumns-1 ) + "<br>" ) ) );
+                str.append( tr( qPrintable( "<br><b>Number of covariates</b>  " + QString::number( nbColumns-1 ) ) ) );
+                m_covariates.clear();
+                for( int c = 0; c < nbColumns; ++c )
+                {
+                    if( c != m_subjectColumnID )
+                    {
+                        QString cov = m_dataTableWidget->item( 0, c )->text();
+                        str.append( tr( qPrintable( "<br>-  " + cov ) ) );
+                        m_covariates.insert( c, cov );
+                    }
+                }
+                m_covariates.insert( -1, tr( "Intercept" ) );
+                emit CovariatesChanged( m_covariates ); /** The new covariates ( column ID and name ) are sent to the main window **/
+            }
+            else
+            {
+                str.append( tr( qPrintable( "<br><center><i>WARNING<br><br>Please make sure you have uploaded<br>a " + m_prefix.toUpper() + " file</i></center>" ) ) );
+            }
+        }
+        else /** AD/RD/MD or FA file edition **/
+        {
+            if( !m_isCOMP ) /** The file matches the expected file structure **/
+            {
+                str.append( tr( qPrintable( "<br><b>Number of test subjects</b>  " + QString::number( nbColumns-1 ) + "<br>" ) ) );
                 str.append( tr( qPrintable( "<br><b>Data matrix</b>  " + QString::number( nbRows-1 ) + "x" + QString::number( nbColumns ) ) ) );
             }
             else
             {
-                str.append( tr( qPrintable( "<br><center><i>WARNING<br><br>Please make sure you have uploaded<br>a " + m_prefix + " file</i></center>" ) ) );
+                str.append( tr( qPrintable( "<br><center><i>WARNING<br><br>Please make sure you have uploaded<br>a(n) " + m_prefix.toUpper() + " file</i></center>" ) ) );
             }
-
         }
     }
-    m_ui->fileInformation_label->setText( str );
+    m_fileInformationLabel->setText( str );
 }
 
 bool EditInputDialog::SaveCSVFile()
 {
-    QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_prefix + " file as ..." ) ), m_currentInputDir, tr( ".csv( *.csv ) ;; .*( * )" ) );
+    QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_prefix.toUpper() + " file as ..." ) ), m_currentInputDir, tr( ".csv( *.csv ) ;; .*( * )" ) );
     QFile exportedCSV( filePath );
     if( exportedCSV.open( QIODevice::WriteOnly ) )
     {
         QTextStream ts( &exportedCSV );
-        QStringList strList;
+        QStringList data;
 
         for( int r = 0; r < m_dataTableWidget->rowCount(); ++r )
         {
-            strList.clear();
+            data.clear();
             for( int c = 0; c < m_dataTableWidget->columnCount(); ++c )
             {
-                strList << m_dataTableWidget->item( r, c )->text();
+                data << m_dataTableWidget->item( r, c )->text();
             }
-            ts << strList.join( m_csvSeparator ) << endl;
+            ts << data.join( m_csvSeparator ) << endl;
         }
         exportedCSV.flush();
         exportedCSV.close();
-        emit FilePathChanged( filePath, m_prefix );
+
         m_inputFile = filePath;
+        emit FilePathChanged( m_inputFile, m_prefix ); /** Update file path in main window LineEdit **/
+
         m_columnDeleted = false;
         m_rowDeleted = false;
         return true;
@@ -302,6 +325,7 @@ void EditInputDialog::closeEvent( QCloseEvent *event )
             break;
         case QMessageBox::Discard:
             ResetTableWidget();
+            ResetSubjectColumnID();
             event->accept();
             break;
         case QMessageBox::Cancel:
@@ -309,7 +333,7 @@ void EditInputDialog::closeEvent( QCloseEvent *event )
             break;
         default:
             event->accept();
-                break;
+            break;
         }
     }
     else

@@ -1,53 +1,62 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
-#include <QObject>
+#include <QLocale>
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-#include <QMap>
 #include <QCheckBox>
 #include <QListWidget>
+#include <QProcess>
 #include <QDebug>
-#include <QLocale>
 
+#include "Data.h"
 
 class Processing
 {
 public:
     Processing();
 
-    QStringList GetSubjectListFromInputFile( QString inputFile, int subjectCovariatesColumnId );
+    /*****************************************************/
+    /****************** Running Process ******************/
+    /*****************************************************/
+    void RunScript( QString matlabExe, QString scriptPath );
 
-    QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectsCovariatesColumnId );
-
-    QMap< QString, QMap<QString, bool> > FindSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectList );
-
-    void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjectList,
-                              QMap<QString, QStringList >& unMatchedSubjectList , QString subjectListFilePath );
 
     bool IsCOMPFile( const QStringList strList );
 
-
-    /***************** Run *****************/
-    QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
-                                                  int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates,
-                                                  QString currentOutputDir, QString fiberName );
-
     QStringList GetSelectedSubjectList( QString selectedSubjectListFile );
 
-    void ResetProcessing();
+    QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
+                                                  int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates,
+                                                  QString outputDir, QString fiberName );
+
+
+    /*****************************************************/
+    /****************** Data Processing ******************/
+    /*****************************************************/
+    QStringList GetSubjectListFromInputFile( QString inputFile, int subjectCovariatesColumnId );
+
+    QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId );
+
+    QStringList GetRefSubjectList( const QString subjectListFilePath, QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId );
+
+
+    QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap );
+
+    QMap< QString, QMap<QString, bool> > SortSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectMap );
+
+    void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjects,
+                              QMap<QString, QStringList >& unMatchedSubjects );
+
+
+    QList<QStringList> GetDataFromFile( QString fileName );
 
 
 private:
     static const QString m_csvSeparator;
 
-    QString m_selectedSubjectListFile;
-
-    QStringList m_selectedSubjectList;
-
-    QMap<QString, bool> m_selectedInputFiles, m_matlabInputFiles;
-
+    QProcess* m_process;
 };
 
 #endif // PROCESSING_H

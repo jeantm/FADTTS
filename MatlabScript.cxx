@@ -1,15 +1,18 @@
-#include "ScriptMatlab.h"
+#include "MatlabScript.h"
 
-const QString ScriptMatlab::m_csvSeparator = QLocale().groupSeparator();
+const QString MatlabScript::m_csvSeparator = QLocale().groupSeparator();
 
-ScriptMatlab::ScriptMatlab()
+MatlabScript::MatlabScript()
 {
 }
 
-void ScriptMatlab::GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
-                                         QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
+/***************************************************************/
+/********************** Public functions ***********************/
+/***************************************************************/
+QString MatlabScript::GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
+                                            QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
 {
-    InitScriptMatlab();
+    InitMatlabScript( "." );
 
     SetHeader();
 
@@ -27,7 +30,9 @@ void ScriptMatlab::GenerateMatlabScript( QString outputDir, QString fiberName, Q
 
     SetPostHoc( postHoc );
 
-    QFile matlabScript( outputDir + "/" + fiberName + "_ScriptFADTTS.m" );
+    m_scriptPath = outputDir + "/" + fiberName + "_FADTTSAnalysis_MatlabScript.m";
+    QFile matlabScript( m_scriptPath );
+
     if( matlabScript.open( QIODevice::WriteOnly ) )
     {
         QTextStream ts( &matlabScript );
@@ -35,31 +40,76 @@ void ScriptMatlab::GenerateMatlabScript( QString outputDir, QString fiberName, Q
         matlabScript.flush();
         matlabScript.close();
     }
+
+    return m_scriptPath;
+}
+
+QString MatlabScript::GenerateMatlabScriptForTest( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
+                                            QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
+{
+    InitMatlabScript( "/work/jeantm/Project/FADTTS-build" );
+
+    SetFiberName( fiberName );
+
+    SetDiffusionProperties( selectedPrefixes );
+
+    SetNbrPermutations( nbrPermutations );
+
+    SetCovariatesList( selectedCovariates );
+
+    SetInputFiles( matlabInputFiles );
+
+    SetOmnibus( omnibus );
+
+    SetPostHoc( postHoc );
+
+    m_scriptPath = outputDir + "/" + fiberName + "_FADTTSAnalysis_MatlabScript.m";
+    QFile matlabScript( m_scriptPath );
+
+    if( matlabScript.open( QIODevice::WriteOnly ) )
+    {
+        QTextStream ts( &matlabScript );
+        ts << m_script;
+        matlabScript.flush();
+        matlabScript.close();
+    }
+
+    return m_scriptPath;
+}
+
+void MatlabScript::ResetScript()
+{
+    m_script.clear();
+    m_scriptPath.clear();
 }
 
 
-void ScriptMatlab::InitScriptMatlab()
+
+/***************************************************************/
+/********************** Private functions **********************/
+/***************************************************************/
+void MatlabScript::InitMatlabScript( QString path )
 {
-    QFile matlabScriptRef( "scriptRefTest.m" );
+    QFile matlabScriptRef( path + "/scriptRefTest.m" );
     matlabScriptRef.open( QIODevice::ReadOnly );
     QTextStream ts( &matlabScriptRef );
     m_script = ts.readAll();
     matlabScriptRef.close();
 }
 
-void ScriptMatlab::SetHeader()
+void MatlabScript::SetHeader()
 {
-    m_script.replace( "$version$", "V01.01.01" );
-    m_script.replace( "$date$", QDate::currentDate().toString( "MM.dd.yyyy" ) );
-    m_script.replace( "$time$", QTime::currentTime().toString( "h:mm ap" ) );
+    m_script.replace( "$version$", QString( FADTTS_VERSION ).prepend( "V" ) );
+    m_script.replace( "$date$", QDate::currentDate().toString( "MM/dd/yyyy" ) );
+    m_script.replace( "$time$", QTime::currentTime().toString( "hh:mm ap" ) );
 }
 
-void ScriptMatlab::SetFiberName( QString fiberName )
+void MatlabScript::SetFiberName( QString fiberName )
 {
     m_script.replace( "$inputFiberName$", "fiberName = '" + fiberName + "';\n" );
 }
 
-void ScriptMatlab::SetDiffusionProperties( QStringList selectedPrefixes )
+void MatlabScript::SetDiffusionProperties( QStringList selectedPrefixes )
 {
     if( !selectedPrefixes.isEmpty() )
     {
@@ -95,12 +145,12 @@ void ScriptMatlab::SetDiffusionProperties( QStringList selectedPrefixes )
 
 }
 
-void ScriptMatlab::SetNbrPermutations( int nbrPermutations )
+void MatlabScript::SetNbrPermutations( int nbrPermutations )
 {
     m_script.replace( "$inputNbrPermutations$", "nbrPermutations = " + QString::number( nbrPermutations ) + ";" );
 }
 
-void ScriptMatlab::SetCovariatesList( QMap<int, QString> selectedCovariates )
+void MatlabScript::SetCovariatesList( QMap<int, QString> selectedCovariates )
 {
     m_script.replace( "$inputNbrCovariates$", "nbrCovariates = " + QString::number( selectedCovariates.count() ) + ";" );
     QString strInputCovar;
@@ -118,7 +168,7 @@ void ScriptMatlab::SetCovariatesList( QMap<int, QString> selectedCovariates )
     m_script.replace( "$covariates$", strCovar );
 }
 
-void ScriptMatlab::SetInputFiles( QMap<QString, bool> matlabInputFiles )
+void MatlabScript::SetInputFiles( QMap<QString, bool> matlabInputFiles )
 {
     QString inputDiffusionFiles;
     QString diffusionFiles;
@@ -139,7 +189,7 @@ void ScriptMatlab::SetInputFiles( QMap<QString, bool> matlabInputFiles )
         else
         {
             m_script.replace( "$inputMatlabCOMPInputFile$", filename.split( "." ).first() + " = strcat( folder, '/" + filename + "' );" );
-            m_script.replace( "$matlabCOMPInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", '" + m_csvSeparator + "', 1, 1);\n" );
+            m_script.replace( "$matlabCOMPInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", '" + m_csvSeparator + "', 1, 1);" );
         }
         ++iterMatlabInputFile;
     }
@@ -155,12 +205,12 @@ void ScriptMatlab::SetInputFiles( QMap<QString, bool> matlabInputFiles )
     }
 }
 
-void ScriptMatlab::SetOmnibus( bool omnibus )
+void MatlabScript::SetOmnibus( bool omnibus )
 {
     m_script.replace( "$inputOmnibus$", "omnibus = " + QString::number( omnibus ) + ";" );
 }
 
-void ScriptMatlab::SetPostHoc( bool postHoc )
+void MatlabScript::SetPostHoc( bool postHoc )
 {
     m_script.replace( "$inputPostHoc$", "postHoc = " + QString::number( postHoc ) + ";" );
 }

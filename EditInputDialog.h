@@ -13,9 +13,10 @@ class EditInputDialog;
 
 class EditInputDialog : public QDialog
 {
-    Q_OBJECT
-    
+    friend class TestEditInputDialog; /** For unit tests **/
+    friend class TestFADTTSWindow; /** For unit tests **/
 
+    Q_OBJECT
 
 public:
     explicit EditInputDialog( QWidget *parent = 0 );
@@ -43,13 +44,13 @@ signals:
 
 
 private slots:
-    void on_deleteRows_pushButton_clicked();
+    void DeleteRows();
 
-    void on_deleteColumns_pushButton_clicked();
+    void DeleteColumns();
 
-    void on_para_subjectColumn_spinBox_valueChanged( int idColumn );
+    void ChangeSubjectColumnID( int idColumn );
 
-    void on_saveFile_pushButton_clicked();
+    void Save();
 
 
 private:
@@ -58,6 +59,10 @@ private:
     Ui::EditInputDialog *m_ui;
 
     QTableWidget *m_dataTableWidget;
+
+    QSpinBox *m_subjectColumnSpinBox;
+
+    QLabel *m_fileInformationLabel, *m_subjectColumnLabel;
 
     QString m_prefix, m_inputFile, m_currentInputDir;
 
@@ -69,6 +74,8 @@ private:
 
     Data *m_data;
 
+
+    void InitEditInputDialog();
 
     void UploadData();
 

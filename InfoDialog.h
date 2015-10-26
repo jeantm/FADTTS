@@ -3,8 +3,8 @@
 
 #include <QtCore>
 #include <QtGui>
-#include "Data.h"
 
+#include "Data.h"
 
 namespace Ui {
 class InfoDialog;
@@ -12,8 +12,10 @@ class InfoDialog;
 
 class InfoDialog : public QDialog
 {
-    Q_OBJECT
-    
+    friend class TestInfoDialog; /** For unit tests **/
+    friend class TestFADTTSWindow; /** For unit tests **/
+
+    Q_OBJECT    
 
 public:
     explicit InfoDialog( QWidget *parent = 0 );
@@ -27,17 +29,20 @@ public:
 private:
     Ui::InfoDialog *m_ui;
 
+    QLabel *m_adFileInfo_label, *m_rdFileInfo_label, *m_mdFileInfo_label,
+    *m_faFileInfo_label, *m_compFileInfo_label;
+
     typedef QMap<QString, QLabel*> labelMapType;
     labelMapType m_fileInfoLabelMap;
 
     Data *m_data;
 
 
-    QString GetFileInfo( const QString p );
-
-    void SetFilePrefix();
+    void InitInfoDialog();
 
     void SetInfoFileLabelMap();
+
+    QString GetFileInfo( const QString p );
 };
 
 #endif // INFODIALOG_H

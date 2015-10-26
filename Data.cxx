@@ -112,12 +112,6 @@ QMap<QString, QString >::ConstIterator Data::GetFilenameMapIterator()
 }
 
 
-QMap<QString, QStringList >::ConstIterator Data::GetSubjectsMapIterator()
-{
-    return m_SubjectsMap.begin();
-}
-
-
 /***************************************/
 /*************** Setters ***************/
 /***************************************/
@@ -208,6 +202,7 @@ void Data::AddCovariate( int colunmID, QString covariate )
 void Data::AddIntercept()
 {
     m_covariatesList.insert( -1, tr( "Intercept" ) );
+    /** The key is -1 so the Intercept is not taken into account as an input covariate **/
 }
 
 void Data::ClearFileInformation( QString prefID )
