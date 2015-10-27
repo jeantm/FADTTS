@@ -1,10 +1,8 @@
 #include "TestMatlabScript.h"
 
-
 TestMatlabScript::TestMatlabScript()
 {
 }
-
 
 /**********************************************************************/
 /*************************** Test Functions ***************************/
@@ -28,7 +26,7 @@ bool TestMatlabScript::Test_GenerateMatlabScript( QString outputDir, QString mat
     matlabInputFiles.insert( "00?" + matlabInputADFile, false );
     matlabInputFiles.insert( "04?" + matlabInputCOMPFile, true );
 
-    QString matlabScript = mScript.GenerateMatlabScript( outputDir, fiberName, selectedPrefixes, matlabInputFiles,
+    QString matlabScript = mScript.GenerateMatlabScript( false, outputDir, fiberName, selectedPrefixes, matlabInputFiles,
                                                          selectedCovariates, nbrPermutations, omnibus, postHoc );
 
     bool scriptMatched = CompareFile( matlabScript, expectedMatlabScript );

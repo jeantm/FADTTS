@@ -183,11 +183,14 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
 /****************** Other Processes ******************/
 QStringList Processing::GetSubjectListFromInputFile( QList<QStringList> dataInInputFile, int subjectCovariatesColumnId )
 {
+    qDebug() << "Test1.1";
     QStringList subjectList;
-
     QList<QStringList> data = dataInInputFile;
+    qDebug() << "Test1.2";
     int nbRows = data.count();
+    qDebug() << "Test1.3";
     int nbColumns = data.at( 0 ).count();
+    qDebug() << "Test1.4";
 
     if( IsCOMPFile( data.at( 1 ) ) )
     {
@@ -210,11 +213,15 @@ QStringList Processing::GetSubjectListFromInputFile( QList<QStringList> dataInIn
 
 QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int subjectCovariatesColumnId )
 {
+    qDebug() << "Test2.1";
     QStringList refSubjectList;
     QMap<QString, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
+    qDebug() << "Test2.2";
     while( iterDataInSelectedFile != dataInSelectedInputFiles.end() )
     {
+        qDebug() << "Test2.3";
         QStringList currentSubjectList = GetSubjectListFromInputFile( iterDataInSelectedFile.value(), subjectCovariatesColumnId );
+        qDebug() << "Test2.4";
         foreach( QString subject, currentSubjectList )
         {
             if( !refSubjectList.contains( subject ) )
@@ -222,15 +229,17 @@ QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, Q
                 refSubjectList.append( subject );
             }
         }
+        qDebug() << "Test2.5";
         ++iterDataInSelectedFile;
     }
     refSubjectList.removeDuplicates();
-
+    qDebug() << "Test2.6";
     return refSubjectList;
 }
 
 QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QMap<QString, QList<QStringList> > dataInSelectedFiles, int subjectCovariatesColumnId )
 {
+    qDebug() << "Test3.1";
     /** Create a subject list of reference.
      *  This list is either a file provided by the user or automatically generated
      *  with the selected input files' subjects **/
@@ -257,7 +266,7 @@ QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QM
         }
     }
     refSubjectList.removeDuplicates();
-
+    qDebug() << "Test3.2";
     return refSubjectList;
 }
 
@@ -357,10 +366,7 @@ QList<QStringList> Processing::GetDataFromFile( QString fileName )
     {
         data << ts.readLine().split( m_csvSeparator );
     }
-
     file.close();
-
-    //    qDebug() << data;
 
     return data;
 }

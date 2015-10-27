@@ -39,9 +39,9 @@ add_executable(FADTTS_Test_EditInputDialog ${SOURCES_TEST_EDITINPUTDIALOG})
 target_link_libraries(FADTTS_Test_EditInputDialog FADTTSLib)
 
 # Add the executable for the test of FADTTSWindow
-#file(GLOB SOURCES_TEST_FADTTSWINDOW "*FADTTSWindow.cxx")
-#add_executable(FADTTS_Test_FADTTSWindow ${SOURCES_TEST_FADTTSWINDOW})
-#target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSLib)
+file(GLOB SOURCES_TEST_FADTTSWINDOW "*FADTTSWindow.cxx")
+add_executable(FADTTS_Test_FADTTSWindow ${SOURCES_TEST_FADTTSWINDOW})
+target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSLib)
 
 # Add the executable for the test of InfoDialog
 file(GLOB SOURCES_TEST_INFODIALOG "*InfoDialog.cxx")
@@ -67,10 +67,11 @@ ExternalData_add_test(
 )
 
 # Test for FADTTSWindow
-#add_test(
-#        NAME TestFADTTSWindow
-#        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow>
-#)
+ExternalData_add_test(
+        MY_DATA
+        NAME TestFADTTSWindow
+        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${ad_TestFADTTS_Input}
+)
 
 # Test for InfoDialog
 ExternalData_add_test(

@@ -1,6 +1,5 @@
 #include "TestInfoDialog.h"
 
-
 TestInfoDialog::TestInfoDialog()
 {
 }

@@ -10,12 +10,16 @@ MatlabScript::MatlabScript()
 /***************************************************************/
 /********************** Public functions ***********************/
 /***************************************************************/
-QString MatlabScript::GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
-                                            QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
+QString MatlabScript::GenerateMatlabScript( bool release, QString outputDir, QString fiberName, QStringList selectedPrefixes,
+                                            QMap<QString, bool> matlabInputFiles, QMap<int,QString> selectedCovariates,
+                                            int nbrPermutations, bool omnibus, bool postHoc )
 {
     InitMatlabScript();
 
-    SetHeader();
+    if( release )
+    {
+        SetHeader();
+    }
 
     SetFiberName( fiberName );
 

@@ -2,6 +2,8 @@
 
 int main( int argc, char *argv[] )
 {
+    Q_INIT_RESOURCE( FADTTS_Resources );
+
     TestMatlabScript testMatlabScript;
 
     bool test = testMatlabScript.Test_GenerateMatlabScript( argv[1], argv[2], argv[3], argv[4] );

@@ -39,7 +39,7 @@ FADTTSWindow::~FADTTSWindow()
     m_infoDialog.clear();
     delete m_sortedSubjectListWidget;
     delete m_covariatesListWidget;
-//    delete m_mainUi;
+    //    delete m_mainUi;
 }
 
 
@@ -96,9 +96,9 @@ void FADTTSWindow::LoadSoftConfigFile()
 void FADTTSWindow::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton closeMBox = QMessageBox::question( this,
-                                                   tr( "FADTTS" ),
-                                                   tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
-                                                   QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
+                                                                   tr( "FADTTS" ),
+                                                                   tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
+                                                                   QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
     switch( closeMBox )
     {
     case QMessageBox::No:
@@ -129,7 +129,7 @@ void FADTTSWindow::Init()
     if( nbrDuplicates != 0 )  /** Check if a prefix has been entered twice **/
     {
         CriticalPopUp( tr( qPrintable( "Careful, you have " + QString::number( nbrDuplicates ) + " duplicates<br>"
-                       "in your file prefix list.<br>The application may not work properly." ) ) );
+                                       "in your file prefix list.<br>The application may not work properly." ) ) );
     }
 
     m_infoDialog->SetData( &m_data );
@@ -154,7 +154,7 @@ void FADTTSWindow::InitMenuBar()
     connect( this->actionSave_Settings, SIGNAL( triggered() ), SLOT( SaveParaConfigFile() ) );
     connect( this->actionLoad_Software, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
     connect( this->actionSave_Software, SIGNAL( triggered() ), SLOT( SaveSoftConfigFile() ) );
-//    connect( this->actionAbout, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
+    //    connect( this->actionAbout, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
 
 }
 
@@ -613,7 +613,7 @@ void FADTTSWindow::SetInfoSubjectColumnID()
             !m_data.GetDataInFile( m_data.GetCovariatePrefix() ).isEmpty() )
     {
         this->inputsTab_subjectColumnID_label->setText( tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
-                                                      QString::number( m_data.GetSubjectColumnID() + 1 ) + "<i/><b/><span/>") ) );
+                                                                        QString::number( m_data.GetSubjectColumnID() + 1 ) + "<i/><b/><span/>") ) );
     }
     else
     {
@@ -915,7 +915,7 @@ void FADTTSWindow::DisplaySortedSubjectList( const QStringList refSubjectList, c
     else if( !unMatchedSubjects.isEmpty() && ( !matchedSubjects.isEmpty() ) )
     {
         text = tr( qPrintable( QString::number( matchedSubjects.size() ) + "/" + QString::number( refSubjectList.size() ) + " matched      " +
-                QString::number( unMatchedSubjects.size() ) + "/" + QString::number( refSubjectList.size() ) + " unmatched" ) );
+                               QString::number( unMatchedSubjects.size() ) + "/" + QString::number( refSubjectList.size() ) + " unmatched" ) );
     }
     this->subjectsTab_sortSubjects_label->setText( text );
 
@@ -960,7 +960,7 @@ void FADTTSWindow::SelectCovariates( QListWidgetItem *item )
             item->setCheckState( Qt::Unchecked );
         }
         else
-        {            
+        {
             int ignoreWarning = QMessageBox::warning( this,
                                                       tr( "Uncheck Intercept" ),
                                                       tr( "You are about to uncheck the Intercept."
@@ -1027,8 +1027,6 @@ void FADTTSWindow::DisplayCovariatesList( QMap<int, QString> covariatesList )
 /*************************** Run  tab ***************************/
 /****************************************************************/
 
-/*********************** Public  function ***********************/
-
 /***********************  Private  slots  ***********************/
 void FADTTSWindow::SetOutputDir()
 {
@@ -1049,7 +1047,7 @@ void FADTTSWindow::SetOutputDir()
     {
         m_data.SetOutputDir() =  dirPath;
         lineEdit->setText( dirPath );
-    }    
+    }
 }
 
 void FADTTSWindow::UpdateOutputDirLineEdit( const QString&  textLineEdit )
@@ -1101,25 +1099,35 @@ void FADTTSWindow::SetMatlabExe()
     /******************************************/
     /****** NOT SATISFIED WITH THIS CODE ******/
     /******************************************/
-
 }
 
 void FADTTSWindow::RunFADTTS()
 {
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
 
-    if( this->para_inputsTab_fiberName_lineEdit->text().isEmpty() || !this->para_subjectsTab_compInput_checkBox->isChecked() || selectedCovariates.count() == 0  )
+    bool fiberNameProvided = !this->para_inputsTab_fiberName_lineEdit->text().isEmpty();
+    bool atLeastOneDataFileSelected = ( this->para_subjectsTab_adInput_checkBox->isChecked() | this->para_subjectsTab_rdInput_checkBox->isChecked() |
+                                        this->para_subjectsTab_mdInput_checkBox->isChecked() | this->para_subjectsTab_faInput_checkBox->isChecked() );
+    bool covariateFileSelected = this->para_subjectsTab_compInput_checkBox->isChecked();
+    bool atLeastOneCovariateSelected = selectedCovariates.count() != 0;
+    qDebug() << "selectedCovariates" << selectedCovariates << endl;
+    qDebug() << "atLeastOneCovariateSelected" << atLeastOneCovariateSelected << endl;
+    if( !fiberNameProvided || !atLeastOneDataFileSelected || !covariateFileSelected || !atLeastOneCovariateSelected  )
     {
         QString warningText = "<b>FADTTS will not be executed for the following reason(s):</b><br>";
-        if( this->para_inputsTab_fiberName_lineEdit->text().isEmpty() )
+        if( !fiberNameProvided )
         {
             warningText.append( "- No fiber name provided<br><i>Inputs Tab</i><br>" );
         }
-        if( !this->para_subjectsTab_compInput_checkBox->isChecked() )
+        if( !atLeastOneDataFileSelected )
+        {
+            warningText.append( "- Provide and select at least 1 data file<br><i>Inputs Tab / Parameters Tab</i><br>" );
+        }
+        if( !covariateFileSelected )
         {
             warningText.append( "- No correct input covariate file provided and/or selected<br><i>Inputs Tab / Parameters Tab</i><br>" );
         }
-        if( selectedCovariates.count() == 0 )
+        if( !atLeastOneCovariateSelected )
         {
             warningText.append( "- Select at least 1 covariate<br><i>Parameters Tab</i><br>" );
         }
@@ -1137,17 +1145,17 @@ void FADTTSWindow::RunFADTTS()
                                                                                       m_data.GetSubjectColumnID(), selectedCovariates,
                                                                                       m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text() );
 
-        QString matlabScript = m_matlabScript.GenerateMatlabScript( m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text(), selectedPrefixes,
-                                             matlabInputFiles, selectedCovariates, this->para_parametersTab_nbrPermutations_spinBox->value(),
-                                             this->para_parametersTab_omnibus_checkBox->isChecked(), this->para_parametersTab_postHoc_checkBox->isChecked() );
+        QString matlabScript = m_matlabScript.GenerateMatlabScript( true, m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text(), selectedPrefixes,
+                                                                    matlabInputFiles, selectedCovariates, this->para_parametersTab_nbrPermutations_spinBox->value(),
+                                                                    this->para_parametersTab_omnibus_checkBox->isChecked(), this->para_parametersTab_postHoc_checkBox->isChecked() );
 
-//        QString program = "/opt/matlab/bin/matlab";
-//        m_processing.RunScript( program,  matlabScript );
+        //        QString program = "/opt/matlab/bin/matlab";
+        //        m_processing.RunScript( program,  matlabScript );
 
-//        if( !matlabScript.isEmpty() )
-//        {
-//            m_processing.RunScript( matlabScript );
-//        }
+        //        if( !matlabScript.isEmpty() )
+        //        {
+        //            m_processing.RunScript( matlabScript );
+        //        }
     }
 }
 
@@ -1184,8 +1192,9 @@ QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
                 selectedInputFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), true );
             }
         }
-    i++;
+        i++;
     }
+    qDebug() << "selectedInputFiles" << selectedInputFiles << endl;
     return selectedInputFiles;
 }
 
@@ -1200,8 +1209,9 @@ QMap<QString, QList<QStringList> > FADTTSWindow::GetDataInSelectedFiles()
         {
             dataInSelectedFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), m_data.GetDataInFile( prefID ) );
         }
-    i++;
+        i++;
     }
+    qDebug() << "dataInSelectedFiles" << dataInSelectedFiles << endl;
     return dataInSelectedFiles;
 }
 

@@ -15,10 +15,10 @@ public:
     /*************************** Test Functions ***************************/
     /**********************************************************************/
     bool Test_UpdateCurrentDir(); // Done
-    bool Test_UpdateCurrentDirEditInputDialog();
+    bool Test_UpdateCurrentDirEditInputDialog(); // Done
 
-    bool Test_DisplayCovariatesList();
-    bool Test_UpdateAvailableFileParamTab();
+    bool Test_DisplayCovariatesList(); // Done
+    bool Test_UpdateAvailableFileParamTab( QString adInputFile );
     bool Test_SetInfoSubjectColumnID();
     bool Test_IsMatrixDimensionOK();
     bool Test_UpdateFileInformation();
