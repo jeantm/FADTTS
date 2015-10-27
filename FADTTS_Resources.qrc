@@ -1,7 +1,8 @@
 <RCC>
-    <qresource prefix="FADTTS_Icons">
+    <qresource prefix="/">
         <file>koIconOut.xpm</file>
         <file>okIconOut.xpm</file>
         <file>warningIconOut.xpm</file>
+        <file>MatlabRefScript.m</file>
     </qresource>
 </RCC>

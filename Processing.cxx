@@ -76,7 +76,7 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
         QString encoding = iterSelectedInputFile.key().split( "?" ).first() + "?";
         QString fileName = iterSelectedInputFile.key().split( "?" ).last();
         QFile matlabInputFile( outputDir + "/" + fiberName + "_" +
-                               QFileInfo( QFile( fileName  ) ).fileName().split( "." ).first() + "_MatlabInput.csv" );
+                               QFileInfo( QFile( fileName ) ).fileName().split( "." ).first() + "_MatlabInput.csv" );
         matlabInputFile.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInputFile );
         QStringList rowData;
@@ -181,10 +181,11 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
 
 
 /****************** Other Processes ******************/
-QStringList Processing::GetSubjectListFromInputFile( QString inputFile, int subjectCovariatesColumnId )
+QStringList Processing::GetSubjectListFromInputFile( QList<QStringList> dataInInputFile, int subjectCovariatesColumnId )
 {
     QStringList subjectList;
-    QList<QStringList> data = GetDataFromFile( inputFile );
+
+    QList<QStringList> data = dataInInputFile;
     int nbRows = data.count();
     int nbColumns = data.at( 0 ).count();
 
@@ -202,19 +203,18 @@ QStringList Processing::GetSubjectListFromInputFile( QString inputFile, int subj
             subjectList.append( data.at( 0 ).at( c ) );
         }
     }
-
     subjectList.sort();
 
     return subjectList;
 }
 
-QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId )
+QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int subjectCovariatesColumnId )
 {
     QStringList refSubjectList;
-    QMap<QString, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
-    while( iterSelectedInputFile != selectedInputFiles.end() )
+    QMap<QString, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
+    while( iterDataInSelectedFile != dataInSelectedInputFiles.end() )
     {
-        QStringList currentSubjectList = GetSubjectListFromInputFile( iterSelectedInputFile.key().split( "?" ).last(), subjectCovariatesColumnId );
+        QStringList currentSubjectList = GetSubjectListFromInputFile( iterDataInSelectedFile.value(), subjectCovariatesColumnId );
         foreach( QString subject, currentSubjectList )
         {
             if( !refSubjectList.contains( subject ) )
@@ -222,14 +222,14 @@ QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, b
                 refSubjectList.append( subject );
             }
         }
-        ++iterSelectedInputFile;
+        ++iterDataInSelectedFile;
     }
     refSubjectList.removeDuplicates();
 
     return refSubjectList;
 }
 
-QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId )
+QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QMap<QString, QList<QStringList> > dataInSelectedFiles, int subjectCovariatesColumnId )
 {
     /** Create a subject list of reference.
      *  This list is either a file provided by the user or automatically generated
@@ -238,13 +238,13 @@ QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QM
     QStringList refSubjectList;
     if( QFileInfo( subjectFile ).fileName().isNull() )
     {
-        refSubjectList = GetRefSubjectListFromSelectedInputFiles( selectedInputFiles, subjectCovariatesColumnId );
+        refSubjectList = GetRefSubjectListFromSelectedInputFiles( dataInSelectedFiles, subjectCovariatesColumnId );
     }
     else
     {
         if( !subjectFile.open( QIODevice::ReadOnly ) )
         {
-            refSubjectList = GetRefSubjectListFromSelectedInputFiles( selectedInputFiles, subjectCovariatesColumnId );
+            refSubjectList = GetRefSubjectListFromSelectedInputFiles( dataInSelectedFiles, subjectCovariatesColumnId );
         }
         else
         {
@@ -360,7 +360,7 @@ QList<QStringList> Processing::GetDataFromFile( QString fileName )
 
     file.close();
 
-//    qDebug() << data;
+    //    qDebug() << data;
 
     return data;
 }

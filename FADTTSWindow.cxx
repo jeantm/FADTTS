@@ -1,6 +1,4 @@
 #include "FADTTSWindow.h"
-#include "ui_FADTTSWindow.h"
-
 
 /****************************************************************/
 /******************** Configuration & Events ********************/
@@ -28,9 +26,9 @@ FADTTSWindow::FADTTSWindow()
     m_sortedSubjectListWidget = new QListWidget();
     m_sortedSubjectListWidget = this->subjectsTab_sortedSubjects_listWidget;
 
-    m_okPixmap = QPixmap( ":/FADTTS_Icons/okIconOut.xpm" );
-    m_koPixmap = QPixmap( ":/FADTTS_Icons/koIconOut.xpm" );
-    m_warningPixmap = QPixmap( ":/FADTTS_Icons/warningIconOut.xpm" );
+    m_okPixmap = QPixmap( ":/okIconOut.xpm" );
+    m_koPixmap = QPixmap( ":/koIconOut.xpm" );
+    m_warningPixmap = QPixmap( ":/warningIconOut.xpm" );
 
     Init();
 }
@@ -355,23 +353,7 @@ void FADTTSWindow::AddFile( const QString& prefID )
     }
 
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
-    QFile importedCSV( file );
-    if( importedCSV.fileName().isNull() )
-    {
-        return;
-    }
-    else
-    {
-        if( !importedCSV.open( QIODevice::ReadOnly ) )
-        {
-            return;
-        }
-        else
-        {
-            importedCSV.close();
-            lineEdit->setText( file );
-        }
-    }
+    lineEdit->setText( file );
 }
 
 void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
@@ -383,13 +365,13 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
         UpdateCurrentDirEditInputDialog( filePath, m_currentFileInputDir );
     }
 
+    UpdateFileInformation( prefID );
+
     if( prefID == m_data.GetCovariatePrefix() )
     {
         m_editInputDialog->ResetSubjectColumnID(); /** By default Subjects are on the 1st column. **/
         SetInfoSubjectColumnID();
     }
-
-    UpdateFileInformation( prefID );
 
     SortSubjects();
 
@@ -446,8 +428,8 @@ void FADTTSWindow::UpdateSubjectColumnIDAfterFileEdition( const int&  newSubject
     /** Subjects are not on the 1st column anymore. **/
     m_data.SetSubjectColumnID( newSubjectColumnIDAfterFileEdition );
 
-    SetInfoSubjectColumnID();
     UpdateFileInformation( m_data.GetCovariatePrefix() );
+    SetInfoSubjectColumnID();
 
     SortSubjects();
 
@@ -539,7 +521,8 @@ void FADTTSWindow::UpdateFileInformation( const QString prefID )
         {
             file.close();
 
-            QList<QStringList> data = m_processing.GetDataFromFile( filePath );
+            m_data.SetDataInFile( prefID ) = m_processing.GetDataFromFile( filePath );
+            QList<QStringList> data = m_data.GetDataInFile( prefID );
             int nbRows = data.count();
             int nbColumns = data.at( 0 ).count();
 
@@ -626,10 +609,9 @@ void FADTTSWindow::DisplayIcon( const QString prefID, const QPixmap icon )
 
 void FADTTSWindow::SetInfoSubjectColumnID()
 {
-    QString filePath = m_inputTabFilePathLineEditMap[ m_data.GetCovariatePrefix() ]->text();
-    if( !filePath.isEmpty() && QFile( filePath ).open( QIODevice::ReadOnly ) )
+    if( !m_inputTabFilePathLineEditMap[ m_data.GetCovariatePrefix() ]->text().isEmpty() &&
+            !m_data.GetDataInFile( m_data.GetCovariatePrefix() ).isEmpty() )
     {
-        QFile( filePath ).close();
         this->inputsTab_subjectColumnID_label->setText( tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
                                                       QString::number( m_data.GetSubjectColumnID() + 1 ) + "<i/><b/><span/>") ) );
     }
@@ -651,87 +633,23 @@ void FADTTSWindow::SetInfoSubjectColumnID()
 void FADTTSWindow::LoadInputSubjectFile()
 {
     QLineEdit *lineEdit = this->para_subjectsTab_inputSubjectList_lineEdit;
-    QString filePath;
-    QDir dir = QFileInfo( QFile( lineEdit->text() ) ).absolutePath();
-    if( !dir.exists() || dir.dirName() == "." )
+    QString filePath = lineEdit->text();
+    QString file;
+    QDir dir;
+    if( !filePath.isEmpty() )
     {
-        filePath = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), m_currentSubjectListInputDir, tr( ".txt( *.txt ) ;; .*( * )" ) );
+        dir = QFileInfo( QFile( filePath ) ).absolutePath();
+        if( !dir.exists() )
+        {
+            dir = m_currentSubjectListInputDir;
+        }
     }
     else
     {
-        filePath = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
+        dir = m_currentSubjectListInputDir;
     }
-
-    QFile importedTXT( filePath );
-    if( importedTXT.fileName().isNull() )
-    {
-        return;
-    }
-    else
-    {
-        if( !importedTXT.open( QIODevice::ReadOnly ) )
-        {
-            return;
-        }
-        else
-        {
-            importedTXT.close();
-            lineEdit->setText( filePath );
-        }
-    }
-
-
-
-//    QLineEdit *lineEdit = this->para_subjectsTab_inputSubjectList_lineEdit;
-//    QString filePath;
-//    QDir dir;/* = QFileInfo( QFile( lineEdit->text() ) ).absolutePath();*/
-//    if( !dir.exists() || dir.dirName() == "." )
-//    {
-//        file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), m_currentSubjectListInputDir, tr( ".txt( *.txt ) ;; .*( * )" ) );
-//    }
-//    else
-//    {
-//        file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
-//    }
-
-
-//    QDir dir;
-//    if( !filePath.isEmpty() )
-//    {
-//        dir = QFileInfo( QFile( filePath ) ).absolutePath();
-//        if( !dir.exists() )
-//        {
-//            dir = m_currentFileInputDir;
-//        }
-//    }
-//    else
-//    {
-//        dir = m_currentFileInputDir;
-//    }
-
-//    QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
-
-
-//    QFile importedTXT( file );
-//    if( importedTXT.fileName().isNull() )
-//    {
-//        return;
-//    }
-//    else
-//    {
-//        if( !importedTXT.open( QIODevice::ReadOnly ) )
-//        {
-//            return;
-//        }
-//        else
-//        {
-//            importedTXT.close();
-//            lineEdit->setText( filePath );
-//        }
-//    }
-
-
-
+    file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
+    lineEdit->setText( file );
 }
 
 void FADTTSWindow::ResetInputSubjectFiles()
@@ -759,7 +677,6 @@ void FADTTSWindow::UpdateInputSubjectListLineEdit( const QString& textLineEdit )
             DisplayIcon( label, m_okPixmap );
         }
     }
-
 
     if( !textLineEdit.isEmpty() )
     {
@@ -850,7 +767,7 @@ void FADTTSWindow::SelectSubject( QListWidgetItem *item )
 void FADTTSWindow::SortSubjects()
 {
     QString subjectListFilename = this->para_subjectsTab_inputSubjectList_lineEdit->text();
-    QStringList refSubjectList = m_processing.GetRefSubjectList( subjectListFilename, GetSelectedInputFiles(), m_data.GetSubjectColumnID() );
+    QStringList refSubjectList = m_processing.GetRefSubjectList( subjectListFilename, GetDataInSelectedFiles(), m_data.GetSubjectColumnID() );
     QMap<QString, QStringList> allSubjectListFromSelectedInputFile = m_processing.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjectsMap() );
 
     QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.SortSubjectInInputFile( refSubjectList, allSubjectListFromSelectedInputFile );
@@ -927,23 +844,15 @@ void FADTTSWindow::SetCaseSensitivity( bool checked )
 /*********************** Private function ***********************/
 void FADTTSWindow::UpdateAvailableFileParamTab()
 {
-    qDebug() << "LabelMap" << endl << m_paramTabFileSizeLabelMap << endl;
-    qDebug() << "CheckBoxMap" << endl << m_paramTabFileCheckBoxMap << endl;
-
     QString text;
     labelMapType::ConstIterator iterLabel = m_paramTabFileSizeLabelMap.begin();
     checkBoxMapType::ConstIterator iterCheckBox = m_paramTabFileCheckBoxMap.begin();
     while( iterLabel != m_paramTabFileSizeLabelMap.constEnd() )
     {
-        qDebug() << "Before" << iterLabel.value()->text() << iterCheckBox.value()->isChecked();
         int nbRows = m_data.GetNbrRows( iterCheckBox.key() );
         int nbColumns = m_data.GetNbrColumns( iterCheckBox.key() );
-        qDebug() << "nbrRows" << nbRows << endl;
-        qDebug() << "nbColumns" << nbColumns << endl;
-
         if( ( nbRows == 0 ) || ( nbColumns == 0 ) )
         {
-            qDebug() << "Size OK";
             text = tr( "N/A" );
             iterLabel.value()->setEnabled( false );
             iterCheckBox.value()->setChecked( false );
@@ -951,15 +860,12 @@ void FADTTSWindow::UpdateAvailableFileParamTab()
         }
         else
         {
-            qDebug() << "Size KO";
             text = tr( qPrintable( QString::number( nbRows ) + "x" + QString::number( nbColumns ) ) );
             iterLabel.value()->setEnabled( true );
-//            QCheckBox cb = new QCheckBox();
-            iterCheckBox.value()->setChecked( false );
+            iterCheckBox.value()->setChecked( true );
             iterCheckBox.value()->setEnabled( true );
         }
         iterLabel.value()->setText( text );
-        qDebug() << "After" << iterLabel.value()->text() << iterCheckBox.value()->isChecked() << endl;
         ++iterLabel;
         ++iterCheckBox;
     }
@@ -1175,34 +1081,23 @@ void FADTTSWindow::SetMatlabExe()
     /****** NOT SATISFIED WITH THIS CODE ******/
     /******************************************/
     QLineEdit *lineEdit = this->soft_runTab_matlab_lineEdit;
-    QString filePath;
-    QDir dir = QFileInfo( QFile( lineEdit->text() ) ).absolutePath();
-    if( !dir.exists() || dir.dirName() == "." )
+    QString filePath = lineEdit->text();
+    QString file;
+    QDir dir;
+    if( !filePath.isEmpty() )
     {
-        filePath = QFileDialog::getOpenFileName( this, tr( "Choose Matlab Executable" ), m_currentMatlabExeDir, tr( "All( * )" ) );
+        dir = QFileInfo( QFile( filePath ) ).absolutePath();
+        if( !dir.exists() )
+        {
+            dir = m_currentMatlabExeDir;
+        }
     }
     else
     {
-        filePath = QFileDialog::getOpenFileName( this, tr( "Choose Matlab Executable" ), dir.absolutePath(), tr( "All( * )" ) );
+        dir = m_currentMatlabExeDir;
     }
-
-    QFile matlabExe( filePath );
-    if( matlabExe.fileName().isNull() )
-    {
-        return;
-    }
-    else
-    {
-        if( !matlabExe.open( QIODevice::ReadOnly ) )
-        {
-            return;
-        }
-        else
-        {
-            matlabExe.close();
-            lineEdit->setText( filePath );
-        }
-    }
+    file = QFileDialog::getOpenFileName( this, tr( "Choose Matlab Executable" ), dir.absolutePath(), tr( "All( * )" ) );
+    lineEdit->setText( file );
     /******************************************/
     /****** NOT SATISFIED WITH THIS CODE ******/
     /******************************************/
@@ -1278,7 +1173,7 @@ QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
     foreach ( QString prefID, m_data.GetPrefixList() )
     {
         QString encoding = QString( "%1" ).arg( i, 2, 10, QChar( '0' ) ).append( "?" ); /** Encoding necessary to keep the order **/
-        if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() )
+        if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() && !m_data.GetFilename( prefID ).isEmpty() )
         {
             if( prefID != m_data.GetCovariatePrefix() )
             {
@@ -1292,6 +1187,22 @@ QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
     i++;
     }
     return selectedInputFiles;
+}
+
+QMap<QString, QList<QStringList> > FADTTSWindow::GetDataInSelectedFiles()
+{
+    QMap<QString, QList<QStringList> > dataInSelectedFiles;
+    int i = 0;
+    foreach ( QString prefID, m_data.GetPrefixList() )
+    {
+        QString encoding = QString( "%1" ).arg( i, 2, 10, QChar( '0' ) ).append( "?" ); /** Encoding necessary to keep the order **/
+        if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() && !m_data.GetFilename( prefID ).isEmpty() )
+        {
+            dataInSelectedFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), m_data.GetDataInFile( prefID ) );
+        }
+    i++;
+    }
+    return dataInSelectedFiles;
 }
 
 QMap<int, QString> FADTTSWindow::GetSelectedCovariates()

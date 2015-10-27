@@ -50,6 +50,11 @@ QMap<QString, QString> Data::GetFilenameMap() const
     return m_filenameMap;
 }
 
+QMap< QString, QList<QStringList> > Data::GetDataInFileMap() const
+{
+    return m_dataInFileMap;
+}
+
 QMap<QString, QStringList> Data::GetSubjectsMap() const
 {
     return m_SubjectsMap;
@@ -57,22 +62,27 @@ QMap<QString, QStringList> Data::GetSubjectsMap() const
 
 QMap<QString, int> Data::GetNbrRowsMap() const
 {
-    return m_NbrRowsMap;
+    return m_nbrRowsMap;
 }
 
 QMap<QString, int> Data::GetNbrColumnsMap() const
 {
-    return m_NbrColumnsMap;
+    return m_nbrColumnsMap;
 }
 
 QMap<QString, int> Data::GetNbrSubjectsMap() const
 {
-    return m_NbrSubjectsMap;
+    return m_nbrSubjectsMap;
 }
 
 QString Data::GetFilename( QString pref ) const
 {
     return m_filenameMap[ pref ];
+}
+
+QList<QStringList> Data::GetDataInFile( QString pref ) const
+{
+    return m_dataInFileMap[ pref ];
 }
 
 QStringList Data::GetSubjects( QString pref ) const
@@ -82,17 +92,17 @@ QStringList Data::GetSubjects( QString pref ) const
 
 int Data::GetNbrRows( QString pref ) const
 {
-    return m_NbrRowsMap[ pref ];
+    return m_nbrRowsMap[ pref ];
 }
 
 int Data::GetNbrColumns( QString pref ) const
 {
-    return m_NbrColumnsMap[ pref ];
+    return m_nbrColumnsMap[ pref ];
 }
 
 int Data::GetNbrSubjects( QString pref ) const
 {
-    return m_NbrSubjectsMap[ pref ];
+    return m_nbrSubjectsMap[ pref ];
 }
 
 QMap<int, QString> Data::GetCovariatesList() const
@@ -119,9 +129,15 @@ QString& Data::SetOutputDir()
 {
     return m_outputDir;
 }
+
 QString& Data::SetFilename( QString pref )
  {
      return m_filenameMap[ pref ];
+ }
+
+QList<QStringList>& Data::SetDataInFile( QString pref )
+ {
+     return m_dataInFileMap[ pref ];
  }
 
 QStringList& Data::SetSubjects( QString pref )
@@ -131,17 +147,17 @@ QStringList& Data::SetSubjects( QString pref )
 
 int& Data::SetNbrRows( QString pref )
 {
-    return m_NbrRowsMap[ pref ];
+    return m_nbrRowsMap[ pref ];
 }
 
 int& Data::SetNbrColumns( QString pref )
 {
-    return m_NbrColumnsMap[ pref ];
+    return m_nbrColumnsMap[ pref ];
 }
 
 int& Data::SetNbrSubjects( QString pref )
 {
-    return m_NbrSubjectsMap[ pref ];
+    return m_nbrSubjectsMap[ pref ];
 }
 
 QMap<int, QString>& Data::SetCovariatesList()
@@ -178,9 +194,9 @@ int Data::InitData()
     foreach( QString pref, m_PrefixList )
     {
         m_filenameMap[ pref ];
-        m_NbrRowsMap[ pref ];
-        m_NbrColumnsMap[ pref ];
-        m_NbrSubjectsMap[ pref ];
+        m_nbrRowsMap[ pref ];
+        m_nbrColumnsMap[ pref ];
+        m_nbrSubjectsMap[ pref ];
         ( m_SubjectsMap[ pref ] );
     }
 
@@ -208,9 +224,10 @@ void Data::AddIntercept()
 void Data::ClearFileInformation( QString prefID )
 {
     m_filenameMap[ prefID ].clear();
-    m_NbrRowsMap[ prefID ] = 0;
-    m_NbrColumnsMap[ prefID ] = 0;
-    m_NbrSubjectsMap[ prefID ] = 0;
+    m_dataInFileMap[ prefID ].clear();
+    m_nbrRowsMap[ prefID ] = 0;
+    m_nbrColumnsMap[ prefID ] = 0;
+    m_nbrSubjectsMap[ prefID ] = 0;
     ( m_SubjectsMap[ prefID ] ).clear();
 
     if( prefID == m_covariatesPrefix )

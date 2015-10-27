@@ -203,7 +203,8 @@ bool TestProcessing::Test_GetSubjectListFromInputFile( QString inputADFile, QStr
     /******************** Test 1 ********************/
     /************************************************/
     // AD, RA, MD and FA file
-    QStringList subjectListTest1 = process.GetSubjectListFromInputFile( inputADFile, 2 );
+    QList<QStringList> dataInInputADFile = process.GetDataFromFile( inputADFile );
+    QStringList subjectListTest1 = process.GetSubjectListFromInputFile( dataInInputADFile, 2 );
     QStringList expectedSubjectListTest1;
     expectedSubjectListTest1 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
                                 "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
@@ -220,7 +221,8 @@ bool TestProcessing::Test_GetSubjectListFromInputFile( QString inputADFile, QStr
     /******************** Test 2 ********************/
     /************************************************/
     // Covariates file: subjects on 1st column
-    QStringList subjectListTest2 = process.GetSubjectListFromInputFile( inputCOMPFileTest1, 0 );
+    QList<QStringList> dataInInputCOMPFileTest1 = process.GetDataFromFile( inputCOMPFileTest1 );
+    QStringList subjectListTest2 = process.GetSubjectListFromInputFile( dataInInputCOMPFileTest1, 0 );
     QStringList expectedSubjectListTest2;
     expectedSubjectListTest2 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
                                 "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
@@ -237,7 +239,8 @@ bool TestProcessing::Test_GetSubjectListFromInputFile( QString inputADFile, QStr
     /******************** Test 3 ********************/
     /************************************************/
     // Covariates file: subjects not on 1st column
-    QStringList subjectListTest3 = process.GetSubjectListFromInputFile( inputCOMPFileTest2, 3 );
+    QList<QStringList> dataInInputCOMPFileTest2 = process.GetDataFromFile( inputCOMPFileTest2 );
+    QStringList subjectListTest3 = process.GetSubjectListFromInputFile( dataInInputCOMPFileTest2, 3 );
     QStringList expectedSubjectListTest3;
     expectedSubjectListTest3 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
                                 "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
@@ -287,14 +290,18 @@ bool TestProcessing::Test_GetRefSubjectListFromSelectedInputFiles( QString input
                                   "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
                                   "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
 
+    QList<QStringList> dataInInputADFile = process.GetDataFromFile( inputADFile );
+    QList<QStringList> dataInInputCOMPFileTest1 = process.GetDataFromFile( inputCOMPFileTest1 );
+    QList<QStringList> dataInInputCOMPFileTest2 = process.GetDataFromFile( inputCOMPFileTest2 );
+
     /************************************************/
     /******************** Test 1 ********************/
     /************************************************/
     expectedRefSubjectListTest << "randomSubject_COMP_0";
-    QMap<QString, bool> selectedInputFilesTest1;
-    selectedInputFilesTest1.insert( "00?" + inputADFile, false );
-    selectedInputFilesTest1.insert( "04?" + inputCOMPFileTest1, true );
-    QStringList refSubjectListTest1 = process.GetRefSubjectListFromSelectedInputFiles( selectedInputFilesTest1, 0 );
+    QMap< QString, QList<QStringList> > dataInSelectedInputFilesTest1;
+    dataInSelectedInputFilesTest1.insert( "00?" + inputADFile, dataInInputADFile );
+    dataInSelectedInputFilesTest1.insert( "04?" + inputCOMPFileTest1, dataInInputCOMPFileTest1 );
+    QStringList refSubjectListTest1 = process.GetRefSubjectListFromSelectedInputFiles( dataInSelectedInputFilesTest1, 0 );
 
     bool refListMatchedTest1 = CompareQStringList( refSubjectListTest1, expectedRefSubjectListTest );
 
@@ -304,10 +311,10 @@ bool TestProcessing::Test_GetRefSubjectListFromSelectedInputFiles( QString input
     /************************************************/
     expectedRefSubjectListTest.removeLast();
     expectedRefSubjectListTest << "randomSubject_COMP_3";
-    QMap<QString, bool> selectedInputFilesTest2;
-    selectedInputFilesTest2.insert( "00?" + inputADFile, false );
-    selectedInputFilesTest2.insert( "04?" + inputCOMPFileTest2, true );
-    QStringList refSubjectListTest2 = process.GetRefSubjectListFromSelectedInputFiles( selectedInputFilesTest2, 3 );
+    QMap< QString, QList<QStringList> > dataInSelectedInputFilesTest2;
+    dataInSelectedInputFilesTest2.insert( "00?" + inputADFile, dataInInputADFile );
+    dataInSelectedInputFilesTest2.insert( "04?" + inputCOMPFileTest2, dataInInputCOMPFileTest2 );
+    QStringList refSubjectListTest2 = process.GetRefSubjectListFromSelectedInputFiles( dataInSelectedInputFilesTest2, 3 );
 
     bool refListMatchedTest2 = CompareQStringList( refSubjectListTest2, expectedRefSubjectListTest );
 
@@ -338,9 +345,12 @@ bool TestProcessing::Test_GetRefSubjectList( QString inputADFile, QString inputC
 {
     Processing process;
 
-    QMap<QString, bool> selectedInputFiles;
-    selectedInputFiles.insert( "00?" + inputADFile, false );
-    selectedInputFiles.insert( "04?" + inputCOMPFile, true );
+    QList<QStringList> dataInInputADFile = process.GetDataFromFile( inputADFile );
+    QList<QStringList> dataInInputCOMPFile = process.GetDataFromFile( inputCOMPFile );
+
+    QMap< QString, QList<QStringList> > dataInSelectedInputFiles;
+    dataInSelectedInputFiles.insert( "00?" + inputADFile, dataInInputADFile );
+    dataInSelectedInputFiles.insert( "04?" + inputCOMPFile, dataInInputCOMPFile );
     QStringList expectedRefSubjectList;
     expectedRefSubjectList << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
                               "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
@@ -350,7 +360,7 @@ bool TestProcessing::Test_GetRefSubjectList( QString inputADFile, QString inputC
     /******************** Test 1 ********************/
     /************************************************/
     // With subjectList file
-    QStringList refSubjectListTest1 = process.GetRefSubjectList( subjectListFilePath, selectedInputFiles, 3 );
+    QStringList refSubjectListTest1 = process.GetRefSubjectList( subjectListFilePath, dataInSelectedInputFiles, 3 );
 
     bool refSubjectListMatchedTest1 = CompareQStringList( expectedRefSubjectList, refSubjectListTest1 );
 
@@ -361,7 +371,7 @@ bool TestProcessing::Test_GetRefSubjectList( QString inputADFile, QString inputC
     // Without subjectList file
     expectedRefSubjectList << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
                               "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad" << "randomSubject_COMP_3";
-    QStringList refSubjectListTest2 = process.GetRefSubjectList( "", selectedInputFiles, 3 );
+    QStringList refSubjectListTest2 = process.GetRefSubjectList( "", dataInSelectedInputFiles, 3 );
 
     bool refSubjectListMatchedTest2 = CompareQStringList( expectedRefSubjectList, refSubjectListTest2 );
 

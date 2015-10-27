@@ -1,6 +1,7 @@
 #ifndef MATLABSCRIPT_H
 #define MATLABSCRIPT_H
 
+#include <QResource>
 #include <QDate>
 #include <QTime>
 #include <QString>
@@ -29,22 +30,16 @@ public :
    QString GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
                                  QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc );
 
-   QString GenerateMatlabScriptForTest( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
-                                 QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc );
-
-
    void ResetScript();
 
 
 private :
    static const QString m_csvSeparator;
 
-   QString m_script;
-
-   QString m_scriptPath;
+   QString m_scriptPath, m_script;
 
 
-   void InitMatlabScript( QString path );
+   void InitMatlabScript();
 
    void SetHeader();
 

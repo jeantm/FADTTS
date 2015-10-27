@@ -1,6 +1,7 @@
 #include "MatlabScript.h"
 
 const QString MatlabScript::m_csvSeparator = QLocale().groupSeparator();
+//const QFile MatlabScript::m_matlabReferenceScript = QFile( ":/FADTTS_MatlabReferenceScript/MatlabRefScript.m" );
 
 MatlabScript::MatlabScript()
 {
@@ -12,42 +13,9 @@ MatlabScript::MatlabScript()
 QString MatlabScript::GenerateMatlabScript( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
                                             QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
 {
-    InitMatlabScript( "." );
+    InitMatlabScript();
 
     SetHeader();
-
-    SetFiberName( fiberName );
-
-    SetDiffusionProperties( selectedPrefixes );
-
-    SetNbrPermutations( nbrPermutations );
-
-    SetCovariatesList( selectedCovariates );
-
-    SetInputFiles( matlabInputFiles );
-
-    SetOmnibus( omnibus );
-
-    SetPostHoc( postHoc );
-
-    m_scriptPath = outputDir + "/" + fiberName + "_FADTTSAnalysis_MatlabScript.m";
-    QFile matlabScript( m_scriptPath );
-
-    if( matlabScript.open( QIODevice::WriteOnly ) )
-    {
-        QTextStream ts( &matlabScript );
-        ts << m_script;
-        matlabScript.flush();
-        matlabScript.close();
-    }
-
-    return m_scriptPath;
-}
-
-QString MatlabScript::GenerateMatlabScriptForTest( QString outputDir, QString fiberName, QStringList selectedPrefixes, QMap<QString, bool> matlabInputFiles,
-                                            QMap<int,QString> selectedCovariates, int nbrPermutations, bool omnibus, bool postHoc )
-{
-    InitMatlabScript( "/work/jeantm/Project/FADTTS-build" );
 
     SetFiberName( fiberName );
 
@@ -88,13 +56,24 @@ void MatlabScript::ResetScript()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-void MatlabScript::InitMatlabScript( QString path )
+void MatlabScript::InitMatlabScript()
 {
-    QFile matlabScriptRef( path + "/scriptRefTest.m" );
-    matlabScriptRef.open( QIODevice::ReadOnly );
-    QTextStream ts( &matlabScriptRef );
-    m_script = ts.readAll();
-    matlabScriptRef.close();
+    QResource resource( ":/MatlabRefScript.m" );
+
+    qDebug() << resource.absoluteFilePath() << endl;
+    QFile matlabScriptRef( resource.absoluteFilePath() );
+
+    if ( !matlabScriptRef.open( QIODevice::ReadOnly | QIODevice::Text ) )
+    {
+        qDebug() << "Unable to open file: " << matlabScriptRef.fileName() << " because of error " << matlabScriptRef.errorString() << endl;
+        return; /** Display error **/
+    }
+    else
+    {
+        QTextStream ts( &matlabScriptRef );
+        m_script = ts.readAll();
+        matlabScriptRef.close();
+    }
 }
 
 void MatlabScript::SetHeader()

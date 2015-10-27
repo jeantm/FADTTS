@@ -112,7 +112,7 @@ private:
 
     static const int m_IconSize;
 
-    Ui::FADTTSWindow *m_mainUi;
+//    Ui::FADTTSWindow *m_mainUi;
 
     QSharedPointer<EditInputDialog> m_editInputDialog;
 
@@ -211,6 +211,8 @@ private:
     QStringList GetSelectedPrefixes();
 
     QMap<QString, bool> GetSelectedInputFiles();
+
+    QMap<QString, QList<QStringList> > GetDataInSelectedFiles();
 
     QMap<int, QString> GetSelectedCovariates();
 

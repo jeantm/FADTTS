@@ -32,6 +32,8 @@ public:
 
     QMap<QString, QString> GetFilenameMap() const;
 
+    QMap< QString, QList<QStringList> > GetDataInFileMap() const;
+
     QMap<QString, QStringList> GetSubjectsMap() const;
 
     QMap<QString, int> GetNbrRowsMap() const;
@@ -41,6 +43,8 @@ public:
     QMap<QString, int> GetNbrSubjectsMap() const;
 
     QString GetFilename( QString pref ) const;
+
+    QList<QStringList> GetDataInFile( QString pref ) const;
 
     QStringList GetSubjects( QString pref ) const;
 
@@ -64,6 +68,8 @@ public:
     QString& SetOutputDir();
 
     QString& SetFilename( QString pref );
+
+    QList<QStringList>& SetDataInFile( QString pref );
 
     QStringList& SetSubjects( QString pref );
 
@@ -111,9 +117,11 @@ private:
 
     QMap<QString, QStringList> m_SubjectsMap;
 
+    QMap< QString, QList<QStringList> > m_dataInFileMap;
+
     QMap<QString, QString> m_filenameMap;
 
-    QMap<QString, int> m_NbrRowsMap, m_NbrColumnsMap, m_NbrSubjectsMap;
+    QMap<QString, int> m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
 
     QMap<int, QString> m_covariatesList;
 };

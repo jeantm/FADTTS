@@ -35,12 +35,11 @@ public:
     /*****************************************************/
     /****************** Data Processing ******************/
     /*****************************************************/
-    QStringList GetSubjectListFromInputFile( QString inputFile, int subjectCovariatesColumnId );
+    QStringList GetSubjectListFromInputFile( QList<QStringList> dataInInputFile, int subjectCovariatesColumnId );
 
-    QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId );
+    QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int subjectCovariatesColumnId );
 
-    QStringList GetRefSubjectList( const QString subjectListFilePath, QMap<QString, bool> selectedInputFiles, int subjectCovariatesColumnId );
-
+    QStringList GetRefSubjectList( const QString subjectListFilePath, QMap<QString, QList<QStringList> > dataInSelectedFiles, int subjectCovariatesColumnId );
 
     QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap );
 

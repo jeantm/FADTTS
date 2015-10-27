@@ -17,6 +17,8 @@ bool TestEditInputDialog::Test_UploadData( QString adInputFile )
     Data data;
     data.InitData();
     QString ad = "ad";
+    QList<QStringList> dataInadInputFile = process.GetDataFromFile( adInputFile );
+    data.SetDataInFile( ad ) = dataInadInputFile;
 
     QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
     editInputDialog->SetData( &data );
@@ -55,6 +57,8 @@ bool TestEditInputDialog::Test_Delete( QString adInputFile )
     Data data;
     data.InitData();
     QString ad = "ad";
+    QList<QStringList> dataInadInputFile = process.GetDataFromFile( adInputFile );
+    data.SetDataInFile( ad ) = dataInadInputFile;
 
     QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
     editInputDialog->SetData( &data );
@@ -123,7 +127,10 @@ bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inp
     Data data;
     data.InitData();
     QString ad = "ad";
+    QList<QStringList> dataInadInputFile = process.GetDataFromFile( adInputFile );
+    data.SetDataInFile( ad ) = dataInadInputFile;
     QString COMP = "COMP";
+    QList<QStringList> dataInCOMPInputFile = process.GetDataFromFile( inputCOMPFile );
 
     QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
 
@@ -176,6 +183,7 @@ bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inp
     /************************************************/
     /******************** Test 3 ********************/
     /************************************************/
+    data.SetDataInFile( COMP ) = dataInadInputFile;
     /** AD, RD, MD or FA file in wrong QLineEdit **/
     editInputDialog->ResetTableWidget();
     editInputDialog->SetData( &data );
@@ -198,6 +206,7 @@ bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inp
     /******************** Test 4 ********************/
     /************************************************/
     /** COMP file in right QLineEdit **/
+    data.SetDataInFile( COMP ) = dataInCOMPInputFile;
     editInputDialog->ResetTableWidget();
     editInputDialog->SetData( &data );
     editInputDialog->SetPrefix( COMP );
@@ -275,6 +284,7 @@ bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inp
     /******************** Test 7 ********************/
     /************************************************/
     /**  COMP file in wrong QLineEdit **/
+    data.SetDataInFile( ad )= dataInCOMPInputFile;
     editInputDialog->ResetTableWidget();
     editInputDialog->SetData( &data );
     editInputDialog->SetPrefix( ad );
@@ -424,7 +434,6 @@ bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inp
 /**********************************************************************/
 /********************** Functions Used For Testing ********************/
 /**********************************************************************/
-/** Check if the data displayed in the QTableWidget is the right one **/
 bool TestEditInputDialog::TestQTableWidget( QList<QStringList> expectedData, QSharedPointer<EditInputDialog> editInputDialog )
 {
     for( int i = 0; i < editInputDialog->m_dataTableWidget->rowCount(); i++ )

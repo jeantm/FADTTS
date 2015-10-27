@@ -161,7 +161,7 @@ void EditInputDialog::InitEditInputDialog()
 void EditInputDialog::UploadData()
 {
     Processing process;
-    QList<QStringList> data = process.GetDataFromFile( m_inputFile );
+    QList<QStringList> data = m_data->GetDataInFile( m_prefix );
     m_isCOMP = process.IsCOMPFile( data.at( 1 ) );
     int row = 0, col = 0;
 
