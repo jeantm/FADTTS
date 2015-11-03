@@ -109,12 +109,12 @@ if( omnibus == 1 )
     [ ebiasBetas ] = MVCM_bias( NoSetup, arclength_allPos, Xdesign, Ydesign, InvSigmats, mh );
 
     % save Beta txt file
-%    for i = 1:size( Dnames )
-%        savefile=sprintf('%s/%s_%s_%s_betas.csv', folder, Fnames{1}, Dnames{i} ,params{1});
-%        temp=efitBetas(:,:,i);
-%        csvwrite(savefile,temp');
-%        clear temp;
-%    end
+    for i = 1:size( Dnames )
+        savefile=sprintf('%s/%s_%s_%s_betas.csv', folder, Fnames{1}, Dnames{i} ,params{1});
+        temp=efitBetas(:,:,i);
+        csvwrite(savefile,temp');
+        clear temp;
+    end
 
     for pp=2:P
         %individual and global statistics calculation
@@ -145,8 +145,7 @@ if( omnibus == 1 )
 
     Lpvals_FDR = zeros( size( Lpvals ) );
     for i = 1:( P-1 )
-        Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ) );
-%         Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
+        Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
     end
 
     % save FDR Local P-Values csv file
@@ -197,8 +196,7 @@ if( postHoc == 1 )
     posthoc_Lpvals_FDR = zeros( size( posthoc_Lpvals ) );
     for Dii = 1:D
         for pii = 1:( P-1 )
-            posthoc_Lpvals_FDR( :, Dii, pii ) = myFDR( posthoc_Lpvals( :, Dii, pii ) );
-%            posthoc_Lpvals_FDR( :, Dii, pii ) = mafdr( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
+            posthoc_Lpvals_FDR( :, Dii, pii ) = mafdr( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
         end
     end
 

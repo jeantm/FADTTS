@@ -140,27 +140,5 @@ QString MatlabScript::GenerateMatlabFiles( QString outputDir, QString fiberName,
         matlabScript.close();
     }
 
-    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/myFDR.m" );
-    QFile myFDR( resource.absoluteFilePath() );
-    QFile myFDROutput( outputDir + "/myFDR.m" );
-    if( myFDROutput.open( QIODevice::WriteOnly | QIODevice::Text ) )
-    {
-        if( !myFDR.open( QIODevice::ReadOnly | QIODevice::Text ) )
-        {
-            QString criticalError = "Unable to open resource file: " + myFDR.fileName() +
-                    " because of error \"" + myFDR.errorString() + "\"";
-            std::cerr << criticalError.toStdString() << std::endl;
-        }
-        else
-        {
-            QTextStream tsMyFDR( &myFDR );
-            QTextStream tsMyFDROutput( &myFDROutput );
-            tsMyFDROutput << tsMyFDR.readAll();
-            myFDROutput.flush();
-            myFDROutput.close();
-            myFDR.close();
-        }
-    }
-
     return matlabScriptPath;
 }
