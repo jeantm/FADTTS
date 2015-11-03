@@ -21,7 +21,7 @@ public:
     explicit InfoDialog( QWidget *parent = 0 );
     ~InfoDialog();
     
-    void DisplayInfo();
+    void DisplayFileInformation();
 
     void SetData( Data *newData );
 
@@ -33,16 +33,16 @@ private:
     *m_faFileInfo_label, *m_compFileInfo_label;
 
     typedef QMap<QString, QLabel*> labelMapType;
-    labelMapType m_fileInfoLabelMap;
+    labelMapType m_inputFileInformationLabelMap;
 
     Data *m_data;
 
 
     void InitInfoDialog();
 
-    void SetInfoFileLabelMap();
+    void SetFileInformationLabelMap();
 
-    QString GetFileInfo( const QString p );
+    QString GetInputFileInformation( const QString prefID );
 };
 
 #endif // INFODIALOG_H

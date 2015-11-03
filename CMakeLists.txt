@@ -59,6 +59,12 @@ QT4_ADD_RESOURCES( FADTTS_RESOURCES_RCC ${FADTTS_RESOURCES} )
 # xml info in GUI
 FILE(READ FADTTS.xml var)
 
+string( REGEX MATCH "<title>.*</title>" ext "${var}" )
+string( REPLACE "<title>" "" title ${ext} )
+string( REPLACE "</title>" "" title ${title} )
+
+ADD_DEFINITIONS( -DFADTTS_TITLE="${title}" )
+
 string( REGEX MATCH "<version>.*</version>" ext "${var}" )
 string( REPLACE "<version>" "" version ${ext} )
 string( REPLACE "</version>" "" version ${version} )
@@ -69,7 +75,14 @@ string( REGEX MATCH "<contributor>.*</contributor>" ext "${var}" )
 string( REPLACE "<contributor>" "" contributors ${ext} )
 string( REPLACE "</contributor>" "" contributors ${contributors} )
 
-ADD_DEFINITIONS( -DFADTTS_CONTRIBUTOR="${CONTRIBUTORS}" )
+ADD_DEFINITIONS( -DFADTTS_CONTRIBUTORS="${contributors}" )
+
+string( REGEX MATCH "<description>.*</description>" ext "${var}" )
+string( REPLACE "<description>" "" description ${ext} )
+string( REPLACE "</description>" "" description ${description} )
+
+ADD_DEFINITIONS( -DFADTTS_DESCRIPTION="${description}" )
+
 
 LIST( APPEND
 FADTTS_SOURCES

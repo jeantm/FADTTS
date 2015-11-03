@@ -17,23 +17,23 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     m_sync = true;
 
     /*1st tab: Inputs*/
-    m_para_m->setpara_inputsTab_inputADfile_lineEdit( para_inputsTab_inputADfile_lineEdit->text() ) ;
-    m_para_m->setpara_inputsTab_inputRDfile_lineEdit( para_inputsTab_inputRDfile_lineEdit->text() ) ;
-    m_para_m->setpara_inputsTab_inputMDfile_lineEdit( para_inputsTab_inputMDfile_lineEdit->text() ) ;
-    m_para_m->setpara_inputsTab_inputFAfile_lineEdit( para_inputsTab_inputFAfile_lineEdit->text() ) ;
-    m_para_m->setpara_inputsTab_inputCOMPfile_lineEdit( para_inputsTab_inputCOMPfile_lineEdit->text() ) ;
+    m_para_m->setpara_inputTab_adFile_lineEdit( para_inputTab_adFile_lineEdit->text() ) ;
+    m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() ) ;
+    m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() ) ;
+    m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() ) ;
+    m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() ) ;
 
-    m_para_m->setpara_inputsTab_fiberName_lineEdit( para_inputsTab_fiberName_lineEdit->text() );
+    m_para_m->setpara_inputTab_fiberName_lineEdit( para_inputTab_fiberName_lineEdit->text() );
 
 
     /*2nd tab: Subjects*/
-    m_para_m->setpara_subjectsTab_adInput_checkBox( para_subjectsTab_adInput_checkBox->checkState() );
-    m_para_m->setpara_subjectsTab_rdInput_checkBox( para_subjectsTab_rdInput_checkBox->checkState() );
-    m_para_m->setpara_subjectsTab_mdInput_checkBox( para_subjectsTab_mdInput_checkBox->checkState() );
-    m_para_m->setpara_subjectsTab_faInput_checkBox( para_subjectsTab_faInput_checkBox->checkState() );
-    m_para_m->setpara_subjectsTab_compInput_checkBox( para_subjectsTab_compInput_checkBox->checkState() );
+    m_para_m->setpara_subjectTab_adFile_checkBox( para_subjectTab_adFile_checkBox->checkState() );
+    m_para_m->setpara_subjectTab_rdFile_checkBox( para_subjectTab_rdFile_checkBox->checkState() );
+    m_para_m->setpara_subjectTab_mdFile_checkBox( para_subjectTab_mdFile_checkBox->checkState() );
+    m_para_m->setpara_subjectTab_faFile_checkBox( para_subjectTab_faFile_checkBox->checkState() );
+    m_para_m->setpara_subjectTab_covariateFile_checkBox( para_subjectTab_covariateFile_checkBox->checkState() );
 
-    m_para_m->setpara_subjectsTab_inputSubjectList_lineEdit( para_subjectsTab_inputSubjectList_lineEdit->text() );
+    m_para_m->setpara_subjectTab_subjectFile_lineEdit( para_subjectTab_subjectFile_lineEdit->text() );
 
     /************** ????listWidget Subjects???? **************/
 
@@ -41,19 +41,19 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     /*3rd tab: Parameteres*/
     std::map<QString,bool> itemList;
     itemList.clear();
-    for( int i = 0 ; i < para_parametersTab_covariates_listWidget->count() ; i++ )
+    for( int i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
     {
         QString encoding = QString( "%1" ).arg( i, 3, 10, QChar( '0' ) ).append( "_" );
-        QListWidgetItem *currentItem = para_parametersTab_covariates_listWidget->item( i ) ;
+        QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i ) ;
         itemList[ encoding.append( currentItem->text() ) ] = static_cast<bool>( currentItem->checkState() ) ;
     }
-    qDebug() << "itemList.size() Set" << itemList.size();
-    m_para_m->setpara_parametersTab_covariates_listWidget( itemList ) ;
+//    qDebug() << "itemList.size() Set" << itemList.size();
+    m_para_m->setpara_parameterTab_covariates_listWidget( itemList ) ;
 
-    m_para_m->setpara_parametersTab_omnibus_checkBox( para_parametersTab_omnibus_checkBox->checkState() );
-    m_para_m->setpara_parametersTab_postHoc_checkBox( para_parametersTab_postHoc_checkBox->checkState() );
+    m_para_m->setpara_parameterTab_omnibus_checkBox( para_parameterTab_omnibus_checkBox->checkState() );
+    m_para_m->setpara_parameterTab_postHoc_checkBox( para_parameterTab_postHoc_checkBox->checkState() );
 
-    m_para_m->setpara_parametersTab_nbrPermutations_spinBox( para_parametersTab_nbrPermutations_spinBox->value() );
+    m_para_m->setpara_parameterTab_nbrPermutations_spinBox( para_parameterTab_nbrPermutations_spinBox->value() );
 
 
     /*4th tab: Quality Control*/
@@ -77,23 +77,23 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
     if(prefix =="para")
     {
         /*1st tab: Inputs*/
-        m_para_m->setpara_inputsTab_inputADfile_lineEdit( para_inputsTab_inputADfile_lineEdit->text() ) ;
-        m_para_m->setpara_inputsTab_inputRDfile_lineEdit( para_inputsTab_inputRDfile_lineEdit->text() ) ;
-        m_para_m->setpara_inputsTab_inputMDfile_lineEdit( para_inputsTab_inputMDfile_lineEdit->text() ) ;
-        m_para_m->setpara_inputsTab_inputFAfile_lineEdit( para_inputsTab_inputFAfile_lineEdit->text() ) ;
-        m_para_m->setpara_inputsTab_inputCOMPfile_lineEdit( para_inputsTab_inputCOMPfile_lineEdit->text() ) ;
+        m_para_m->setpara_inputTab_adFile_lineEdit( para_inputTab_adFile_lineEdit->text() ) ;
+        m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() ) ;
+        m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() ) ;
+        m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() ) ;
+        m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() ) ;
 
-        m_para_m->setpara_inputsTab_fiberName_lineEdit( para_inputsTab_fiberName_lineEdit->text() );
+        m_para_m->setpara_inputTab_fiberName_lineEdit( para_inputTab_fiberName_lineEdit->text() );
 
 
         /*2nd tab: Subjects*/
-        m_para_m->setpara_subjectsTab_adInput_checkBox( para_subjectsTab_adInput_checkBox->checkState() );
-        m_para_m->setpara_subjectsTab_rdInput_checkBox( para_subjectsTab_rdInput_checkBox->checkState() );
-        m_para_m->setpara_subjectsTab_mdInput_checkBox( para_subjectsTab_mdInput_checkBox->checkState() );
-        m_para_m->setpara_subjectsTab_faInput_checkBox( para_subjectsTab_faInput_checkBox->checkState() );
-        m_para_m->setpara_subjectsTab_compInput_checkBox( para_subjectsTab_compInput_checkBox->checkState() );
+        m_para_m->setpara_subjectTab_adFile_checkBox( para_subjectTab_adFile_checkBox->checkState() );
+        m_para_m->setpara_subjectTab_rdFile_checkBox( para_subjectTab_rdFile_checkBox->checkState() );
+        m_para_m->setpara_subjectTab_mdFile_checkBox( para_subjectTab_mdFile_checkBox->checkState() );
+        m_para_m->setpara_subjectTab_faFile_checkBox( para_subjectTab_faFile_checkBox->checkState() );
+        m_para_m->setpara_subjectTab_covariateFile_checkBox( para_subjectTab_covariateFile_checkBox->checkState() );
 
-        m_para_m->setpara_subjectsTab_inputSubjectList_lineEdit( para_subjectsTab_inputSubjectList_lineEdit->text() );
+        m_para_m->setpara_subjectTab_subjectFile_lineEdit( para_subjectTab_subjectFile_lineEdit->text() );
 
         /************** ????listWidget Subjects???? **************/
 //        std::map<QString,bool> itemList ;
@@ -108,18 +108,18 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         /*3rd tab: Parameteres*/
         std::map<QString,bool> itemList;
         itemList.clear();
-        for( int i = 0 ; i < para_parametersTab_covariates_listWidget->count() ; i++ )
+        for( int i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
         {
             QString encoding = QString( "%1" ).arg( i, 3, 10, QChar( '0' ) ).append( "_" );
-            QListWidgetItem *currentItem = para_parametersTab_covariates_listWidget->item( i ) ;
+            QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i ) ;
             itemList[ encoding.append( currentItem->text() ) ] = static_cast<bool>( currentItem->checkState() ) ;
         }
-        m_para_m->setpara_parametersTab_covariates_listWidget( itemList ) ;
+        m_para_m->setpara_parameterTab_covariates_listWidget( itemList ) ;
 
-        m_para_m->setpara_parametersTab_omnibus_checkBox( para_parametersTab_omnibus_checkBox->checkState() );
-        m_para_m->setpara_parametersTab_postHoc_checkBox( para_parametersTab_postHoc_checkBox->checkState() );
+        m_para_m->setpara_parameterTab_omnibus_checkBox( para_parameterTab_omnibus_checkBox->checkState() );
+        m_para_m->setpara_parameterTab_postHoc_checkBox( para_parameterTab_postHoc_checkBox->checkState() );
 
-        m_para_m->setpara_parametersTab_nbrPermutations_spinBox( para_parametersTab_nbrPermutations_spinBox->value() );
+        m_para_m->setpara_parameterTab_nbrPermutations_spinBox( para_parameterTab_nbrPermutations_spinBox->value() );
 
 
         /*4th tab: Quality Control*/
@@ -147,43 +147,43 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     m_sync = true;
 
     /*1st tab: Inputs*/
-    para_inputsTab_inputADfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputADfile_lineEdit() );
-    para_inputsTab_inputRDfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputRDfile_lineEdit() );
-    para_inputsTab_inputMDfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputMDfile_lineEdit() );
-    para_inputsTab_inputFAfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputFAfile_lineEdit() );
-    para_inputsTab_inputCOMPfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputCOMPfile_lineEdit() );
+    para_inputTab_adFile_lineEdit->setText( m_para_m->getpara_inputTab_adFile_lineEdit() );
+    para_inputTab_rdFile_lineEdit->setText( m_para_m->getpara_inputTab_rdFile_lineEdit() );
+    para_inputTab_mdFile_lineEdit->setText( m_para_m->getpara_inputTab_mdFile_lineEdit() );
+    para_inputTab_faFile_lineEdit->setText( m_para_m->getpara_inputTab_faFile_lineEdit() );
+    para_inputTab_covariateFile_lineEdit->setText( m_para_m->getpara_inputTab_covariateFile_lineEdit() );
 
-    para_inputsTab_fiberName_lineEdit->setText( m_para_m->getpara_inputsTab_fiberName_lineEdit() );
+    para_inputTab_fiberName_lineEdit->setText( m_para_m->getpara_inputTab_fiberName_lineEdit() );
 
 
     /*2nd tab: Subjects*/
-    para_subjectsTab_adInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_adInput_checkBox() );
-    para_subjectsTab_rdInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_rdInput_checkBox() );
-    para_subjectsTab_mdInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_mdInput_checkBox() );
-    para_subjectsTab_faInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_faInput_checkBox() );
-    para_subjectsTab_compInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_compInput_checkBox() );
+    para_subjectTab_adFile_checkBox->setChecked( m_para_m->getpara_subjectTab_adFile_checkBox() );
+    para_subjectTab_rdFile_checkBox->setChecked( m_para_m->getpara_subjectTab_rdFile_checkBox() );
+    para_subjectTab_mdFile_checkBox->setChecked( m_para_m->getpara_subjectTab_mdFile_checkBox() );
+    para_subjectTab_faFile_checkBox->setChecked( m_para_m->getpara_subjectTab_faFile_checkBox() );
+    para_subjectTab_covariateFile_checkBox->setChecked( m_para_m->getpara_subjectTab_covariateFile_checkBox() );
 
-    para_subjectsTab_inputSubjectList_lineEdit->setText( m_para_m->getpara_subjectsTab_inputSubjectList_lineEdit() );
+    para_subjectTab_subjectFile_lineEdit->setText( m_para_m->getpara_subjectTab_subjectFile_lineEdit() );
 
     /************** ????listWidget Subjects???? **************/
 
 
     /*3rd tab: Parameteres*/
-    std::map<QString,bool> itemList = m_para_m->getpara_parametersTab_covariates_listWidget();
-    qDebug() << "itemList.size() Get" << itemList.size();
-    para_parametersTab_covariates_listWidget->clear();
+    std::map<QString,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
+//    qDebug() << "itemList.size() Get" << itemList.size();
+    para_parameterTab_covariates_listWidget->clear();
     for( std::map<QString,bool>::iterator it = itemList.begin() ; it != itemList.end() ; it++ )
     {
-        QListWidgetItem *item = new QListWidgetItem( it->first.split( "_" ).last() , para_parametersTab_covariates_listWidget ) ;
+        QListWidgetItem *item = new QListWidgetItem( it->first.split( "_" ).last() , para_parameterTab_covariates_listWidget ) ;
         item->setCheckState( it->second != false ? Qt::Checked : Qt::Unchecked ) ;
         item->setFlags( Qt::ItemIsEnabled );
-        para_parametersTab_covariates_listWidget->addItem( item );
+        para_parameterTab_covariates_listWidget->addItem( item );
     }
 
-    para_parametersTab_omnibus_checkBox->setChecked( m_para_m->getpara_parametersTab_omnibus_checkBox() );
-    para_parametersTab_postHoc_checkBox->setChecked( m_para_m->getpara_parametersTab_postHoc_checkBox() );
+    para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
+    para_parameterTab_postHoc_checkBox->setChecked( m_para_m->getpara_parameterTab_postHoc_checkBox() );
 
-    para_parametersTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parametersTab_nbrPermutations_spinBox() );
+    para_parameterTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parameterTab_nbrPermutations_spinBox() );
 
 
     /*4th tab: Quality Control*/
@@ -209,44 +209,44 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
     if(prefix == "para")
     {
         /*1st tab: Inputs*/
-        para_inputsTab_inputADfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputADfile_lineEdit() );
-        para_inputsTab_inputRDfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputRDfile_lineEdit() );
-        para_inputsTab_inputMDfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputMDfile_lineEdit() );
-        para_inputsTab_inputFAfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputFAfile_lineEdit() );
-        para_inputsTab_inputCOMPfile_lineEdit->setText( m_para_m->getpara_inputsTab_inputCOMPfile_lineEdit() );
+        para_inputTab_adFile_lineEdit->setText( m_para_m->getpara_inputTab_adFile_lineEdit() );
+        para_inputTab_rdFile_lineEdit->setText( m_para_m->getpara_inputTab_rdFile_lineEdit() );
+        para_inputTab_mdFile_lineEdit->setText( m_para_m->getpara_inputTab_mdFile_lineEdit() );
+        para_inputTab_faFile_lineEdit->setText( m_para_m->getpara_inputTab_faFile_lineEdit() );
+        para_inputTab_covariateFile_lineEdit->setText( m_para_m->getpara_inputTab_covariateFile_lineEdit() );
 
-        para_inputsTab_fiberName_lineEdit->setText( m_para_m->getpara_inputsTab_fiberName_lineEdit() );
+        para_inputTab_fiberName_lineEdit->setText( m_para_m->getpara_inputTab_fiberName_lineEdit() );
 
 
         /*2nd tab: Subjects*/
-        para_subjectsTab_adInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_adInput_checkBox() );
-        para_subjectsTab_rdInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_rdInput_checkBox() );
-        para_subjectsTab_mdInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_mdInput_checkBox() );
-        para_subjectsTab_faInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_faInput_checkBox() );
-        para_subjectsTab_compInput_checkBox->setChecked( m_para_m->getpara_subjectsTab_compInput_checkBox() );
+        para_subjectTab_adFile_checkBox->setChecked( m_para_m->getpara_subjectTab_adFile_checkBox() );
+        para_subjectTab_rdFile_checkBox->setChecked( m_para_m->getpara_subjectTab_rdFile_checkBox() );
+        para_subjectTab_mdFile_checkBox->setChecked( m_para_m->getpara_subjectTab_mdFile_checkBox() );
+        para_subjectTab_faFile_checkBox->setChecked( m_para_m->getpara_subjectTab_faFile_checkBox() );
+        para_subjectTab_covariateFile_checkBox->setChecked( m_para_m->getpara_subjectTab_covariateFile_checkBox() );
 
-        para_subjectsTab_inputSubjectList_lineEdit->setText( m_para_m->getpara_subjectsTab_inputSubjectList_lineEdit() );
+        para_subjectTab_subjectFile_lineEdit->setText( m_para_m->getpara_subjectTab_subjectFile_lineEdit() );
 
         /************** ????listWidget Subjects???? **************/
 
 
         /*3rd tab: Parameteres*/
-        std::map<QString,bool> itemList = m_para_m->getpara_parametersTab_covariates_listWidget();
-        qDebug() << "itemList.size() Get" << itemList.size();
+        std::map<QString,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
+//        qDebug() << "itemList.size() Get" << itemList.size();
 
-        para_parametersTab_covariates_listWidget->clear();
+        para_parameterTab_covariates_listWidget->clear();
         for( std::map<QString,bool>::iterator it = itemList.begin() ; it != itemList.end() ; it++ )
         {
-            QListWidgetItem *item = new QListWidgetItem( it->first.split( "_" ).last() , para_parametersTab_covariates_listWidget ) ;
+            QListWidgetItem *item = new QListWidgetItem( it->first.split( "_" ).last() , para_parameterTab_covariates_listWidget ) ;
             item->setCheckState( it->second != false ? Qt::Checked : Qt::Unchecked ) ;
             item->setFlags( Qt::ItemIsEnabled );
-            para_parametersTab_covariates_listWidget->addItem( item );
+            para_parameterTab_covariates_listWidget->addItem( item );
         }
 
-        para_parametersTab_omnibus_checkBox->setChecked( m_para_m->getpara_parametersTab_omnibus_checkBox() );
-        para_parametersTab_postHoc_checkBox->setChecked( m_para_m->getpara_parametersTab_postHoc_checkBox() );
+        para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
+        para_parameterTab_postHoc_checkBox->setChecked( m_para_m->getpara_parameterTab_postHoc_checkBox() );
 
-        para_parametersTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parametersTab_nbrPermutations_spinBox() );
+        para_parameterTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parameterTab_nbrPermutations_spinBox() );
 
 
         /*4th tab: Quality Control*/

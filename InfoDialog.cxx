@@ -24,12 +24,13 @@ InfoDialog::~InfoDialog()
 /***************************************************************/
 /********************** Public functions ***********************/
 /***************************************************************/
-void InfoDialog::DisplayInfo()
+void InfoDialog::DisplayFileInformation()
 {
-    SetInfoFileLabelMap();
-    foreach( QString prefix, m_data->GetPrefixList() )
+    SetFileInformationLabelMap();
+    foreach( QString prefID, m_data->GetPrefixList() )
     {
-        m_fileInfoLabelMap.value( prefix )->setText( tr( qPrintable( "<center><b>" + prefix.toUpper() + " File</b></center><br>" + GetFileInfo( prefix ) ) ) );
+        m_inputFileInformationLabelMap.value( prefID )->
+                setText( tr( qPrintable( "<center><b>" + prefID.toUpper() + " File</b></center><br>" + GetInputFileInformation( prefID ) ) ) );
     }
 }
 
@@ -56,43 +57,43 @@ void InfoDialog::InitInfoDialog()
     m_compFileInfo_label = m_ui->compFileInfo_label;
 }
 
-void InfoDialog::SetInfoFileLabelMap()
+void InfoDialog::SetFileInformationLabelMap()
 {
-    m_fileInfoLabelMap.insert( m_data->GetAxialDiffusivityPrefix(), m_adFileInfo_label );
-    m_fileInfoLabelMap.insert( m_data->GetRadialDiffusivityPrefix(), m_rdFileInfo_label );
-    m_fileInfoLabelMap.insert( m_data->GetMeanDiffusivityPrefix(), m_mdFileInfo_label );
-    m_fileInfoLabelMap.insert( m_data->GetFractionalAnisotropyPrefix(), m_ui->faFileInfo_label );
-    m_fileInfoLabelMap.insert( m_data->GetCovariatePrefix(), m_compFileInfo_label );
+    m_inputFileInformationLabelMap.insert( m_data->GetAxialDiffusivityPrefix(), m_adFileInfo_label );
+    m_inputFileInformationLabelMap.insert( m_data->GetRadialDiffusivityPrefix(), m_rdFileInfo_label );
+    m_inputFileInformationLabelMap.insert( m_data->GetMeanDiffusivityPrefix(), m_mdFileInfo_label );
+    m_inputFileInformationLabelMap.insert( m_data->GetFractionalAnisotropyPrefix(), m_ui->faFileInfo_label );
+    m_inputFileInformationLabelMap.insert( m_data->GetCovariatePrefix(), m_compFileInfo_label );
 }
 
-QString InfoDialog::GetFileInfo( const QString p )
+QString InfoDialog::GetInputFileInformation( const QString prefID )
 {
-    QString str;
-    str.append( tr ( "<i>No File Information.<br>Please select a correct data file</i>" ) );
+    QString fileInformation;
+    fileInformation.append( tr ( "<i>No File Information.<br>Please select a correct data file</i>" ) );
 
-    const QString filename = m_data->GetFilename( p );
+    const QString filename = m_data->GetFilename( prefID );
     QString fileName =  QFileInfo( QFile( filename ) ).fileName();
     if( !fileName.isEmpty() )
     {
-        int nbRows = m_data->GetNbrRows( p );
-        int nbColumns = m_data->GetNbrColumns( p );
+        int nbRows = m_data->GetNbrRows( prefID );
+        int nbColumns = m_data->GetNbrColumns( prefID );
 
-        str.clear();
-        str.append( tr( qPrintable( "<b>Filename</b> " + fileName + "<br>" ) ) );
-        str.append( tr( qPrintable( "<b>Number of test subjects</b>  " + QString::number( m_data->GetNbrSubjects( p ) ) + "<br>" ) ) );
-        str.append( tr( qPrintable( "<b>Data matrix</b>  " + QString::number( nbRows ) + "x" + QString::number( nbColumns )  + "<br>" ) ) );
-        if( p == m_data->GetCovariatePrefix() )
+        fileInformation.clear();
+        fileInformation.append( tr( qPrintable( "<b>Filename</b> " + fileName + "<br>" ) ) );
+        fileInformation.append( tr( qPrintable( "<b>Number of test subjects</b>  " + QString::number( m_data->GetNbrSubjects( prefID ) ) + "<br>" ) ) );
+        fileInformation.append( tr( qPrintable( "<b>Data matrix</b>  " + QString::number( nbRows ) + "x" + QString::number( nbColumns )  + "<br>" ) ) );
+        if( prefID == m_data->GetCovariatePrefix() )
         {
-            str.append( tr( qPrintable( "<b>Number of covariates</b>  " + QString::number( m_data->GetCovariatesList().size()-1 ) ) ) );
-            for( int c = 0; c < m_data->GetCovariatesList().size(); ++c )
+            fileInformation.append( tr( qPrintable( "<b>Number of covariates</b>  " + QString::number( m_data->GetCovariates().size()-1 ) ) ) );
+            for( int c = 0; c < m_data->GetCovariates().size(); ++c )
             {
-                if( c != m_data->GetSubjectColumnID() )
+                if( c != m_data->GetCovariateFileSubjectColumnID() )
                 {
-                    str.append( tr( qPrintable( "<br>-  " + m_data->GetCovariatesList().value( c ) ) ) );
+                    fileInformation.append( tr( qPrintable( "<br>-  " + m_data->GetCovariates().value( c ) ) ) );
                 }
             }
         }
     }
 
-    return str;
+    return fileInformation;
 }

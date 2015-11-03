@@ -20,36 +20,40 @@ public:
     /*****************************************************/
     /****************** Running Process ******************/
     /*****************************************************/
-    void RunScript( QString matlabExe, QString scriptPath );
+    void RunScript( QString matlabExe, QString matlabScript );
 
 
-    bool IsCOMPFile( const QStringList strList );
+    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
 
-    QStringList GetSelectedSubjectList( QString selectedSubjectListFile );
+    bool IsCovariateFile(const QStringList fileData );
 
-    QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
-                                                  int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates,
+    QStringList GetSelectedSubjects( QString selectedSubjectFile );
+
+    QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectFile,
+                                                  int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
                                                   QString outputDir, QString fiberName );
 
 
     /*****************************************************/
     /****************** Data Processing ******************/
     /*****************************************************/
-    QStringList GetSubjectListFromInputFile( QList<QStringList> dataInInputFile, int subjectCovariatesColumnId );
+    QStringList GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID );
 
-    QStringList GetRefSubjectListFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int subjectCovariatesColumnId );
+    QStringList GetRefSubjectsFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 
-    QStringList GetRefSubjectList( const QString subjectListFilePath, QMap<QString, QList<QStringList> > dataInSelectedFiles, int subjectCovariatesColumnId );
+    QStringList GetRefSubjects( const QString subjectFilePath, QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 
     QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap );
 
-    QMap< QString, QMap<QString, bool> > SortSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectMap );
+    QMap< QString, QMap<QString, bool> > SortSubjects( const QStringList refSubjects, const QMap<QString, QStringList> selectedSubjects );
 
-    void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjects,
+    void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubjects, QStringList& matchedSubjects,
                               QMap<QString, QStringList >& unMatchedSubjects );
 
 
-    QList<QStringList> GetDataFromFile( QString fileName );
+    QList<QStringList> GetDataFromFile( QString filePath );
+
+    QMap<int, QString> GetCovariatesFromFileData( QList<QStringList> dataCovariateFile, int covariateFileSubjectColumnID );
 
 
 private:

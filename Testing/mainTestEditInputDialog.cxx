@@ -2,8 +2,11 @@
 
 int main( int argc, char *argv[] )
 {
+    QApplication *app = new QApplication( argc, argv );
+
     TestEditInputDialog testEditInputDialog;
-    bool test1 = testEditInputDialog.Test_UploadData( argv[1] );
+
+    bool test1 = testEditInputDialog.Test_UploadFileData( argv[1] );
     bool test2 = testEditInputDialog.Test_Delete( argv[1] );
     bool test3 = testEditInputDialog.Test_RefreshFileInfo( argv[1], argv[2] );
 

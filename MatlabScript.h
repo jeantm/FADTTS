@@ -4,40 +4,36 @@
 #include <QResource>
 #include <QDate>
 #include <QTime>
-#include <QString>
-#include <QTextStream>
 #include <QDir>
-#include <QMap>
+#include <QTextStream>
 #include <QDebug>
+
+#include <iostream>
 
 #include "para_Model_FADTTS.h"
 #include "soft_Model_FADTTS.h"
+
+#ifndef FADTTS_TITLE
+#define FADTTS_TITLE "Unknown Title"
+#endif
 
 #ifndef FADTTS_VERSION
 #define FADTTS_VERSION "unknown"
 #endif
 
-#ifndef FADTTS_CONTRIBUTOR
-#define FADTTS_CONTRIBUTOR "unknown"
+#ifndef FADTTS_CONTRIBUTORS
+#define FADTTS_CONTRIBUTORS "unknown"
 #endif
+
+#ifndef FADTTS_DESCRIPTION
+#define FADTTS_DESCRIPTION "No description available"
+#endif
+
 
 class MatlabScript
 {
 public :
    MatlabScript();
-
-
-   QString GenerateMatlabScript( bool release, QString outputDir, QString fiberName, QStringList selectedPrefixes,
-                                 QMap<QString, bool> matlabInputFiles, QMap<int,QString> selectedCovariates,
-                                 int nbrPermutations, bool omnibus, bool postHoc );
-
-   void ResetScript();
-
-
-private :
-   static const QString m_csvSeparator;
-
-   QString m_scriptPath, m_script;
 
 
    void InitMatlabScript();
@@ -48,15 +44,23 @@ private :
 
    void SetDiffusionProperties( QStringList selectedPrefixes );
 
-   void SetNbrPermutations( int nbrPermutation );
+   void SetNbrPermutation( int nbrPermutation );
 
-   void SetCovariatesList( QMap<int, QString> selectedCovariates );
+   void SetCovariates( QMap<int, QString> selectedCovariates );
 
    void SetInputFiles( QMap<QString, bool> matlabInputFiles );
 
    void SetOmnibus( bool omnibus );
 
    void SetPostHoc( bool postHoc );
+
+   QString GenerateMatlabFiles( QString outputDir, QString fiberName, int nbrPermutations );
+
+
+private :
+   static const QString m_csvSeparator;
+
+   QString m_matlabScript;
 };
 
 

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>925</width>
-    <height>492</height>
+    <width>906</width>
+    <height>498</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,7 +35,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="inputsTab">
+      <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -47,7 +47,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="1" column="0">
-         <spacer name="horizontalSpacer_2">
+         <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -60,7 +60,7 @@
          </spacer>
         </item>
         <item row="1" column="1">
-         <widget class="QPushButton" name="inputsTab_close_pushButton">
+         <widget class="QPushButton" name="inputTab_close_pushButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -85,7 +85,7 @@
          </widget>
         </item>
         <item row="0" column="0" colspan="2">
-         <widget class="QWidget" name="inputsTab_inputFiles_widget" native="true">
+         <widget class="QWidget" name="inputTab_inputFiles_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -100,7 +100,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="inputsTab_inputFiles_groupBox">
+            <widget class="QGroupBox" name="inputTab_inputFiles_groupBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -121,7 +121,7 @@
                <number>6</number>
               </property>
               <item row="7" column="7" colspan="2">
-               <widget class="QPushButton" name="inputsTab_editInputCOMPfile_pushButton">
+               <widget class="QPushButton" name="inputTab_editCovariateFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -134,7 +134,7 @@
                </widget>
               </item>
               <item row="1" column="7" colspan="2">
-               <widget class="QPushButton" name="inputsTab_editInputADfile_pushButton">
+               <widget class="QPushButton" name="inputTab_editADFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -147,7 +147,7 @@
                </widget>
               </item>
               <item row="10" column="0" colspan="2">
-               <widget class="QPushButton" name="inputsTab_inputInfo_pushButton">
+               <widget class="QPushButton" name="inputTab_fileInformation_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -160,7 +160,7 @@
                </widget>
               </item>
               <item row="5" column="7">
-               <widget class="QPushButton" name="inputsTab_editInputFAfile_pushButton">
+               <widget class="QPushButton" name="inputTab_editFAFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -173,7 +173,7 @@
                </widget>
               </item>
               <item row="5" column="5">
-               <widget class="QLabel" name="inputsTab_iconInputFAFile_label">
+               <widget class="QLabel" name="inputTab_iconFAFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -192,7 +192,7 @@
                </widget>
               </item>
               <item row="4" column="7">
-               <widget class="QPushButton" name="inputsTab_editInputMDfile_pushButton">
+               <widget class="QPushButton" name="inputTab_editMDFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -205,17 +205,17 @@
                </widget>
               </item>
               <item row="7" column="1" colspan="4">
-               <widget class="QLineEdit" name="para_inputsTab_inputCOMPfile_lineEdit">
+               <widget class="QLineEdit" name="para_inputTab_covariateFile_lineEdit">
                 <property name="text">
                  <string/>
                 </property>
                </widget>
               </item>
               <item row="3" column="1" colspan="4">
-               <widget class="QLineEdit" name="para_inputsTab_inputRDfile_lineEdit"/>
+               <widget class="QLineEdit" name="para_inputTab_rdFile_lineEdit"/>
               </item>
               <item row="9" column="0" colspan="4">
-               <widget class="QLabel" name="inputsTab_prefixMeaning_label">
+               <widget class="QLabel" name="inputTab_prefixMeaning_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -228,10 +228,10 @@
                </widget>
               </item>
               <item row="4" column="1" colspan="4">
-               <widget class="QLineEdit" name="para_inputsTab_inputMDfile_lineEdit"/>
+               <widget class="QLineEdit" name="para_inputTab_mdFile_lineEdit"/>
               </item>
               <item row="4" column="5">
-               <widget class="QLabel" name="inputsTab_iconInputMDFile_label">
+               <widget class="QLabel" name="inputTab_iconMDFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -250,7 +250,7 @@
                </widget>
               </item>
               <item row="11" column="1">
-               <widget class="QLineEdit" name="para_inputsTab_fiberName_lineEdit">
+               <widget class="QLineEdit" name="para_inputTab_fiberName_lineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -260,7 +260,7 @@
                </widget>
               </item>
               <item row="7" column="0">
-               <widget class="QPushButton" name="inputsTab_inputCOMPfile_pushButton">
+               <widget class="QPushButton" name="inputTab_addCovariateFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -285,7 +285,7 @@
                </widget>
               </item>
               <item row="7" column="6">
-               <widget class="QLabel" name="inputsTab_subjectColumnID_label">
+               <widget class="QLabel" name="inputTab_subjectColumnID_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -304,7 +304,7 @@
                </widget>
               </item>
               <item row="3" column="5">
-               <widget class="QLabel" name="inputsTab_iconInputRDFile_label">
+               <widget class="QLabel" name="inputTab_iconRDFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -323,7 +323,7 @@
                </widget>
               </item>
               <item row="7" column="5">
-               <widget class="QLabel" name="inputsTab_iconInputCOMPFile_label">
+               <widget class="QLabel" name="inputTab_iconCovariateFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -342,7 +342,7 @@
                </widget>
               </item>
               <item row="11" column="0">
-               <widget class="QLabel" name="label">
+               <widget class="QLabel" name="inputTab_fiberName_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -355,7 +355,7 @@
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QPushButton" name="inputsTab_inputADfile_pushButton">
+               <widget class="QPushButton" name="inputTab_addADFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -374,7 +374,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QPushButton" name="inputsTab_inputAddInputFiles_pushButton">
+               <widget class="QPushButton" name="inputTab_addMultipleInputFiles_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -393,7 +393,7 @@
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="QPushButton" name="inputsTab_inputMDfile_pushButton">
+               <widget class="QPushButton" name="inputTab_addMDFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -412,7 +412,7 @@
                </widget>
               </item>
               <item row="1" column="5">
-               <widget class="QLabel" name="inputsTab_iconInputADFile_label">
+               <widget class="QLabel" name="inputTab_iconADFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -431,10 +431,10 @@
                </widget>
               </item>
               <item row="1" column="1" colspan="4">
-               <widget class="QLineEdit" name="para_inputsTab_inputADfile_lineEdit"/>
+               <widget class="QLineEdit" name="para_inputTab_adFile_lineEdit"/>
               </item>
               <item row="3" column="7">
-               <widget class="QPushButton" name="inputsTab_editInputRDfile_pushButton">
+               <widget class="QPushButton" name="inputTab_editRDFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -447,7 +447,7 @@
                </widget>
               </item>
               <item row="5" column="0">
-               <widget class="QPushButton" name="inputsTab_inputFAfile_pushButton">
+               <widget class="QPushButton" name="inputTab_addFAFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -466,10 +466,10 @@
                </widget>
               </item>
               <item row="5" column="1" colspan="4">
-               <widget class="QLineEdit" name="para_inputsTab_inputFAfile_lineEdit"/>
+               <widget class="QLineEdit" name="para_inputTab_faFile_lineEdit"/>
               </item>
               <item row="0" column="1" colspan="3">
-               <widget class="QLabel" name="inputsTab_addInputFilesInfo_label">
+               <widget class="QLabel" name="inputTab_addMultipleInputFilesInfo_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -482,7 +482,7 @@
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QPushButton" name="inputsTab_inputRDfile_pushButton">
+               <widget class="QPushButton" name="inputTab_addRDFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -501,7 +501,7 @@
                </widget>
               </item>
               <item row="11" column="2" colspan="2">
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="inputTab_fiberNameInfo_label">
                 <property name="text">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Only use alphanumeric characters and '_' separator&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -515,13 +515,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="subjectsTab">
+      <widget class="QWidget" name="subjectTab">
        <attribute name="title">
         <string>Subjects</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="2" rowspan="5" colspan="2">
-         <widget class="QWidget" name="subjectsTab_matchSubjects_widget" native="true">
+         <widget class="QWidget" name="subjectTab_sortedSubjects_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -536,13 +536,13 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="subjectsTab_matchSubjects_groupBox">
+            <widget class="QGroupBox" name="subjectTab_matchSubjects_groupBox">
              <property name="title">
-              <string>Matched Subjects</string>
+              <string>Sorted Subjects</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_6">
               <item row="3" column="0" colspan="5">
-               <widget class="QLabel" name="subjectsTab_checkedSubjects_label">
+               <widget class="QLabel" name="subjectTab_checkedSubjectsInformation_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -555,7 +555,7 @@
                </widget>
               </item>
               <item row="8" column="0">
-               <widget class="QLabel" name="subjectsTab_search_label">
+               <widget class="QLabel" name="subjectTab_search_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -568,7 +568,7 @@
                </widget>
               </item>
               <item row="9" column="1">
-               <widget class="QCheckBox" name="subjectsTab_caseSensitive_checkBox">
+               <widget class="QCheckBox" name="subjectTab_caseSensitive_checkBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -579,12 +579,12 @@
                  <string>Case Sensitive</string>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
               <item row="4" column="0" rowspan="2" colspan="7">
-               <widget class="QListWidget" name="subjectsTab_sortedSubjects_listWidget">
+               <widget class="QListWidget" name="subjectTab_sortedSubjects_listWidget">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -606,7 +606,7 @@
                </widget>
               </item>
               <item row="8" column="1" colspan="6">
-               <widget class="QLineEdit" name="subjectsTab_search_lineEdit">
+               <widget class="QLineEdit" name="subjectTab_search_lineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -616,7 +616,7 @@
                </widget>
               </item>
               <item row="2" column="0" colspan="3">
-               <widget class="QLabel" name="subjectsTab_sortSubjects_label">
+               <widget class="QLabel" name="subjectTab_sortedSubjectsInformation_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -632,7 +632,7 @@
                </widget>
               </item>
               <item row="2" column="6">
-               <widget class="QPushButton" name="subjectsTab_unCheckAllVisible_pushButton">
+               <widget class="QPushButton" name="subjectTab_unCheckAllVisible_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -645,7 +645,7 @@
                </widget>
               </item>
               <item row="2" column="5">
-               <widget class="QPushButton" name="subjectsTab_checkAllVisible_pushButton">
+               <widget class="QPushButton" name="subjectTab_checkAllVisible_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -677,7 +677,7 @@
          </spacer>
         </item>
         <item row="0" column="0">
-         <widget class="QWidget" name="subjectsTab_inputs_widget" native="true">
+         <widget class="QWidget" name="subjectTab_inputs_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -692,13 +692,13 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="subjectsTab_inputs_groupBox">
+            <widget class="QGroupBox" name="subjectTab_inputs_groupBox">
              <property name="title">
               <string>Inputs</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_5">
               <item row="6" column="0">
-               <widget class="QCheckBox" name="para_subjectsTab_compInput_checkBox">
+               <widget class="QCheckBox" name="para_subjectTab_covariateFile_checkBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -711,7 +711,7 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QLabel" name="subjectsTab_adInputSize_label">
+               <widget class="QLabel" name="subjectTab_adFileInfo_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -724,7 +724,7 @@
                </widget>
               </item>
               <item row="3" column="2">
-               <widget class="QLabel" name="subjectsTab_rdInputSize_label">
+               <widget class="QLabel" name="subjectTab_rdFileInfo_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -737,7 +737,7 @@
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QLabel" name="subjectsTab_mdInputSize_label">
+               <widget class="QLabel" name="subjectTab_mdFileInfo_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -750,7 +750,7 @@
                </widget>
               </item>
               <item row="5" column="2">
-               <widget class="QLabel" name="subjectsTab_faInputSize_label">
+               <widget class="QLabel" name="subjectTab_faFileInfo_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -763,7 +763,7 @@
                </widget>
               </item>
               <item row="6" column="2">
-               <widget class="QLabel" name="subjectsTab_compInputSize_label">
+               <widget class="QLabel" name="subjectTab_covariateFileInfo_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -776,7 +776,7 @@
                </widget>
               </item>
               <item row="3" column="0">
-               <widget class="QCheckBox" name="para_subjectsTab_rdInput_checkBox">
+               <widget class="QCheckBox" name="para_subjectTab_rdFile_checkBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -789,7 +789,7 @@
                </widget>
               </item>
               <item row="5" column="0">
-               <widget class="QCheckBox" name="para_subjectsTab_faInput_checkBox">
+               <widget class="QCheckBox" name="para_subjectTab_faFile_checkBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -802,7 +802,7 @@
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="QCheckBox" name="para_subjectsTab_mdInput_checkBox">
+               <widget class="QCheckBox" name="para_subjectTab_mdFile_checkBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -815,7 +815,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QCheckBox" name="para_subjectsTab_adInput_checkBox">
+               <widget class="QCheckBox" name="para_subjectTab_adFile_checkBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -834,7 +834,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QWidget" name="subjectsTab_subjectsList_widget" native="true">
+         <widget class="QWidget" name="subjectTab_subjectFile_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -852,7 +852,7 @@
             <number>0</number>
            </property>
            <item row="1" column="0">
-            <widget class="QGroupBox" name="subjectsTab_subjectsList_groupBox">
+            <widget class="QGroupBox" name="subjectTab_subjectFile_groupBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -860,11 +860,11 @@
               </sizepolicy>
              </property>
              <property name="title">
-              <string>Specify Subjects</string>
+              <string>Specify Reference Subjects</string>
              </property>
              <layout class="QGridLayout" name="gridLayout">
               <item row="2" column="0">
-               <widget class="QPushButton" name="subjectsTab_loadInputSubjectList_PushButton">
+               <widget class="QPushButton" name="subjectTab_loadSubjectFile_PushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -877,7 +877,7 @@
                </widget>
               </item>
               <item row="0" column="0" colspan="4">
-               <widget class="QLabel" name="subjectsTab_warningSpecifySubjects_label">
+               <widget class="QLabel" name="subjectTab_warningSubjectFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -885,7 +885,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;WARNING: If the subject list is either unspecified&lt;br/&gt;or invalid, one will be automatically generated&lt;br/&gt;from selected data files.&lt;/span&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;If the reference subjects file is either&lt;br/&gt;unspecified or invalid, reference subjects&lt;br/&gt;will automatically be generated from&lt;br/&gt;selected data files.&lt;/span&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="scaledContents">
                  <bool>false</bool>
@@ -896,7 +896,7 @@
                </widget>
               </item>
               <item row="4" column="0" colspan="2">
-               <widget class="QPushButton" name="subjectsTab_saveCheckedSubjectList_pushButton">
+               <widget class="QPushButton" name="subjectTab_saveCheckedSubjects_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -909,7 +909,7 @@
                </widget>
               </item>
               <item row="2" column="1" colspan="2">
-               <widget class="QPushButton" name="subjectsTab_reset_pushButton">
+               <widget class="QPushButton" name="subjectTab_resetSubjectFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -922,7 +922,7 @@
                </widget>
               </item>
               <item row="3" column="0" colspan="2">
-               <widget class="QLineEdit" name="para_subjectsTab_inputSubjectList_lineEdit">
+               <widget class="QLineEdit" name="para_subjectTab_subjectFile_lineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -932,7 +932,7 @@
                </widget>
               </item>
               <item row="3" column="2">
-               <widget class="QLabel" name="subjectsTab_iconLoadList_label">
+               <widget class="QLabel" name="subjectTab_iconLoadSubjectFile_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -958,7 +958,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="parametersTab">
+      <widget class="QWidget" name="parameterTab">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -969,8 +969,74 @@
         <string>Parameters</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_10">
+        <item row="3" column="1">
+         <widget class="QWidget" name="parameterTab_settings_widget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="parameterTab_settings_groupBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="title">
+              <string>Settings</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <item>
+               <widget class="QCheckBox" name="para_parameterTab_omnibus_checkBox">
+                <property name="text">
+                 <string>Omnibus / Test Jointly</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="para_parameterTab_postHoc_checkBox">
+                <property name="text">
+                 <string>Post Hoc / Test Independently</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2" rowspan="8">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="4" column="1">
-         <widget class="QWidget" name="parametersTab_permutations_widget" native="true">
+         <widget class="QWidget" name="parameterTab_nbrPermutations_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -985,13 +1051,13 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="parametersTab_permutations_groupBox">
+            <widget class="QGroupBox" name="parameterTab_nbrPermutations_groupBox">
              <property name="title">
               <string>Number of Permutations</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_11">
-              <item row="0" column="1">
-               <widget class="QSpinBox" name="para_parametersTab_nbrPermutations_spinBox">
+              <item row="0" column="2">
+               <widget class="QSpinBox" name="para_parameterTab_nbrPermutations_spinBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1006,8 +1072,8 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="parametersTab_permutations_label">
+              <item row="0" column="0" colspan="2">
+               <widget class="QLabel" name="parameterTab_nbrPermutations_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1019,10 +1085,10 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="QLabel" name="label_3">
+              <item row="2" column="0">
+               <widget class="QLabel" name="parameterTab_nbrPermutationsInfo_label">
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Set to 100 when testing, 1000 otherwise.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;100 when testing, 1000 otherwise.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -1032,34 +1098,8 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="2" rowspan="7">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="1" rowspan="3">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0" rowspan="7">
-         <widget class="QWidget" name="parametersTab_covariates_widget" native="true">
+        <item row="0" column="0" rowspan="8">
+         <widget class="QWidget" name="parameterTab_covariates_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -1086,13 +1126,13 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="parametersTab_covariates_groupBox">
+            <widget class="QGroupBox" name="parameterTab_covariates_groupBox">
              <property name="title">
               <string>Covariates</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_9">
               <item row="1" column="0" rowspan="3" colspan="2">
-               <widget class="QListWidget" name="para_parametersTab_covariates_listWidget">
+               <widget class="QListWidget" name="para_parameterTab_covariates_listWidget">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -1102,7 +1142,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QPushButton" name="parametersTab_covariatesCheckAll_pushButton">
+               <widget class="QPushButton" name="parameterTab_covariatesCheckAll_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1115,7 +1155,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QPushButton" name="parametersTab_covariatesUncheckAll_pushButton">
+               <widget class="QPushButton" name="parameterTab_covariatesUncheckAll_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1133,61 +1173,24 @@
           </layout>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QWidget" name="parametersTab_settings_widget" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="5" column="1" rowspan="3">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QGroupBox" name="parametersTab_settings_groupBox">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title">
-              <string>Settings</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_13">
-              <item>
-               <widget class="QCheckBox" name="para_parametersTab_omnibus_checkBox">
-                <property name="text">
-                 <string>Omnibus / Test Jointly</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="para_parametersTab_postHoc_checkBox">
-                <property name="text">
-                 <string>Post Hoc / Test Independently</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+          <property name="sizeType">
+           <enum>QSizePolicy::Preferred</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item row="0" column="1" rowspan="3">
-         <spacer name="verticalSpacer_3">
+         <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -1225,7 +1228,7 @@
          </widget>
         </item>
         <item row="2" column="0" colspan="2">
-         <spacer name="horizontalSpacer">
+         <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1362,7 +1365,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>925</width>
+     <width>906</width>
      <height>25</height>
     </rect>
    </property>
@@ -1414,43 +1417,45 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>inputsTab_inputAddInputFiles_pushButton</tabstop>
-  <tabstop>inputsTab_inputADfile_pushButton</tabstop>
-  <tabstop>para_inputsTab_inputADfile_lineEdit</tabstop>
-  <tabstop>inputsTab_editInputADfile_pushButton</tabstop>
-  <tabstop>inputsTab_inputRDfile_pushButton</tabstop>
-  <tabstop>para_inputsTab_inputRDfile_lineEdit</tabstop>
-  <tabstop>inputsTab_editInputRDfile_pushButton</tabstop>
-  <tabstop>inputsTab_inputMDfile_pushButton</tabstop>
-  <tabstop>para_inputsTab_inputMDfile_lineEdit</tabstop>
-  <tabstop>inputsTab_editInputMDfile_pushButton</tabstop>
-  <tabstop>inputsTab_inputFAfile_pushButton</tabstop>
-  <tabstop>para_inputsTab_inputFAfile_lineEdit</tabstop>
-  <tabstop>inputsTab_editInputFAfile_pushButton</tabstop>
-  <tabstop>inputsTab_inputCOMPfile_pushButton</tabstop>
-  <tabstop>para_inputsTab_inputCOMPfile_lineEdit</tabstop>
-  <tabstop>inputsTab_editInputCOMPfile_pushButton</tabstop>
-  <tabstop>inputsTab_inputInfo_pushButton</tabstop>
-  <tabstop>inputsTab_close_pushButton</tabstop>
-  <tabstop>para_subjectsTab_adInput_checkBox</tabstop>
-  <tabstop>para_subjectsTab_rdInput_checkBox</tabstop>
-  <tabstop>para_subjectsTab_mdInput_checkBox</tabstop>
-  <tabstop>para_subjectsTab_faInput_checkBox</tabstop>
-  <tabstop>para_subjectsTab_compInput_checkBox</tabstop>
-  <tabstop>subjectsTab_loadInputSubjectList_PushButton</tabstop>
-  <tabstop>subjectsTab_reset_pushButton</tabstop>
-  <tabstop>para_subjectsTab_inputSubjectList_lineEdit</tabstop>
-  <tabstop>subjectsTab_saveCheckedSubjectList_pushButton</tabstop>
-  <tabstop>subjectsTab_checkAllVisible_pushButton</tabstop>
-  <tabstop>subjectsTab_unCheckAllVisible_pushButton</tabstop>
-  <tabstop>subjectsTab_sortedSubjects_listWidget</tabstop>
-  <tabstop>subjectsTab_search_lineEdit</tabstop>
-  <tabstop>subjectsTab_caseSensitive_checkBox</tabstop>
-  <tabstop>parametersTab_covariatesCheckAll_pushButton</tabstop>
-  <tabstop>parametersTab_covariatesUncheckAll_pushButton</tabstop>
-  <tabstop>para_parametersTab_covariates_listWidget</tabstop>
-  <tabstop>para_parametersTab_omnibus_checkBox</tabstop>
-  <tabstop>para_parametersTab_postHoc_checkBox</tabstop>
+  <tabstop>inputTab_addMultipleInputFiles_pushButton</tabstop>
+  <tabstop>inputTab_addADFile_pushButton</tabstop>
+  <tabstop>para_inputTab_adFile_lineEdit</tabstop>
+  <tabstop>inputTab_editADFile_pushButton</tabstop>
+  <tabstop>inputTab_addRDFile_pushButton</tabstop>
+  <tabstop>para_inputTab_rdFile_lineEdit</tabstop>
+  <tabstop>inputTab_editRDFile_pushButton</tabstop>
+  <tabstop>inputTab_addMDFile_pushButton</tabstop>
+  <tabstop>para_inputTab_mdFile_lineEdit</tabstop>
+  <tabstop>inputTab_editMDFile_pushButton</tabstop>
+  <tabstop>inputTab_addFAFile_pushButton</tabstop>
+  <tabstop>para_inputTab_faFile_lineEdit</tabstop>
+  <tabstop>inputTab_editFAFile_pushButton</tabstop>
+  <tabstop>inputTab_addCovariateFile_pushButton</tabstop>
+  <tabstop>para_inputTab_covariateFile_lineEdit</tabstop>
+  <tabstop>inputTab_editCovariateFile_pushButton</tabstop>
+  <tabstop>inputTab_fileInformation_pushButton</tabstop>
+  <tabstop>para_inputTab_fiberName_lineEdit</tabstop>
+  <tabstop>inputTab_close_pushButton</tabstop>
+  <tabstop>para_subjectTab_adFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_rdFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_mdFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_faFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_covariateFile_checkBox</tabstop>
+  <tabstop>subjectTab_loadSubjectFile_PushButton</tabstop>
+  <tabstop>subjectTab_resetSubjectFile_pushButton</tabstop>
+  <tabstop>para_subjectTab_subjectFile_lineEdit</tabstop>
+  <tabstop>subjectTab_saveCheckedSubjects_pushButton</tabstop>
+  <tabstop>subjectTab_checkAllVisible_pushButton</tabstop>
+  <tabstop>subjectTab_unCheckAllVisible_pushButton</tabstop>
+  <tabstop>subjectTab_sortedSubjects_listWidget</tabstop>
+  <tabstop>subjectTab_search_lineEdit</tabstop>
+  <tabstop>subjectTab_caseSensitive_checkBox</tabstop>
+  <tabstop>parameterTab_covariatesCheckAll_pushButton</tabstop>
+  <tabstop>parameterTab_covariatesUncheckAll_pushButton</tabstop>
+  <tabstop>para_parameterTab_covariates_listWidget</tabstop>
+  <tabstop>para_parameterTab_omnibus_checkBox</tabstop>
+  <tabstop>para_parameterTab_postHoc_checkBox</tabstop>
+  <tabstop>para_parameterTab_nbrPermutations_spinBox</tabstop>
   <tabstop>runTab_outputDir_pushButton</tabstop>
   <tabstop>para_runTab_outputDir_lineEdit</tabstop>
   <tabstop>runTab_matlab_pushButton</tabstop>
@@ -1460,18 +1465,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>inputsTab_close_pushButton</sender>
+   <sender>inputTab_close_pushButton</sender>
    <signal>clicked()</signal>
    <receiver>FADTTSWindow</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>401</x>
-     <y>462</y>
+     <x>885</x>
+     <y>507</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>
-     <y>524</y>
+     <y>497</y>
     </hint>
    </hints>
   </connection>

@@ -20,7 +20,7 @@ set(COMP_3_TestFADTTS_Input DATA{${SOURCE_DIR}/COMP_3_TestFADTTS_Input.csv})
 set(selectedSubjectList_TestFADTTS DATA{${SOURCE_DIR}/selectedSubjectList_TestFADTTS.txt})
 
 set(ad_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/ad_TestFADTTS_MatlabInput.csv})
-set(rd_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/rd_TestFADTTS_MatlabInput.csv})
+set(rd_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/rd_TestzFADTTS_MatlabInput.csv})
 set(md_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/md_TestFADTTS_MatlabInput.csv})
 set(fa_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/fa_TestFADTTS_MatlabInput.csv})
 set(COMP_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/COMP_TestFADTTS_MatlabInput.csv})
@@ -33,65 +33,65 @@ include_DIRECTORIES( ${CMAKE_SOURCE_DIR})
 # Add the executable for the tests and linked the != libraries needed
 link_directories(${CMAKE_BINARY_DIR}/lib)
 
-# Add the executable for the test of EditInputDialog
-file(GLOB SOURCES_TEST_EDITINPUTDIALOG "*EditInputDialog.cxx")
-add_executable(FADTTS_Test_EditInputDialog ${SOURCES_TEST_EDITINPUTDIALOG})
-target_link_libraries(FADTTS_Test_EditInputDialog FADTTSLib)
-
-# Add the executable for the test of FADTTSWindow
-file(GLOB SOURCES_TEST_FADTTSWINDOW "*FADTTSWindow.cxx")
-add_executable(FADTTS_Test_FADTTSWindow ${SOURCES_TEST_FADTTSWINDOW})
-target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSLib)
-
-# Add the executable for the test of InfoDialog
+# Add the executable for the test(s) of the InfoDialog class
 file(GLOB SOURCES_TEST_INFODIALOG "*InfoDialog.cxx")
 add_executable(FADTTS_Test_InfoDialog ${SOURCES_TEST_INFODIALOG})
 target_link_libraries(FADTTS_Test_InfoDialog FADTTSLib)
 
-# Add the executable for the test of MatlabScript
+# Add the executable for the test(s) of the MatlabScript class
 file(GLOB SOURCES_TEST_MATLABSCRIPT "*MatlabScript.cxx")
 add_executable(FADTTS_Test_MatlabScript ${SOURCES_TEST_MATLABSCRIPT})
 target_link_libraries(FADTTS_Test_MatlabScript FADTTSLib)
 
-# Add the executable for the test of Processing
+# Add the executable for the test(s) of the Processing class
 file(GLOB SOURCES_TEST_PROCESSING "*Processing.cxx")
 add_executable(FADTTS_Test_Processing ${SOURCES_TEST_PROCESSING})
 target_link_libraries(FADTTS_Test_Processing FADTTSLib)
 
+# Add the executable for the test(s) of the EditInputDialog class
+file(GLOB SOURCES_TEST_EDITINPUTDIALOG "*EditInputDialog.cxx")
+add_executable(FADTTS_Test_EditInputDialog ${SOURCES_TEST_EDITINPUTDIALOG})
+target_link_libraries(FADTTS_Test_EditInputDialog FADTTSLib)
 
-# Test for EditInputDialog
-ExternalData_add_test(
-        MY_DATA
-        NAME TestEditInputDialog
-        COMMAND $<TARGET_FILE:FADTTS_Test_EditInputDialog> ${ad_TestFADTTS_Input} ${COMP_0_TestFADTTS_Input}
-)
+# Add the executable for the test(s) of the FADTTSWindow class
+file(GLOB SOURCES_TEST_FADTTSWINDOW "*FADTTSWindow.cxx")
+add_executable(FADTTS_Test_FADTTSWindow ${SOURCES_TEST_FADTTSWINDOW})
+target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSLib)
 
-# Test for FADTTSWindow
-ExternalData_add_test(
-        MY_DATA
-        NAME TestFADTTSWindow
-        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${ad_TestFADTTS_Input}
-)
 
-# Test for InfoDialog
+# Test for InfoDialog class
 ExternalData_add_test(
         MY_DATA
         NAME TestInfoDialog
         COMMAND $<TARGET_FILE:FADTTS_Test_InfoDialog> ${ad_TestFADTTS_Input} ${COMP_0_TestFADTTS_Input}
 )
 
-# Test for MatlabScript
+# Test for MatlabScript class
 ExternalData_add_test(
         MY_DATA
         NAME TestMatlabScript
         COMMAND $<TARGET_FILE:FADTTS_Test_MatlabScript> ${TEMP_DIR} ${ad_TestFADTTS_MatlabInput} ${COMP_TestFADTTS_MatlabInput} ${TestFADTTS_MatlabScript}
 )
 
-# Test for Processing
+# Test for Processing class
 ExternalData_add_test(
         MY_DATA
         NAME TestProcessing
         COMMAND $<TARGET_FILE:FADTTS_Test_Processing> ${TEMP_DIR} ${ad_TestFADTTS_Input} ${COMP_0_TestFADTTS_Input} ${COMP_3_TestFADTTS_Input} ${ad_TestFADTTS_MatlabInput} ${COMP_TestFADTTS_MatlabInput} ${selectedSubjectList_TestFADTTS}
+)
+
+# Test for EditInputDialog class
+ExternalData_add_test(
+        MY_DATA
+        NAME TestEditInputDialog
+        COMMAND $<TARGET_FILE:FADTTS_Test_EditInputDialog> ${ad_TestFADTTS_Input} ${COMP_0_TestFADTTS_Input}
+)
+
+# Test for FADTTSWindow class except final running function
+ExternalData_add_test(
+        MY_DATA
+        NAME TestFADTTSWindow
+        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${ad_TestFADTTS_Input} ${COMP_0_TestFADTTS_Input}
 )
 
 # Test for the command --help

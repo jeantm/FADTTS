@@ -40,7 +40,6 @@ Fnames = cell( 1, 1 );
 Fnames{ 1 } = fiberName;
 
 % Diffusion Properties
-Dnames = cell( 2, 1 );
 $diffusionProperties$
 % Diffusion Properties Tested for file names  
 params = cell( 1, 1 );
@@ -53,8 +52,8 @@ numPerms = nbrPermutations; % Use 100 when testing scripts. Use 1000 when runnin
 %% COVARIATES
 % this file has all covariates organized in columns (without headings):
 
-    $matlabCOMPInputFile$
-    designdata = [ ones( size( data2, 1 ), 1 ) data2 ]; % intercept + covariates
+$matlabCOMPInputFile$
+designdata = [ ones( size( data2, 1 ), 1 ) data2 ]; % intercept + covariates
 
 P = nbrCovariates; % how many covariates do you have? (including intercept)
 
@@ -65,7 +64,6 @@ $covariates$
 % diffusionFiles should be a (arclength)X(subject) matrix.
 % the first column has arc-lengths
 
-diffusionFiles = cell( 2, 1 );
 $diffusionFiles$
 
 %% ARCLENGTH
@@ -147,8 +145,8 @@ if( omnibus == 1 )
 
     Lpvals_FDR = zeros( size( Lpvals ) );
     for i = 1:( P-1 )
-%         Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ) );
-        Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
+        Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ) );
+%         Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
     end
 
     % save FDR Local P-Values csv file
@@ -199,8 +197,8 @@ if( postHoc == 1 )
     posthoc_Lpvals_FDR = zeros( size( posthoc_Lpvals ) );
     for Dii = 1:D
         for pii = 1:( P-1 )
-%             posthoc_Lpvals_FDR( :, Dii, pii ) = myFDR( posthoc_Lpvals( :, Dii, pii ) );
-            posthoc_Lpvals_FDR( :, Dii, pii ) = mafdr( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
+            posthoc_Lpvals_FDR( :, Dii, pii ) = myFDR( posthoc_Lpvals( :, Dii, pii ) );
+%            posthoc_Lpvals_FDR( :, Dii, pii ) = mafdr( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
         end
     end
 

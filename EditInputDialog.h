@@ -22,25 +22,25 @@ public:
     explicit EditInputDialog( QWidget *parent = 0 );
     ~EditInputDialog();
 
-    void DisplayData();
+    void DisplayFileData();
 
     void SetData( Data *newData );
 
-    void SetPrefix( const QString &prefixID );
+    void SetLineEditPrefix( const QString &newLineEditPrefixID );
 
-    void SetInputFile( const QString &inputFile );
+    void SetInputFile( const QString &newInputFile );
 
     void SetCurrentInputDir( const QString &newCurrentInputDir );
 
-    void ResetSubjectColumnID();
+    void ResetCovariateFileSubjectColumnID();
 
 
 signals:
     void FilePathChanged( const QString&, const QString&  );
 
-    void CovariatesChanged( const QMap<int, QString>&  );
+    void CovariateMapChanged( const QMap<int, QString>&  );
 
-    void SubjectColumnIDChanged( const int& );
+    void CovariateFileSubjectColumnIDChanged( const int& );
 
 
 private slots:
@@ -48,9 +48,9 @@ private slots:
 
     void DeleteColumns();
 
-    void ChangeSubjectColumnID( int idColumn );
+    void ChangeCovariateFileSubjectColumnID( int idColumn );
 
-    void Save();
+    void SaveFile();
 
 
 private:
@@ -60,24 +60,22 @@ private:
 
     QTableWidget *m_dataTableWidget;
 
-    QSpinBox *m_subjectColumnSpinBox;
+    QSpinBox *m_covariateFileSubjectColumnIDSpinBox;
 
-    QLabel *m_fileInformationLabel, *m_subjectColumnLabel;
-
-    QString m_prefix, m_inputFile, m_currentInputDir;
-
-    QMap<int, QString> m_covariates;
-
-    bool m_rowDeleted, m_columnDeleted, m_isCOMP;
-
-    int m_subjectColumnID;
+    QLabel *m_fileInformationLabel, *m_covariateFileSubjectColumnIDLabel;
 
     Data *m_data;
+
+    QString m_lineEditPrefix, m_inputFile, m_currentInputDir;
+
+    int m_covariateFileSubjectColumnID;
+
+    bool m_rowDeleted, m_columnDeleted, m_isCovariateFile;
 
 
     void InitEditInputDialog();
 
-    void UploadData();
+    void UploadFileData();
 
     void RefreshFileInfo();
 

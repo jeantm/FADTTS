@@ -8,45 +8,59 @@ Processing::Processing()
 
 
 /***************** Running Process *****************/
-void Processing::RunScript( QString matlabExe, QString scriptPath )
+void Processing::RunScript( QString matlabExe, QString matlabScript )
 {
     qDebug() << "In RunScript()";
-    qDebug() << scriptPath;
+    qDebug() << matlabScript;
 
     QProcess process;
     QStringList arguments;
-    arguments << "-nojvm" << "-nosplash" << QString( "-r " + scriptPath );
+    arguments << "-nojvm" << "-nosplash" << QString( "-r " + matlabScript );
     process.start( matlabExe, arguments );
     process.waitForFinished(-1);
 }
 
 
-bool Processing::IsCOMPFile( const QStringList strList )
+bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
+{
+    int rowDataSize = fileData.at( 0 ).count();
+    foreach (QStringList rowData,  fileData)
+    {
+        if( rowDataSize != rowData.count() )
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Processing::IsCovariateFile( const QStringList fileData )
 {
     bool ok;
-    foreach( QString str, strList )
+    foreach( QString data, fileData )
     {
-        if( str.endsWith( '"' ) )
+        if( data.endsWith( '"' ) )
         {
-            str.chop( 1 );
+            data.chop( 1 );
         }
-        if( str.startsWith( '"' ) )
+        if( data.startsWith( '"' ) )
         {
-            str.remove( 0, 1 );
+            data.remove( 0, 1 );
         }
-        str.toFloat( &ok );
+        data.toFloat( &ok );
         if( !ok )
         {
             return !ok;
         }
     }
+
     return !ok;
 }
 
-QStringList Processing::GetSelectedSubjectList( QString selectedSubjectListFile )
+QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
 {
     QStringList selectedSubjectList;
-    QFile file( selectedSubjectListFile );
+    QFile file( selectedSubjectFile );
     if( !file.fileName().isNull() )
     {
         if( file.open( QIODevice::ReadOnly ) )
@@ -63,12 +77,12 @@ QStringList Processing::GetSelectedSubjectList( QString selectedSubjectListFile 
     return selectedSubjectList;
 }
 
-QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectListFile,
-                                                          int subjectCovariatesColumnId, QMap<int, QString> selectedCovariates,
+QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectFile,
+                                                          int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
                                                           QString outputDir, QString fiberName )
 {
     QMap<QString, bool> matlabInputFiles;
-    QStringList selectedSubjectList = GetSelectedSubjectList( selectedSubjectListFile );
+    QStringList selectedSubjectList = GetSelectedSubjects( selectedSubjectFile );
 
     QMap<QString, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
     while( iterSelectedInputFile != selectedInputFiles.end() )
@@ -81,17 +95,17 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
         QTextStream tsM( &matlabInputFile );
         QStringList rowData;
 
-        QList<QStringList> data = GetDataFromFile( fileName );
+        QList<QStringList> fileData = GetDataFromFile( fileName );
 
-        int nbRows = data.count();
-        int nbColumns = data.at( 0 ).count();
+        int nbRows = fileData.count();
+        int nbColumns = fileData.at( 0 ).count();
 
         QStringList subjectAdded;
-        if( IsCOMPFile( data.at( 1 ) ) )
+        if( IsCovariateFile( fileData.at( 1 ) ) )
         {
             for( int r = 0; r < nbRows; r++ )
             {
-                QString currentSubject = data.at( r ).at( subjectCovariatesColumnId );
+                QString currentSubject = fileData.at( r ).at( covariateFileSubjectColumnId );
 
                 rowData.clear();
                 if( !subjectAdded.contains( currentSubject ) )
@@ -106,7 +120,7 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
                             int covID = iterCovariate.key();
                             if( covID != -1 )
                             {
-                                rowData << data.at( r ).at( covID );
+                                rowData << fileData.at( r ).at( covID );
                             }
                             ++iterCovariate;
                         }
@@ -122,7 +136,7 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
                             int covID = iterCovariate.key();
                             if( covID != -1 )
                             {
-                                rowData << data.at( r ).at( covID );
+                                rowData << fileData.at( r ).at( covID );
                             }
                             ++iterCovariate;
                         }
@@ -134,11 +148,6 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
                     }
                     subjectAdded.append( currentSubject );
                 }
-                else
-                {
-                    /***************** WARNING POPUP *****************/
-                    // not in subject lisst ref or appears twice in datafile
-                }
             }
         }
         else
@@ -146,16 +155,11 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
             QList<int> subjectID;
             for( int c = 0; c < nbColumns; c++ )
             {
-                QString currentSubject = data.at( 0 ).at( c );
+                QString currentSubject = fileData.at( 0 ).at( c );
                 if( ( c == 0 || ( selectedSubjectList.contains( currentSubject ) && !subjectAdded.contains( currentSubject ) ) ) )
                 {
                     subjectID.append( c );
                     subjectAdded.append( currentSubject );
-                }
-                else
-                {
-                    /***************** WARNING POPUP *****************/
-                    // not in subject lisst ref or appears twice in datafile
                 }
             }
 
@@ -164,7 +168,7 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
                 rowData.clear();
                 foreach ( int id, subjectID )
                 {
-                    rowData << data.at( r ).at( id );
+                    rowData << fileData.at( r ).at( id );
                 }
                 tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
             }
@@ -176,27 +180,24 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
 
         ++iterSelectedInputFile;
     }
+
     return matlabInputFiles;
 }
 
 
 /****************** Other Processes ******************/
-QStringList Processing::GetSubjectListFromInputFile( QList<QStringList> dataInInputFile, int subjectCovariatesColumnId )
+QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID )
 {
-    qDebug() << "Test1.1";
     QStringList subjectList;
     QList<QStringList> data = dataInInputFile;
-    qDebug() << "Test1.2";
     int nbRows = data.count();
-    qDebug() << "Test1.3";
     int nbColumns = data.at( 0 ).count();
-    qDebug() << "Test1.4";
 
-    if( IsCOMPFile( data.at( 1 ) ) )
+    if( IsCovariateFile( data.at( 1 ) ) )
     {
         for( int r = 1; r < nbRows; r++ )
         {
-            subjectList.append( data.at( r ).at( subjectCovariatesColumnId ) );
+            subjectList.append( data.at( r ).at( covariateFileSubjectColumnID ) );
         }
     }
     else
@@ -211,17 +212,13 @@ QStringList Processing::GetSubjectListFromInputFile( QList<QStringList> dataInIn
     return subjectList;
 }
 
-QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int subjectCovariatesColumnId )
+QStringList Processing::GetRefSubjectsFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
 {
-    qDebug() << "Test2.1";
     QStringList refSubjectList;
     QMap<QString, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
-    qDebug() << "Test2.2";
     while( iterDataInSelectedFile != dataInSelectedInputFiles.end() )
     {
-        qDebug() << "Test2.3";
-        QStringList currentSubjectList = GetSubjectListFromInputFile( iterDataInSelectedFile.value(), subjectCovariatesColumnId );
-        qDebug() << "Test2.4";
+        QStringList currentSubjectList = GetSubjectsFromInputFile( iterDataInSelectedFile.value(), covariateFileSubjectColumnID );
         foreach( QString subject, currentSubjectList )
         {
             if( !refSubjectList.contains( subject ) )
@@ -229,31 +226,29 @@ QStringList Processing::GetRefSubjectListFromSelectedInputFiles( QMap<QString, Q
                 refSubjectList.append( subject );
             }
         }
-        qDebug() << "Test2.5";
         ++iterDataInSelectedFile;
     }
     refSubjectList.removeDuplicates();
-    qDebug() << "Test2.6";
+
     return refSubjectList;
 }
 
-QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QMap<QString, QList<QStringList> > dataInSelectedFiles, int subjectCovariatesColumnId )
+QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
 {
-    qDebug() << "Test3.1";
     /** Create a subject list of reference.
      *  This list is either a file provided by the user or automatically generated
      *  with the selected input files' subjects **/
-    QFile subjectFile( subjectListFilePath );
+    QFile subjectFile( subjectFilePath );
     QStringList refSubjectList;
     if( QFileInfo( subjectFile ).fileName().isNull() )
     {
-        refSubjectList = GetRefSubjectListFromSelectedInputFiles( dataInSelectedFiles, subjectCovariatesColumnId );
+        refSubjectList = GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFiles, covariateFileSubjectColumnID );
     }
     else
     {
         if( !subjectFile.open( QIODevice::ReadOnly ) )
         {
-            refSubjectList = GetRefSubjectListFromSelectedInputFiles( dataInSelectedFiles, subjectCovariatesColumnId );
+            refSubjectList = GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFiles, covariateFileSubjectColumnID );
         }
         else
         {
@@ -266,7 +261,7 @@ QStringList Processing::GetRefSubjectList( const QString subjectListFilePath, QM
         }
     }
     refSubjectList.removeDuplicates();
-    qDebug() << "Test3.2";
+
     return refSubjectList;
 }
 
@@ -290,16 +285,16 @@ QMap<QString, QStringList> Processing::GetAllSubjectsFromSelectedInputFiles( con
     return selectedSubjectList;
 }
 
-QMap< QString, QMap<QString, bool> > Processing::SortSubjectInInputFile( const QStringList refList, const QMap<QString, QStringList> subjectMap )
+QMap< QString, QMap<QString, bool> > Processing::SortSubjects( const QStringList refSubjects, const QMap<QString, QStringList> selectedSubjects )
 {
     QMap< QString, QMap<QString, bool> > checkedSubject;
-    QStringListIterator itRef( refList );
+    QStringListIterator itRef( refSubjects );
     while( itRef.hasNext() )
     {
         QString subjRef = QString( itRef.next() );
 
-        QMap<QString, QStringList >::ConstIterator iterSubjectList = subjectMap.begin();
-        while( iterSubjectList != subjectMap.constEnd() )
+        QMap<QString, QStringList >::ConstIterator iterSubjectList = selectedSubjects.begin();
+        while( iterSubjectList != selectedSubjects.constEnd() )
         {
             if( iterSubjectList.value().contains( subjRef ) )
             {
@@ -312,14 +307,15 @@ QMap< QString, QMap<QString, bool> > Processing::SortSubjectInInputFile( const Q
             ++iterSubjectList;
         }
     }
+
     return checkedSubject;
 }
 
-void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubject, QStringList& matchedSubjects,
+void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubjects, QStringList& matchedSubjects,
                                       QMap<QString, QStringList >& unMatchedSubjects )
 {
-    QMap< QString, QMap<QString, bool> >::ConstIterator iterCheckedSubject = checkedSubject.begin();
-    while( iterCheckedSubject != checkedSubject.constEnd() )
+    QMap< QString, QMap<QString, bool> >::ConstIterator iterCheckedSubject = checkedSubjects.begin();
+    while( iterCheckedSubject != checkedSubjects.constEnd() )
     {
         bool subInAll = true;
         QMap<QString, bool>::ConstIterator it = iterCheckedSubject.value().begin();
@@ -355,18 +351,33 @@ void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> >
 }
 
 
-QList<QStringList> Processing::GetDataFromFile( QString fileName )
+QList<QStringList> Processing::GetDataFromFile( QString filePath )
 {
-    QFile file( fileName );
+    QFile file( filePath );
     file.open( QIODevice::ReadOnly );
 
     QTextStream ts( &file );
-    QList<QStringList> data;
+    QList<QStringList> fileData;
     while( !ts.atEnd() )
     {
-        data << ts.readLine().split( m_csvSeparator );
+        fileData << ts.readLine().split( m_csvSeparator );
     }
     file.close();
 
-    return data;
+    return fileData;
+}
+
+QMap<int, QString> Processing::GetCovariatesFromFileData( QList<QStringList> dataCovariateFile, int covariateFileSubjectColumnID )
+{
+    QMap<int, QString> covariates;
+    int nbrColumns = dataCovariateFile.at( 0 ).count();
+    for( int c = 0; c < nbrColumns; ++c )
+    {
+        if( c != covariateFileSubjectColumnID )
+        {
+            covariates.insert( c, dataCovariateFile.at( 0 ).at( c ) );
+        }
+    }
+
+    return covariates;
 }

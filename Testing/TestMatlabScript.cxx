@@ -10,36 +10,50 @@ TestMatlabScript::TestMatlabScript()
 bool TestMatlabScript::Test_GenerateMatlabScript( QString outputDir, QString matlabInputADFile, QString matlabInputCOMPFile, QString expectedMatlabScript )
 {
     MatlabScript mScript;
+    mScript.InitMatlabScript();
 
     QString fiberName = "TestFADTTS";
-    bool omnibus = true;
-    bool postHoc = true;
+    mScript.SetFiberName( fiberName );
+
+    QStringList selectedPrefixes;
+    selectedPrefixes.append( "ad" );
+    mScript.SetDiffusionProperties( selectedPrefixes );
+
     int nbrPermutations = 259;
+    mScript.SetNbrPermutation( nbrPermutations );
+
     QMap<int,QString> selectedCovariates;
     selectedCovariates.insert( -1, "Intercept" );
     selectedCovariates.insert( 1, "COMP" );
     selectedCovariates.insert( 2, "Gender" );
     selectedCovariates.insert( 3, "GestAgeBirth" );
-    QStringList selectedPrefixes;
-    selectedPrefixes.append( "ad" );
+    mScript.SetCovariates( selectedCovariates );
+
     QMap<QString, bool> matlabInputFiles;
     matlabInputFiles.insert( "00?" + matlabInputADFile, false );
     matlabInputFiles.insert( "04?" + matlabInputCOMPFile, true );
+    mScript.SetInputFiles( matlabInputFiles );
 
-    QString matlabScript = mScript.GenerateMatlabScript( false, outputDir, fiberName, selectedPrefixes, matlabInputFiles,
-                                                         selectedCovariates, nbrPermutations, omnibus, postHoc );
+    bool omnibus = true;
+    mScript.SetOmnibus( omnibus );
+
+    bool postHoc = true;
+    mScript.SetPostHoc( postHoc );
+
+
+    QString matlabScript = mScript.GenerateMatlabFiles( outputDir, fiberName, nbrPermutations );
 
     bool scriptMatched = CompareFile( matlabScript, expectedMatlabScript );
 
 
     if( !scriptMatched )
     {
-        std::cerr << std::endl << "Test_GenerateMatlabInputFiles() FAILED:" << std::endl;
+        std::cerr << std::endl << "Test_GenerateMatlabScript() FAILED:" << std::endl;
         std::cerr << "\t+ Matlab Script not generated correctly" << std::endl;
     }
     else
     {
-        std::cout << std::endl << "Test_GenerateMatlabInputFiles() PASSED" << std::endl;
+        std::cout << std::endl << "Test_GenerateMatlabScript() PASSED" << std::endl;
     }
 
     return scriptMatched;

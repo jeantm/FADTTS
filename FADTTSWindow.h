@@ -34,38 +34,40 @@ private slots:
 
     void LoadSoftConfigFile();
 
+    void DisplayAbout();
+
 
     void closeEvent(QCloseEvent *event);
 
 
     /*************** Input Tab ***************/
-    void AddMultipleFiles();
+    void AddMultipleInputFiles();
 
-    void AddFile( const QString& prefID );
+    void AddInputFile( const QString& prefID );
 
     void UpdateInputLineEdit( const QString& prefID );
 
-    void EditFile( const QString& prefID );
+    void EditInputFile( const QString& prefID );
 
 
-    void DisplayInfoInputFiles();
+    void DisplayInputFileInformation();
 
 
-    void UpdateLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID );
+    void UpdateInputLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID );
 
-    void UpdateCovariatesAfterFileEdition( const QMap<int, QString>& newCovariatesAfterFileEdition );
+    void UpdateCovariateMapAfterFileEdition( const QMap<int, QString>& newCovariateMapAfterFileEdition );
 
-    void UpdateSubjectColumnIDAfterFileEdition( const int& newSubjectColumnIDAfterFileEdition );
+    void UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int& newCovariateFileSubjectColumnIDAfterFileEdition );
 
 
     /*************** Subjects Tab ***************/
-    void LoadInputSubjectFile();
+    void LoadSubjectFile();
 
-    void ResetInputSubjectFiles();
+    void ResetSubjectFile();
 
-    void UpdateInputSubjectListLineEdit( const QString& textLineEdit );
+    void UpdateSubjectFileLineEdit( const QString& filePath );
 
-    void SaveCheckedSubjectList();
+    void SaveCheckedSubjects();
 
 
     void CheckAllSubjectsVisible();
@@ -75,15 +77,15 @@ private slots:
     void SelectSubject( QListWidgetItem *item );
 
 
-    void SortSubjects();
+    void SortAndDisplaySubjects();
 
-    void Search();
+    void SearchSubjects();
 
     void SetCaseSensitivity( bool checked );
 
 
     /***************** Parameters  Tab *****************/
-    void SelectCovariates( QListWidgetItem *item );
+    void SelectCovariate( QListWidgetItem *item );
 
     void CheckAllCovariates();
 
@@ -93,7 +95,7 @@ private slots:
     /******************** Run  Tab ********************/
     void SetOutputDir();
 
-    void UpdateOutputDirLineEdit( const QString& textLineEdit );
+    void UpdateOutputDirLineEdit( const QString& path );
 
     void SetMatlabExe(); /******** WARNING BAD CODING. FUNCTION NEEDS TO BE CORRECTED ********/
 
@@ -102,7 +104,7 @@ private slots:
 
 
 private:
-    static const QString m_csvSeparator;
+    static const QString m_csvSeparator; // Not Used
 
     static const QColor m_green;
     static const QColor m_red;
@@ -110,41 +112,33 @@ private:
     static const QColor m_yellow;
     static const QColor m_lightBlack;
 
-    static const int m_IconSize;
-
-//    Ui::FADTTSWindow *m_mainUi;
-
-    QSharedPointer<EditInputDialog> m_editInputDialog;
-
-    QSharedPointer<InfoDialog> m_infoDialog;
-
-    QListWidget *m_sortedSubjectListWidget, *m_covariatesListWidget;
-
-//    QLabel *m_adInputSizeLabel, *m_rdInputSizeLabel, *m_mdInputSizeLabel,
-//    *m_faInputSizeLabel, *m_compInputSizeLabel;
-
-//    QCheckBox *m_adInputSizeCheckBox, *m_rdInputSizeCheckBox, *m_mdInputSizeCheckBox,
-//    *m_faInputSizeCheckBox, *m_compInputSizeCheckBox;
+    static const int m_iconSize;
 
     QPixmap m_okPixmap;
     QPixmap m_koPixmap;
     QPixmap m_warningPixmap;
 
+    QSharedPointer<EditInputDialog> m_editInputDialog;
+
+    QSharedPointer<InfoDialog> m_infoDialog;
+
+    QListWidget *m_sortedSubjectListWidget, *m_covariateListWidget;
+
+    QLineEdit *m_subjectFileLineEdit;
+
     typedef QMap<QString, QLabel*> labelMapType;
-    labelMapType m_paramTabFileSizeLabelMap, m_inputTabIconLabelMap;
+    labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap;
 
     typedef QMap<QString, QCheckBox*> checkBoxMapType;
     checkBoxMapType m_paramTabFileCheckBoxMap;
 
     typedef QMap<QString, QLineEdit*> lineEditMapType;
-    lineEditMapType m_inputTabFilePathLineEditMap;
+    lineEditMapType m_inputTabInputFileLineEditMap;
 
     typedef QMap<QString, QPushButton*> pushButtonMapType;
-    pushButtonMapType m_inputTabAddFilePushButtonMap, m_inputTabEditFilePushButtonMap;
+    pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
 
     Qt::CaseSensitivity caseSensitivity;
-
-    QString m_currentFileInputDir, m_currentSubjectListInputDir, m_currentMatlabExeDir;
 
     Data m_data;
 
@@ -152,9 +146,12 @@ private:
 
     MatlabScript m_matlabScript;
 
+    QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir;
+
+
 
     /********* Configuration & Events *********/
-    void Init();
+    void InitFADTTSWindow();
 
     void InitMenuBar();
 
@@ -162,49 +159,52 @@ private:
 
     void InitSubjectTab();
 
-    void InitParametersTab();
+    void InitParameterTab();
 
     void InitRunTab();
 
 
-    void UpdateCurrentDirEditInputDialog(const QString newfilePath, QString& currentDir );
+    void UpdateEditInputDialogCurrentDir( const QString newfilePath );
 
-    QDir UpdateCurrentDir(const QString newfilePath, QString& currentDir );
+    QDir UpdateCurrentDir( const QString newfilePath, QString& currentDir );
+
+    void SetDir( QDir& dir, QString filePath, QString currentDir );
 
 
-    void WarningPopUp( const QString warningText );
+    void WarningPopUp( const QString warningMessage );
 
-    void CriticalPopUp( const QString criticalText );
+    void CriticalPopUp( const QString criticalMessage );
 
     void DisplayIcon( QLabel *label , const QPixmap icon );
 
 
     /*************** Input Tab ***************/
-    void AddFiles( const QStringList fileList );
+    void UpdateLineEditsAfterAddingMultipleFiles( const QStringList fileList );
 
 
-    void LaunchEditInputWindow( QString prefID );
+    void LaunchEditInputDialog( QString prefID );
 
 
-    void UpdateFileInformation( const QString prefID );
+    void UpdateInputFileInformation( const QString prefID );
 
-    bool IsMatrixDimensionOK( const QList<QStringList> data );
+    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
 
 
-    void DisplayIcon( const QString prefID , const QPixmap icon );
+    void DisplayInputLineEditIcon( const QString prefID , const QPixmap icon );
 
-    void SetInfoSubjectColumnID();
+    void SetInfoCovariateFileSubjectColumnID();
 
 
     /*************** Subjects Tab ***************/
     void UpdateAvailableFileParamTab();
 
-    void DisplaySortedSubjectList( const QStringList subjectListRef, const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectList );
+    void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectMap );
 
-    void DisplayNbrSubjectsSelected();
+    void DisplayNbrSubjectSelected();
+
 
     /*************** Parameters Tab ***************/
-    void DisplayCovariatesList( QMap<int, QString> covariatesList );
+    void DisplayCovariates( QMap<int, QString> covariateMap );
 
 
     /*************** Run Tab ***************/
@@ -212,12 +212,11 @@ private:
 
     QMap<QString, bool> GetSelectedInputFiles();
 
-    QMap<QString, QList<QStringList> > GetDataInSelectedFiles();
+    QMap<QString, QList<QStringList> > GetFileDataOfSelectedFiles();
 
     QMap<int, QString> GetSelectedCovariates();
 
-    QString GenerateSelectedSubjectList();
-
+    QString GenerateSelectedSubjectFile();
 };
 
 #endif // FADTTSWINDOW_H

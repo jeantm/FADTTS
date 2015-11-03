@@ -1,8 +1,11 @@
 <RCC>
-    <qresource prefix="/">
-        <file>koIconOut.xpm</file>
-        <file>okIconOut.xpm</file>
-        <file>warningIconOut.xpm</file>
-        <file>MatlabRefScript.m</file>
+    <qresource prefix="/Icons">
+        <file>Resources/Icons/koIconOut.xpm</file>
+        <file>Resources/Icons/okIconOut.xpm</file>
+        <file>Resources/Icons/warningIconOut.xpm</file>
+    </qresource>
+    <qresource prefix="/MatlabFiles">
+        <file>Resources/MatlabFiles/MatlabScriptRef.m</file>
+        <file>Resources/MatlabFiles/myFDR.m</file>
     </qresource>
 </RCC>

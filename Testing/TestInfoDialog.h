@@ -14,7 +14,7 @@ public:
     /**********************************************************************/
     /*************************** Test Functions ***************************/
     /**********************************************************************/
-    bool Test_DisplayInfo( QString adInputFile, QString inputCOMPFile ); // Done
+    bool Test_DisplayFileInformation( QString adInputFile, QString inputCOMPFile ); // Done
 
 
 private:

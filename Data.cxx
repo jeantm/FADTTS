@@ -16,7 +16,7 @@ QString Data::GetOutputDir() const
 
 QStringList Data::GetPrefixList() const
 {
-    return m_PrefixList;
+    return m_prefixList;
 }
 
 QString Data::GetAxialDiffusivityPrefix() const
@@ -41,84 +41,49 @@ QString Data::GetFractionalAnisotropyPrefix() const
 
 QString Data::GetCovariatePrefix() const
 {
-    return m_covariatesPrefix;
+    return m_covariatePrefix;
+}
+
+int Data::GetCovariateFileSubjectColumnID() const
+{
+    return m_covariateFileSubjectColumnID;
 }
 
 
-QMap<QString, QString> Data::GetFilenameMap() const
+QMap<QString, QStringList> Data::GetSubjects() const
 {
-    return m_filenameMap;
+    return m_subjectMap;
 }
 
-QMap< QString, QList<QStringList> > Data::GetDataInFileMap() const
+QMap<int, QString> Data::GetCovariates() const
 {
-    return m_dataInFileMap;
-}
-
-QMap<QString, QStringList> Data::GetSubjectsMap() const
-{
-    return m_SubjectsMap;
-}
-
-QMap<QString, int> Data::GetNbrRowsMap() const
-{
-    return m_nbrRowsMap;
-}
-
-QMap<QString, int> Data::GetNbrColumnsMap() const
-{
-    return m_nbrColumnsMap;
-}
-
-QMap<QString, int> Data::GetNbrSubjectsMap() const
-{
-    return m_nbrSubjectsMap;
-}
-
-QString Data::GetFilename( QString pref ) const
-{
-    return m_filenameMap[ pref ];
-}
-
-QList<QStringList> Data::GetDataInFile( QString pref ) const
-{
-    return m_dataInFileMap[ pref ];
-}
-
-QStringList Data::GetSubjects( QString pref ) const
-{
-    return m_SubjectsMap[ pref ];
-}
-
-int Data::GetNbrRows( QString pref ) const
-{
-    return m_nbrRowsMap[ pref ];
-}
-
-int Data::GetNbrColumns( QString pref ) const
-{
-    return m_nbrColumnsMap[ pref ];
-}
-
-int Data::GetNbrSubjects( QString pref ) const
-{
-    return m_nbrSubjectsMap[ pref ];
-}
-
-QMap<int, QString> Data::GetCovariatesList() const
-{
-    return m_covariatesList;
+    return m_covariateMap;
 }
 
 
-int Data::GetSubjectColumnID() const
+QString Data::GetFilename( QString prefID ) const
 {
-    return m_subjectColumnID;
+    return m_filenameMap[ prefID ];
 }
 
-QMap<QString, QString >::ConstIterator Data::GetFilenameMapIterator()
+QList<QStringList> Data::GetFileData( QString prefID ) const
 {
-    return m_filenameMap.begin();
+    return m_fileDataMap[ prefID ];
+}
+
+int Data::GetNbrRows( QString prefID ) const
+{
+    return m_nbrRowsMap[ prefID ];
+}
+
+int Data::GetNbrColumns( QString prefID ) const
+{
+    return m_nbrColumnsMap[ prefID ];
+}
+
+int Data::GetNbrSubjects( QString prefID ) const
+{
+    return m_nbrSubjectsMap[ prefID ];
 }
 
 
@@ -130,55 +95,52 @@ QString& Data::SetOutputDir()
     return m_outputDir;
 }
 
-QString& Data::SetFilename( QString pref )
- {
-     return m_filenameMap[ pref ];
- }
 
-QList<QStringList>& Data::SetDataInFile( QString pref )
- {
-     return m_dataInFileMap[ pref ];
- }
-
-QStringList& Data::SetSubjects( QString pref )
+QMap<int, QString>& Data::SetCovariates()
 {
-    return m_SubjectsMap[ pref ];
-}
-
-int& Data::SetNbrRows( QString pref )
-{
-    return m_nbrRowsMap[ pref ];
-}
-
-int& Data::SetNbrColumns( QString pref )
-{
-    return m_nbrColumnsMap[ pref ];
-}
-
-int& Data::SetNbrSubjects( QString pref )
-{
-    return m_nbrSubjectsMap[ pref ];
-}
-
-QMap<int, QString>& Data::SetCovariatesList()
-{
-    return m_covariatesList;
+    return m_covariateMap;
 }
 
 
-QString& Data::SetCovariatesPrefix()
+QString& Data::SetFilename( QString prefID )
 {
-    return m_covariatesPrefix;
+    return m_filenameMap[ prefID ];
 }
 
-void Data::SetSubjectColumnID( int id )
+QList<QStringList>& Data::SetFileData( QString prefID )
 {
-    m_subjectColumnID = id;
+    return m_fileDataMap[ prefID ];
+}
+
+QStringList& Data::SetSubjects( QString prefID )
+{
+    return m_subjectMap[ prefID ];
+}
+
+int& Data::SetNbrRows( QString prefID )
+{
+    return m_nbrRowsMap[ prefID ];
+}
+
+int& Data::SetNbrColumns( QString prefID )
+{
+    return m_nbrColumnsMap[ prefID ];
+}
+
+int& Data::SetNbrSubjects( QString prefID )
+{
+    return m_nbrSubjectsMap[ prefID ];
+}
+
+
+int& Data::SetCovariateFileSubjectColumnID()
+{
+    return m_covariateFileSubjectColumnID;
 }
 
 
 /***************************************/
-/************** Functions **************/
+/*********** Other Functions ***********/
 /***************************************/
 int Data::InitData()
 {
@@ -186,62 +148,62 @@ int Data::InitData()
     m_radialDiffusivityPrefix = "rd";
     m_meanDiffusivityPrefix = "md";
     m_fractionalAnisotropyPrefix = "fa";
-    m_covariatesPrefix = "COMP";
+    m_covariatePrefix = "COMP";
 
-    m_PrefixList << m_axialDiffusivityPrefix << m_radialDiffusivityPrefix << m_meanDiffusivityPrefix
-                 << m_fractionalAnisotropyPrefix << m_covariatesPrefix;
+    m_prefixList << m_axialDiffusivityPrefix << m_radialDiffusivityPrefix << m_meanDiffusivityPrefix
+                 << m_fractionalAnisotropyPrefix << m_covariatePrefix;
 
-    foreach( QString pref, m_PrefixList )
+    foreach( QString prefID, m_prefixList )
     {
-        m_filenameMap[ pref ];
-        m_nbrRowsMap[ pref ];
-        m_nbrColumnsMap[ pref ];
-        m_nbrSubjectsMap[ pref ];
-        ( m_SubjectsMap[ pref ] );
+        m_filenameMap[ prefID ];
+        m_nbrRowsMap[ prefID ];
+        m_nbrColumnsMap[ prefID ];
+        m_nbrSubjectsMap[ prefID ];
+        ( m_subjectMap[ prefID ] );
     }
 
-    m_subjectColumnID = 0;
+    m_covariateFileSubjectColumnID = 0;
 
-    return m_PrefixList.removeDuplicates();
+    return m_prefixList.removeDuplicates();
 }
 
-void Data::AddSubject( QString prefID, QString subjectID )
+void Data::SetSubjects(QString prefID, QStringList subjects )
 {
-    m_SubjectsMap[ prefID ].append( tr( qPrintable( subjectID ) ) );
+    m_subjectMap[ prefID ].append( subjects );
 }
 
 void Data::AddCovariate( int colunmID, QString covariate )
 {
-    m_covariatesList.insert( colunmID, covariate );
+    m_covariateMap.insert( colunmID, covariate );
 }
 
-void Data::AddIntercept()
+void Data::AddInterceptToCovariates()
 {
-    m_covariatesList.insert( -1, tr( "Intercept" ) );
     /** The key is -1 so the Intercept is not taken into account as an input covariate **/
+    m_covariateMap.insert( -1, "Intercept" );
 }
 
 void Data::ClearFileInformation( QString prefID )
 {
     m_filenameMap[ prefID ].clear();
-    m_dataInFileMap[ prefID ].clear();
+    m_fileDataMap[ prefID ].clear();
     m_nbrRowsMap[ prefID ] = 0;
     m_nbrColumnsMap[ prefID ] = 0;
     m_nbrSubjectsMap[ prefID ] = 0;
-    ( m_SubjectsMap[ prefID ] ).clear();
+    ( m_subjectMap[ prefID ] ).clear();
 
-    if( prefID == m_covariatesPrefix )
+    if( prefID == m_covariatePrefix )
     {
-        m_covariatesList.clear();
+        m_covariateMap.clear();
     }
 }
 
 void Data::ClearSubjects( QString prefID )
 {
-    ( m_SubjectsMap[ prefID ] ).clear();
+    ( m_subjectMap[ prefID ] ).clear();
 }
 
-void Data::ClearCovariatesList()
+void Data::ClearCovariates()
 {
-    m_covariatesList.clear();
+    m_covariateMap.clear();
 }

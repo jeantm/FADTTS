@@ -100,7 +100,7 @@
          <string>Modification</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="4" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="subjectColumn_label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -113,39 +113,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QSpinBox" name="para_subjectColumn_spinBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimum">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QPushButton" name="deleteRows_pushButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>122</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Delete Rows</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
+         <item row="4" column="0" colspan="2">
           <widget class="QPushButton" name="deleteColumns_pushButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -164,8 +132,40 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="2">
-          <spacer name="horizontalSpacer_2">
+         <item row="6" column="4">
+          <widget class="QPushButton" name="close_pushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Close</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QPushButton" name="deleteRows_pushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>122</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Delete Rows</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <spacer name="horizontalSpacer_4">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -180,7 +180,7 @@
            </property>
           </spacer>
          </item>
-         <item row="4" column="3">
+         <item row="6" column="3">
           <widget class="QPushButton" name="saveFile_pushButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -193,21 +193,21 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="4">
-          <widget class="QPushButton" name="close_pushButton">
+         <item row="6" column="1">
+          <widget class="QSpinBox" name="para_subjectColumn_spinBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="text">
-            <string>Close</string>
+           <property name="minimum">
+            <number>1</number>
            </property>
           </widget>
          </item>
-         <item row="2" column="2" colspan="3">
-          <spacer name="horizontalSpacer_3">
+         <item row="3" column="3" colspan="2">
+          <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -219,8 +219,8 @@
            </property>
           </spacer>
          </item>
-         <item row="3" column="2" colspan="3">
-          <spacer name="horizontalSpacer_4">
+         <item row="4" column="3" colspan="2">
+          <spacer name="horizontalSpacer_3">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -250,6 +250,10 @@
  <tabstops>
   <tabstop>data_tableWidget</tabstop>
   <tabstop>deleteRows_pushButton</tabstop>
+  <tabstop>deleteColumns_pushButton</tabstop>
+  <tabstop>para_subjectColumn_spinBox</tabstop>
+  <tabstop>saveFile_pushButton</tabstop>
+  <tabstop>close_pushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

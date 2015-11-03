@@ -7,45 +7,42 @@ TestInfoDialog::TestInfoDialog()
 /**********************************************************************/
 /*************************** Test Functions ***************************/
 /**********************************************************************/
-bool TestInfoDialog::Test_DisplayInfo( QString inputADFile, QString inputCOMPFile )
+bool TestInfoDialog::Test_DisplayFileInformation( QString inputADFile, QString inputCOMPFile )
 {
-    int argc = 0;
-    char **argv = 0;
-    QApplication *app = new QApplication( argc, argv );
-    Processing process;
+    Processing processing;
 
-    QList<QStringList> inputADData = process.GetDataFromFile( inputADFile );
-    QList<QStringList> inputCOMPData = process.GetDataFromFile( inputCOMPFile );
+    QList<QStringList> dataInputADFile = processing.GetDataFromFile( inputADFile );
+    QList<QStringList> dataInputCOMPFile = processing.GetDataFromFile( inputCOMPFile );
 
     Data data;
     data.InitData();
     data.SetFilename( "ad" ) = inputADFile;
-    data.SetNbrRows( "ad" ) = inputADData.size()-1;
-    data.SetNbrColumns( "ad" ) = inputADData.at( 0 ).size();
-    data.SetNbrSubjects( "ad" ) = inputADData.at( 0 ).size()-1;
+    data.SetNbrRows( "ad" ) = dataInputADFile.size()-1;
+    data.SetNbrColumns( "ad" ) = dataInputADFile.at( 0 ).size();
+    data.SetNbrSubjects( "ad" ) = dataInputADFile.at( 0 ).size()-1;
 
     data.SetFilename( "COMP" ) = inputCOMPFile;
-    data.SetNbrRows( "COMP" ) = inputCOMPData.size()-1;
-    data.SetNbrColumns( "COMP" ) = inputCOMPData.at( 0 ).size()-1;
-    data.SetNbrSubjects( "COMP" ) = inputCOMPData.size()-1;
-    for( int c = 0; c < inputCOMPData.at( 0 ).size(); c++ )
+    data.SetNbrRows( "COMP" ) = dataInputCOMPFile.size()-1;
+    data.SetNbrColumns( "COMP" ) = dataInputCOMPFile.at( 0 ).size()-1;
+    data.SetNbrSubjects( "COMP" ) = dataInputCOMPFile.size()-1;
+    for( int c = 0; c < dataInputCOMPFile.at( 0 ).size(); c++ )
     {
-        if( c != data.GetSubjectColumnID() )
+        if( c != data.GetCovariateFileSubjectColumnID() )
         {
-            data.AddCovariate( c, inputCOMPData.at( 0 ).at( c ) );
+            data.AddCovariate( c, dataInputCOMPFile.at( 0 ).at( c ) );
         }
     }
     data.AddCovariate( -1, "Intercept" );
 
     QSharedPointer<InfoDialog> infoDialog = QSharedPointer<InfoDialog>( new InfoDialog );
     infoDialog->SetData( &data );
-    infoDialog->DisplayInfo();
+    infoDialog->DisplayFileInformation();
 
     QString expectedADFileLabel;
     expectedADFileLabel.append( "<center><b>AD File</b></center><br>" );
     expectedADFileLabel.append( "<b>Filename</b> " + QFileInfo( QFile( inputADFile ) ).fileName() + "<br>"  );
-    expectedADFileLabel.append( "<b>Number of test subjects</b>  " + QString::number( inputADData.at( 0 ).size()-1 ) + "<br>" );
-    expectedADFileLabel.append( "<b>Data matrix</b>  " + QString::number( inputADData.size()-1 ) + "x" + QString::number( inputADData.at( 0 ).size() ) + "<br>" );
+    expectedADFileLabel.append( "<b>Number of test subjects</b>  " + QString::number( dataInputADFile.at( 0 ).size()-1 ) + "<br>" );
+    expectedADFileLabel.append( "<b>Data matrix</b>  " + QString::number( dataInputADFile.size()-1 ) + "x" + QString::number( dataInputADFile.at( 0 ).size() ) + "<br>" );
 
     bool testADFileLabel = ( expectedADFileLabel == infoDialog->m_adFileInfo_label->text() );
 
@@ -60,14 +57,14 @@ bool TestInfoDialog::Test_DisplayInfo( QString inputADFile, QString inputCOMPFil
     QString expectedCOMPFileLabel;
     expectedCOMPFileLabel.append( "<center><b>COMP File</b></center><br>" );
     expectedCOMPFileLabel.append( "<b>Filename</b> " + QFileInfo( QFile( inputCOMPFile ) ).fileName() + "<br>"  );
-    expectedCOMPFileLabel.append( "<b>Number of test subjects</b>  " + QString::number( inputCOMPData.size()-1 ) + "<br>" );
-    expectedCOMPFileLabel.append( "<b>Data matrix</b>  " + QString::number( inputCOMPData.size()-1 ) + "x" + QString::number( inputCOMPData.at( 0 ).size()-1 ) + "<br>" );
-    expectedCOMPFileLabel.append( "<b>Number of covariates</b>  " + QString::number( inputCOMPData.at( 0 ).size()-1 ) );
-    for( int c = 0; c < inputCOMPData.at( 0 ).size(); c++ )
+    expectedCOMPFileLabel.append( "<b>Number of test subjects</b>  " + QString::number( dataInputCOMPFile.size()-1 ) + "<br>" );
+    expectedCOMPFileLabel.append( "<b>Data matrix</b>  " + QString::number( dataInputCOMPFile.size()-1 ) + "x" + QString::number( dataInputCOMPFile.at( 0 ).size()-1 ) + "<br>" );
+    expectedCOMPFileLabel.append( "<b>Number of covariates</b>  " + QString::number( dataInputCOMPFile.at( 0 ).size()-1 ) );
+    for( int c = 0; c < dataInputCOMPFile.at( 0 ).size(); c++ )
     {
-        if( c != data.GetSubjectColumnID() )
+        if( c != data.GetCovariateFileSubjectColumnID() )
         {
-            expectedCOMPFileLabel.append ("<br>-  " + inputCOMPData.at( 0 ).at( c ) );
+            expectedCOMPFileLabel.append ("<br>-  " + dataInputCOMPFile.at( 0 ).at( c ) );
         }
     }
 
@@ -76,7 +73,7 @@ bool TestInfoDialog::Test_DisplayInfo( QString inputADFile, QString inputCOMPFil
 
     if( !testADFileLabel || !testNoFileLabel || !testCOMPFileLabel )
     {
-        std::cerr << std::endl << "Test_DisplayInfo() FAILED:" << std::endl;
+        std::cerr << std::endl << "Test_DisplayFileInformation() FAILED:" << std::endl;
         if( !testADFileLabel )
         {
             std::cerr << "\t   Wrong info displayed for AD file" << std::endl;
@@ -95,10 +92,9 @@ bool TestInfoDialog::Test_DisplayInfo( QString inputADFile, QString inputCOMPFil
     }
     else
     {
-        std::cout << std::endl << "Test_DisplayInfo() PASSED" << std::endl;
+        std::cout << std::endl << "Test_DisplayFileInformation() PASSED" << std::endl;
     }
 
-    app->exit();
     return ( testADFileLabel & testNoFileLabel & testCOMPFileLabel );
 }
 

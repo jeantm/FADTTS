@@ -19,27 +19,31 @@ public:
     bool Test_RunScript();
 
 
-    bool Test_isCOMP(); // Done
+    bool Test_IsMatrixDimensionOK( QString inputADFile ); // Done
 
-    bool Test_GetSelectedSubjectList( QString selectedSubjectListFileTest ); // Done
+    bool Test_IsCovariateFile(); // Done
 
-    bool Test_GenerateMatlabInputFiles( QString outputDir, QString inputADFile, QString inputCOMPFileTest1, QString inputCOMPFileTest2,
-                                        QString matlabInputADFile, QString matlabInputCOMPFile, QString selectedSubjectListFileTest ); // Done
+    bool Test_GetSelectedSubjects( QString selectedSubjectsFileTest ); // Done
+
+    bool Test_GenerateMatlabInputFiles( QString outputDir, QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2,
+                                        QString matlabInputADFile, QString matlabInputCovariateFile, QString selectedSubjectsFileTest );  // Done
 
 
 
-    bool Test_GetSubjectListFromInputFile( QString inputADFile, QString inputCOMPFileTest1, QString inputCOMPFileTest2 );  // Done
+    bool Test_GetSubjectsFromInputFile( QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2 );  // Done
 
-    bool Test_GetRefSubjectListFromSelectedInputFiles( QString inputADFile, QString inputCOMPFileTest1, QString inputCOMPFileTest2 ); // Done
+    bool Test_GetRefSubjectsFromSelectedInputFiles( QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2 ); // Done
 
-    bool Test_GetRefSubjectList( QString inputADFile, QString inputCOMPFile, QString subjectListFilePath ); // Done
+    bool Test_GetRefSubjects( QString inputADFile, QString inputCovariateFile, QString subjectsFilePath ); // Done
 
 
     bool Test_GetAllSubjectsFromSelectedInputFiles(); // Done
 
-    bool Test_SortSubjectInInputFile(); // Done
+    bool Test_SortSubjects(); // Done
 
     bool Test_AssignSortedSubject(); // Done
+
+    bool Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString inputCovariateFileTest2 ); // Done
 
 
 private:
@@ -53,13 +57,15 @@ private:
     bool CompareQStringList( QStringList qStringList1, QStringList qStringList2 );
 
 
-    void DisplayErrorSubjectList( QStringList subjectListExpected, QStringList subjectListDisplayed );
+    void DisplayErrorSubjects( QStringList subjectsExpected, QStringList subjectsDisplayed );
 
     void DisplayErrorAllSubjects( QMap<QString, QStringList> expectedSubjects, QMap<QString, QStringList> selectedSubjects );
 
     void DisplayErrorSortedSubjects( QMap< QString, QMap<QString, bool> > expectedSortedSubjects, QMap< QString, QMap<QString, bool> > sortedSubjects );
 
     void DisplayErrorUnMatchedSubjects( QMap<QString, QStringList > unMatchedSubjectsExpected, QMap<QString, QStringList > unMatchedSubjectsDisplayed );
+
+    void DisplayErrorCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed );
 };
 
 #endif // TESTPROCESSING_H

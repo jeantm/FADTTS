@@ -13,7 +13,7 @@ public:
     /**********************************************************************/
     /*************************** Test Functions ***************************/
     /**********************************************************************/
-    bool Test_UploadData( QString adInputFile ); // Done
+    bool Test_UploadFileData( QString adInputFile ); // Done
 
     bool Test_Delete( QString adInputFile ); // Done
 

@@ -11,26 +11,17 @@ const QColor FADTTSWindow::m_grey = QColor( 220,220,220,255 );
 const QColor FADTTSWindow::m_yellow = QColor( 255,255,0,127 );
 const QColor FADTTSWindow::m_lightBlack = QColor( 0,0,0,191 );
 
-const int FADTTSWindow::m_IconSize = 12;
+const int FADTTSWindow::m_iconSize = 12;
 
 
 /********************** Public  functions ***********************/
 FADTTSWindow::FADTTSWindow()
 {
-    m_editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
-    m_infoDialog = QSharedPointer<InfoDialog>( new InfoDialog );
+    m_okPixmap = QPixmap( ":/Icons/Resources/Icons/okIconOut.xpm" );
+    m_koPixmap = QPixmap( ":/Icons/Resources/Icons/koIconOut.xpm" );
+    m_warningPixmap = QPixmap( ":/Icons/Resources/Icons/warningIconOut.xpm" );
 
-    m_covariatesListWidget = new QListWidget();
-    m_covariatesListWidget = this->para_parametersTab_covariates_listWidget;
-
-    m_sortedSubjectListWidget = new QListWidget();
-    m_sortedSubjectListWidget = this->subjectsTab_sortedSubjects_listWidget;
-
-    m_okPixmap = QPixmap( ":/okIconOut.xpm" );
-    m_koPixmap = QPixmap( ":/koIconOut.xpm" );
-    m_warningPixmap = QPixmap( ":/warningIconOut.xpm" );
-
-    Init();
+    InitFADTTSWindow();
 }
 
 FADTTSWindow::~FADTTSWindow()
@@ -38,8 +29,7 @@ FADTTSWindow::~FADTTSWindow()
     m_editInputDialog.clear();
     m_infoDialog.clear();
     delete m_sortedSubjectListWidget;
-    delete m_covariatesListWidget;
-    //    delete m_mainUi;
+    delete m_covariateListWidget;
 }
 
 
@@ -92,13 +82,23 @@ void FADTTSWindow::LoadSoftConfigFile()
     }
 }
 
+void FADTTSWindow::DisplayAbout()
+{
+    QString messageBoxTitle = "About " + QString( FADTTS_TITLE );
+    QString aboutFADTTS;
+    aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
+            "<b>Description:</b> " + QString( FADTTS_DESCRIPTION ) + "<br>"
+            "<b>Contributors:</b> " + QString( FADTTS_CONTRIBUTORS );
+    QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( aboutFADTTS ) ), QMessageBox::Ok );
+}
+
 
 void FADTTSWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton closeMBox = QMessageBox::question( this,
-                                                                   tr( "FADTTS" ),
-                                                                   tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
-                                                                   QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
+    QMessageBox::StandardButton closeMBox =
+            QMessageBox::question( this, tr( "FADTTS" ), tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
+                                   QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
+
     switch( closeMBox )
     {
     case QMessageBox::No:
@@ -121,29 +121,23 @@ void FADTTSWindow::closeEvent(QCloseEvent *event)
 
 
 /*********************** Private function **********************/
-void FADTTSWindow::Init()
+void FADTTSWindow::InitFADTTSWindow()
 {
-    InitMenuBar();
-
     int nbrDuplicates = m_data.InitData();
     if( nbrDuplicates != 0 )  /** Check if a prefix has been entered twice **/
     {
-        CriticalPopUp( tr( qPrintable( "Careful, you have " + QString::number( nbrDuplicates ) + " duplicates<br>"
-                                       "in your file prefix list.<br>The application may not work properly." ) ) );
+        QString criticalMessage = "Be careful, you have " + QString::number( nbrDuplicates ) + " duplicates<br>" +
+                "in your file prefix list.<br>The application may not work properly.";
+        CriticalPopUp( criticalMessage );
     }
 
-    m_infoDialog->SetData( &m_data );
-    m_editInputDialog->SetData( &m_data );
-
+    InitMenuBar();
     InitInputTab();
-
     InitSubjectTab();
-
-    InitParametersTab();
-
+    InitParameterTab();
     InitRunTab();
 
-    DisplayCovariatesList( m_data.GetCovariatesList() );
+    DisplayCovariates( m_data.GetCovariates() );
 
     UpdateAvailableFileParamTab();
 }
@@ -154,85 +148,98 @@ void FADTTSWindow::InitMenuBar()
     connect( this->actionSave_Settings, SIGNAL( triggered() ), SLOT( SaveParaConfigFile() ) );
     connect( this->actionLoad_Software, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
     connect( this->actionSave_Software, SIGNAL( triggered() ), SLOT( SaveSoftConfigFile() ) );
-    //    connect( this->actionAbout, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
+    connect( this->actionAbout, SIGNAL( triggered() ), SLOT( DisplayAbout() ) );
 
 }
 
 void FADTTSWindow::InitInputTab()
 {
-    connect( this->inputsTab_inputAddInputFiles_pushButton, SIGNAL( clicked() ), this, SLOT( AddMultipleFiles() ) );
+    m_editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
+    m_editInputDialog->SetData( &m_data );
+
+    m_infoDialog = QSharedPointer<InfoDialog>( new InfoDialog );
+    m_infoDialog->SetData( &m_data );
+
+
+    connect( this->inputTab_addMultipleInputFiles_pushButton, SIGNAL( clicked() ), this, SLOT( AddMultipleInputFiles() ) );
 
     /** Map of PushButtons to add each file separetely and
      *  SignalMapper to link them to the slot AddFile() **/
-    m_inputTabAddFilePushButtonMap.insert( m_data.GetAxialDiffusivityPrefix(), this->inputsTab_inputADfile_pushButton );
-    m_inputTabAddFilePushButtonMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputsTab_inputRDfile_pushButton );
-    m_inputTabAddFilePushButtonMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputsTab_inputMDfile_pushButton );
-    m_inputTabAddFilePushButtonMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputsTab_inputFAfile_pushButton );
-    m_inputTabAddFilePushButtonMap.insert( m_data.GetCovariatePrefix(), this->inputsTab_inputCOMPfile_pushButton );
+    m_inputTabAddInputFilePushButtonMap.insert( m_data.GetAxialDiffusivityPrefix(), this->inputTab_addADFile_pushButton );
+    m_inputTabAddInputFilePushButtonMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputTab_addRDFile_pushButton );
+    m_inputTabAddInputFilePushButtonMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputTab_addMDFile_pushButton );
+    m_inputTabAddInputFilePushButtonMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputTab_addFAFile_pushButton );
+    m_inputTabAddInputFilePushButtonMap.insert( m_data.GetCovariatePrefix(), this->inputTab_addCovariateFile_pushButton );
     QSignalMapper *signalMapperAddFile = new QSignalMapper( this );
-    connect( signalMapperAddFile, SIGNAL( mapped( const QString& ) ), this, SLOT( AddFile( const QString& ) ) );
+    connect( signalMapperAddFile, SIGNAL( mapped( const QString& ) ), this, SLOT( AddInputFile( const QString& ) ) );
     for( int i = 0; i < m_data.GetPrefixList().size(); ++i )
     {
-        connect( m_inputTabAddFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( clicked() ), signalMapperAddFile,SLOT(map() ) );
-        signalMapperAddFile->setMapping( m_inputTabAddFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
+        connect( m_inputTabAddInputFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( clicked() ), signalMapperAddFile,SLOT(map() ) );
+        signalMapperAddFile->setMapping( m_inputTabAddInputFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
     }
 
     /** Map of LineEdits where the file path of each file is set and
      *  SignalMapper to link them to the slot UpdateInputLineEdit() **/
-    m_inputTabFilePathLineEditMap.insert( m_data.GetAxialDiffusivityPrefix(), this->para_inputsTab_inputADfile_lineEdit );
-    m_inputTabFilePathLineEditMap.insert( m_data.GetRadialDiffusivityPrefix(), this->para_inputsTab_inputRDfile_lineEdit );
-    m_inputTabFilePathLineEditMap.insert( m_data.GetMeanDiffusivityPrefix(), this->para_inputsTab_inputMDfile_lineEdit );
-    m_inputTabFilePathLineEditMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->para_inputsTab_inputFAfile_lineEdit );
-    m_inputTabFilePathLineEditMap.insert( m_data.GetCovariatePrefix(), this->para_inputsTab_inputCOMPfile_lineEdit );
-    QSignalMapper *signalMapperUpdateLineEdit = new QSignalMapper(this);
+    m_inputTabInputFileLineEditMap.insert( m_data.GetAxialDiffusivityPrefix(), this->para_inputTab_adFile_lineEdit );
+    m_inputTabInputFileLineEditMap.insert( m_data.GetRadialDiffusivityPrefix(), this->para_inputTab_rdFile_lineEdit );
+    m_inputTabInputFileLineEditMap.insert( m_data.GetMeanDiffusivityPrefix(), this->para_inputTab_mdFile_lineEdit );
+    m_inputTabInputFileLineEditMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->para_inputTab_faFile_lineEdit );
+    m_inputTabInputFileLineEditMap.insert( m_data.GetCovariatePrefix(), this->para_inputTab_covariateFile_lineEdit );
+    QSignalMapper *signalMapperUpdateLineEdit = new QSignalMapper( this );
     connect( signalMapperUpdateLineEdit, SIGNAL( mapped( const QString& ) ), this, SLOT( UpdateInputLineEdit( const QString& ) ) );
     for( int i = 0; i < m_data.GetPrefixList().size(); ++i )
     {
-        connect( m_inputTabFilePathLineEditMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( textChanged( const QString& ) ), signalMapperUpdateLineEdit,SLOT(map() ) );
-        signalMapperUpdateLineEdit->setMapping( m_inputTabFilePathLineEditMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
+        connect( m_inputTabInputFileLineEditMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( textChanged( const QString& ) ), signalMapperUpdateLineEdit,SLOT(map() ) );
+        signalMapperUpdateLineEdit->setMapping( m_inputTabInputFileLineEditMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
     }
 
     /** Map of Labels to set the icon information of each file entered in a LineEdit **/
-    m_inputTabIconLabelMap.insert( m_data.GetAxialDiffusivityPrefix(), this->inputsTab_iconInputADFile_label );
-    m_inputTabIconLabelMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputsTab_iconInputRDFile_label );
-    m_inputTabIconLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputsTab_iconInputMDFile_label );
-    m_inputTabIconLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputsTab_iconInputFAFile_label );
-    m_inputTabIconLabelMap.insert( m_data.GetCovariatePrefix(), this->inputsTab_iconInputCOMPFile_label );
+    m_inputTabIconLabelMap.insert( m_data.GetAxialDiffusivityPrefix(), this->inputTab_iconADFile_label );
+    m_inputTabIconLabelMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputTab_iconRDFile_label );
+    m_inputTabIconLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputTab_iconMDFile_label );
+    m_inputTabIconLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputTab_iconFAFile_label );
+    m_inputTabIconLabelMap.insert( m_data.GetCovariatePrefix(), this->inputTab_iconCovariateFile_label );
 
     /** Map of PushButtons to edit the files and
      *  SignalMapper to link them to the slot EditFile() **/
-    m_inputTabEditFilePushButtonMap.insert( m_data.GetAxialDiffusivityPrefix(), this->inputsTab_editInputADfile_pushButton );
-    m_inputTabEditFilePushButtonMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputsTab_editInputRDfile_pushButton );
-    m_inputTabEditFilePushButtonMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputsTab_editInputMDfile_pushButton );
-    m_inputTabEditFilePushButtonMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputsTab_editInputFAfile_pushButton );
-    m_inputTabEditFilePushButtonMap.insert( m_data.GetCovariatePrefix(), this->inputsTab_editInputCOMPfile_pushButton );
+    m_inputTabEditInputFilePushButtonMap.insert( m_data.GetAxialDiffusivityPrefix(), this->inputTab_editADFile_pushButton );
+    m_inputTabEditInputFilePushButtonMap.insert( m_data.GetRadialDiffusivityPrefix(), this->inputTab_editRDFile_pushButton );
+    m_inputTabEditInputFilePushButtonMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputTab_editMDFile_pushButton );
+    m_inputTabEditInputFilePushButtonMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputTab_editFAFile_pushButton );
+    m_inputTabEditInputFilePushButtonMap.insert( m_data.GetCovariatePrefix(), this->inputTab_editCovariateFile_pushButton );
     QSignalMapper *signalMapperEditFile = new QSignalMapper( this );
-    connect( signalMapperEditFile, SIGNAL( mapped( const QString& ) ), this, SLOT( EditFile( const QString& ) ) );
+    connect( signalMapperEditFile, SIGNAL( mapped( const QString& ) ), this, SLOT( EditInputFile( const QString& ) ) );
     for( int i = 0; i < m_data.GetPrefixList().size(); ++i )
     {
-        connect( m_inputTabEditFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( clicked() ), signalMapperEditFile, SLOT(map() ) );
-        signalMapperEditFile->setMapping( m_inputTabEditFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
+        connect( m_inputTabEditInputFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( clicked() ), signalMapperEditFile, SLOT(map() ) );
+        signalMapperEditFile->setMapping( m_inputTabEditInputFilePushButtonMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
     }
 
-    connect( this->inputsTab_inputInfo_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayInfoInputFiles() ) );
+    connect( this->inputTab_fileInformation_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayInputFileInformation() ) );
 
     /** Signal/Slot connection to receive updates from m_editInputDialog **/
-    connect( m_editInputDialog.data(), SIGNAL( FilePathChanged( const QString&, const QString& ) ), this, SLOT( UpdateLineEditAfterFileEdition( const QString& , const QString& ) ) );
-    connect( m_editInputDialog.data(), SIGNAL( CovariatesChanged( const QMap<int, QString>& ) ), this, SLOT( UpdateCovariatesAfterFileEdition( const QMap<int, QString>& ) ) );
-    connect( m_editInputDialog.data(), SIGNAL( SubjectColumnIDChanged( const int& ) ), this, SLOT( UpdateSubjectColumnIDAfterFileEdition( int ) ) );
+    connect( m_editInputDialog.data(), SIGNAL( FilePathChanged( const QString&, const QString& ) ), this, SLOT( UpdateInputLineEditAfterFileEdition( const QString& , const QString& ) ) );
+    connect( m_editInputDialog.data(), SIGNAL( CovariateMapChanged( const QMap<int, QString>& ) ), this, SLOT( UpdateCovariateMapAfterFileEdition( const QMap<int, QString>& ) ) );
+    connect( m_editInputDialog.data(), SIGNAL( CovariateFileSubjectColumnIDChanged( const int& ) ), this, SLOT( UpdateCovariateFileSubjectColumnIDAfterFileEdition( int ) ) );
 }
 
 void FADTTSWindow::InitSubjectTab()
 {
+    m_sortedSubjectListWidget = new QListWidget();
+    m_sortedSubjectListWidget = this->subjectTab_sortedSubjects_listWidget;
+
+    m_subjectFileLineEdit = new QLineEdit();
+    m_subjectFileLineEdit = this->para_subjectTab_subjectFile_lineEdit;
+
     /** Map of CheckBoxes to select the files we want to work on and
      *  SignalMapper to link them to the slot SortSubjects() **/
-    m_paramTabFileCheckBoxMap.insert( m_data.GetAxialDiffusivityPrefix(), this->para_subjectsTab_adInput_checkBox );
-    m_paramTabFileCheckBoxMap.insert( m_data.GetRadialDiffusivityPrefix(), this->para_subjectsTab_rdInput_checkBox );
-    m_paramTabFileCheckBoxMap.insert( m_data.GetMeanDiffusivityPrefix(), this->para_subjectsTab_mdInput_checkBox );
-    m_paramTabFileCheckBoxMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->para_subjectsTab_faInput_checkBox );
-    m_paramTabFileCheckBoxMap.insert( m_data.GetCovariatePrefix(), this->para_subjectsTab_compInput_checkBox );
-    QSignalMapper *signalMapperSelectFile = new QSignalMapper(this);
-    connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SortSubjects() ) );
+    m_paramTabFileCheckBoxMap.insert( m_data.GetAxialDiffusivityPrefix(), this->para_subjectTab_adFile_checkBox );
+    m_paramTabFileCheckBoxMap.insert( m_data.GetRadialDiffusivityPrefix(), this->para_subjectTab_rdFile_checkBox );
+    m_paramTabFileCheckBoxMap.insert( m_data.GetMeanDiffusivityPrefix(), this->para_subjectTab_mdFile_checkBox );
+    m_paramTabFileCheckBoxMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->para_subjectTab_faFile_checkBox );
+    m_paramTabFileCheckBoxMap.insert( m_data.GetCovariatePrefix(), this->para_subjectTab_covariateFile_checkBox );
+    QSignalMapper *signalMapperSelectFile = new QSignalMapper( this );
+    connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SortAndDisplaySubjects() ) );
     connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SyncUiToModelStructure() ) );
     for ( int i = 0; i < m_data.GetPrefixList().size(); ++i )
     {
@@ -241,35 +248,38 @@ void FADTTSWindow::InitSubjectTab()
     }
 
     /** Map of Labels displaying the matrix data size of the files that have been chosen **/
-    m_paramTabFileSizeLabelMap.insert( m_data.GetAxialDiffusivityPrefix(), this->subjectsTab_adInputSize_label );
-    m_paramTabFileSizeLabelMap.insert( m_data.GetRadialDiffusivityPrefix(),this->subjectsTab_rdInputSize_label );
-    m_paramTabFileSizeLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->subjectsTab_mdInputSize_label );
-    m_paramTabFileSizeLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->subjectsTab_faInputSize_label );
-    m_paramTabFileSizeLabelMap.insert( m_data.GetCovariatePrefix(), this->subjectsTab_compInputSize_label );
+    m_paramTabFileDataSizeLabelMap.insert( m_data.GetAxialDiffusivityPrefix(), this->subjectTab_adFileInfo_label );
+    m_paramTabFileDataSizeLabelMap.insert( m_data.GetRadialDiffusivityPrefix(),this->subjectTab_rdFileInfo_label );
+    m_paramTabFileDataSizeLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->subjectTab_mdFileInfo_label );
+    m_paramTabFileDataSizeLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->subjectTab_faFileInfo_label );
+    m_paramTabFileDataSizeLabelMap.insert( m_data.GetCovariatePrefix(), this->subjectTab_covariateFileInfo_label );
 
 
-    connect( this->subjectsTab_loadInputSubjectList_PushButton, SIGNAL( clicked() ), this, SLOT( LoadInputSubjectFile() ) );
-    connect( this->subjectsTab_reset_pushButton, SIGNAL( clicked() ), this, SLOT( ResetInputSubjectFiles() ) );
-    connect( this->para_subjectsTab_inputSubjectList_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateInputSubjectListLineEdit( const QString&  ) ) );
-    connect( this->subjectsTab_saveCheckedSubjectList_pushButton, SIGNAL( clicked() ), this, SLOT( SaveCheckedSubjectList() ) );
+    connect( this->subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( LoadSubjectFile() ) );
+    connect( this->subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( ResetSubjectFile() ) );
+    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateSubjectFileLineEdit( const QString&  ) ) );
+    connect( this->subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( SaveCheckedSubjects() ) );
 
-    connect( this->subjectsTab_checkAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllSubjectsVisible() ) );
-    connect( this->subjectsTab_unCheckAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllSubjectsVisible() ) );
-    connect( this->subjectsTab_sortedSubjects_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectSubject( QListWidgetItem * ) ) );
-    connect( this->subjectsTab_search_lineEdit, SIGNAL( textEdited( const QString& ) ), this, SLOT( Search() ) );
-    connect( this->subjectsTab_caseSensitive_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SetCaseSensitivity( bool ) ) );
+    connect( this->subjectTab_checkAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllSubjectsVisible() ) );
+    connect( this->subjectTab_unCheckAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllSubjectsVisible() ) );
+    connect( this->subjectTab_sortedSubjects_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectSubject( QListWidgetItem * ) ) );
+    connect( this->subjectTab_search_lineEdit, SIGNAL( textEdited( const QString& ) ), this, SLOT( SearchSubjects() ) );
+    connect( this->subjectTab_caseSensitive_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SetCaseSensitivity( bool ) ) );
 }
 
-void FADTTSWindow::InitParametersTab()
+void FADTTSWindow::InitParameterTab()
 {
-    connect( this->para_parametersTab_covariates_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectCovariates( QListWidgetItem * ) ) );
-    connect( this->parametersTab_covariatesCheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllCovariates() ) );
-    connect( this->parametersTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllCovariates() ) );
+    m_covariateListWidget = new QListWidget();
+    m_covariateListWidget = this->para_parameterTab_covariates_listWidget;
 
-    connect( this->para_parametersTab_omnibus_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
-    connect( this->para_parametersTab_postHoc_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
-    connect( this->para_parametersTab_nbrPermutations_spinBox, SIGNAL( valueChanged( int ) ), this, SLOT( SyncUiToModelStructure() ) );
-    this->para_parametersTab_nbrPermutations_spinBox->setMaximum( 2000 );
+    connect( this->para_parameterTab_covariates_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectCovariate( QListWidgetItem * ) ) );
+    connect( this->parameterTab_covariatesCheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllCovariates() ) );
+    connect( this->parameterTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllCovariates() ) );
+
+    connect( this->para_parameterTab_omnibus_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
+    connect( this->para_parameterTab_postHoc_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
+    connect( this->para_parameterTab_nbrPermutations_spinBox, SIGNAL( valueChanged( int ) ), this, SLOT( SyncUiToModelStructure() ) );
+    this->para_parameterTab_nbrPermutations_spinBox->setMaximum( 2000 );
 }
 
 void FADTTSWindow::InitRunTab()
@@ -283,10 +293,10 @@ void FADTTSWindow::InitRunTab()
 }
 
 
-void FADTTSWindow::UpdateCurrentDirEditInputDialog(const QString newfilePath, QString& currentDir )
+void FADTTSWindow::UpdateEditInputDialogCurrentDir( const QString newfilePath )
 {
 
-    QDir dir = UpdateCurrentDir( newfilePath, currentDir );
+    QDir dir = UpdateCurrentDir( newfilePath, m_currentInputFileDir );
     if( dir.exists() )
     {
         m_editInputDialog->SetCurrentInputDir( dir.absolutePath() );
@@ -304,20 +314,36 @@ QDir FADTTSWindow::UpdateCurrentDir( const QString newfilePath, QString& current
     return dir;
 }
 
-
-void FADTTSWindow::WarningPopUp( const QString warningText )
+void FADTTSWindow::SetDir( QDir& dir, QString filePath, QString currentDir )
 {
-    QMessageBox::warning( this, tr( "WARNING" ), tr( qPrintable( warningText ) ), QMessageBox::Ok );
+    if( !filePath.isEmpty() )
+    {
+        dir = QFileInfo( QFile( filePath ) ).absolutePath();
+        if( !dir.exists() )
+        {
+            dir = currentDir;
+        }
+    }
+    else
+    {
+        dir = currentDir;
+    }
 }
 
-void FADTTSWindow::CriticalPopUp( const QString criticalText )
+
+void FADTTSWindow::WarningPopUp( const QString warningMessage )
 {
-    QMessageBox::critical( this, tr( "CRITICAL ERROR" ), tr( qPrintable( criticalText ) ), QMessageBox::Ok );
+    QMessageBox::warning( this, tr( "WARNING" ), tr( qPrintable( warningMessage ) ), QMessageBox::Ok );
+}
+
+void FADTTSWindow::CriticalPopUp( const QString criticalMessage )
+{
+    QMessageBox::critical( this, tr( "CRITICAL ERROR" ), tr( qPrintable( criticalMessage ) ), QMessageBox::Ok );
 }
 
 void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap icon )
 {
-    label->setPixmap( icon.scaled( QSize( m_IconSize, m_IconSize ), Qt::IgnoreAspectRatio ) );
+    label->setPixmap( icon.scaled( QSize( m_iconSize, m_iconSize ), Qt::IgnoreAspectRatio ) );
 }
 
 
@@ -326,31 +352,21 @@ void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap icon )
 /***************************************************************/
 
 /***********************  Private slots  ***********************/
-void FADTTSWindow::AddMultipleFiles()
+void FADTTSWindow::AddMultipleInputFiles()
 {
-    QString dirPath = m_currentFileInputDir;
+    QString dir = m_currentInputFileDir;
     QStringList fileList;
-    fileList = QFileDialog::getOpenFileNames( this, tr( "Choose Input Files" ), dirPath, tr( ".csv( *.csv ) ;; .*( * )" ) );
-    AddFiles( fileList );
+    fileList = QFileDialog::getOpenFileNames( this, tr( "Choose Input Files" ), dir, tr( ".csv( *.csv ) ;; .*( * )" ) );
+
+    UpdateLineEditsAfterAddingMultipleFiles( fileList );
 }
 
-void FADTTSWindow::AddFile( const QString& prefID )
+void FADTTSWindow::AddInputFile( const QString& prefID )
 {
-    QLineEdit *lineEdit = m_inputTabFilePathLineEditMap[ prefID ];
+    QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ prefID ];
     QString filePath = lineEdit->text();
     QDir dir;
-    if( !filePath.isEmpty() )
-    {
-        dir = QFileInfo( QFile( filePath ) ).absolutePath();
-        if( !dir.exists() )
-        {
-            dir = m_currentFileInputDir;
-        }
-    }
-    else
-    {
-        dir = m_currentFileInputDir;
-    }
+    SetDir( dir, filePath, m_currentInputFileDir );
 
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
     lineEdit->setText( file );
@@ -358,87 +374,118 @@ void FADTTSWindow::AddFile( const QString& prefID )
 
 void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
 {
-    QLineEdit *lineEdit = m_inputTabFilePathLineEditMap[ prefID ];
+    QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ prefID ];
     QString filePath = lineEdit->text();
-    if( !filePath.isEmpty() )
+    QFile file( filePath );
+    if( filePath.isEmpty() )
     {
-        UpdateCurrentDirEditInputDialog( filePath, m_currentFileInputDir );
+        m_inputTabIconLabelMap[ prefID ]->clear();
+        m_data.ClearFileInformation( prefID );
     }
-
-    UpdateFileInformation( prefID );
-
-    if( prefID == m_data.GetCovariatePrefix() )
+    else
     {
-        m_editInputDialog->ResetSubjectColumnID(); /** By default Subjects are on the 1st column. **/
-        SetInfoSubjectColumnID();
-    }
+        UpdateEditInputDialogCurrentDir( filePath );
 
-    SortSubjects();
-
-    SyncUiToModelStructure();
-}
-
-void FADTTSWindow::EditFile( const QString& prefID )
-{
-    if( m_data.GetFilename( prefID ).isEmpty() )
-    {
-        QString warningMessage = tr( "<center><b>File edition unable</b></center>" );
-        if( m_inputTabFilePathLineEditMap[ prefID ]->text().isEmpty() )
+        if( !file.open( QIODevice::ReadOnly ) )
         {
-            warningMessage.append( tr( "No file specified" ) );
+            DisplayInputLineEditIcon( prefID, m_koPixmap );
+            m_data.ClearFileInformation( prefID );
         }
         else
         {
-            warningMessage.append( tr( qPrintable( "Could not open the file:<br><i>" + m_inputTabFilePathLineEditMap[ prefID ]->text() + "</i>" ) ) );
+            file.close();
+            QList<QStringList> fileData = m_processing.GetDataFromFile( filePath );
+            if( m_processing.IsMatrixDimensionOK( fileData ) )
+            {
+                DisplayInputLineEditIcon( prefID, m_okPixmap );
+                m_data.SetFilename( prefID ) = filePath;
+                m_data.SetFileData( prefID ) = fileData;
+            }
+            else
+            {
+                DisplayInputLineEditIcon( prefID, m_koPixmap );
+
+                QString criticalMessage = prefID.toUpper() + " data file corrupted:<br><i>" + m_inputTabInputFileLineEditMap[ prefID ]->text() + "</i><br>"
+                        "For each row, the number of columns is not constant.<br>"
+                        "We advise that you to check your data file.";
+                CriticalPopUp( criticalMessage );
+
+                m_data.ClearFileInformation( prefID );
+            }
+        }
+    }
+
+    UpdateInputFileInformation( prefID );
+
+    if( prefID == m_data.GetCovariatePrefix() )
+    {
+        m_editInputDialog->ResetCovariateFileSubjectColumnID(); /** By default Subjects are on the 1st column. **/
+        SetInfoCovariateFileSubjectColumnID();
+    }
+
+    SortAndDisplaySubjects();
+    SyncUiToModelStructure();
+}
+
+void FADTTSWindow::EditInputFile( const QString& prefID )
+{
+    if( m_data.GetFilename( prefID ).isEmpty() )
+    {
+        QString warningMessage = "<center><b>File edition unable</b></center>";
+        if( m_inputTabInputFileLineEditMap[ prefID ]->text().isEmpty() )
+        {
+            warningMessage.append( "No file specified" );
+        }
+        else
+        {
+            warningMessage.append( "Could not open the file:<br><i>" + m_inputTabInputFileLineEditMap[ prefID ]->text() + "</i>" );
         }
         WarningPopUp( warningMessage );
     }
     else
     {
-        LaunchEditInputWindow( prefID );
+        LaunchEditInputDialog( prefID );
     }
 }
 
 
-void FADTTSWindow::DisplayInfoInputFiles()
+void FADTTSWindow::DisplayInputFileInformation()
 {
     m_infoDialog->setModal( true );
     m_infoDialog->setWindowTitle( tr( "Files Information" ) );
-    m_infoDialog->DisplayInfo();
+    m_infoDialog->DisplayFileInformation();
     m_infoDialog->exec();
 }
 
 
-void FADTTSWindow::UpdateLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID )
+void FADTTSWindow::UpdateInputLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID )
 {
-    m_inputTabFilePathLineEditMap[ prefID ]->setText( newFilePathAfterFileEdition );
+    m_inputTabInputFileLineEditMap[ prefID ]->setText( newFilePathAfterFileEdition );
 }
 
-void FADTTSWindow::UpdateCovariatesAfterFileEdition( const QMap<int, QString>& newCovariatesAfterFileEdition )
+void FADTTSWindow::UpdateCovariateMapAfterFileEdition( const QMap<int, QString>& newCovariateMapAfterFileEdition )
 {
-    m_data.ClearCovariatesList();
-    m_data.SetCovariatesList() = newCovariatesAfterFileEdition;
-    DisplayCovariatesList( m_data.GetCovariatesList() );
+    m_data.ClearCovariates();
+    m_data.SetCovariates() = newCovariateMapAfterFileEdition;
+    DisplayCovariates( m_data.GetCovariates() );
 
     SyncUiToModelStructure();
 }
 
-void FADTTSWindow::UpdateSubjectColumnIDAfterFileEdition( const int&  newSubjectColumnIDAfterFileEdition )
+void FADTTSWindow::UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int&  newCovariateFileSubjectColumnIDAfterFileEdition )
 {
     /** Subjects are not on the 1st column anymore. **/
-    m_data.SetSubjectColumnID( newSubjectColumnIDAfterFileEdition );
+    m_data.SetCovariateFileSubjectColumnID() = newCovariateFileSubjectColumnIDAfterFileEdition;
+    UpdateInputFileInformation( m_data.GetCovariatePrefix() );
+    SetInfoCovariateFileSubjectColumnID();
 
-    UpdateFileInformation( m_data.GetCovariatePrefix() );
-    SetInfoSubjectColumnID();
-
-    SortSubjects();
-
+    SortAndDisplaySubjects();
     SyncUiToModelStructure();
 }
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::AddFiles( const QStringList fileList )
+void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fileList )
 {
     /** This function only works with filename that start with ad_, rd_, md_, fa_ and COMP_.
      *  If a prefix is detected more than once, the reated files will be ignored. **/
@@ -467,157 +514,78 @@ void FADTTSWindow::AddFiles( const QStringList fileList )
             file.clear();
         }
 
-        if( m_inputTabFilePathLineEditMap.contains( prefix ) )
-        {
-            m_inputTabFilePathLineEditMap[ prefix ]->setText( file );
-        }
+        m_inputTabInputFileLineEditMap[ prefix ]->setText( file );
         ++iter;
     }
 }
 
 
-void  FADTTSWindow::LaunchEditInputWindow( QString prefID )
+void  FADTTSWindow::LaunchEditInputDialog( QString prefID )
 {
-    m_editInputDialog->SetPrefix( prefID );
-    m_editInputDialog->SetInputFile( m_inputTabFilePathLineEditMap[ prefID ]->text() );
+    m_editInputDialog->SetLineEditPrefix( prefID );
+    m_editInputDialog->SetInputFile( m_inputTabInputFileLineEditMap[ prefID ]->text() );
     m_editInputDialog->setModal( true );
     m_editInputDialog->setWindowTitle( tr( qPrintable( "Edit " + prefID.toUpper() + " File" ) ) );
-    m_editInputDialog->DisplayData();
+    m_editInputDialog->DisplayFileData();
     m_editInputDialog->exec();
 }
 
 
-void FADTTSWindow::UpdateFileInformation( const QString prefID )
+void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
 {
-    QString filePath = m_inputTabFilePathLineEditMap[ prefID ]->text();
-    QFile file( filePath );
-    if( file.fileName().isNull() )
+    QString filePath = m_data.GetFilename( prefID );
+    if( !filePath.isEmpty() )
     {
-        if( !m_inputTabFilePathLineEditMap[ prefID ]->text().isEmpty() )
+        QList<QStringList> fileData = m_data.GetFileData( prefID );
+        int nbrRows = fileData.count();
+        int nbrColumns = fileData.at( 0 ).count();
+
+        m_data.ClearSubjects( prefID );
+        QStringList subjects = m_processing.GetSubjectsFromInputFile( fileData, m_data.GetCovariateFileSubjectColumnID() );
+        m_data.SetSubjects( prefID, subjects );
+
+        if( prefID == m_data.GetCovariatePrefix() )
         {
-            DisplayIcon( prefID, m_koPixmap );
+            m_data.SetNbrRows( prefID ) = nbrRows-1;
+            m_data.SetNbrColumns( prefID ) = nbrColumns-1;
+            m_data.SetNbrSubjects( prefID ) = subjects.count();
+
+            m_data.ClearCovariates();
+            m_data.SetCovariates() = m_processing.GetCovariatesFromFileData( fileData, m_data.GetCovariateFileSubjectColumnID() );
+            /** Intercept representes everything that has not been classified in one of the previous
+             *  covariates. It is important to add it as 1st element of m_covariatesList **/
+            m_data.AddInterceptToCovariates();
         }
         else
         {
-            m_inputTabIconLabelMap[ prefID ]->clear();
-        }
-        m_data.ClearFileInformation( prefID );
-    }
-    else
-    {
-        if( !file.open( QIODevice::ReadOnly ) )
-        {
-            if( !m_inputTabFilePathLineEditMap[ prefID ]->text().isEmpty() )
-            {
-                DisplayIcon( prefID, m_koPixmap );
-            }
-            else
-            {
-                m_inputTabIconLabelMap[ prefID ]->clear();
-            }
-            m_data.ClearFileInformation( prefID );
-        }
-        else
-        {
-            file.close();
-
-            m_data.SetDataInFile( prefID ) = m_processing.GetDataFromFile( filePath );
-            QList<QStringList> data = m_data.GetDataInFile( prefID );
-            int nbRows = data.count();
-            int nbColumns = data.at( 0 ).count();
-
-            if( IsMatrixDimensionOK( data ) )
-            {
-                DisplayIcon( prefID, m_okPixmap );
-                m_data.SetFilename( prefID ) = filePath;
-                m_data.ClearSubjects( prefID );
-
-                if( prefID == m_data.GetCovariatePrefix() )
-                {
-                    m_data.SetNbrRows( prefID ) = nbRows-1;
-                    m_data.SetNbrColumns( prefID ) = nbColumns-1;
-                    m_data.SetNbrSubjects( prefID ) = nbRows-1;
-
-                    m_data.ClearCovariatesList();
-                    for( int c = 0; c < nbColumns; ++c )
-                    {
-                        if( c != m_data.GetSubjectColumnID() )
-                        {
-                            m_data.AddCovariate( c, data.at( 0 ).at( c ) );
-                        }
-                    }
-                    /** Intercept representes everything that has not been classified in one of the previous
-                     *  covariates. It is important to add it as 1st element of m_covariatesList **/
-                    m_data.AddIntercept();
-                    for( int r = 1; r < nbRows; r++ )
-                    {
-                        m_data.AddSubject( prefID, data.at( r ).at( m_data.GetSubjectColumnID() ) );
-                    }
-                }
-                else
-                {
-                    if( m_data.GetPrefixList().contains( prefID ) )
-                    {
-                        m_data.SetNbrRows( prefID ) = nbRows-1;
-                        m_data.SetNbrColumns( prefID ) = nbColumns;
-                        m_data.SetNbrSubjects( prefID ) = nbColumns-1;
-                        for( int c = 1; c < nbColumns; c++ )
-                        {
-                            m_data.AddSubject( prefID, data.at( 0 ).at( c ) );
-                        }
-                    }
-                }
-            }
-            else
-            {
-                DisplayIcon( prefID, m_koPixmap );
-
-                QString criticalText = tr( qPrintable( prefID.toUpper() + " data file corrupted:<br><i>" + m_inputTabFilePathLineEditMap[ prefID ]->text() + "</i><br>"
-                                                       "For each row, the number of columns is not constant.<br>"
-                                                       "We advise you to check your data file." ) );
-                CriticalPopUp( criticalText );
-
-                m_data.ClearFileInformation( prefID );
-                return;
-            }
+            m_data.SetNbrRows( prefID ) = nbrRows-1;
+            m_data.SetNbrColumns( prefID ) = nbrColumns;
+            m_data.SetNbrSubjects( prefID ) = subjects.count();
         }
     }
 
-    DisplayCovariatesList( m_data.GetCovariatesList() );
+    DisplayCovariates( m_data.GetCovariates() );
     UpdateAvailableFileParamTab();
 }
 
-bool FADTTSWindow::IsMatrixDimensionOK( const QList<QStringList> data )
+
+void FADTTSWindow::DisplayInputLineEditIcon( const QString prefID, const QPixmap icon )
 {
-    int dataSize = data.at( 0 ).count();
-    foreach (QStringList strL,  data)
-    {
-        if( dataSize != strL.count() )
-        {
-            return false;
-        }
-    }
-    return true;
+    DisplayIcon( m_inputTabIconLabelMap[ prefID ], icon );
 }
 
 
-void FADTTSWindow::DisplayIcon( const QString prefID, const QPixmap icon )
-{
-    QLabel *label = m_inputTabIconLabelMap[ prefID ];
-    label->setPixmap( icon.scaled( QSize( m_IconSize, m_IconSize ), Qt::IgnoreAspectRatio ) );
-}
 
-void FADTTSWindow::SetInfoSubjectColumnID()
+void FADTTSWindow::SetInfoCovariateFileSubjectColumnID()
 {
-    if( !m_inputTabFilePathLineEditMap[ m_data.GetCovariatePrefix() ]->text().isEmpty() &&
-            !m_data.GetDataInFile( m_data.GetCovariatePrefix() ).isEmpty() )
+    if( !m_data.GetFileData( m_data.GetCovariatePrefix() ).isEmpty() )
     {
-        this->inputsTab_subjectColumnID_label->setText( tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
-                                                                        QString::number( m_data.GetSubjectColumnID() + 1 ) + "<i/><b/><span/>") ) );
+        this->inputTab_subjectColumnID_label->setText( tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
+                                                                       QString::number( m_data.GetCovariateFileSubjectColumnID() + 1 ) + "</i></b></span>") ) );
     }
     else
     {
-        this->inputsTab_subjectColumnID_label->clear();
+        this->inputTab_subjectColumnID_label->clear();
     }
 }
 
@@ -630,38 +598,27 @@ void FADTTSWindow::SetInfoSubjectColumnID()
 
 
 /***********************  Private slots  ************************/
-void FADTTSWindow::LoadInputSubjectFile()
+void FADTTSWindow::LoadSubjectFile()
 {
-    QLineEdit *lineEdit = this->para_subjectsTab_inputSubjectList_lineEdit;
+    QLineEdit *lineEdit = m_subjectFileLineEdit;
     QString filePath = lineEdit->text();
-    QString file;
     QDir dir;
-    if( !filePath.isEmpty() )
-    {
-        dir = QFileInfo( QFile( filePath ) ).absolutePath();
-        if( !dir.exists() )
-        {
-            dir = m_currentSubjectListInputDir;
-        }
-    }
-    else
-    {
-        dir = m_currentSubjectListInputDir;
-    }
-    file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
+    SetDir( dir, filePath, m_currentSubjectFileDir );
+
+    QString file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
     lineEdit->setText( file );
 }
 
-void FADTTSWindow::ResetInputSubjectFiles()
+void FADTTSWindow::ResetSubjectFile()
 {
-    this->para_subjectsTab_inputSubjectList_lineEdit->clear();
+    m_subjectFileLineEdit->clear();
 }
 
-void FADTTSWindow::UpdateInputSubjectListLineEdit( const QString& textLineEdit )
+void FADTTSWindow::UpdateSubjectFileLineEdit( const QString& filePath )
 {
-    QFile subjectFile( textLineEdit );
-    QLabel *label = this->subjectsTab_iconLoadList_label;
-    if( subjectFile.fileName().isNull() )
+    QFile subjectFile( filePath );
+    QLabel *label = this->subjectTab_iconLoadSubjectFile_label;
+    if( filePath.isEmpty() )
     {
         label->clear();
     }
@@ -676,21 +633,17 @@ void FADTTSWindow::UpdateInputSubjectListLineEdit( const QString& textLineEdit )
             subjectFile.close();
             DisplayIcon( label, m_okPixmap );
         }
+
+        UpdateCurrentDir( filePath, m_currentSubjectFileDir );
     }
 
-    if( !textLineEdit.isEmpty() )
-    {
-        UpdateCurrentDir( textLineEdit, m_currentSubjectListInputDir );
-    }
-
-    SortSubjects();
-
+    SortAndDisplaySubjects();
     SyncUiToModelStructure();
 }
 
-void FADTTSWindow::SaveCheckedSubjectList()
+void FADTTSWindow::SaveCheckedSubjects()
 {
-    QString filePath = QFileDialog::getSaveFileName( this, tr( "Save subject list as ..." ), m_currentSubjectListInputDir, tr( ".txt ( *.txt ) ;; .*( * )" ) );
+    QString filePath = QFileDialog::getSaveFileName( this, tr( "Save subject list as ..." ), m_currentSubjectFileDir, tr( ".txt ( *.txt ) ;; .*( * )" ) );
     QFile exportedTXT( filePath );
     if( exportedTXT.open( QIODevice::WriteOnly ) )
     {
@@ -705,12 +658,12 @@ void FADTTSWindow::SaveCheckedSubjectList()
         exportedTXT.flush();
         exportedTXT.close();
 
-        QString previousFilePath = this->para_subjectsTab_inputSubjectList_lineEdit->text();
-        this->para_subjectsTab_inputSubjectList_lineEdit->setText( filePath );
+        QString previousFilePath = m_subjectFileLineEdit->text();
+        m_subjectFileLineEdit->setText( filePath );
         if( previousFilePath == filePath )
         {
             /** If filePath does not change, an update is needed to display the right subject list **/
-            SortSubjects();
+            SortAndDisplaySubjects();
         }
     }
 }
@@ -760,40 +713,41 @@ void FADTTSWindow::SelectSubject( QListWidgetItem *item )
             }
         }
     }
-    DisplayNbrSubjectsSelected();
+
+    DisplayNbrSubjectSelected();
 }
 
 
-void FADTTSWindow::SortSubjects()
+void FADTTSWindow::SortAndDisplaySubjects()
 {
-    QString subjectListFilename = this->para_subjectsTab_inputSubjectList_lineEdit->text();
-    QStringList refSubjectList = m_processing.GetRefSubjectList( subjectListFilename, GetDataInSelectedFiles(), m_data.GetSubjectColumnID() );
-    QMap<QString, QStringList> allSubjectListFromSelectedInputFile = m_processing.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjectsMap() );
+    QString subjectFile = m_subjectFileLineEdit->text();
+    QStringList refSubjectList = m_processing.GetRefSubjects( subjectFile, GetFileDataOfSelectedFiles(), m_data.GetCovariateFileSubjectColumnID() );
+    QMap<QString, QStringList> allSubjects = m_processing.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjects() );
 
-    QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.SortSubjectInInputFile( refSubjectList, allSubjectListFromSelectedInputFile );
+    QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.SortSubjects( refSubjectList, allSubjects );
 
     QStringList matchedSubjects;
     QMap<QString, QStringList > unMatchedSubjects;
     m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
 
-    DisplaySortedSubjectList( refSubjectList, matchedSubjects, unMatchedSubjects );
+    DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
 
-    Search();
+    SearchSubjects();
 }
 
-void FADTTSWindow::Search()
+void FADTTSWindow::SearchSubjects()
 {
     QListWidget *list = m_sortedSubjectListWidget;
-    QLineEdit *lineEdit = this->subjectsTab_search_lineEdit;
-    QString search_str = lineEdit->text();
+    QLineEdit *lineEdit = this->subjectTab_search_lineEdit;
+    QString search = lineEdit->text();
     QPalette palette;
-    if( !search_str.isEmpty() )
+    if( !search.isEmpty() )
     {
         if(  list->count() != 0  )
         {
-            search_str.prepend( "*" );
-            search_str.append( "*" );
-            QRegExp regExp( search_str );
+            search.prepend( "*" );
+            search.append( "*" );
+            QRegExp regExp( search );
             regExp.setPatternSyntax( QRegExp::Wildcard );
             regExp.setCaseSensitivity( caseSensitivity );
             for( int i = 0; i < list->count(); i++ )
@@ -837,7 +791,7 @@ void FADTTSWindow::SetCaseSensitivity( bool checked )
         caseSensitivity = Qt::CaseInsensitive;
     }
 
-    Search();
+    SearchSubjects();
 }
 
 
@@ -845,13 +799,13 @@ void FADTTSWindow::SetCaseSensitivity( bool checked )
 void FADTTSWindow::UpdateAvailableFileParamTab()
 {
     QString text;
-    labelMapType::ConstIterator iterLabel = m_paramTabFileSizeLabelMap.begin();
+    labelMapType::ConstIterator iterLabel = m_paramTabFileDataSizeLabelMap.begin();
     checkBoxMapType::ConstIterator iterCheckBox = m_paramTabFileCheckBoxMap.begin();
-    while( iterLabel != m_paramTabFileSizeLabelMap.constEnd() )
+    while( iterLabel != m_paramTabFileDataSizeLabelMap.constEnd() )
     {
-        int nbRows = m_data.GetNbrRows( iterCheckBox.key() );
-        int nbColumns = m_data.GetNbrColumns( iterCheckBox.key() );
-        if( ( nbRows == 0 ) || ( nbColumns == 0 ) )
+        int nbrRows = m_data.GetNbrRows( iterCheckBox.key() );
+        int nbrColumns = m_data.GetNbrColumns( iterCheckBox.key() );
+        if( ( nbrRows == 0 ) || ( nbrColumns == 0 ) )
         {
             text = tr( "N/A" );
             iterLabel.value()->setEnabled( false );
@@ -860,7 +814,7 @@ void FADTTSWindow::UpdateAvailableFileParamTab()
         }
         else
         {
-            text = tr( qPrintable( QString::number( nbRows ) + "x" + QString::number( nbColumns ) ) );
+            text = tr( qPrintable( QString::number( nbrRows ) + "x" + QString::number( nbrColumns ) ) );
             iterLabel.value()->setEnabled( true );
             iterCheckBox.value()->setChecked( true );
             iterCheckBox.value()->setEnabled( true );
@@ -871,73 +825,74 @@ void FADTTSWindow::UpdateAvailableFileParamTab()
     }
 }
 
-void FADTTSWindow::DisplaySortedSubjectList( const QStringList refSubjectList, const QStringList matchedSubjects, const QMap<QString, QStringList > unMatchedSubjects )
+void FADTTSWindow::DisplaySortedSubjects( const QStringList matchedSubjects, const QMap<QString, QStringList > unMatchedSubjectMap )
 {
     m_sortedSubjectListWidget->clear();
     m_sortedSubjectListWidget->setUpdatesEnabled( false );
     m_sortedSubjectListWidget->setSelectionMode( QAbstractItemView::NoSelection );
 
-    QStringListIterator itermatchedSubjects( matchedSubjects );
-    while( itermatchedSubjects.hasNext() )
+    foreach( QString subject, matchedSubjects )
     {
-        QString text = QString( itermatchedSubjects.next() );
-        QListWidgetItem *listItem = new QListWidgetItem( text, m_sortedSubjectListWidget );
-        listItem->setCheckState( Qt::Checked );
-        listItem->setBackgroundColor( m_green );
-        listItem->setFlags( Qt::ItemIsEnabled );
-        m_sortedSubjectListWidget->addItem( listItem );
+        QListWidgetItem *item = new QListWidgetItem( subject, m_sortedSubjectListWidget );
+        item->setCheckState( Qt::Checked );
+        item->setBackgroundColor( m_green );
+        item->setFlags( Qt::ItemIsEnabled );
+        m_sortedSubjectListWidget->addItem( item );
     }
 
-    QMap<QString, QStringList >::ConstIterator iterunMatchedSubjects = unMatchedSubjects.begin();
-    while( iterunMatchedSubjects != unMatchedSubjects.constEnd() )
+    QMap<QString, QStringList >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.begin();
+    while( iterUnmatchedSubjects != unMatchedSubjectMap.constEnd() )
     {
-        QStringList sortedText = iterunMatchedSubjects.value();
+        QStringList sortedText = iterUnmatchedSubjects.value();
         sortedText.sort();
-        QString text = tr( qPrintable( iterunMatchedSubjects.key() + " --> " + sortedText.join( ", " ) ) );
-        QListWidgetItem *listItem = new QListWidgetItem( text, m_sortedSubjectListWidget );
-        listItem->setBackgroundColor( m_red );
-        listItem->setTextColor( m_lightBlack );
-        m_sortedSubjectListWidget->addItem( listItem );
-        ++iterunMatchedSubjects;
+        QString text = tr( qPrintable( iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " ) ) );
+        QListWidgetItem *item = new QListWidgetItem( text, m_sortedSubjectListWidget );
+        item->setBackgroundColor( m_red );
+        item->setTextColor( m_lightBlack );
+        m_sortedSubjectListWidget->addItem( item );
+        ++iterUnmatchedSubjects;
     }
     m_sortedSubjectListWidget->setUpdatesEnabled( true );
 
-    this->subjectsTab_sortSubjects_label->clear();
+    this->subjectTab_sortedSubjectsInformation_label->clear();
     QString text;
-    if( ( unMatchedSubjects.isEmpty() ) && ( !matchedSubjects.isEmpty() ) )
+    int nbrSubjects = matchedSubjects.count() + unMatchedSubjectMap.size();
+    if( ( unMatchedSubjectMap.isEmpty() ) && ( !matchedSubjects.isEmpty() ) )
     {
         text = tr( qPrintable( "All subjects matched ( " + QString::number( matchedSubjects.size() ) + " )" ) );
     }
-    else if( ( !unMatchedSubjects.isEmpty() ) && ( matchedSubjects.isEmpty() ) )
+    else if( ( !unMatchedSubjectMap.isEmpty() ) && ( matchedSubjects.isEmpty() ) )
     {
-        text = tr( qPrintable( "Warning! No subject matched ( " + QString::number( unMatchedSubjects.size() ) + " )" ) );
+        text = tr( qPrintable( "Warning! No subject matched ( " + QString::number( unMatchedSubjectMap.size() ) + " )" ) );
     }
-    else if( !unMatchedSubjects.isEmpty() && ( !matchedSubjects.isEmpty() ) )
+    else if( !unMatchedSubjectMap.isEmpty() && ( !matchedSubjects.isEmpty() ) )
     {
-        text = tr( qPrintable( QString::number( matchedSubjects.size() ) + "/" + QString::number( refSubjectList.size() ) + " matched      " +
-                               QString::number( unMatchedSubjects.size() ) + "/" + QString::number( refSubjectList.size() ) + " unmatched" ) );
+        text = tr( qPrintable( QString::number( matchedSubjects.size() ) + "/" + QString::number( nbrSubjects ) + " matched      " +
+                               QString::number( unMatchedSubjectMap.size() ) + "/" + QString::number( nbrSubjects ) + " unmatched" ) );
     }
-    this->subjectsTab_sortSubjects_label->setText( text );
+    this->subjectTab_sortedSubjectsInformation_label->setText( text );
 
-    DisplayNbrSubjectsSelected();
+    DisplayNbrSubjectSelected();
 }
 
-void FADTTSWindow::DisplayNbrSubjectsSelected()
+void FADTTSWindow::DisplayNbrSubjectSelected()
 {
-    this->subjectsTab_checkedSubjects_label->clear();
+    this->subjectTab_checkedSubjectsInformation_label->clear();
     int nbrSubjectsSelected = 0;
-    for( int i = 0; i < m_sortedSubjectListWidget->count(); i++ )
-    {
-        QListWidgetItem *item = m_sortedSubjectListWidget->item( i );
-        if( item->checkState() == Qt::Checked )
-        {
-            nbrSubjectsSelected++;
-        }
-    }
 
     if( m_sortedSubjectListWidget->count() != 0 )
     {
-        this->subjectsTab_checkedSubjects_label->setText( tr( qPrintable( QString::number( nbrSubjectsSelected ) + " subjects selected") ) );
+        for( int i = 0; i < m_sortedSubjectListWidget->count(); i++ )
+        {
+            QListWidgetItem *item = m_sortedSubjectListWidget->item( i );
+
+            if( item->checkState() == Qt::Checked )
+            {
+                nbrSubjectsSelected++;
+            }
+        }
+
+        this->subjectTab_checkedSubjectsInformation_label->setText( tr( qPrintable( QString::number( nbrSubjectsSelected ) + " subjects selected") ) );
     }
 }
 
@@ -947,7 +902,7 @@ void FADTTSWindow::DisplayNbrSubjectsSelected()
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
-void FADTTSWindow::SelectCovariates( QListWidgetItem *item )
+void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
 {
     if( item->flags() == Qt::ItemIsEnabled )
     {
@@ -961,12 +916,10 @@ void FADTTSWindow::SelectCovariates( QListWidgetItem *item )
         }
         else
         {
-            int ignoreWarning = QMessageBox::warning( this,
-                                                      tr( "Uncheck Intercept" ),
-                                                      tr( "You are about to uncheck the Intercept."
-                                                          "This action is not recommended.<br>"
-                                                          "Are you sure you want to do it?" ),
-                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+            QString warningMessage = "You are about to uncheck the Intercept. This action is not recommended.<br>Are you sure you want to do it?";
+            int ignoreWarning = QMessageBox::warning( this, tr( "Uncheck Intercept" ), tr( qPrintable( warningMessage ) ),
+                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::No );
+
             if( ignoreWarning == QMessageBox::Yes )
             {
                 item->setCheckState( Qt::Unchecked );
@@ -979,10 +932,10 @@ void FADTTSWindow::SelectCovariates( QListWidgetItem *item )
 
 void FADTTSWindow::CheckAllCovariates()
 {
-    QListWidget *covariatesList = m_covariatesListWidget;
-    for( int i = 0; i < covariatesList->count(); i++ )
+    QListWidget *covariateListWidget = m_covariateListWidget;
+    for( int i = 0; i < covariateListWidget->count(); i++ )
     {
-        covariatesList->item( i )->setCheckState( Qt::Checked );
+        covariateListWidget->item( i )->setCheckState( Qt::Checked );
     }
 
     SyncUiToModelStructure();
@@ -990,10 +943,10 @@ void FADTTSWindow::CheckAllCovariates()
 
 void FADTTSWindow::UnCheckAllCovariates()
 {
-    QListWidget *covariatesList = m_covariatesListWidget;
-    for( int i = 0; i < covariatesList->count(); i++ )
+    QListWidget *covariateListWidget = m_covariateListWidget;
+    for( int i = 0; i < covariateListWidget->count(); i++ )
     {
-        QListWidgetItem *currentItem = covariatesList->item( i );
+        QListWidgetItem *currentItem = covariateListWidget->item( i );
         if( !currentItem->text().contains( "Intercept" ) )
         {
             currentItem->setCheckState( Qt::Unchecked );
@@ -1005,19 +958,19 @@ void FADTTSWindow::UnCheckAllCovariates()
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::DisplayCovariatesList( QMap<int, QString> covariatesList )
+void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
 {
-    m_covariatesListWidget->clear();
-    if( !( covariatesList.isEmpty() ) )
+    m_covariateListWidget->clear();
+    if( !( covariateMap.isEmpty() ) )
     {
-        QMap<int, QString>::ConstIterator covariate = covariatesList.begin();
-        while( covariate != covariatesList.end() )
+        QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
+        while( iterCovariate != covariateMap.end() )
         {
-            QListWidgetItem *covariateItem = new QListWidgetItem( covariate.value(), m_covariatesListWidget );
+            QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), m_covariateListWidget );
             covariateItem->setCheckState( Qt::Checked );
             covariateItem->setFlags( Qt::ItemIsEnabled );
-            m_covariatesListWidget->addItem( covariateItem );
-            ++covariate;
+            m_covariateListWidget->addItem( covariateItem );
+            ++iterCovariate;
         }
     }
 }
@@ -1050,15 +1003,15 @@ void FADTTSWindow::SetOutputDir()
     }
 }
 
-void FADTTSWindow::UpdateOutputDirLineEdit( const QString&  textLineEdit )
+void FADTTSWindow::UpdateOutputDirLineEdit( const QString&  path )
 {
     QLabel *label = this->runTab_iconOutputDir_label;
-    if( !textLineEdit.isEmpty() )
+    if( !path.isEmpty() )
     {
-        if( QDir( textLineEdit ).exists() )
+        if( QDir( path ).exists() )
         {
             DisplayIcon( label, m_okPixmap );
-            m_data.SetOutputDir() = textLineEdit;
+            m_data.SetOutputDir() = path;
         }
         else
         {
@@ -1105,10 +1058,10 @@ void FADTTSWindow::RunFADTTS()
 {
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
 
-    bool fiberNameProvided = !this->para_inputsTab_fiberName_lineEdit->text().isEmpty();
-    bool atLeastOneDataFileSelected = ( this->para_subjectsTab_adInput_checkBox->isChecked() | this->para_subjectsTab_rdInput_checkBox->isChecked() |
-                                        this->para_subjectsTab_mdInput_checkBox->isChecked() | this->para_subjectsTab_faInput_checkBox->isChecked() );
-    bool covariateFileSelected = this->para_subjectsTab_compInput_checkBox->isChecked();
+    bool fiberNameProvided = !this->para_inputTab_fiberName_lineEdit->text().isEmpty();
+    bool atLeastOneDataFileSelected = ( this->para_subjectTab_adFile_checkBox->isChecked() | this->para_subjectTab_rdFile_checkBox->isChecked() |
+                                        this->para_subjectTab_mdFile_checkBox->isChecked() | this->para_subjectTab_faFile_checkBox->isChecked() );
+    bool covariateFileSelected = this->para_subjectTab_covariateFile_checkBox->isChecked();
     bool atLeastOneCovariateSelected = selectedCovariates.count() != 0;
     qDebug() << "selectedCovariates" << selectedCovariates << endl;
     qDebug() << "atLeastOneCovariateSelected" << atLeastOneCovariateSelected << endl;
@@ -1139,15 +1092,25 @@ void FADTTSWindow::RunFADTTS()
 
         QMap<QString, bool> selectedInputFiles = GetSelectedInputFiles();
 
-        QString selectedSubjectListFilePath = GenerateSelectedSubjectList();
+        QString selectedSubjectListFilePath = GenerateSelectedSubjectFile();
 
-        QMap<QString, bool> matlabInputFiles = m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
-                                                                                      m_data.GetSubjectColumnID(), selectedCovariates,
-                                                                                      m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text() );
+        QMap<QString, bool> matlabInputFiles =
+                m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
+                                                       m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, m_data.GetOutputDir(),
+                                                       this->para_inputTab_fiberName_lineEdit->text() );
 
-        QString matlabScript = m_matlabScript.GenerateMatlabScript( true, m_data.GetOutputDir(), this->para_inputsTab_fiberName_lineEdit->text(), selectedPrefixes,
-                                                                    matlabInputFiles, selectedCovariates, this->para_parametersTab_nbrPermutations_spinBox->value(),
-                                                                    this->para_parametersTab_omnibus_checkBox->isChecked(), this->para_parametersTab_postHoc_checkBox->isChecked() );
+        m_matlabScript.InitMatlabScript();
+        m_matlabScript.SetHeader();
+        m_matlabScript.SetFiberName( this->para_inputTab_fiberName_lineEdit->text() );
+        m_matlabScript.SetDiffusionProperties( selectedPrefixes );
+        m_matlabScript.SetNbrPermutation( this->para_parameterTab_nbrPermutations_spinBox->value() );
+        m_matlabScript.SetCovariates( selectedCovariates );
+        m_matlabScript.SetInputFiles( matlabInputFiles );
+        m_matlabScript.SetOmnibus( this->para_parameterTab_omnibus_checkBox->isChecked() );
+        m_matlabScript.SetPostHoc( this->para_parameterTab_postHoc_checkBox->isChecked() );
+
+
+        QString matlabScript = m_matlabScript.GenerateMatlabFiles( m_data.GetOutputDir(), this->para_inputTab_fiberName_lineEdit->text(), this->para_parameterTab_nbrPermutations_spinBox->value() );
 
         //        QString program = "/opt/matlab/bin/matlab";
         //        m_processing.RunScript( program,  matlabScript );
@@ -1194,11 +1157,11 @@ QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
         }
         i++;
     }
-    qDebug() << "selectedInputFiles" << selectedInputFiles << endl;
+
     return selectedInputFiles;
 }
 
-QMap<QString, QList<QStringList> > FADTTSWindow::GetDataInSelectedFiles()
+QMap<QString, QList<QStringList> > FADTTSWindow::GetFileDataOfSelectedFiles()
 {
     QMap<QString, QList<QStringList> > dataInSelectedFiles;
     int i = 0;
@@ -1207,45 +1170,50 @@ QMap<QString, QList<QStringList> > FADTTSWindow::GetDataInSelectedFiles()
         QString encoding = QString( "%1" ).arg( i, 2, 10, QChar( '0' ) ).append( "?" ); /** Encoding necessary to keep the order **/
         if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() && !m_data.GetFilename( prefID ).isEmpty() )
         {
-            dataInSelectedFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), m_data.GetDataInFile( prefID ) );
+            dataInSelectedFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), m_data.GetFileData( prefID ) );
         }
         i++;
     }
-    qDebug() << "dataInSelectedFiles" << dataInSelectedFiles << endl;
+
     return dataInSelectedFiles;
 }
 
 QMap<int, QString> FADTTSWindow::GetSelectedCovariates()
 {
-    QMap<int, QString> covariatesMap = m_data.GetCovariatesList();
+    QMap<int, QString> covariateMap = m_data.GetCovariates();
     QMap<int, QString> selectedCovariates;
 
-    QListWidget *list = m_covariatesListWidget;
-    for( int i = 1; i < list->count(); i++ )
+    QListWidget *list = m_covariateListWidget;
+    for( int i = 0; i < list->count(); i++ )
     {
         QListWidgetItem *currentItem = list->item( i );
         if( currentItem->checkState() == Qt::Checked )
         {
-            QMap<int, QString>::ConstIterator iterCovar = covariatesMap.begin();
-
-            while( iterCovar != covariatesMap.end() )
+            if( i == 0 )
             {
-                if( currentItem->text() == iterCovar.value() )
+                selectedCovariates.insert( -1, "Intercept" );
+            }
+            else
+            {
+                QMap<int, QString>::ConstIterator iterCovar = covariateMap.begin();
+                while( iterCovar != covariateMap.end() )
                 {
-                    selectedCovariates.insert( iterCovar.key(), iterCovar.value() );
+                    if( currentItem->text() == iterCovar.value() )
+                    {
+                        selectedCovariates.insert( iterCovar.key(), iterCovar.value() );
+                    }
+                    ++iterCovar;
                 }
-                ++iterCovar;
             }
         }
     }
-    selectedCovariates.insert( -1, "Intercept" );
 
     return selectedCovariates;
 }
 
-QString FADTTSWindow::GenerateSelectedSubjectList()
+QString FADTTSWindow::GenerateSelectedSubjectFile()
 {
-    QFile selectedSubjects( m_data.GetOutputDir() + "/" + this->para_inputsTab_fiberName_lineEdit->text() + "_subjectList.txt" );
+    QFile selectedSubjects( m_data.GetOutputDir() + "/" + this->para_inputTab_fiberName_lineEdit->text() + "_subjectList.txt" );
     if( selectedSubjects.open( QIODevice::WriteOnly ) )
     {
         QTextStream tsSelectedSubjects( &selectedSubjects );
@@ -1253,10 +1221,11 @@ QString FADTTSWindow::GenerateSelectedSubjectList()
         {
             if( m_sortedSubjectListWidget->item( i )->checkState() == Qt::Checked )
             {
-                tsSelectedSubjects << QObject::tr( qPrintable( m_sortedSubjectListWidget->item( i )->text() ) ) << endl;
+                tsSelectedSubjects << m_sortedSubjectListWidget->item( i )->text() << endl;
             }
         }
         selectedSubjects.close();
     }
+
     return selectedSubjects.fileName();
 }

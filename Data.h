@@ -29,24 +29,17 @@ public:
 
     QString GetCovariatePrefix() const;
 
+    int GetCovariateFileSubjectColumnID() const;
 
-    QMap<QString, QString> GetFilenameMap() const;
 
-    QMap< QString, QList<QStringList> > GetDataInFileMap() const;
+    QMap<QString, QStringList> GetSubjects() const;
 
-    QMap<QString, QStringList> GetSubjectsMap() const;
+    QMap<int, QString> GetCovariates() const;
 
-    QMap<QString, int> GetNbrRowsMap() const;
-
-    QMap<QString, int> GetNbrColumnsMap() const;
-
-    QMap<QString, int> GetNbrSubjectsMap() const;
 
     QString GetFilename( QString pref ) const;
 
-    QList<QStringList> GetDataInFile( QString pref ) const;
-
-    QStringList GetSubjects( QString pref ) const;
+    QList<QStringList> GetFileData( QString pref ) const;
 
     int GetNbrRows( QString pref ) const;
 
@@ -54,76 +47,67 @@ public:
 
     int GetNbrSubjects( QString pref ) const;
 
-    QMap<int, QString> GetCovariatesList() const;
-
-
-    int GetSubjectColumnID() const;
-
-    QMap<QString, QString >::ConstIterator GetFilenameMapIterator();
-
 
     /***************************************/
     /*************** Setters ***************/
     /***************************************/
     QString& SetOutputDir();
 
-    QString& SetFilename( QString pref );
-
-    QList<QStringList>& SetDataInFile( QString pref );
-
-    QStringList& SetSubjects( QString pref );
-
-    int& SetNbrRows( QString pref );
-
-    int& SetNbrColumns( QString pref );
-
-    int& SetNbrSubjects( QString pref );
-
-    QMap<int, QString>& SetCovariatesList( );
+    int& SetCovariateFileSubjectColumnID();
 
 
-    QString& SetCovariatesPrefix();
+    QMap<int, QString>& SetCovariates();
 
-    void SetSubjectColumnID( int id );
+
+    QString& SetFilename( QString prefID );
+
+    QList<QStringList>& SetFileData( QString prefID );
+
+    QStringList& SetSubjects( QString prefID );
+
+    int& SetNbrRows( QString prefID );
+
+    int& SetNbrColumns( QString prefID );
+
+    int& SetNbrSubjects( QString prefID );
 
 
     /***************************************/
-    /************** Functions **************/
+    /*********** Other Functions ***********/
     /***************************************/
     int InitData();
 
-    void AddSubject( QString prefID, QString subjectID );
+    void SetSubjects( QString prefID, QStringList subjects );
 
     void AddCovariate( int colunmID , QString covariate );
 
-    void AddIntercept();
+    void AddInterceptToCovariates();
 
     void ClearFileInformation( QString prefID );
 
     void ClearSubjects( QString prefID );
 
-    void ClearCovariatesList();
+    void ClearCovariates();
 
 
 private:
-
-    int m_subjectColumnID;
-
-    QString m_outputDir,
-    m_axialDiffusivityPrefix, m_radialDiffusivityPrefix,
-    m_meanDiffusivityPrefix, m_fractionalAnisotropyPrefix, m_covariatesPrefix;
-
-    QStringList m_PrefixList;
-
-    QMap<QString, QStringList> m_SubjectsMap;
-
-    QMap< QString, QList<QStringList> > m_dataInFileMap;
+    QMap<QString, QStringList> m_subjectMap;
 
     QMap<QString, QString> m_filenameMap;
 
+    QMap< QString, QList<QStringList> > m_fileDataMap;
+
     QMap<QString, int> m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
 
-    QMap<int, QString> m_covariatesList;
+    QMap<int, QString> m_covariateMap;
+
+    QStringList m_prefixList;
+
+    QString m_outputDir,
+    m_axialDiffusivityPrefix, m_radialDiffusivityPrefix,
+    m_meanDiffusivityPrefix, m_fractionalAnisotropyPrefix, m_covariatePrefix;
+
+    int m_covariateFileSubjectColumnID;
 };
 
 #endif // DATA_H

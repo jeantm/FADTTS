@@ -2,9 +2,11 @@
 
 int main( int argc, char *argv[] )
 {
+    QApplication *app = new QApplication( argc, argv );
+
     TestInfoDialog testInfoDialog;
 
-    bool test = testInfoDialog.Test_DisplayInfo( argv[1], argv[2] );
+    bool test = testInfoDialog.Test_DisplayFileInformation( argv[1], argv[2] );
 
     std::cout << std::endl;
     if( test )
