@@ -1120,8 +1120,8 @@ void FADTTSWindow::RunFADTTS()
 
         QString matlabScript = m_matlabScript.GenerateMatlabFiles( m_data.GetOutputDir(), this->para_inputTab_fiberName_lineEdit->text(), this->para_parameterTab_nbrPermutations_spinBox->value() );
 
-        QString program = "/opt/matlab/bin/matlab";
-        m_processing.RunScript( program,  matlabScript );
+//        QString program = "/opt/matlab/bin/matlab";
+//        m_processing.RunScript( program,  matlabScript );
     }
 }
 

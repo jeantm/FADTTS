@@ -477,7 +477,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;To add several files at the same time, click on '&lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Add Data Files&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;' and then select them.&lt;br&gt;The files must start with ad_, rd_, md_, fa_ or COMP_ prefix.&lt;br/&gt;If a prefix appears more than once in the selection, linked files will be ignored.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;To add several files at the same time, click on '&lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Add Input Files&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;' and select them.&lt;br&gt;The files must start with ad_, rd_, md_, fa_ or COMP_. Select one file per prefix.&lt;br/&gt;If multiple files starting with the same prefix are selected, they will be ignored.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -885,7 +885,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;If the reference subjects file is either&lt;br/&gt;unspecified or invalid, reference subjects&lt;br/&gt;will automatically be generated from&lt;br/&gt;selected data files.&lt;/span&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;If the reference subjects file is either&lt;br/&gt;unspecified or invalid, reference subjects&lt;br/&gt;will automatically be generated from&lt;br/&gt;the selected data files.&lt;/span&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="scaledContents">
                  <bool>false</bool>
