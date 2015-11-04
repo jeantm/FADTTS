@@ -80,7 +80,7 @@ ADD_DEFINITIONS( -DFADTTS_CONTRIBUTORS="${contributors}" )
 string( REGEX MATCH "<description>.*</description>" ext "${var}" )
 string( REPLACE "<description>" "" description ${ext} )
 string( REPLACE "</description>" "" description ${description} )
-
+message(WARNING ${description})
 ADD_DEFINITIONS( -DFADTTS_DESCRIPTION="${description}" )
 
 

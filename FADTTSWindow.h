@@ -26,9 +26,9 @@ public:
 
 private slots:
     /********* Configuration & Events *********/
-    void SaveParaConfigFile();
+    void SaveConfiguration();
 
-    void LoadParaConfigFile();
+    void LoadConfiguration();
 
     void SaveSoftConfigFile();
 

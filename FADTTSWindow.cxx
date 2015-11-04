@@ -34,58 +34,61 @@ FADTTSWindow::~FADTTSWindow()
 
 
 /*********************** Private slots ***********************/
-void FADTTSWindow::SaveParaConfigFile()
+void FADTTSWindow::SaveConfiguration()
 {
     QString dir;
-    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Parameter Configuration File" ) ,  dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
+    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Configuration" ) ,  dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
         QFileInfo fi( filename ) ;
         dir = fi.dir().absolutePath() ;
         Save_Parameter_Configuration( filename.toStdString() );
+        Save_Software_Configuration( filename.toStdString() );
     }
 }
 
-void FADTTSWindow::LoadParaConfigFile()
+void FADTTSWindow::LoadConfiguration()
 {
     QString dir;
-    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Parameter Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
+    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Configuration" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
         QFileInfo fi( filename ) ;
         dir = fi.dir().absolutePath() ;
         Load_Parameter_Configuration( filename.toStdString() );
+        Load_Software_Configuration( filename.toStdString() );
     }
 }
 
 void FADTTSWindow::SaveSoftConfigFile()
 {
-    QString dir;
-    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Software Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
-    if( !filename.isEmpty() )
-    {
-        QFileInfo fi( filename ) ;
-        dir = fi.dir().absolutePath() ;
-        Save_Software_Configuration( filename.toStdString() );
-    }
+//    QString dir;
+//    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Software Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
+//    if( !filename.isEmpty() )
+//    {
+//        QFileInfo fi( filename ) ;
+//        dir = fi.dir().absolutePath() ;
+//        Save_Software_Configuration( filename.toStdString() );
+//    }
 }
 
 void FADTTSWindow::LoadSoftConfigFile()
 {
-    QString dir;
-    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Software Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
-    if( !filename.isEmpty() )
-    {
-        QFileInfo fi( filename ) ;
-        dir = fi.dir().absolutePath() ;
-        Load_Software_Configuration( filename.toStdString() );
-    }
+//    QString dir;
+//    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Software Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
+//    if( !filename.isEmpty() )
+//    {
+//        QFileInfo fi( filename ) ;
+//        dir = fi.dir().absolutePath() ;
+//        Load_Software_Configuration( filename.toStdString() );
+//    }
 }
 
 void FADTTSWindow::DisplayAbout()
 {
     QString messageBoxTitle = "About " + QString( FADTTS_TITLE );
     QString aboutFADTTS;
+    std::cout<<FADTTS_DESCRIPTION<<std::endl;
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Description:</b> " + QString( FADTTS_DESCRIPTION ) + "<br>"
             "<b>Contributors:</b> " + QString( FADTTS_CONTRIBUTORS );
@@ -150,10 +153,10 @@ void FADTTSWindow::InitFADTTSWindow()
 
 void FADTTSWindow::InitMenuBar()
 {
-    connect( this->actionLoad_Settings, SIGNAL( triggered() ), SLOT( LoadParaConfigFile() ) );
-    connect( this->actionSave_Settings, SIGNAL( triggered() ), SLOT( SaveParaConfigFile() ) );
-    connect( this->actionLoad_Software, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
-    connect( this->actionSave_Software, SIGNAL( triggered() ), SLOT( SaveSoftConfigFile() ) );
+    connect( this->actionLoad_Settings, SIGNAL( triggered() ), SLOT( LoadConfiguration() ) );
+    connect( this->actionSave_Settings, SIGNAL( triggered() ), SLOT( SaveConfiguration() ) );
+//    connect( this->actionLoad_Software, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
+//    connect( this->actionSave_Software, SIGNAL( triggered() ), SLOT( SaveSoftConfigFile() ) );
     connect( this->actionAbout, SIGNAL( triggered() ), SLOT( DisplayAbout() ) );
 
 }
@@ -246,7 +249,6 @@ void FADTTSWindow::InitSubjectTab()
     m_paramTabFileCheckBoxMap.insert( m_data.GetCovariatePrefix(), this->para_subjectTab_covariateFile_checkBox );
     QSignalMapper *signalMapperSelectFile = new QSignalMapper( this );
     connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SortAndDisplaySubjects() ) );
-    connect( signalMapperSelectFile, SIGNAL( mapped( const QString& ) ), this, SLOT( SyncUiToModelStructure() ) );
     for ( int i = 0; i < m_data.GetPrefixList().size(); ++i )
     {
         connect( m_paramTabFileCheckBoxMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( toggled( const bool& ) ), signalMapperSelectFile,SLOT( map() ) );
@@ -282,9 +284,6 @@ void FADTTSWindow::InitParameterTab()
     connect( this->parameterTab_covariatesCheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllCovariates() ) );
     connect( this->parameterTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllCovariates() ) );
 
-    connect( this->para_parameterTab_omnibus_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
-    connect( this->para_parameterTab_postHoc_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SyncUiToModelStructure() ) );
-    connect( this->para_parameterTab_nbrPermutations_spinBox, SIGNAL( valueChanged( int ) ), this, SLOT( SyncUiToModelStructure() ) );
     this->para_parameterTab_nbrPermutations_spinBox->setMaximum( 2000 );
 }
 
@@ -430,7 +429,6 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
     }
 
     SortAndDisplaySubjects();
-    SyncUiToModelStructure();
 }
 
 void FADTTSWindow::EditInputFile( const QString& prefID )
@@ -474,8 +472,6 @@ void FADTTSWindow::UpdateCovariateMapAfterFileEdition( const QMap<int, QString>&
     m_data.ClearCovariates();
     m_data.SetCovariates() = newCovariateMapAfterFileEdition;
     DisplayCovariates( m_data.GetCovariates() );
-
-    SyncUiToModelStructure();
 }
 
 void FADTTSWindow::UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int&  newCovariateFileSubjectColumnIDAfterFileEdition )
@@ -486,7 +482,6 @@ void FADTTSWindow::UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int
     SetInfoCovariateFileSubjectColumnID();
 
     SortAndDisplaySubjects();
-    SyncUiToModelStructure();
 }
 
 
@@ -648,7 +643,6 @@ void FADTTSWindow::UpdateSubjectFileLineEdit( const QString& filePath )
     }
 
     SortAndDisplaySubjects();
-    SyncUiToModelStructure();
 }
 
 void FADTTSWindow::SaveCheckedSubjects()
@@ -937,7 +931,6 @@ void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
         }
     }
 
-    SyncUiToModelStructure();
 }
 
 void FADTTSWindow::CheckAllCovariates()
@@ -948,7 +941,6 @@ void FADTTSWindow::CheckAllCovariates()
         covariateListWidget->item( i )->setCheckState( Qt::Checked );
     }
 
-    SyncUiToModelStructure();
 }
 
 void FADTTSWindow::UnCheckAllCovariates()
@@ -963,7 +955,6 @@ void FADTTSWindow::UnCheckAllCovariates()
         }
     }
 
-    SyncUiToModelStructure();
 }
 
 
@@ -1033,7 +1024,6 @@ void FADTTSWindow::UpdateOutputDirLineEdit( const QString&  path )
         label->clear();
     }
 
-    SyncUiToModelStructure();
 }
 
 void FADTTSWindow::SetMatlabExe()
@@ -1066,6 +1056,8 @@ void FADTTSWindow::SetMatlabExe()
 
 void FADTTSWindow::RunFADTTS()
 {
+    SyncUiToModelStructure();
+
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
 
     bool fiberNameProvided = !this->para_inputTab_fiberName_lineEdit->text().isEmpty();

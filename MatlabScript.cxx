@@ -14,6 +14,7 @@ void MatlabScript::InitMatlabScript()
 {
     m_matlabScript.clear();
     QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRef.m" );
+//    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRefWithPlots.m" );
     QFile matlabScriptRef( resource.absoluteFilePath() );
     if ( !matlabScriptRef.open( QIODevice::ReadOnly | QIODevice::Text ) )
     {

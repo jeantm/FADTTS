@@ -6,5 +6,6 @@
     </qresource>
     <qresource prefix="/MatlabFiles">
         <file>Resources/MatlabFiles/MatlabScriptRef.m</file>
+        <file>Resources/MatlabFiles/MatlabScriptRefWithPlots.m</file>
     </qresource>
 </RCC>
