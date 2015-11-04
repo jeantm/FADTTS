@@ -106,10 +106,16 @@ void FADTTSWindow::closeEvent(QCloseEvent *event)
         break;
     case QMessageBox::Yes:
     {
+        /*******************************************/
+        /*************** STOP THREAD ***************/
+        /*******************************************/
         //        if( m_thread->isRunning() )
         //        {
         //            m_thread->terminate();
         //        }
+        /*******************************************/
+        /*************** STOP THREAD ***************/
+        /*******************************************/
         event->accept();
         break;
     }
@@ -1063,8 +1069,6 @@ void FADTTSWindow::RunFADTTS()
                                         this->para_subjectTab_mdFile_checkBox->isChecked() | this->para_subjectTab_faFile_checkBox->isChecked() );
     bool covariateFileSelected = this->para_subjectTab_covariateFile_checkBox->isChecked();
     bool atLeastOneCovariateSelected = selectedCovariates.count() != 0;
-    qDebug() << "selectedCovariates" << selectedCovariates << endl;
-    qDebug() << "atLeastOneCovariateSelected" << atLeastOneCovariateSelected << endl;
     if( !fiberNameProvided || !atLeastOneDataFileSelected || !covariateFileSelected || !atLeastOneCovariateSelected  )
     {
         QString warningText = "<b>FADTTS will not be executed for the following reason(s):</b><br>";
@@ -1112,13 +1116,8 @@ void FADTTSWindow::RunFADTTS()
 
         QString matlabScript = m_matlabScript.GenerateMatlabFiles( m_data.GetOutputDir(), this->para_inputTab_fiberName_lineEdit->text(), this->para_parameterTab_nbrPermutations_spinBox->value() );
 
-        //        QString program = "/opt/matlab/bin/matlab";
-        //        m_processing.RunScript( program,  matlabScript );
-
-        //        if( !matlabScript.isEmpty() )
-        //        {
-        //            m_processing.RunScript( matlabScript );
-        //        }
+        QString program = "/opt/matlab/bin/matlab";
+        m_processing.RunScript( program,  matlabScript );
     }
 }
 

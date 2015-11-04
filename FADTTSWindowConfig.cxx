@@ -5,7 +5,7 @@ FADTTSWindowConfig::FADTTSWindowConfig( QWidget *parent, Qt::WFlags f ):
 {
     this->setupUi( this ) ;
     m_sync = false ;
-//    m_para_m = 0;
+    //    m_para_m = 0;
 }
 
 void FADTTSWindowConfig::SyncUiToModelStructure()
@@ -35,20 +35,22 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
 
     m_para_m->setpara_subjectTab_subjectFile_lineEdit( para_subjectTab_subjectFile_lineEdit->text() );
 
-    /************** ????listWidget Subjects???? **************/
-
 
     /*3rd tab: Parameteres*/
-    std::map<QString,bool> itemList;
+    std::map<std::pair<unsigned long,QString>,bool> itemList ;
     itemList.clear();
-    for( int i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
+    for( unsigned long i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
     {
-        QString encoding = QString( "%1" ).arg( i, 3, 10, QChar( '0' ) ).append( "_" );
-        QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i ) ;
-        itemList[ encoding.append( currentItem->text() ) ] = static_cast<bool>( currentItem->checkState() ) ;
+        QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item(i);
+        std::pair<unsigned long,QString> attribute ;
+        attribute = std::make_pair(i,currentItem->text());
+        itemList[ attribute ] = static_cast<bool>( currentItem->checkState() );
     }
-//    qDebug() << "itemList.size() Set" << itemList.size();
-    m_para_m->setpara_parameterTab_covariates_listWidget( itemList ) ;
+    m_para_m->setpara_parameterTab_covariates_listWidget( itemList );
+
+
+
+
 
     m_para_m->setpara_parameterTab_omnibus_checkBox( para_parameterTab_omnibus_checkBox->checkState() );
     m_para_m->setpara_parameterTab_postHoc_checkBox( para_parameterTab_postHoc_checkBox->checkState() );
@@ -95,26 +97,18 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
 
         m_para_m->setpara_subjectTab_subjectFile_lineEdit( para_subjectTab_subjectFile_lineEdit->text() );
 
-        /************** ????listWidget Subjects???? **************/
-//        std::map<QString,bool> itemList ;
-//        for( int i = 0 ; i < para_ref_tracts_listWidget->count() ; i++ )
-//        {
-//            QListWidgetItem *currentItem = para_ref_tracts_listWidget->item(i) ;
-//            itemList[ currentItem->text() ] = static_cast<bool>(currentItem->checkState() ) ;
-//        }
-//        m_para_m->setpara_ref_tracts_listWidget(itemList) ;
-
 
         /*3rd tab: Parameteres*/
-        std::map<QString,bool> itemList;
+        std::map<std::pair<unsigned long,QString>,bool> itemList ;
         itemList.clear();
-        for( int i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
+        for( unsigned long i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
         {
-            QString encoding = QString( "%1" ).arg( i, 3, 10, QChar( '0' ) ).append( "_" );
-            QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i ) ;
-            itemList[ encoding.append( currentItem->text() ) ] = static_cast<bool>( currentItem->checkState() ) ;
+            QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item(i);
+            std::pair<unsigned long,QString> attribute ;
+            attribute = std::make_pair(i,currentItem->text());
+            itemList[ attribute ] = static_cast<bool>( currentItem->checkState() );
         }
-        m_para_m->setpara_parameterTab_covariates_listWidget( itemList ) ;
+        m_para_m->setpara_parameterTab_covariates_listWidget( itemList );
 
         m_para_m->setpara_parameterTab_omnibus_checkBox( para_parameterTab_omnibus_checkBox->checkState() );
         m_para_m->setpara_parameterTab_postHoc_checkBox( para_parameterTab_postHoc_checkBox->checkState() );
@@ -165,19 +159,16 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
 
     para_subjectTab_subjectFile_lineEdit->setText( m_para_m->getpara_subjectTab_subjectFile_lineEdit() );
 
-    /************** ????listWidget Subjects???? **************/
-
 
     /*3rd tab: Parameteres*/
-    std::map<QString,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
-//    qDebug() << "itemList.size() Get" << itemList.size();
+    std::map<std::pair<unsigned long,QString>,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
     para_parameterTab_covariates_listWidget->clear();
-    for( std::map<QString,bool>::iterator it = itemList.begin() ; it != itemList.end() ; it++ )
+    for( std::map<std::pair<unsigned long,QString>,bool>::iterator it = itemList.begin(); it != itemList.end(); it++ )
     {
-        QListWidgetItem *item = new QListWidgetItem( it->first.split( "_" ).last() , para_parameterTab_covariates_listWidget ) ;
-        item->setCheckState( it->second != false ? Qt::Checked : Qt::Unchecked ) ;
+        QListWidgetItem *item = new QListWidgetItem( it->first.second , para_parameterTab_covariates_listWidget );
+        item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked ) ;
         item->setFlags( Qt::ItemIsEnabled );
-        para_parameterTab_covariates_listWidget->addItem( item );
+        //      para_parameterTab_covariates_listWidget->addItem( item );
     }
 
     para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
@@ -231,16 +222,14 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
 
 
         /*3rd tab: Parameteres*/
-        std::map<QString,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
-//        qDebug() << "itemList.size() Get" << itemList.size();
-
+        std::map<std::pair<unsigned long,QString>,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
         para_parameterTab_covariates_listWidget->clear();
-        for( std::map<QString,bool>::iterator it = itemList.begin() ; it != itemList.end() ; it++ )
+        for( std::map<std::pair<unsigned long,QString>,bool>::iterator it = itemList.begin(); it != itemList.end(); it++ )
         {
-            QListWidgetItem *item = new QListWidgetItem( it->first.split( "_" ).last() , para_parameterTab_covariates_listWidget ) ;
-            item->setCheckState( it->second != false ? Qt::Checked : Qt::Unchecked ) ;
+            QListWidgetItem *item = new QListWidgetItem( it->first.second , para_parameterTab_covariates_listWidget );
+            item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked ) ;
             item->setFlags( Qt::ItemIsEnabled );
-            para_parameterTab_covariates_listWidget->addItem( item );
+            //      para_parameterTab_covariates_listWidget->addItem( item );
         }
 
         para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );

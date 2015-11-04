@@ -37,7 +37,7 @@ private slots:
     void DisplayAbout();
 
 
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event); /** Stop multi threading **/
 
 
     /*************** Input Tab ***************/
@@ -97,7 +97,7 @@ private slots:
 
     void UpdateOutputDirLineEdit( const QString& path );
 
-    void SetMatlabExe(); /******** WARNING BAD CODING. FUNCTION NEEDS TO BE CORRECTED ********/
+    void SetMatlabExe(); /** WARNING! BAD CODING! FUNCTION NEEDS TO BE CORRECTED **/
 
 
     void RunFADTTS();

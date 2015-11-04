@@ -11,22 +11,15 @@ set(TEMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
 # Set the files used for the tests
 set(ad_TestFADTTS_Input DATA{${SOURCE_DIR}/ad_TestFADTTS_Input.csv})
-set(rd_TestFADTTS_Input DATA{${SOURCE_DIR}/rd_TestFADTTS_Input.csv})
-set(md_TestFADTTS_Input DATA{${SOURCE_DIR}/md_TestFADTTS_Input.csv})
-set(fa_TestFADTTS_Input DATA{${SOURCE_DIR}/fa_TestFADTTS_Input.csv})
 set(COMP_0_TestFADTTS_Input DATA{${SOURCE_DIR}/COMP_0_TestFADTTS_Input.csv})
 set(COMP_3_TestFADTTS_Input DATA{${SOURCE_DIR}/COMP_3_TestFADTTS_Input.csv})
 
 set(selectedSubjectList_TestFADTTS DATA{${SOURCE_DIR}/selectedSubjectList_TestFADTTS.txt})
 
 set(ad_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/ad_TestFADTTS_MatlabInput.csv})
-set(rd_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/rd_TestzFADTTS_MatlabInput.csv})
-set(md_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/md_TestFADTTS_MatlabInput.csv})
-set(fa_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/fa_TestFADTTS_MatlabInput.csv})
 set(COMP_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/COMP_TestFADTTS_MatlabInput.csv})
 
-set(TestFADTTS_MatlabScript DATA{${SOURCE_DIR}/TestFADTTS_FADTTSAnalysis_MatlabScript.m})
-
+set(matlabScript_TestFADTTS_RunInput DATA{${SOURCE_DIR}/matlabScript_TestFADTTS_RunInput.m})
 
 include_DIRECTORIES( ${CMAKE_SOURCE_DIR})
 
@@ -67,11 +60,11 @@ ExternalData_add_test(
 )
 
 # Test for MatlabScript class
-ExternalData_add_test(
-        MY_DATA
-        NAME TestMatlabScript
-        COMMAND $<TARGET_FILE:FADTTS_Test_MatlabScript> ${TEMP_DIR} ${ad_TestFADTTS_MatlabInput} ${COMP_TestFADTTS_MatlabInput} ${TestFADTTS_MatlabScript}
-)
+#ExternalData_add_test(
+#        MY_DATA
+#        NAME TestMatlabScript
+#        COMMAND $<TARGET_FILE:FADTTS_Test_MatlabScript> ${TEMP_DIR} ${ad_TestFADTTS_MatlabInput} ${COMP_TestFADTTS_MatlabInput} ${matlabScript_TestFADTTS_RunInput}
+#)
 
 # Test for Processing class
 ExternalData_add_test(

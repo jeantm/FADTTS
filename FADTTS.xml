@@ -4,8 +4,14 @@
     <title>FADTTS</title>
     <version>1.00.00</version>
     <contributor>Jean Noel</contributor>
-    <description>Interface to help researchers working on FADTTS</description>
-
+    <description>This interface purpose is to simplify data processing when working with FADTTS. This interface enables the user to work on the row data as well as on the subjects used for the study.</description>
+<!--         The user can edit the data file and selecte the covariates and<br>
+        the subjects she or he wants to work on.<br>
+        To run the program, the following is required:<br>
+        - A fiber name<br>
+        - At least one AD, RD, MD or FA file<br>
+        - A covariate file<br>
+        - At least one covariate<br>-->
     <parameters>
     </parameters>
 

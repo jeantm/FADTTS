@@ -18,6 +18,7 @@ void Processing::RunScript( QString matlabExe, QString matlabScript )
     arguments << "-nojvm" << "-nosplash" << QString( "-r " + matlabScript );
     process.start( matlabExe, arguments );
     process.waitForFinished(-1);
+    qDebug() << endl << "Done with FADTTS" << endl;
 }
 
 
