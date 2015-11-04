@@ -88,17 +88,17 @@ void MatlabScript::SetCovariates( QMap<int, QString> selectedCovariates )
     m_matlabScript.replace( "$covariates$", covariates );
 }
 
-void MatlabScript::SetInputFiles( QMap<QString, bool> matlabInputFiles )
+void MatlabScript::SetInputFiles( QMap< QPair< int, QString >, bool > matlabInputFiles )
 {
     QString inputDiffusionFiles;
     QString diffusionFiles;
     diffusionFiles.append("diffusionFiles = cell( " + QString::number( matlabInputFiles.size() - 1 ) + ", 1 );\n");
 
     int i = 1;
-    QMap<QString, bool>::ConstIterator iterMatlabInputFile = matlabInputFiles.begin();
+    QMap< QPair< int, QString >, bool >::ConstIterator iterMatlabInputFile = matlabInputFiles.begin();
     while( iterMatlabInputFile != matlabInputFiles.constEnd() )
     {
-        QString filename = QFileInfo( QFile( iterMatlabInputFile.key().split( "?" ).last() ) ).fileName();
+        QString filename = QFileInfo( QFile( iterMatlabInputFile.key().second ) ).fileName();
         if( iterMatlabInputFile.value() == false )
         {
             inputDiffusionFiles.append( filename.split( "." ).first() + " = strcat( folder, \'/" + filename + "\' );\n" );

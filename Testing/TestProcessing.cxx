@@ -129,20 +129,32 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString i
     bool CovariateFileMatchedTest1 = true;
     bool CovariateFileMatchedTest2 = true;
 
-    QMap<QString, bool> expectedOutput;
-    expectedOutput.insert( "00?" + matlabInputADFile, false );
-    expectedOutput.insert( "04?" + matlabInputCovariateFile, true );
-    QMap<QString, bool>::ConstIterator iterExpectedOutput1 = expectedOutput.begin();
-    QMap<QString, bool>::ConstIterator iterExpectedOutput2 = expectedOutput.begin();
+    QMap< QPair< int, QString >, bool > expectedOutput;
+    QPair< int, QString > adMatlabFilePair;
+    adMatlabFilePair.first = 0;
+    adMatlabFilePair.second = matlabInputADFile;
+    QPair< int, QString > compMatlabFilePair;
+    compMatlabFilePair.first = 4;
+    compMatlabFilePair.second = matlabInputCovariateFile;
+    expectedOutput.insert( adMatlabFilePair, false );
+    expectedOutput.insert( compMatlabFilePair, true );
+    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput1 = expectedOutput.begin();
+    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput2 = expectedOutput.begin();
 
     /************************************************/
     /******************** Test 1 ********************/
     /************************************************/
     // AD, RA, MD and FA file
     // Covariates file: subjects on 1st column
-    QMap<QString, bool> selectedInputFilesTest1;
-    selectedInputFilesTest1.insert( "00?" + inputADFile, false );
-    selectedInputFilesTest1.insert( "04?" + inputCovariateFileTest1, true );
+    QMap< QPair< int, QString >, bool > selectedInputFilesTest1;
+    QPair< int, QString > adFilePair;
+    adFilePair.first = 0;
+    adFilePair.second = inputADFile;
+    QPair< int, QString > compFilePairTest1;
+    compFilePairTest1.first = 4;
+    compFilePairTest1.second = inputCovariateFileTest1;
+    selectedInputFilesTest1.insert( adFilePair, false );
+    selectedInputFilesTest1.insert( compFilePairTest1, true );
     int subjectCovariatesColumnIdTest1 = 0;
     QMap<int, QString> selectedCovariatesTest1;
     selectedCovariatesTest1.insert( -1, "Intercept" );
@@ -151,19 +163,19 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString i
     selectedCovariatesTest1.insert( 3, "GestAgeBirth" );
     QString fiberNameTest1 = "Test1";
 
-    QMap<QString, bool> matlabInputFilesTest1 =
+    QMap< QPair< int, QString >, bool > matlabInputFilesTest1 =
             processing.GenerateMatlabInputFiles( selectedInputFilesTest1, selectedSubjectsFileTest,
                                                  subjectCovariatesColumnIdTest1, selectedCovariatesTest1,
                                                  outputDir, fiberNameTest1 );
 
-    QMap<QString, bool>::ConstIterator iterTest1 = matlabInputFilesTest1.begin();
+    QMap< QPair< int, QString >, bool >::ConstIterator iterTest1 = matlabInputFilesTest1.begin();
     while( iterTest1 != matlabInputFilesTest1.end() )
     {
-        if( !CompareFile( iterExpectedOutput1.key().split( "?" ).last(), iterTest1.key().split( "?" ).last() ) && ( i%2 == 0 ) )
+        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 == 0 ) )
         {
             ADFilesMatched = false;
         }
-        if( !CompareFile( iterExpectedOutput1.key().split( "?" ).last(), iterTest1.key().split( "?" ).last() ) && ( i%2 != 0 ) )
+        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 != 0 ) )
         {
             CovariateFileMatchedTest1 = false;
         }
@@ -177,9 +189,12 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString i
     /******************** Test 2 ********************/
     /************************************************/
     // Covariates file: subjects not on 1st column
-    QMap<QString, bool> selectedInputFilesTest2;
-    selectedInputFilesTest2.insert( "00?" + inputADFile, false );
-    selectedInputFilesTest2.insert( "04?" + inputCovariateFileTest2, true );
+    QMap< QPair< int, QString >, bool > selectedInputFilesTest2;
+    QPair< int, QString > compFilePairTest2;
+    compFilePairTest2.first = 4;
+    compFilePairTest2.second = inputCovariateFileTest2;
+    selectedInputFilesTest2.insert( adFilePair, false );
+    selectedInputFilesTest2.insert( compFilePairTest2, true );
     int subjectCovariatesColumnIdTest2 = 3;
     QMap<int, QString> selectedCovariatesTest2;
     selectedCovariatesTest2.insert( -1, "Intercept" );
@@ -188,15 +203,15 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString i
     selectedCovariatesTest2.insert( 2, "GestAgeBirth" );
     QString fiberNameTest2 = "Test2";
 
-    QMap<QString, bool> matlabInputFilesTest2 =
+    QMap< QPair< int, QString >, bool > matlabInputFilesTest2 =
             processing.GenerateMatlabInputFiles( selectedInputFilesTest2, selectedSubjectsFileTest,
                                                  subjectCovariatesColumnIdTest2, selectedCovariatesTest2,
                                                  outputDir, fiberNameTest2 );
 
-    QMap<QString, bool>::ConstIterator iterTest2 = matlabInputFilesTest2.begin();
+    QMap< QPair< int, QString >, bool >::ConstIterator iterTest2 = matlabInputFilesTest2.begin();
     while( iterTest2 != matlabInputFilesTest2.end() )
     {
-        if( !CompareFile( iterExpectedOutput2.key().split( "?" ).last(), iterTest2.key().split( "?" ).last() ) && ( i%2 != 0 ) )
+        if( !CompareFile( iterExpectedOutput2.key().second, iterTest2.key().second ) && ( i%2 != 0 ) )
         {
             CovariateFileMatchedTest2 = false;
         }
@@ -335,9 +350,15 @@ bool TestProcessing::Test_GetRefSubjectsFromSelectedInputFiles( QString inputADF
     /******************** Test 1 ********************/
     /************************************************/
     expectedRefSubjectsTest << "randomSubject_COMP_0";
-    QMap< QString, QList<QStringList> > dataInSelectedInputFilesTest1;
-    dataInSelectedInputFilesTest1.insert( "00?" + inputADFile, dataInInputADFile );
-    dataInSelectedInputFilesTest1.insert( "04?" + inputCovariateFileTest1, dataInInputCovariateFileTest1 );
+    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFilesTest1;
+    QPair< int, QString > adFilePair;
+    adFilePair.first = 0;
+    adFilePair.second = inputADFile;
+    QPair< int, QString > compFilePairTest1;
+    compFilePairTest1.first = 4;
+    compFilePairTest1.second = inputCovariateFileTest1;
+    dataInSelectedInputFilesTest1.insert( adFilePair, dataInInputADFile );
+    dataInSelectedInputFilesTest1.insert( compFilePairTest1, dataInInputCovariateFileTest1 );
     QStringList refSubjectsTest1 = processing.GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFilesTest1, 0 );
 
     bool refListMatchedTest1 = CompareQStringList( refSubjectsTest1, expectedRefSubjectsTest );
@@ -348,9 +369,12 @@ bool TestProcessing::Test_GetRefSubjectsFromSelectedInputFiles( QString inputADF
     /************************************************/
     expectedRefSubjectsTest.removeLast();
     expectedRefSubjectsTest << "randomSubject_COMP_3";
-    QMap< QString, QList<QStringList> > dataInSelectedInputFilesTest2;
-    dataInSelectedInputFilesTest2.insert( "00?" + inputADFile, dataInInputADFile );
-    dataInSelectedInputFilesTest2.insert( "04?" + inputCovariateFileTest2, dataInInputCovariateFileTest2 );
+    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFilesTest2;
+    QPair< int, QString > compFilePairTest2;
+    compFilePairTest2.first = 4;
+    compFilePairTest2.second = inputCovariateFileTest1;
+    dataInSelectedInputFilesTest2.insert( adFilePair, dataInInputADFile );
+    dataInSelectedInputFilesTest2.insert( compFilePairTest2, dataInInputCovariateFileTest2 );
     QStringList refSubjectsTest2 = processing.GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFilesTest2, 3 );
 
     bool refListMatchedTest2 = CompareQStringList( refSubjectsTest2, expectedRefSubjectsTest );
@@ -385,9 +409,15 @@ bool TestProcessing::Test_GetRefSubjects( QString inputADFile, QString inputCova
     QList<QStringList> dataInInputADFile = processing.GetDataFromFile( inputADFile );
     QList<QStringList> dataInInputCovariateFile = processing.GetDataFromFile( inputCovariateFile );
 
-    QMap< QString, QList<QStringList> > dataInSelectedInputFiles;
-    dataInSelectedInputFiles.insert( "00?" + inputADFile, dataInInputADFile );
-    dataInSelectedInputFiles.insert( "04?" + inputCovariateFile, dataInInputCovariateFile );
+    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles;
+    QPair< int, QString > adFilePair;
+    adFilePair.first = 0;
+    adFilePair.second = inputADFile;
+    QPair< int, QString > compFilePair;
+    compFilePair.first = 4;
+    compFilePair.second = inputCovariateFile;
+    dataInSelectedInputFiles.insert( adFilePair, dataInInputADFile );
+    dataInSelectedInputFiles.insert( compFilePair, dataInInputCovariateFile );
     QStringList expectedRefSubjects;
     expectedRefSubjects << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
                               "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";

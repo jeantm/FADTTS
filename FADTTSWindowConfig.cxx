@@ -3,25 +3,25 @@
 FADTTSWindowConfig::FADTTSWindowConfig( QWidget *parent, Qt::WFlags f ):
     QMainWindow( parent, f )
 {
-    this->setupUi( this ) ;
-    m_sync = false ;
+    this->setupUi( this );
+    m_sync = false;
     //    m_para_m = 0;
 }
 
 void FADTTSWindowConfig::SyncUiToModelStructure()
 {
-    if( m_sync == 1)
+    if( m_sync == 1 )
     {
         return;
     }
     m_sync = true;
 
     /*1st tab: Inputs*/
-    m_para_m->setpara_inputTab_adFile_lineEdit( para_inputTab_adFile_lineEdit->text() ) ;
-    m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() ) ;
-    m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() ) ;
-    m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() ) ;
-    m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() ) ;
+    m_para_m->setpara_inputTab_adFile_lineEdit( para_inputTab_adFile_lineEdit->text() );
+    m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() );
+    m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() );
+    m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() );
+    m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() );
 
     m_para_m->setpara_inputTab_fiberName_lineEdit( para_inputTab_fiberName_lineEdit->text() );
 
@@ -37,13 +37,13 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
 
 
     /*3rd tab: Parameteres*/
-    std::map<std::pair<unsigned long,QString>,bool> itemList ;
+    std::map<std::pair<unsigned long,QString>,bool> itemList;
     itemList.clear();
-    for( unsigned long i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
+    for( unsigned long i = 0; i < para_parameterTab_covariates_listWidget->count(); i++ )
     {
-        QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item(i);
-        std::pair<unsigned long,QString> attribute ;
-        attribute = std::make_pair(i,currentItem->text());
+        QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i );
+        std::pair<unsigned long,QString> attribute;
+        attribute = std::make_pair( i, currentItem->text() );
         itemList[ attribute ] = static_cast<bool>( currentItem->checkState() );
     }
     m_para_m->setpara_parameterTab_covariates_listWidget( itemList );
@@ -66,24 +66,24 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     m_soft_m->setsoft_runTab_matlab_lineEdit( soft_runTab_matlab_lineEdit->text() );
 
 
-    m_sync = false ;
+    m_sync = false;
 }
 
 void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
 {
-    if( m_sync == 1)
+    if( m_sync == 1 )
     {
         return;
     }
     m_sync = true;
-    if(prefix =="para")
+    if( prefix =="para" )
     {
         /*1st tab: Inputs*/
-        m_para_m->setpara_inputTab_adFile_lineEdit( para_inputTab_adFile_lineEdit->text() ) ;
-        m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() ) ;
-        m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() ) ;
-        m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() ) ;
-        m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() ) ;
+        m_para_m->setpara_inputTab_adFile_lineEdit( para_inputTab_adFile_lineEdit->text() );
+        m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() );
+        m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() );
+        m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() );
+        m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() );
 
         m_para_m->setpara_inputTab_fiberName_lineEdit( para_inputTab_fiberName_lineEdit->text() );
 
@@ -99,13 +99,13 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
 
 
         /*3rd tab: Parameteres*/
-        std::map<std::pair<unsigned long,QString>,bool> itemList ;
+        std::map<std::pair<unsigned long,QString>,bool> itemList;
         itemList.clear();
-        for( unsigned long i = 0 ; i < para_parameterTab_covariates_listWidget->count() ; i++ )
+        for( unsigned long i = 0; i < para_parameterTab_covariates_listWidget->count(); i++ )
         {
-            QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item(i);
-            std::pair<unsigned long,QString> attribute ;
-            attribute = std::make_pair(i,currentItem->text());
+            QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i );
+            std::pair<unsigned long,QString> attribute;
+            attribute = std::make_pair( i, currentItem->text() );
             itemList[ attribute ] = static_cast<bool>( currentItem->checkState() );
         }
         m_para_m->setpara_parameterTab_covariates_listWidget( itemList );
@@ -123,18 +123,18 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_para_m->setpara_runTab_outputDir_lineEdit(para_runTab_outputDir_lineEdit->text() );
     }
 
-    if(prefix == "soft")
+    if( prefix == "soft" )
     {
         /*5th tab: Run*/
         m_soft_m->setsoft_runTab_matlab_lineEdit( soft_runTab_matlab_lineEdit->text() );
     }
 
-    m_sync = false ;
+    m_sync = false;
 }
 
 void FADTTSWindowConfig::SyncModelStructureToUi()
 {
-    if( m_sync == 1)
+    if( m_sync == 1 )
     {
         return;
     }
@@ -166,9 +166,8 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     for( std::map<std::pair<unsigned long,QString>,bool>::iterator it = itemList.begin(); it != itemList.end(); it++ )
     {
         QListWidgetItem *item = new QListWidgetItem( it->first.second , para_parameterTab_covariates_listWidget );
-        item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked ) ;
+        item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked );
         item->setFlags( Qt::ItemIsEnabled );
-        //      para_parameterTab_covariates_listWidget->addItem( item );
     }
 
     para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
@@ -186,18 +185,18 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     soft_runTab_matlab_lineEdit->setText( m_soft_m->getsoft_runTab_matlab_lineEdit() );
 
 
-    m_sync = false ;
+    m_sync = false;
 }
 
 void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
 {
-    if( m_sync == 1)
+    if( m_sync == 1 )
     {
         return;
     }
     m_sync = true;
 
-    if(prefix == "para")
+    if( prefix == "para" )
     {
         /*1st tab: Inputs*/
         para_inputTab_adFile_lineEdit->setText( m_para_m->getpara_inputTab_adFile_lineEdit() );
@@ -227,9 +226,8 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         for( std::map<std::pair<unsigned long,QString>,bool>::iterator it = itemList.begin(); it != itemList.end(); it++ )
         {
             QListWidgetItem *item = new QListWidgetItem( it->first.second , para_parameterTab_covariates_listWidget );
-            item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked ) ;
+            item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked );
             item->setFlags( Qt::ItemIsEnabled );
-            //      para_parameterTab_covariates_listWidget->addItem( item );
         }
 
         para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
@@ -245,13 +243,13 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         para_runTab_outputDir_lineEdit->setText( m_para_m->getpara_runTab_outputDir_lineEdit() );
     }
 
-    if(prefix == "soft")
+    if( prefix == "soft" )
     {
         /*5th tab: Run*/
         soft_runTab_matlab_lineEdit->setText( m_soft_m->getsoft_runTab_matlab_lineEdit() );
     }
 
-    m_sync = false ;
+    m_sync = false;
 }
 
 void FADTTSWindowConfig::Save_Parameter_Configuration( std::string filename )

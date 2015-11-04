@@ -78,18 +78,17 @@ QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
     return selectedSubjectList;
 }
 
-QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectFile,
+QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
                                                           int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
                                                           QString outputDir, QString fiberName )
 {
-    QMap<QString, bool> matlabInputFiles;
+    QMap< QPair< int, QString >, bool> matlabInputFiles;
     QStringList selectedSubjectList = GetSelectedSubjects( selectedSubjectFile );
 
-    QMap<QString, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
+    QMap< QPair< int, QString >, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
-        QString encoding = iterSelectedInputFile.key().split( "?" ).first() + "?";
-        QString fileName = iterSelectedInputFile.key().split( "?" ).last();
+        QString fileName = iterSelectedInputFile.key().second;
         QFile matlabInputFile( outputDir + "/" + fiberName + "_" +
                                QFileInfo( QFile( fileName ) ).fileName().split( "." ).first() + "_MatlabInput.csv" );
         matlabInputFile.open( QIODevice::WriteOnly );
@@ -177,7 +176,10 @@ QMap<QString, bool> Processing::GenerateMatlabInputFiles( QMap<QString, bool> se
         matlabInputFile.flush();
         matlabInputFile.close();
 
-        matlabInputFiles.insert( encoding.append( matlabInputFile.fileName() ), iterSelectedInputFile.value() );
+        QPair< int, QString > currentPair;
+        currentPair.first = iterSelectedInputFile.key().first;
+        currentPair.second = matlabInputFile.fileName();
+        matlabInputFiles.insert( currentPair, iterSelectedInputFile.value() );
 
         ++iterSelectedInputFile;
     }
@@ -213,10 +215,10 @@ QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInput
     return subjectList;
 }
 
-QStringList Processing::GetRefSubjectsFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
+QStringList Processing::GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
 {
     QStringList refSubjectList;
-    QMap<QString, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
+    QMap< QPair< int, QString >, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
     while( iterDataInSelectedFile != dataInSelectedInputFiles.end() )
     {
         QStringList currentSubjectList = GetSubjectsFromInputFile( iterDataInSelectedFile.value(), covariateFileSubjectColumnID );
@@ -234,7 +236,7 @@ QStringList Processing::GetRefSubjectsFromSelectedInputFiles( QMap<QString, QLis
     return refSubjectList;
 }
 
-QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
+QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
 {
     /** Create a subject list of reference.
      *  This list is either a file provided by the user or automatically generated

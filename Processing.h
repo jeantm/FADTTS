@@ -29,7 +29,7 @@ public:
 
     QStringList GetSelectedSubjects( QString selectedSubjectFile );
 
-    QMap<QString, bool> GenerateMatlabInputFiles( QMap<QString, bool> selectedInputFiles, QString selectedSubjectFile,
+    QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
                                                   int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
                                                   QString outputDir, QString fiberName );
 
@@ -39,9 +39,9 @@ public:
     /*****************************************************/
     QStringList GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID );
 
-    QStringList GetRefSubjectsFromSelectedInputFiles( QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
+    QStringList GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 
-    QStringList GetRefSubjects( const QString subjectFilePath, QMap<QString, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
+    QStringList GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 
     QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap );
 

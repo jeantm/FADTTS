@@ -48,7 +48,7 @@ public :
 
    void SetCovariates( QMap<int, QString> selectedCovariates );
 
-   void SetInputFiles( QMap<QString, bool> matlabInputFiles );
+   void SetInputFiles( QMap< QPair< int, QString >, bool> matlabInputFiles );
 
    void SetOmnibus( bool omnibus );
 

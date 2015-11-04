@@ -570,7 +570,11 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
         }
     }
 
-    DisplayCovariates( m_data.GetCovariates() );
+    if( prefID == m_data.GetCovariatePrefix() )
+    {
+        DisplayCovariates( m_data.GetCovariates() );
+    }
+
     UpdateAvailableFileParamTab();
 }
 
@@ -1094,11 +1098,11 @@ void FADTTSWindow::RunFADTTS()
     {
         QStringList selectedPrefixes = GetSelectedPrefixes();
 
-        QMap<QString, bool> selectedInputFiles = GetSelectedInputFiles();
+        QMap< QPair< int, QString >, bool> selectedInputFiles = GetSelectedInputFiles();
 
         QString selectedSubjectListFilePath = GenerateSelectedSubjectFile();
 
-        QMap<QString, bool> matlabInputFiles =
+        QMap< QPair< int, QString >, bool> matlabInputFiles =
                 m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
                                                        m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, m_data.GetOutputDir(),
                                                        this->para_inputTab_fiberName_lineEdit->text() );
@@ -1136,23 +1140,18 @@ QStringList FADTTSWindow::GetSelectedPrefixes()
     return selectedPrefixes;
 }
 
-QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
+QMap< QPair< int, QString >, bool > FADTTSWindow::GetSelectedInputFiles()
 {
-    QMap<QString, bool> selectedInputFiles;
+    QMap< QPair< int, QString >, bool > selectedInputFiles;
     int i = 0;
     foreach ( QString prefID, m_data.GetPrefixList() )
     {
-        QString encoding = QString( "%1" ).arg( i, 2, 10, QChar( '0' ) ).append( "?" ); /** Encoding necessary to keep the order **/
+        QPair< int, QString > currentPair;
         if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() && !m_data.GetFilename( prefID ).isEmpty() )
         {
-            if( prefID != m_data.GetCovariatePrefix() )
-            {
-                selectedInputFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), false );
-            }
-            else
-            {
-                selectedInputFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), true );
-            }
+            currentPair.first = i;
+            currentPair.second = m_data.GetFilename( prefID );
+            selectedInputFiles.insert( currentPair, prefID != m_data.GetCovariatePrefix() ? false : true );
         }
         i++;
     }
@@ -1160,16 +1159,18 @@ QMap<QString, bool> FADTTSWindow::GetSelectedInputFiles()
     return selectedInputFiles;
 }
 
-QMap<QString, QList<QStringList> > FADTTSWindow::GetFileDataOfSelectedFiles()
+QMap< QPair< int, QString >, QList<QStringList> > FADTTSWindow::GetFileDataOfSelectedFiles()
 {
-    QMap<QString, QList<QStringList> > dataInSelectedFiles;
+    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedFiles;
     int i = 0;
     foreach ( QString prefID, m_data.GetPrefixList() )
     {
-        QString encoding = QString( "%1" ).arg( i, 2, 10, QChar( '0' ) ).append( "?" ); /** Encoding necessary to keep the order **/
+        QPair< int, QString > currentPair;
+        currentPair.first = i;
+        currentPair.second = m_data.GetFilename( prefID );
         if( m_paramTabFileCheckBoxMap[ prefID ]->isChecked() && !m_data.GetFilename( prefID ).isEmpty() )
         {
-            dataInSelectedFiles.insert( encoding.append( m_data.GetFilename( prefID ) ), m_data.GetFileData( prefID ) );
+            dataInSelectedFiles.insert( currentPair, m_data.GetFileData( prefID ) );
         }
         i++;
     }

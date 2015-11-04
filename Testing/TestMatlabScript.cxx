@@ -29,9 +29,15 @@ bool TestMatlabScript::Test_GenerateMatlabScript( QString outputDir, QString mat
     selectedCovariates.insert( 3, "GestAgeBirth" );
     mScript.SetCovariates( selectedCovariates );
 
-    QMap<QString, bool> matlabInputFiles;
-    matlabInputFiles.insert( "00?" + matlabInputADFile, false );
-    matlabInputFiles.insert( "04?" + matlabInputCOMPFile, true );
+    QMap< QPair< int, QString >, bool> matlabInputFiles;
+    QPair< int, QString > adFilePair;
+    adFilePair.first = 0;
+    adFilePair.second = matlabInputADFile;
+    QPair< int, QString > compFilePair;
+    compFilePair.first = 4;
+    compFilePair.second = matlabInputCOMPFile;
+    matlabInputFiles.insert( adFilePair, false );
+    matlabInputFiles.insert( compFilePair, true );
     mScript.SetInputFiles( matlabInputFiles );
 
     bool omnibus = true;

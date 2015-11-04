@@ -210,9 +210,9 @@ private:
     /*************** Run Tab ***************/
     QStringList GetSelectedPrefixes();
 
-    QMap<QString, bool> GetSelectedInputFiles();
+    QMap< QPair< int, QString >, bool> GetSelectedInputFiles();
 
-    QMap<QString, QList<QStringList> > GetFileDataOfSelectedFiles();
+    QMap< QPair< int, QString >, QList<QStringList> > GetFileDataOfSelectedFiles();
 
     QMap<int, QString> GetSelectedCovariates();
 
