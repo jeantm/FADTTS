@@ -276,15 +276,9 @@ bool TestFADTTSWindow::Test_UpdateAvailableFileParamTab()
     para_Model_FADTTS para_m;
     para_Save_FADTTS para_s;
     para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
     fadttsWindow->SetParaLoad( &para_l );
     fadttsWindow->SetParaSave( &para_s );
     fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
 
     bool testADFileLabel = true;
     bool testADFileCheckState = true;
@@ -435,15 +429,9 @@ bool TestFADTTSWindow::Test_SetInfoCovariateFileSubjectColumnID( QString inputCO
     para_Model_FADTTS para_m;
     para_Save_FADTTS para_s;
     para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
     fadttsWindow->SetParaLoad( &para_l );
     fadttsWindow->SetParaSave( &para_s );
     fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
 
     /************************************************/
     /********************* Test1 ********************/
@@ -520,15 +508,9 @@ bool TestFADTTSWindow::Test_UpdateInputFileInformation( QString inputADFile, QSt
     para_Model_FADTTS para_m;
     para_Save_FADTTS para_s;
     para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
     fadttsWindow->SetParaLoad( &para_l );
     fadttsWindow->SetParaSave( &para_s );
     fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
 
     /************************************************/
     /******************** AD File *******************/
@@ -621,15 +603,9 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     para_Model_FADTTS para_m;
     para_Save_FADTTS para_s;
     para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
     fadttsWindow->SetParaLoad( &para_l );
     fadttsWindow->SetParaSave( &para_s );
     fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
 
     QStringList matchedSubjects;
     QMap<QString, QStringList > unMatchedSubjectMap;
@@ -906,15 +882,9 @@ bool TestFADTTSWindow::Test_DisplayNbrSubjectSelected()
     para_Model_FADTTS para_m;
     para_Save_FADTTS para_s;
     para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
     fadttsWindow->SetParaLoad( &para_l );
     fadttsWindow->SetParaSave( &para_s );
     fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
 
     QStringList subjects;
     subjects << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Pip" << "Tweek" << "Timmy" << "Wendy";

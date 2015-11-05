@@ -30,10 +30,6 @@ private slots:
 
     void LoadConfiguration();
 
-    void SaveSoftConfigFile();
-
-    void LoadSoftConfigFile();
-
     void DisplayAbout();
 
 
@@ -98,6 +94,8 @@ private slots:
     void UpdateOutputDirLineEdit( const QString& path );
 
     void SetMatlabExe(); /** WARNING! BAD CODING! FUNCTION NEEDS TO BE CORRECTED **/
+
+    void UpdateMatlabExeLineEdit( const QString& executable );
 
 
     void RunFADTTS();

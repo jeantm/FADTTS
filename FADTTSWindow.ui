@@ -1313,7 +1313,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="soft_runTab_matlab_lineEdit">
+               <widget class="QLineEdit" name="para_runTab_matlab_lineEdit">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -1375,9 +1375,6 @@
     </property>
     <addaction name="actionLoad_Settings"/>
     <addaction name="actionSave_Settings"/>
-    <addaction name="separator"/>
-    <addaction name="actionLoad_Software"/>
-    <addaction name="actionSave_Software"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1459,7 +1456,7 @@
   <tabstop>runTab_outputDir_pushButton</tabstop>
   <tabstop>para_runTab_outputDir_lineEdit</tabstop>
   <tabstop>runTab_matlab_pushButton</tabstop>
-  <tabstop>soft_runTab_matlab_lineEdit</tabstop>
+  <tabstop>para_runTab_matlab_lineEdit</tabstop>
   <tabstop>runTab_run_pushButton</tabstop>
  </tabstops>
  <resources/>

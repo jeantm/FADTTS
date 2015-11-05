@@ -43,7 +43,6 @@ void FADTTSWindow::SaveConfiguration()
         QFileInfo fi( filename ) ;
         dir = fi.dir().absolutePath() ;
         Save_Parameter_Configuration( filename.toStdString() );
-        Save_Software_Configuration( filename.toStdString() );
     }
 }
 
@@ -56,32 +55,7 @@ void FADTTSWindow::LoadConfiguration()
         QFileInfo fi( filename ) ;
         dir = fi.dir().absolutePath() ;
         Load_Parameter_Configuration( filename.toStdString() );
-        Load_Software_Configuration( filename.toStdString() );
     }
-}
-
-void FADTTSWindow::SaveSoftConfigFile()
-{
-//    QString dir;
-//    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Software Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
-//    if( !filename.isEmpty() )
-//    {
-//        QFileInfo fi( filename ) ;
-//        dir = fi.dir().absolutePath() ;
-//        Save_Software_Configuration( filename.toStdString() );
-//    }
-}
-
-void FADTTSWindow::LoadSoftConfigFile()
-{
-//    QString dir;
-//    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Software Configuration File" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
-//    if( !filename.isEmpty() )
-//    {
-//        QFileInfo fi( filename ) ;
-//        dir = fi.dir().absolutePath() ;
-//        Load_Software_Configuration( filename.toStdString() );
-//    }
 }
 
 void FADTTSWindow::DisplayAbout()
@@ -155,8 +129,6 @@ void FADTTSWindow::InitMenuBar()
 {
     connect( this->actionLoad_Settings, SIGNAL( triggered() ), SLOT( LoadConfiguration() ) );
     connect( this->actionSave_Settings, SIGNAL( triggered() ), SLOT( SaveConfiguration() ) );
-//    connect( this->actionLoad_Software, SIGNAL( triggered() ), SLOT( LoadSoftConfigFile() ) );
-//    connect( this->actionSave_Software, SIGNAL( triggered() ), SLOT( SaveSoftConfigFile() ) );
     connect( this->actionAbout, SIGNAL( triggered() ), SLOT( DisplayAbout() ) );
 
 }
@@ -293,6 +265,7 @@ void FADTTSWindow::InitRunTab()
     connect( this->para_runTab_outputDir_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateOutputDirLineEdit( const QString& ) ) );
 
     connect( this->runTab_matlab_pushButton, SIGNAL( clicked() ), this, SLOT( SetMatlabExe() ) );
+    connect( this->para_runTab_matlab_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateMatlabExeLineEdit( const QString& ) ) );
 
     connect( this->runTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( RunFADTTS() ) );
 }
@@ -374,7 +347,10 @@ void FADTTSWindow::AddInputFile( const QString& prefID )
     SetDir( dir, filePath, m_currentInputFileDir );
 
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
-    lineEdit->setText( file );
+    if( !file.isEmpty() )
+    {
+        lineEdit->setText( file );
+    }
 }
 
 void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
@@ -611,7 +587,10 @@ void FADTTSWindow::LoadSubjectFile()
     SetDir( dir, filePath, m_currentSubjectFileDir );
 
     QString file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
-    lineEdit->setText( file );
+    if( !file.isEmpty() )
+    {
+        lineEdit->setText( file );
+    }
 }
 
 void FADTTSWindow::ResetSubjectFile()
@@ -930,7 +909,6 @@ void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
             }
         }
     }
-
 }
 
 void FADTTSWindow::CheckAllCovariates()
@@ -940,7 +918,6 @@ void FADTTSWindow::CheckAllCovariates()
     {
         covariateListWidget->item( i )->setCheckState( Qt::Checked );
     }
-
 }
 
 void FADTTSWindow::UnCheckAllCovariates()
@@ -954,7 +931,6 @@ void FADTTSWindow::UnCheckAllCovariates()
             currentItem->setCheckState( Qt::Unchecked );
         }
     }
-
 }
 
 
@@ -962,6 +938,7 @@ void FADTTSWindow::UnCheckAllCovariates()
 void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
 {
     m_covariateListWidget->clear();
+
     if( !( covariateMap.isEmpty() ) )
     {
         QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
@@ -1023,7 +1000,6 @@ void FADTTSWindow::UpdateOutputDirLineEdit( const QString&  path )
     {
         label->clear();
     }
-
 }
 
 void FADTTSWindow::SetMatlabExe()
@@ -1031,7 +1007,7 @@ void FADTTSWindow::SetMatlabExe()
     /******************************************/
     /****** NOT SATISFIED WITH THIS CODE ******/
     /******************************************/
-    QLineEdit *lineEdit = this->soft_runTab_matlab_lineEdit;
+    QLineEdit *lineEdit = this->para_runTab_matlab_lineEdit;
     QString filePath = lineEdit->text();
     QString file;
     QDir dir;
@@ -1047,11 +1023,39 @@ void FADTTSWindow::SetMatlabExe()
     {
         dir = m_currentMatlabExeDir;
     }
-    file = QFileDialog::getOpenFileName( this, tr( "Choose Matlab Executable" ), dir.absolutePath(), tr( "All( * )" ) );
-    lineEdit->setText( file );
+
+    file = QFileDialog::getOpenFileName( this, tr( "Choose Matlab Executable" ), dir.absolutePath() );
+    if( !file.isEmpty() )
+    {
+        lineEdit->setText( file );
+    }
     /******************************************/
     /****** NOT SATISFIED WITH THIS CODE ******/
     /******************************************/
+}
+
+void FADTTSWindow::UpdateMatlabExeLineEdit( const QString& executable )
+{
+    QFile matlabExe( executable );
+    QLabel *label = this->runTab_iconMatlab_label;
+    if( executable.isEmpty() )
+    {
+        label->clear();
+    }
+    else
+    {
+        if( !matlabExe.open( QIODevice::ReadOnly ) )
+        {
+            DisplayIcon( label, m_koPixmap );
+        }
+        else
+        {
+            matlabExe.close();
+            DisplayIcon( label, m_okPixmap );
+        }
+
+        UpdateCurrentDir( executable, m_currentMatlabExeDir );
+    }
 }
 
 void FADTTSWindow::RunFADTTS()
