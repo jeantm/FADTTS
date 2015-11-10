@@ -19,7 +19,6 @@ void Processing::RunScript( QString matlabExe, QString matlabScript )
     process.execute( matlabExe, arguments );
 }
 
-
 bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
 {
     int rowDataSize = fileData.at( 0 ).count();

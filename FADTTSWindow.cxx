@@ -974,6 +974,11 @@ void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
             m_covariateListWidget->addItem( covariateItem );
             ++iterCovariate;
         }
+        this->parameterTab_covariatesInformation_label->show();
+    }
+    else
+    {
+        this->parameterTab_covariatesInformation_label->hide();
     }
 }
 
@@ -1186,8 +1191,8 @@ void FADTTSWindow::RunFADTTS()
         QString matlabOutputDir = outputDir + "/MatlabOutputs";
         QString matlabScript = m_matlabScript.GenerateMatlabFiles( matlabOutputDir, fiberName, this->para_parameterTab_nbrPermutations_spinBox->value() );
 
-//        QString matlabExe = "/opt/matlab/bin/matlab";
-//        m_processing.RunScript( matlabExe, matlabScript );
+        //        QString matlabExe = "/opt/matlab/bin/matlab";
+        //        m_processing.RunScript( matlabExe, matlabScript );
     }
 }
 

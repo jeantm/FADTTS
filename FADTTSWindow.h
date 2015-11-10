@@ -37,7 +37,7 @@ private slots:
     void DisplayAbout();
 
 
-    void closeEvent(QCloseEvent *event); /** Stop multi threading **/
+    void closeEvent(QCloseEvent *event);
 
 
     /*************** Input Tab ***************/

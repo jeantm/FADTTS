@@ -23,7 +23,6 @@ public:
     /*****************************************************/
     void RunScript( QString matlabExe, QString matlabScript );
 
-
     bool IsMatrixDimensionOK( const QList<QStringList> fileData );
 
     bool IsCovariateFile(const QStringList fileData );

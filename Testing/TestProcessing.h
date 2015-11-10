@@ -16,9 +16,6 @@ public:
     /**********************************************************************/
     /*************************** Test Functions ***************************/
     /**********************************************************************/
-    bool Test_RunScript();
-
-
     bool Test_IsMatrixDimensionOK( QString inputADFile ); // Done
 
     bool Test_IsCovariateFile(); // Done
