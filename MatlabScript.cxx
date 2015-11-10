@@ -1,7 +1,6 @@
 #include "MatlabScript.h"
 
 const QString MatlabScript::m_csvSeparator = QLocale().groupSeparator();
-//const QFile MatlabScript::m_matlabReferenceScript = QFile( ":/FADTTS_MatlabReferenceScript/MatlabRefScript.m" );
 
 MatlabScript::MatlabScript()
 {
@@ -13,8 +12,8 @@ MatlabScript::MatlabScript()
 void MatlabScript::InitMatlabScript()
 {
     m_matlabScript.clear();
-    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRef.m" );
-//    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRefWithPlots.m" );
+//    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRef.m" );
+    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRefWithPlots.m" );
     QFile matlabScriptRef( resource.absoluteFilePath() );
     if ( !matlabScriptRef.open( QIODevice::ReadOnly | QIODevice::Text ) )
     {
@@ -35,6 +34,11 @@ void MatlabScript::SetHeader()
     m_matlabScript.replace( "$version$", QString( FADTTS_VERSION ).prepend( "V" ) );
     m_matlabScript.replace( "$date$", QDate::currentDate().toString( "MM/dd/yyyy" ) );
     m_matlabScript.replace( "$time$", QTime::currentTime().toString( "hh:mm ap" ) );
+}
+
+void MatlabScript::SetMVCMPath( QString mvcmPath )
+{
+    m_matlabScript.replace( "$addMVCMPath$", "addpath = \'" + mvcmPath + "\';\n" );
 }
 
 void MatlabScript::SetFiberName( QString fiberName )
@@ -102,7 +106,7 @@ void MatlabScript::SetInputFiles( QMap< QPair< int, QString >, bool > matlabInpu
         QString filename = QFileInfo( QFile( iterMatlabInputFile.key().second ) ).fileName();
         if( iterMatlabInputFile.value() == false )
         {
-            inputDiffusionFiles.append( filename.split( "." ).first() + " = strcat( folder, \'/" + filename + "\' );\n" );
+            inputDiffusionFiles.append( filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );\n" );
             diffusionFiles.append( "dataFiber" + QString::number( i ) + "All = dlmread( " + filename.split( "." ).first() +
                                    ", \'" + m_csvSeparator + "\', 1, 0 );\n" );
             diffusionFiles.append( "diffusionFiles{ " + QString::number( i ) + " } = dataFiber" + QString::number( i ) + "All( :, 2:end );\n" );
@@ -110,7 +114,7 @@ void MatlabScript::SetInputFiles( QMap< QPair< int, QString >, bool > matlabInpu
         }
         else
         {
-            m_matlabScript.replace( "$inputMatlabCOMPInputFile$", filename.split( "." ).first() + " = strcat( folder, \'/" + filename + "\' );" );
+            m_matlabScript.replace( "$inputMatlabCOMPInputFile$", filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );" );
             m_matlabScript.replace( "$matlabCOMPInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
         }
         ++iterMatlabInputFile;
@@ -129,9 +133,10 @@ void MatlabScript::SetPostHoc( bool postHoc )
     m_matlabScript.replace( "$inputPostHoc$", "postHoc = " + QString::number( postHoc ) + ";" );
 }
 
-QString MatlabScript::GenerateMatlabFiles( QString outputDir, QString fiberName, int nbrPermutations )
+QString MatlabScript::GenerateMatlabFiles( QString matlabOutputDir, QString fiberName, int nbrPermutations )
 {
-    QString matlabScriptPath = outputDir + "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + QString::number( nbrPermutations ) + "perm.m";
+    QDir().mkpath( matlabOutputDir );
+    QString matlabScriptPath = matlabOutputDir + "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + QString::number( nbrPermutations ) + "perm.m";
     QFile matlabScript( matlabScriptPath );
     if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )
     {

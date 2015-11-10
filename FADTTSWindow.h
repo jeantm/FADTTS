@@ -26,9 +26,13 @@ public:
 
 private slots:
     /********* Configuration & Events *********/
-    void SaveConfiguration();
+    void SaveParaSettings();
 
-    void LoadConfiguration();
+    void LoadParaSettings();
+
+    void SaveSoftSettings();
+
+    void LoadSoftSettings();
 
     void DisplayAbout();
 
@@ -91,19 +95,21 @@ private slots:
     /******************** Run  Tab ********************/
     void SetOutputDir();
 
-    void UpdateOutputDirLineEdit( const QString& path );
+    void UpdateOutputDir( const QString& path );
 
-    void SetMatlabExe(); /** WARNING! BAD CODING! FUNCTION NEEDS TO BE CORRECTED **/
+    void SetMatlabExe();
 
-    void UpdateMatlabExeLineEdit( const QString& executable );
+    void UpdateMatlabExe( const QString& executable );
+
+    void SetMVCMPath();
+
+    void UpdateMVCMPath( const QString& path );
 
 
     void RunFADTTS();
 
 
 private:
-    static const QString m_csvSeparator; // Not Used
-
     static const QColor m_green;
     static const QColor m_red;
     static const QColor m_grey;
@@ -144,7 +150,7 @@ private:
 
     MatlabScript m_matlabScript;
 
-    QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir;
+    QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
 
 
 
@@ -214,7 +220,7 @@ private:
 
     QMap<int, QString> GetSelectedCovariates();
 
-    QString GenerateSelectedSubjectFile();
+    QString GenerateSelectedSubjectFile( QString outputDir );
 };
 
 #endif // FADTTSWINDOW_H

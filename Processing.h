@@ -2,6 +2,7 @@
 #define PROCESSING_H
 
 #include <QLocale>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>

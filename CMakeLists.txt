@@ -12,7 +12,6 @@ ${CMAKE_MODULE_PATH}
 )
 
 SET( CMAKE_CXX_FLAGS "-std=c++0x" )
-#add_definitions(-std=c++0x) # CMake 2.8.11 or older
 
 FIND_PACKAGE( QtToCppXML REQUIRED )
 INCLUDE( ${QtToCppXML_USE_FILE} )

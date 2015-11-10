@@ -605,16 +605,6 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="1" colspan="6">
-               <widget class="QLineEdit" name="subjectTab_search_lineEdit">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
               <item row="2" column="0" colspan="3">
                <widget class="QLabel" name="subjectTab_sortedSubjectsInformation_label">
                 <property name="sizePolicy">
@@ -654,6 +644,23 @@
                 </property>
                 <property name="text">
                  <string>Check All Visible</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1" colspan="5">
+               <widget class="QLineEdit" name="subjectTab_search_lineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="6">
+               <widget class="QLabel" name="subjectTab_nbrFound_label">
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -1227,19 +1234,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="2">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="0" colspan="3">
          <widget class="QWidget" name="runTab_outputDir_widget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1290,6 +1284,19 @@
           </layout>
          </widget>
         </item>
+        <item row="2" column="0" colspan="2">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="1" column="0" colspan="3">
          <widget class="QWidget" name="runTab_executable_widget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1298,8 +1305,8 @@
              <property name="title">
               <string>Executable</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="1" column="0">
                <widget class="QPushButton" name="runTab_matlab_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1308,12 +1315,12 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Matlab</string>
+                 <string>Specify Matlab Executable</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLineEdit" name="para_runTab_matlab_lineEdit">
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="soft_runTab_matlab_lineEdit">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -1325,7 +1332,17 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="runTab_mvcm_pushButton">
+                <property name="text">
+                 <string>Specify Path to MVCM</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="soft_runTab_mvcm_lineEdit"/>
+              </item>
+              <item row="1" column="2">
                <widget class="QLabel" name="runTab_iconMatlab_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1339,6 +1356,13 @@
                   <height>0</height>
                  </size>
                 </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="runTab_iconMVCM_label">
                 <property name="text">
                  <string/>
                 </property>
@@ -1373,8 +1397,11 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad_Settings"/>
-    <addaction name="actionSave_Settings"/>
+    <addaction name="actionLoad_Param_Settings"/>
+    <addaction name="actionSave_Param_Settings"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_Soft_Settings"/>
+    <addaction name="actionSave_Soft_Settings"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1385,14 +1412,14 @@
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
   </widget>
-  <action name="actionLoad_Settings">
+  <action name="actionLoad_Param_Settings">
    <property name="text">
-    <string>Load Settings</string>
+    <string>Load Param Settings</string>
    </property>
   </action>
-  <action name="actionSave_Settings">
+  <action name="actionSave_Param_Settings">
    <property name="text">
-    <string>Save Settings</string>
+    <string>Save Param Settings</string>
    </property>
   </action>
   <action name="actionLoad_Software">
@@ -1408,6 +1435,16 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionLoad_Soft_Settings">
+   <property name="text">
+    <string>Load Soft Settings</string>
+   </property>
+  </action>
+  <action name="actionSave_Soft_Settings">
+   <property name="text">
+    <string>Save Soft Settings</string>
    </property>
   </action>
  </widget>
@@ -1456,7 +1493,7 @@
   <tabstop>runTab_outputDir_pushButton</tabstop>
   <tabstop>para_runTab_outputDir_lineEdit</tabstop>
   <tabstop>runTab_matlab_pushButton</tabstop>
-  <tabstop>para_runTab_matlab_lineEdit</tabstop>
+  <tabstop>soft_runTab_matlab_lineEdit</tabstop>
   <tabstop>runTab_run_pushButton</tabstop>
  </tabstops>
  <resources/>

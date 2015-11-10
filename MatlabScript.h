@@ -40,6 +40,8 @@ public :
 
    void SetHeader();
 
+   void SetMVCMPath( QString mvcmPath );
+
    void SetFiberName( QString fiberName );
 
    void SetDiffusionProperties( QStringList selectedPrefixes );
@@ -54,7 +56,7 @@ public :
 
    void SetPostHoc( bool postHoc );
 
-   QString GenerateMatlabFiles( QString outputDir, QString fiberName, int nbrPermutations );
+   QString GenerateMatlabFiles( QString matlabOutputDir, QString fiberName, int nbrPermutations );
 
 
 private :

@@ -19,8 +19,7 @@ set(selectedSubjectList_TestFADTTS DATA{${SOURCE_DIR}/selectedSubjectList_TestFA
 set(ad_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/ad_TestFADTTS_MatlabInput.csv})
 set(COMP_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/COMP_TestFADTTS_MatlabInput.csv})
 
-set(matlabScriptPlotting_TestFADTTS_RunInput DATA{${SOURCE_DIR}/FADTTSAnalysis_MatlabScript_Test_259perm_plotting.m})
-set(matlabScriptNoPlotting_TestFADTTS_RunInput DATA{${SOURCE_DIR}/FADTTSAnalysis_MatlabScript_Test_259perm_noPlotting.m})
+set(matlabScript_TestFADTTS_RunInput DATA{${SOURCE_DIR}/FADTTSAnalysis_MatlabScript_TestFADTTS_259perm.m})
 
 include_DIRECTORIES( ${CMAKE_SOURCE_DIR})
 
@@ -64,7 +63,7 @@ ExternalData_add_test(
 ExternalData_add_test(
         MY_DATA
         NAME TestMatlabScript
-        COMMAND $<TARGET_FILE:FADTTS_Test_MatlabScript> ${TEMP_DIR} ${ad_TestFADTTS_MatlabInput} ${COMP_TestFADTTS_MatlabInput} ${matlabScriptNoPlotting_TestFADTTS_RunInput}
+        COMMAND $<TARGET_FILE:FADTTS_Test_MatlabScript> ${TEMP_DIR} ${ad_TestFADTTS_MatlabInput} ${COMP_TestFADTTS_MatlabInput} ${matlabScript_TestFADTTS_RunInput}
 )
 
 # Test for Processing class

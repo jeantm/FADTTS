@@ -10,15 +10,13 @@ Processing::Processing()
 /***************** Running Process *****************/
 void Processing::RunScript( QString matlabExe, QString matlabScript )
 {
-    qDebug() << "In RunScript()";
-    qDebug() << matlabScript;
-
     QProcess process;
+
     QStringList arguments;
-    arguments << "-nojvm" << "-nosplash" << QString( "-r " + matlabScript );
-    process.start( matlabExe, arguments );
-    process.waitForFinished(-1);
-    qDebug() << endl << "Done with FADTTS" << endl;
+    QString mScript = "run('" + matlabScript + "')";
+    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
+
+    process.execute( matlabExe, arguments );
 }
 
 
