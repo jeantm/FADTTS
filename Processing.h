@@ -1,15 +1,12 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
-#include <QLocale>
-#include <QDir>
+#include <QProcess>
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
 #include <QCheckBox>
-#include <QListWidget>
-#include <QProcess>
-#include <QDebug>
+#include <QMap>
 
 #include "Data.h"
 

@@ -1,3 +1,5 @@
+#include <QApplication>
+
 #include "TestProcessing.h"
 
 int main( int argc, char *argv[] )

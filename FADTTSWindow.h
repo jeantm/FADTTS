@@ -1,8 +1,6 @@
 #ifndef FADTTSWINDOW_H
 #define FADTTSWINDOW_H
 
-#include <QSharedPointer>
-
 #include "FADTTSWindowConfig.h"
 #include "Data.h"
 #include "EditInputDialog.h"

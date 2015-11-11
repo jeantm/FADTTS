@@ -1,3 +1,5 @@
+#include <QApplication>
+
 #include "TestFADTTSWindow.h"
 
 int main( int argc, char *argv[] )

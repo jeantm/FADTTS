@@ -238,27 +238,22 @@ QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap< QPa
     /** Create a subject list of reference.
      *  This list is either a file provided by the user or automatically generated
      *  with the selected input files' subjects **/
-    QFile subjectFile( subjectFilePath );
+
     QStringList refSubjectList;
-    if( QFileInfo( subjectFile ).fileName().isNull() )
+    if( subjectFilePath.isEmpty() )
     {
         refSubjectList = GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFiles, covariateFileSubjectColumnID );
     }
     else
     {
-        if( !subjectFile.open( QIODevice::ReadOnly ) )
+        QFile subjectFile( subjectFilePath );
+        subjectFile.open( QIODevice::ReadOnly );
+        QTextStream ts( &subjectFile );
+        while( !ts.atEnd() )
         {
-            refSubjectList = GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFiles, covariateFileSubjectColumnID );
+            refSubjectList.append( ts.readLine() );
         }
-        else
-        {
-            QTextStream ts( &subjectFile );
-            while( !ts.atEnd() )
-            {
-                refSubjectList.append( ts.readLine() );
-            }
-            subjectFile.close();
-        }
+        subjectFile.close();
     }
     refSubjectList.removeDuplicates();
 

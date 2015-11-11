@@ -1,8 +1,7 @@
 #ifndef INFODIALOG_H
 #define INFODIALOG_H
 
-#include <QtCore>
-#include <QtGui>
+#include <QtWidgets>
 
 #include "Data.h"
 

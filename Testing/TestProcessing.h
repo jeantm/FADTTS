@@ -2,7 +2,7 @@
 #define TESTPROCESSING_H
 
 #include <QCryptographicHash>
-#include <QApplication>
+#include <QSet>
 
 #include <iostream>
 

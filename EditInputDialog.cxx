@@ -233,7 +233,7 @@ void EditInputDialog::RefreshFileInfo()
                         m_data->AddCovariate( c, covariate );
                     }
                 }
-//                m_data->AddInterceptToCovariates();
+                //                m_data->AddInterceptToCovariates();
                 emit CovariateMapChanged( m_data->GetCovariates() ); /** The new covariates ( column ID and name ) are sent to the main window **/
             }
             else
@@ -260,9 +260,10 @@ void EditInputDialog::RefreshFileInfo()
 bool EditInputDialog::SaveCSVFile()
 {
     QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_lineEditPrefix.toUpper() + " file as ..." ) ), m_currentInputDir, tr( ".csv( *.csv ) ;; .*( * )" ) );
-    QFile exportedCSV( filePath );
-    if( exportedCSV.open( QIODevice::WriteOnly ) )
+    if( !filePath.isEmpty() )
     {
+        QFile exportedCSV( filePath );
+        exportedCSV.open( QIODevice::WriteOnly );
         QTextStream ts( &exportedCSV );
         QStringList data;
 
@@ -289,6 +290,7 @@ bool EditInputDialog::SaveCSVFile()
     {
         return false;
     }
+
 }
 
 void EditInputDialog::ResetTableWidget()

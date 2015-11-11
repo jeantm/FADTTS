@@ -1,8 +1,13 @@
 #ifndef EDITINPUTDIALOG_H
 #define EDITINPUTDIALOG_H
 
-#include <QtCore>
-#include <QtGui>
+#include <QDialog>
+#include <QTableWidget>
+#include <QSpinBox>
+#include <QLabel>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QCloseEvent>
 
 #include "Data.h"
 #include "Processing.h"

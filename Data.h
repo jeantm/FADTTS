@@ -2,7 +2,6 @@
 #define DATA_H
 
 #include <QObject>
-#include <QStringList>
 #include <QMap>
 
 class Data : public QObject
@@ -10,7 +9,7 @@ class Data : public QObject
     Q_OBJECT
 
 public:
-    explicit Data(QObject *parent = 0);
+    explicit Data( QObject *parent = 0 );
 
     /***************************************/
     /*************** Getters ***************/

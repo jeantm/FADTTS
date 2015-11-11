@@ -1,5 +1,5 @@
 #include "FADTTSWindow.h"
-
+#include <QDebug>
 /****************************************************************/
 /******************** Configuration & Events ********************/
 /****************************************************************/
@@ -351,8 +351,10 @@ void FADTTSWindow::AddMultipleInputFiles()
     QString dir = m_currentInputFileDir;
     QStringList fileList;
     fileList = QFileDialog::getOpenFileNames( this, tr( "Choose Input Files" ), dir, tr( ".csv( *.csv ) ;; .*( * )" ) );
-
-    UpdateLineEditsAfterAddingMultipleFiles( fileList );
+    if( !fileList.isEmpty() )
+    {
+        UpdateLineEditsAfterAddingMultipleFiles( fileList );
+    }
 }
 
 void FADTTSWindow::AddInputFile( const QString& prefID )
@@ -361,8 +363,9 @@ void FADTTSWindow::AddInputFile( const QString& prefID )
     QString filePath = lineEdit->text();
     QDir dir;
     SetDir( dir, filePath, m_currentInputFileDir );
-
+    qDebug() << "Test1";
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
+    qDebug() << "Test2";
     if( !file.isEmpty() )
     {
         lineEdit->setText( file );
@@ -374,6 +377,7 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
     QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ prefID ];
     QString filePath = lineEdit->text();
     QFile file( filePath );
+
     if( filePath.isEmpty() )
     {
         m_inputTabIconLabelMap[ prefID ]->clear();
@@ -411,7 +415,6 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
             }
         }
     }
-
     UpdateInputFileInformation( prefID );
 
     if( prefID == m_data.GetCovariatePrefix() )
@@ -526,6 +529,7 @@ void  FADTTSWindow::LaunchEditInputDialog( QString prefID )
 void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
 {
     QString filePath = m_data.GetFilename( prefID );
+
     if( !filePath.isEmpty() )
     {
         QList<QStringList> fileData = m_data.GetFileData( prefID );
@@ -639,9 +643,10 @@ void FADTTSWindow::UpdateSubjectFileLineEdit( const QString& filePath )
 void FADTTSWindow::SaveCheckedSubjects()
 {
     QString filePath = QFileDialog::getSaveFileName( this, tr( "Save subject list as ..." ), m_currentSubjectFileDir, tr( ".txt ( *.txt ) ;; .*( * )" ) );
-    QFile exportedTXT( filePath );
-    if( exportedTXT.open( QIODevice::WriteOnly ) )
+    if( !filePath.isEmpty() )
     {
+        QFile exportedTXT( filePath );
+        exportedTXT.open( QIODevice::WriteOnly );
         QTextStream ts( &exportedTXT );
         for( int i = 0; i < m_sortedSubjectListWidget->count(); i++ )
         {
@@ -718,13 +723,11 @@ void FADTTSWindow::SortAndDisplaySubjects()
     QString subjectFile = m_subjectFileLineEdit->text();
     QStringList refSubjectList = m_processing.GetRefSubjects( subjectFile, GetFileDataOfSelectedFiles(), m_data.GetCovariateFileSubjectColumnID() );
     QMap<QString, QStringList> allSubjects = m_processing.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjects() );
-
     QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.SortSubjects( refSubjectList, allSubjects );
 
     QStringList matchedSubjects;
     QMap<QString, QStringList > unMatchedSubjects;
     m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
-
     DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
 
     SearchSubjects();

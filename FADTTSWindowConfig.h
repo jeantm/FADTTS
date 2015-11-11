@@ -49,7 +49,7 @@ public:
     soft_Load_FADTTS* m_soft_l;
 
 
-    FADTTSWindowConfig( QWidget *parent = 0, Qt::WFlags f = 0 );
+    FADTTSWindowConfig( QWidget *parent = 0, Qt::WindowFlags f = 0 );
 
     void SetParaModel( para_Model_FADTTS* para_m );
 
