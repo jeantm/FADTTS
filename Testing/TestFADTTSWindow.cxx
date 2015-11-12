@@ -133,138 +133,139 @@ bool TestFADTTSWindow::Test_UpdateEditInputDialogCurrentDir()
 
 bool TestFADTTSWindow::Test_DisplayCovariates()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+//    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
 
-    bool testTextCovariatesOK1 = true;
-    bool testCheckStateCovariatesOK1 = true;
-    bool testTextCovariatesOK2 = true;
-    bool testCheckStateCovariatesOK2 = true;
+//    bool testTextCovariatesOK1 = true;
+//    bool testCheckStateCovariatesOK1 = true;
+//    bool testTextCovariatesOK2 = true;
+//    bool testCheckStateCovariatesOK2 = true;
 
-    QMap<int, QString> covariateMap1;
-    covariateMap1.insert( -1, "Intercept" );
-    covariateMap1.insert( 1, "COMP" );
-    covariateMap1.insert( 2, "Gender" );
-    covariateMap1.insert( 3, "GestAgeBirth" );
-    covariateMap1.insert( 4, "DaysSinceBirth" );
-    covariateMap1.insert( 5, "MEDUC" );
-    covariateMap1.insert( 6, "Scanner" );
-    QMap<int, QString> covariateMap2;
-    covariateMap2.insert( 7, "Directions" );
-    covariateMap2.insert( 8, "TwinStatus" );
-    covariateMap2.insert( 9, "ICV" );
-    QMap<int, QString> covariateMap3;
+//    QMap<int, QString> covariateMap1;
+//    covariateMap1.insert( -1, "Intercept" );
+//    covariateMap1.insert( 1, "COMP" );
+//    covariateMap1.insert( 2, "Gender" );
+//    covariateMap1.insert( 3, "GestAgeBirth" );
+//    covariateMap1.insert( 4, "DaysSinceBirth" );
+//    covariateMap1.insert( 5, "MEDUC" );
+//    covariateMap1.insert( 6, "Scanner" );
+//    QMap<int, QString> covariateMap2;
+//    covariateMap2.insert( 7, "Directions" );
+//    covariateMap2.insert( 8, "TwinStatus" );
+//    covariateMap2.insert( 9, "ICV" );
+//    QMap<int, QString> covariateMap3;
 
-    fadttsWindow->DisplayCovariates( covariateMap1 );
+//    fadttsWindow->DisplayCovariates( covariateMap1 );
 
-    bool testNbrCovariatesOK1 = fadttsWindow->m_covariateListWidget->count() == covariateMap1.size();
-    int nbrCovarTest1 = fadttsWindow->m_covariateListWidget->count();
+//    bool testNbrCovariatesOK1 = fadttsWindow->m_covariateListWidget->count() == covariateMap1.size();
+//    int nbrCovarTest1 = fadttsWindow->m_covariateListWidget->count();
 
-    QStringList covariatesDisplayed1;
-    QList<Qt::CheckState> covariatesCheckState1;
-    if( testNbrCovariatesOK1 )
-    {
-        for( int i = 0; i < fadttsWindow->m_covariateListWidget->count(); i++ )
-        {
-            covariatesDisplayed1.append( fadttsWindow->m_covariateListWidget->item( i )->text() );
-            if( fadttsWindow->m_covariateListWidget->item( i )->text() != covariateMap1.values().at( i ) )
-            {
-                testTextCovariatesOK1 = false;
-            }
-            covariatesCheckState1.append( fadttsWindow->m_covariateListWidget->item( i )->checkState() );
-            if( fadttsWindow->m_covariateListWidget->item( i )->checkState() != Qt::Checked )
-            {
-                testCheckStateCovariatesOK1 = false;
-            }
-        }
-    }
+//    QStringList covariatesDisplayed1;
+//    QList<Qt::CheckState> covariatesCheckState1;
+//    if( testNbrCovariatesOK1 )
+//    {
+//        for( int i = 0; i < fadttsWindow->m_covariateListWidget->count(); i++ )
+//        {
+//            covariatesDisplayed1.append( fadttsWindow->m_covariateListWidget->item( i )->text() );
+//            if( fadttsWindow->m_covariateListWidget->item( i )->text() != covariateMap1.values().at( i ) )
+//            {
+//                testTextCovariatesOK1 = false;
+//            }
+//            covariatesCheckState1.append( fadttsWindow->m_covariateListWidget->item( i )->checkState() );
+//            if( fadttsWindow->m_covariateListWidget->item( i )->checkState() != Qt::Checked )
+//            {
+//                testCheckStateCovariatesOK1 = false;
+//            }
+//        }
+//    }
 
-    fadttsWindow->DisplayCovariates( covariateMap2 );
+//    fadttsWindow->DisplayCovariates( covariateMap2 );
 
-    bool testNbrCovariatesOK2 = fadttsWindow->m_covariateListWidget->count() == covariateMap2.size();
-    int nbrCovarTest2 = fadttsWindow->m_covariateListWidget->count();
+//    bool testNbrCovariatesOK2 = fadttsWindow->m_covariateListWidget->count() == covariateMap2.size();
+//    int nbrCovarTest2 = fadttsWindow->m_covariateListWidget->count();
 
-    QStringList covariatesDisplayed2;
-    QList<Qt::CheckState> covariatesCheckState2;
-    if( testNbrCovariatesOK2 )
-    {
-        for( int i = 0; i < fadttsWindow->m_covariateListWidget->count(); i++ )
-        {
-            covariatesDisplayed2.append( fadttsWindow->m_covariateListWidget->item( i )->text() );
-            if( fadttsWindow->m_covariateListWidget->item( i )->text() != covariateMap2.values().at( i ) )
-            {
-                testTextCovariatesOK2 = false;
-            }
-            covariatesCheckState2.append( fadttsWindow->m_covariateListWidget->item( i )->checkState() );
-            if( fadttsWindow->m_covariateListWidget->item( i )->checkState() != Qt::Checked )
-            {
-                testCheckStateCovariatesOK2 = false;
-            }
-        }
-    }
+//    QStringList covariatesDisplayed2;
+//    QList<Qt::CheckState> covariatesCheckState2;
+//    if( testNbrCovariatesOK2 )
+//    {
+//        for( int i = 0; i < fadttsWindow->m_covariateListWidget->count(); i++ )
+//        {
+//            covariatesDisplayed2.append( fadttsWindow->m_covariateListWidget->item( i )->text() );
+//            if( fadttsWindow->m_covariateListWidget->item( i )->text() != covariateMap2.values().at( i ) )
+//            {
+//                testTextCovariatesOK2 = false;
+//            }
+//            covariatesCheckState2.append( fadttsWindow->m_covariateListWidget->item( i )->checkState() );
+//            if( fadttsWindow->m_covariateListWidget->item( i )->checkState() != Qt::Checked )
+//            {
+//                testCheckStateCovariatesOK2 = false;
+//            }
+//        }
+//    }
 
-    fadttsWindow->DisplayCovariates( covariateMap3 );
+//    fadttsWindow->DisplayCovariates( covariateMap3 );
 
-    bool testNbrCovariatesOK3 = fadttsWindow->m_covariateListWidget->count() == covariateMap3.size();
-    int nbrCovarTest3 = fadttsWindow->m_covariateListWidget->count();
+//    bool testNbrCovariatesOK3 = fadttsWindow->m_covariateListWidget->count() == covariateMap3.size();
+//    int nbrCovarTest3 = fadttsWindow->m_covariateListWidget->count();
 
 
-    if( !testNbrCovariatesOK1 || !testTextCovariatesOK1 || !testCheckStateCovariatesOK1 ||
-            !testNbrCovariatesOK2 || !testTextCovariatesOK2 || !testCheckStateCovariatesOK2 ||
-            !testNbrCovariatesOK3 )
-    {
-        std::cerr << std::endl << "Test_DisplayCovariates() FAILED:" << std::endl;
-        if( !testNbrCovariatesOK1 || !testTextCovariatesOK1 || !testCheckStateCovariatesOK1 )
-        {
-            std::cerr << "\t+ Test covariateMap with 7 covariates:" << std::endl;
-            if( !testNbrCovariatesOK1 )
-            {
-                DisplayErrorNbrCovariates_DisplayCovariates( nbrCovarTest1, covariateMap1.size() );
-            }
-            else
-            {
-                if( !testTextCovariatesOK1 )
-                {
-                    DisplayErrorNameCovariates_DisplayCovariates( covariatesDisplayed1, covariateMap1 );
-                }
-                if( !testCheckStateCovariatesOK1 )
-                {
-                    DisplayErrorCheckStateCovariates_DisplayCovariates( covariatesDisplayed1, covariatesCheckState1 );
-                }
-            }
-        }
-        if( !testNbrCovariatesOK2 || !testTextCovariatesOK2 || !testCheckStateCovariatesOK2 )
-        {
-            std::cerr << "\t+ Test covariateMap with 3 covariates:" << std::endl;
-            if( !testNbrCovariatesOK2 )
-            {
-                DisplayErrorNbrCovariates_DisplayCovariates( nbrCovarTest2, covariateMap2.size() );
-            }
-            else
-            {
-                if( !testTextCovariatesOK2 )
-                {
-                    DisplayErrorNameCovariates_DisplayCovariates( covariatesDisplayed2, covariateMap2 );
-                }
-                if( !testCheckStateCovariatesOK2 )
-                {
-                    DisplayErrorCheckStateCovariates_DisplayCovariates( covariatesDisplayed2, covariatesCheckState2 );
-                }
-            }
-        }
-        if( !testNbrCovariatesOK3 )
-        {
-            std::cerr << "\t+ Test empty covariateMap:" << std::endl;
-            DisplayErrorNbrCovariates_DisplayCovariates( nbrCovarTest3, covariateMap3.size() );
-        }
-    }
-    else
-    {
-        std::cout << std::endl << "Test_DisplayCovariates() PASSED" << std::endl;
-    }
+//    if( !testNbrCovariatesOK1 || !testTextCovariatesOK1 || !testCheckStateCovariatesOK1 ||
+//            !testNbrCovariatesOK2 || !testTextCovariatesOK2 || !testCheckStateCovariatesOK2 ||
+//            !testNbrCovariatesOK3 )
+//    {
+//        std::cerr << std::endl << "Test_DisplayCovariates() FAILED:" << std::endl;
+//        if( !testNbrCovariatesOK1 || !testTextCovariatesOK1 || !testCheckStateCovariatesOK1 )
+//        {
+//            std::cerr << "\t+ Test covariateMap with 7 covariates:" << std::endl;
+//            if( !testNbrCovariatesOK1 )
+//            {
+//                DisplayErrorNbrCovariates_DisplayCovariates( nbrCovarTest1, covariateMap1.size() );
+//            }
+//            else
+//            {
+//                if( !testTextCovariatesOK1 )
+//                {
+//                    DisplayErrorNameCovariates_DisplayCovariates( covariatesDisplayed1, covariateMap1 );
+//                }
+//                if( !testCheckStateCovariatesOK1 )
+//                {
+//                    DisplayErrorCheckStateCovariates_DisplayCovariates( covariatesDisplayed1, covariatesCheckState1 );
+//                }
+//            }
+//        }
+//        if( !testNbrCovariatesOK2 || !testTextCovariatesOK2 || !testCheckStateCovariatesOK2 )
+//        {
+//            std::cerr << "\t+ Test covariateMap with 3 covariates:" << std::endl;
+//            if( !testNbrCovariatesOK2 )
+//            {
+//                DisplayErrorNbrCovariates_DisplayCovariates( nbrCovarTest2, covariateMap2.size() );
+//            }
+//            else
+//            {
+//                if( !testTextCovariatesOK2 )
+//                {
+//                    DisplayErrorNameCovariates_DisplayCovariates( covariatesDisplayed2, covariateMap2 );
+//                }
+//                if( !testCheckStateCovariatesOK2 )
+//                {
+//                    DisplayErrorCheckStateCovariates_DisplayCovariates( covariatesDisplayed2, covariatesCheckState2 );
+//                }
+//            }
+//        }
+//        if( !testNbrCovariatesOK3 )
+//        {
+//            std::cerr << "\t+ Test empty covariateMap:" << std::endl;
+//            DisplayErrorNbrCovariates_DisplayCovariates( nbrCovarTest3, covariateMap3.size() );
+//        }
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_DisplayCovariates() PASSED" << std::endl;
+//    }
 
-    return ( testNbrCovariatesOK1 & testTextCovariatesOK1 & testCheckStateCovariatesOK1 &
-             testNbrCovariatesOK2 & testTextCovariatesOK2 & testCheckStateCovariatesOK2 &
-             testNbrCovariatesOK3 );
+//    return ( testNbrCovariatesOK1 & testTextCovariatesOK1 & testCheckStateCovariatesOK1 &
+//             testNbrCovariatesOK2 & testTextCovariatesOK2 & testCheckStateCovariatesOK2 &
+//             testNbrCovariatesOK3 );
+    return false;
 }
 
 

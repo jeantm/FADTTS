@@ -131,7 +131,7 @@ void FADTTSWindow::InitFADTTSWindow()
     InitParameterTab();
     InitRunTab();
 
-    DisplayCovariates( m_data.GetCovariates() );
+    DisplayCovariates();
 
     UpdateAvailableFileParamTab();
 }
@@ -238,6 +238,7 @@ void FADTTSWindow::InitSubjectTab()
         connect( m_paramTabFileCheckBoxMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( toggled( const bool& ) ), signalMapperSelectFile,SLOT( map() ) );
         signalMapperSelectFile->setMapping( m_paramTabFileCheckBoxMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
     }
+    connect( this->para_subjectTab_covariateFile_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( DisplayCovariates() ) );
 
     /** Map of Labels displaying the matrix data size of the files that have been chosen **/
     m_paramTabFileDataSizeLabelMap.insert( m_data.GetAxialDiffusivityPrefix(), this->subjectTab_adFileInfo_label );
@@ -256,7 +257,7 @@ void FADTTSWindow::InitSubjectTab()
     connect( this->subjectTab_unCheckAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllSubjectsVisible() ) );
     connect( this->subjectTab_sortedSubjects_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectSubject( QListWidgetItem * ) ) );
     connect( this->subjectTab_search_lineEdit, SIGNAL( textEdited( const QString& ) ), this, SLOT( SearchSubjects() ) );
-    connect( this->subjectTab_caseSensitive_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SetCaseSensitivity( bool ) ) );
+    connect( this->subjectTab_caseSensitive_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( SetCaseSensitivity( const bool& ) ) );
 }
 
 void FADTTSWindow::InitParameterTab()
@@ -463,7 +464,7 @@ void FADTTSWindow::UpdateCovariateMapAfterFileEdition( const QMap<int, QString>&
 {
     m_data.ClearCovariates();
     m_data.SetCovariates() = newCovariateMapAfterFileEdition;
-    DisplayCovariates( m_data.GetCovariates() );
+    DisplayCovariates();
 }
 
 void FADTTSWindow::UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int&  newCovariateFileSubjectColumnIDAfterFileEdition )
@@ -559,7 +560,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
 
     if( prefID == m_data.GetCovariatePrefix() )
     {
-        DisplayCovariates( m_data.GetCovariates() );
+        DisplayCovariates();
     }
 
     UpdateAvailableFileParamTab();
@@ -925,7 +926,7 @@ void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
         {
             QString warningMessage = "You are about to uncheck the Intercept. This action is not recommended.<br>Are you sure you want to do it?";
             int ignoreWarning = QMessageBox::warning( this, tr( "Uncheck Intercept" ), tr( qPrintable( warningMessage ) ),
-                                                      QMessageBox::Yes || QMessageBox::No, QMessageBox::No );
+                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::No );
 
             if( ignoreWarning == QMessageBox::Yes )
             {
@@ -959,8 +960,9 @@ void FADTTSWindow::UnCheckAllCovariates()
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
+void FADTTSWindow::DisplayCovariates()
 {
+    QMap<int, QString> covariateMap = m_data.GetCovariates();
     m_covariateListWidget->clear();
 
     if( !( covariateMap.isEmpty() ) && this->para_subjectTab_covariateFile_checkBox->isChecked() )
@@ -1317,24 +1319,18 @@ bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selected
                 }
             }
         }
-        if( covariateFileChosen )
+        if( covariateFileChecked )
         {
             if( !atLeastOneCovariateChecked )
             {
                 warningText.append( "Parameters Tab<br>" );
-                if( !atLeastOneCovariateChecked )
-                {
-                    warningText.append( "- Select at least 1 covariate<br>" );
-                }
+                warningText.append( "- Select at least 1 covariate<br>" );
             }
         }
         if( !mvcmPathSpecified )
         {
             warningText.append( "Run Tab<br>" );
-            if( !mvcmPathSpecified )
-            {
-                warningText.append( "- Specify the path to FADTTS matlab function (MVCM)<br>" );
-            }
+            warningText.append( "- Specify the path to FADTTS matlab function (MVCM)<br>" );
         }
         WarningPopUp( warningText );
         return false;

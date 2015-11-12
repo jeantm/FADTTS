@@ -85,6 +85,8 @@ private slots:
 
 
     /***************** Parameters  Tab *****************/
+    void DisplayCovariates();
+
     void SelectCovariate( QListWidgetItem *item );
 
     void CheckAllCovariates();
@@ -208,7 +210,6 @@ private:
 
 
     /*************** Parameters Tab ***************/
-    void DisplayCovariates( QMap<int, QString> covariateMap );
 
 
     /*************** Run Tab ***************/
