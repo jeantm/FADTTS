@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
     <category>PROJECT</category>
-    <title>FADTTS</title>
-    <version>1.00.00</version>
+    <title>FADTTSter</title>
+    <version>1.0</version>
     <contributor>Jean Noel</contributor>
     <description>This interface purpose is to simplify data processing when working with FADTTS. This interface enables the user to work on the row data as well as on the subjects used for the study.</description>
     <parameters>

@@ -1,7 +1,7 @@
 #include "FADTTSWindow.h"
-#include <QDebug>
+
 /****************************************************************/
-/******************** Configuration & Events ********************/
+/******************** Configuration && Events ********************/
 /****************************************************************/
 const QColor FADTTSWindow::m_green = QColor( 0,255,0,127 );
 const QColor FADTTSWindow::m_red = QColor( 255,0,0,127 );
@@ -84,7 +84,6 @@ void FADTTSWindow::DisplayAbout()
 {
     QString messageBoxTitle = "About " + QString( FADTTS_TITLE );
     QString aboutFADTTS;
-    std::cout<<FADTTS_DESCRIPTION<<std::endl;
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Description:</b> " + QString( FADTTS_DESCRIPTION ) + "<br>"
             "<b>Contributors:</b> " + QString( FADTTS_CONTRIBUTORS );
@@ -95,7 +94,7 @@ void FADTTSWindow::DisplayAbout()
 void FADTTSWindow::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton closeMBox =
-            QMessageBox::question( this, tr( "FADTTS" ), tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
+            QMessageBox::question( this, tr( "FADTTSter" ), tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
                                    QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
 
     switch( closeMBox )
@@ -363,9 +362,7 @@ void FADTTSWindow::AddInputFile( const QString& prefID )
     QString filePath = lineEdit->text();
     QDir dir;
     SetDir( dir, filePath, m_currentInputFileDir );
-    qDebug() << "Test1";
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
-    qDebug() << "Test2";
     if( !file.isEmpty() )
     {
         lineEdit->setText( file );
@@ -928,7 +925,7 @@ void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
         {
             QString warningMessage = "You are about to uncheck the Intercept. This action is not recommended.<br>Are you sure you want to do it?";
             int ignoreWarning = QMessageBox::warning( this, tr( "Uncheck Intercept" ), tr( qPrintable( warningMessage ) ),
-                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::No );
+                                                      QMessageBox::Yes || QMessageBox::No, QMessageBox::No );
 
             if( ignoreWarning == QMessageBox::Yes )
             {
@@ -966,7 +963,7 @@ void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
 {
     m_covariateListWidget->clear();
 
-    if( !( covariateMap.isEmpty() ) )
+    if( !( covariateMap.isEmpty() ) && this->para_subjectTab_covariateFile_checkBox->isChecked() )
     {
         QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
         while( iterCovariate != covariateMap.end() )
@@ -1092,11 +1089,11 @@ void FADTTSWindow::SetMVCMPath()
     QString dirPath;
     if( dir.exists() && !filePath.isEmpty() )
     {
-        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose Output Directory" ), dir.absolutePath(), QFileDialog::ShowDirsOnly );
+        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), dir.absolutePath(), QFileDialog::ShowDirsOnly );
     }
     else
     {
-        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose Output Directory" ), m_mvcmPath, QFileDialog::ShowDirsOnly );
+        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), m_mvcmPath, QFileDialog::ShowDirsOnly );
     }
     if( !dirPath.isEmpty() )
     {
@@ -1131,43 +1128,12 @@ void FADTTSWindow::RunFADTTS()
     SyncUiToModelStructure();
 
     QString fiberName = this->para_inputTab_fiberName_lineEdit->text();
-    QString outputDir = m_data.GetOutputDir() + "/FADTTS_" + fiberName;
+    QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + fiberName;
     QDir().mkpath( outputDir );
 
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
 
-    bool fiberNameProvided = !fiberName.isEmpty();
-    bool atLeastOneDataFileSelected = ( this->para_subjectTab_adFile_checkBox->isChecked() | this->para_subjectTab_rdFile_checkBox->isChecked() |
-                                        this->para_subjectTab_mdFile_checkBox->isChecked() | this->para_subjectTab_faFile_checkBox->isChecked() );
-    bool covariateFileSelected = this->para_subjectTab_covariateFile_checkBox->isChecked();
-    bool atLeastOneCovariateSelected = selectedCovariates.count() != 0;
-    bool mvcmPathSpecified = !this->soft_runTab_mvcm_lineEdit->text().isEmpty();
-    if( !fiberNameProvided || !atLeastOneDataFileSelected || !covariateFileSelected || !atLeastOneCovariateSelected || !mvcmPathSpecified )
-    {
-        QString warningText = "<b>FADTTS will not be executed for the following reason(s):</b><br>";
-        if( !fiberNameProvided )
-        {
-            warningText.append( "- No fiber name provided<br><i>Inputs Tab</i><br>" );
-        }
-        if( !atLeastOneDataFileSelected )
-        {
-            warningText.append( "- Provide and select at least 1 data file<br><i>Inputs Tab / Parameters Tab</i><br>" );
-        }
-        if( !covariateFileSelected )
-        {
-            warningText.append( "- No correct input covariate file provided and/or selected<br><i>Inputs Tab / Parameters Tab</i><br>" );
-        }
-        if( !atLeastOneCovariateSelected )
-        {
-            warningText.append( "- Select at least 1 covariate<br><i>Parameters Tab</i><br>" );
-        }
-        if( !mvcmPathSpecified )
-        {
-            warningText.append( "- Specify the path to FADTTS matlab function (MVCM)<br><i>Run Tab</i><br>" );
-        }
-        WarningPopUp( warningText );
-    }
-    else
+    if( IsRunFADTTSOK( fiberName, selectedCovariates ) )
     {
         QStringList selectedPrefixes = GetSelectedPrefixes();
 
@@ -1192,10 +1158,7 @@ void FADTTSWindow::RunFADTTS()
         m_matlabScript.SetPostHoc( this->para_parameterTab_postHoc_checkBox->isChecked() );
 
         QString matlabOutputDir = outputDir + "/MatlabOutputs";
-        QString matlabScript = m_matlabScript.GenerateMatlabFiles( matlabOutputDir, fiberName, this->para_parameterTab_nbrPermutations_spinBox->value() );
-
-        //        QString matlabExe = "/opt/matlab/bin/matlab";
-        //        m_processing.RunScript( matlabExe, matlabScript );
+        m_matlabScript.GenerateMatlabFiles( matlabOutputDir, fiberName, this->para_parameterTab_nbrPermutations_spinBox->value() );
     }
 }
 
@@ -1303,4 +1266,81 @@ QString FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
     }
 
     return selectedSubjects.fileName();
+}
+
+bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates )
+{
+    bool fiberNameProvided = !fiberName.isEmpty();
+    bool atLeastOneDataFileChosen = ( this->para_subjectTab_adFile_checkBox->isEnabled() || this->para_subjectTab_rdFile_checkBox->isEnabled() ||
+                                      this->para_subjectTab_mdFile_checkBox->isEnabled() || this->para_subjectTab_faFile_checkBox->isEnabled() );
+    bool covariateFileChosen = this->para_subjectTab_covariateFile_checkBox->isEnabled();
+    bool atLeastOneDataFileChecked = ( this->para_subjectTab_adFile_checkBox->isChecked() || this->para_subjectTab_rdFile_checkBox->isChecked() ||
+                                        this->para_subjectTab_mdFile_checkBox->isChecked() || this->para_subjectTab_faFile_checkBox->isChecked() );
+    bool covariateFileChecked = this->para_subjectTab_covariateFile_checkBox->isChecked();
+
+    bool atLeastOneCovariateChecked = selectedCovariates.count() != 0;
+    bool mvcmPathSpecified = !this->soft_runTab_mvcm_lineEdit->text().isEmpty();
+
+    if( !fiberNameProvided || !atLeastOneDataFileChosen || !covariateFileChosen ||
+            !atLeastOneDataFileChecked || !covariateFileChecked ||
+            !atLeastOneCovariateChecked || !mvcmPathSpecified )
+    {
+        QString warningText = "<b>FADTTSter will not be executed for the following reason(s):</b><br>";
+        if( !fiberNameProvided || !atLeastOneDataFileChosen || !covariateFileChosen )
+        {
+            warningText.append( "Inputs Tab<br>" );
+            if( !fiberNameProvided )
+            {
+                warningText.append( "- No fiber name provided<br>" );
+            }
+            if( !atLeastOneDataFileChosen )
+            {
+                warningText.append( "- Provide at least 1 data file (AD, RD, MR or FA)<br>" );
+            }
+            if( !covariateFileChosen )
+            {
+                warningText.append( "- No covariate file provided<br>" );
+            }
+        }
+        if( atLeastOneDataFileChosen || covariateFileChosen )
+        {
+            if( ( !atLeastOneDataFileChecked && atLeastOneDataFileChosen ) || ( !covariateFileChecked && covariateFileChosen ) )
+            {
+                warningText.append( "Subjects Tab<br>" );
+                if( !atLeastOneDataFileChecked && atLeastOneDataFileChosen )
+                {
+                    warningText.append( "- Select at least 1 data file (AD, RD, MR or FA)<br>" );
+                }
+                if( !covariateFileChecked && covariateFileChosen )
+                {
+                    warningText.append( "- Covariate file not selected<br>" );
+                }
+            }
+        }
+        if( covariateFileChosen )
+        {
+            if( !atLeastOneCovariateChecked )
+            {
+                warningText.append( "Parameters Tab<br>" );
+                if( !atLeastOneCovariateChecked )
+                {
+                    warningText.append( "- Select at least 1 covariate<br>" );
+                }
+            }
+        }
+        if( !mvcmPathSpecified )
+        {
+            warningText.append( "Run Tab<br>" );
+            if( !mvcmPathSpecified )
+            {
+                warningText.append( "- Specify the path to FADTTS matlab function (MVCM)<br>" );
+            }
+        }
+        WarningPopUp( warningText );
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }

@@ -1,7 +1,10 @@
 #ifndef INFODIALOG_H
 #define INFODIALOG_H
 
-#include <QtWidgets>
+#include <QDialog>
+#include <QLabel>
+#include <QFile>
+#include <QFileInfo>
 
 #include "Data.h"
 

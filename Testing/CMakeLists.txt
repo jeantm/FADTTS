@@ -21,7 +21,7 @@ set(COMP_TestFADTTS_MatlabInput DATA{${SOURCE_DIR}/COMP_TestFADTTS_MatlabInput.c
 
 set(matlabScript_TestFADTTS_RunInput DATA{${SOURCE_DIR}/FADTTSAnalysis_MatlabScript_TestFADTTS_259perm.m})
 
-include_DIRECTORIES( ${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR})
 
 # Add the executable for the tests and linked the != libraries needed
 link_directories(${CMAKE_BINARY_DIR}/lib)
@@ -29,27 +29,27 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 # Add the executable for the test(s) of the InfoDialog class
 file(GLOB SOURCES_TEST_INFODIALOG "*InfoDialog.cxx")
 add_executable(FADTTS_Test_InfoDialog ${SOURCES_TEST_INFODIALOG})
-target_link_libraries(FADTTS_Test_InfoDialog FADTTSLib)
+target_link_libraries(FADTTS_Test_InfoDialog FADTTSterLib)
 
 # Add the executable for the test(s) of the MatlabScript class
 file(GLOB SOURCES_TEST_MATLABSCRIPT "*MatlabScript.cxx")
 add_executable(FADTTS_Test_MatlabScript ${SOURCES_TEST_MATLABSCRIPT})
-target_link_libraries(FADTTS_Test_MatlabScript FADTTSLib)
+target_link_libraries(FADTTS_Test_MatlabScript FADTTSterLib)
 
 # Add the executable for the test(s) of the Processing class
 file(GLOB SOURCES_TEST_PROCESSING "*Processing.cxx")
 add_executable(FADTTS_Test_Processing ${SOURCES_TEST_PROCESSING})
-target_link_libraries(FADTTS_Test_Processing FADTTSLib)
+target_link_libraries(FADTTS_Test_Processing FADTTSterLib)
 
 # Add the executable for the test(s) of the EditInputDialog class
 file(GLOB SOURCES_TEST_EDITINPUTDIALOG "*EditInputDialog.cxx")
 add_executable(FADTTS_Test_EditInputDialog ${SOURCES_TEST_EDITINPUTDIALOG})
-target_link_libraries(FADTTS_Test_EditInputDialog FADTTSLib)
+target_link_libraries(FADTTS_Test_EditInputDialog FADTTSterLib)
 
 # Add the executable for the test(s) of the FADTTSWindow class
 file(GLOB SOURCES_TEST_FADTTSWINDOW "*FADTTSWindow.cxx")
 add_executable(FADTTS_Test_FADTTSWindow ${SOURCES_TEST_FADTTSWINDOW})
-target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSLib)
+target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSterLib)
 
 
 # Test for InfoDialog class
@@ -90,7 +90,7 @@ ExternalData_add_test(
 # Test for the command --help
 add_test(
         NAME PrintHelp
-        COMMAND $<TARGET_FILE:FADTTS> --help
+        COMMAND $<TARGET_FILE:FADTTSter> --help
 )
 
-ExternalData_Add_Target(MY_DATA)
+ExternalData_add_target(MY_DATA)

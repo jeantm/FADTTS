@@ -1,6 +1,8 @@
 #ifndef FADTTSWINDOW_H
 #define FADTTSWINDOW_H
 
+#include <QSignalMapper>
+
 #include "FADTTSWindowConfig.h"
 #include "Data.h"
 #include "EditInputDialog.h"
@@ -219,6 +221,8 @@ private:
     QMap<int, QString> GetSelectedCovariates();
 
     QString GenerateSelectedSubjectFile( QString outputDir );
+
+    bool IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates );
 };
 
 #endif // FADTTSWINDOW_H

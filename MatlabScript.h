@@ -1,7 +1,12 @@
 #ifndef MATLABSCRIPT_H
 #define MATLABSCRIPT_H
 
-#include <QtWidgets>
+#include <QLocale>
+#include <QResource>
+#include <QTime>
+#include <QMap>
+#include <QDir>
+#include <QTextStream>
 
 #include <iostream>
 
