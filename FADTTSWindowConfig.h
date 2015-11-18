@@ -1,8 +1,6 @@
 #ifndef FADTTSWINDOWCONFIG_H
 #define FADTTSWINDOWCONFIG_H
 
-#include <QMainWindow>
-
 #include "ui_FADTTSWindow.h"
 #include "para_Save_FADTTS.h"
 #include "para_Load_FADTTS.h"
@@ -10,6 +8,8 @@
 #include "soft_Save_FADTTS.h"
 #include "soft_Load_FADTTS.h"
 #include "soft_Model_FADTTS.h"
+
+#include <QMainWindow>
 
 
 class FADTTSWindowConfig :public QMainWindow, public Ui::FADTTSWindow

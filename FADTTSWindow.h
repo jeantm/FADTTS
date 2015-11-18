@@ -1,14 +1,15 @@
 #ifndef FADTTSWINDOW_H
 #define FADTTSWINDOW_H
 
-#include <QSignalMapper>
-
 #include "FADTTSWindowConfig.h"
-#include "Data.h"
 #include "EditInputDialog.h"
 #include "InfoDialog.h"
+#include "Data.h"
 #include "Processing.h"
 #include "MatlabScript.h"
+#include "Plot.h"
+
+#include <QSignalMapper>
 
 
 class FADTTSWindow : public FADTTSWindowConfig
@@ -111,6 +112,10 @@ private slots:
     void RunFADTTS();
 
 
+    /************** Quality Control  Tab **************/
+    void DisplayVTKPlot();
+
+
 private:
     static const QColor m_green;
     static const QColor m_red;
@@ -130,6 +135,11 @@ private:
 
     QListWidget *m_sortedSubjectListWidget, *m_covariateListWidget;
 
+    QVTKWidget *m_qvtkWidget;
+
+    vtkSmartPointer<vtkContextView> m_view;
+
+
     QLineEdit *m_subjectFileLineEdit;
 
     typedef QMap<QString, QLabel*> labelMapType;
@@ -146,11 +156,15 @@ private:
 
     Qt::CaseSensitivity caseSensitivity;
 
+
     Data m_data;
 
     Processing m_processing;
 
     MatlabScript m_matlabScript;
+
+    Plot m_plot;
+
 
     QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
 
@@ -168,6 +182,8 @@ private:
     void InitParameterTab();
 
     void InitRunTab();
+
+    void InitQualityControlTab();
 
 
     void UpdateEditInputDialogCurrentDir( const QString newfilePath );

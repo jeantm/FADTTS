@@ -12,11 +12,6 @@ InfoDialog::InfoDialog( QWidget *parent ) :
 
 InfoDialog::~InfoDialog()
 {
-    delete m_adFileInfo_label;
-    delete m_rdFileInfo_label;
-    delete m_mdFileInfo_label;
-    delete m_faFileInfo_label;
-    delete m_compFileInfo_label;
     delete m_ui;
 }
 

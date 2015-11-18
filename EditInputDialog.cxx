@@ -14,10 +14,6 @@ EditInputDialog::EditInputDialog( QWidget *parent ) :
 
 EditInputDialog::~EditInputDialog()
 {
-    delete m_covariateFileSubjectColumnIDSpinBox;
-    delete m_fileInformationLabel;
-    delete m_covariateFileSubjectColumnIDLabel;
-    delete m_dataTableWidget;
     delete m_ui;
 }
 

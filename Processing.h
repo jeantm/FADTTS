@@ -1,6 +1,8 @@
 #ifndef PROCESSING_H
 #define PROCESSING_H
 
+#include "Data.h"
+
 #include <QProcess>
 #include <QFile>
 #include <QFileInfo>
@@ -8,7 +10,6 @@
 #include <QCheckBox>
 #include <QMap>
 
-#include "Data.h"
 
 class Processing
 {

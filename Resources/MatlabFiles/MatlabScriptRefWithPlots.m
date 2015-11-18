@@ -18,7 +18,7 @@ $addMVCMPath$
 [ savingFolder, savingName, savingExt ] = fileparts( mfilename( 'fullpath' ) );
 
 %%% loadingFolder %%%
-loadingFolder = strcat( savingFolder, '/..' )
+loadingFolder = strcat( savingFolder, '/..' );
 
 %%% Input FiberName %%%
 $inputFiberName$
@@ -110,7 +110,7 @@ nofeatures = size( diffusionFiles, 1 );
 [ NoSetup, arclength_allPos, Xdesign, Ydesign ] = MVCM_read( CC_data, designdata, diffusionFiles, nofeatures );
 nbrSubjects = NoSetup( 1 );	% No of subjects
 nbrArclengths = NoSetup( 2 ); % No of arclengths
-nbrCovariates = NoSetup( 3 ) % No of covariates (including intercept)
+nbrCovariates = NoSetup( 3 ); % No of covariates (including intercept)
 nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 
 
@@ -120,65 +120,65 @@ nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 %%%%%%%%%%%%%%%%%% Plotting Starts %%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOT CC_Genu PARAMETER - raw data.
-for pii=1:nbrCovariates
-    figure()
-    for Dii=1:nbrDiffusionProperties
-        for nii=1:nbrSubjects
-            if (designdata(nii,pii) == 0)
-                h(1)=plot(arclength,Ydesign(nii,:,Dii),'-k','LineWidth', 2);
-            else
-                h(2)=plot(arclength,Ydesign(nii,:,Dii),'-','Color',color{Dii},'LineWidth', 2);
-            end
-            hold on
-        end
-        hold off
-        
-        xlabel('arclength');
-        ylabel(Dnames{Dii});
-        xlim([min(arclength) max(arclength)]);
-        legend([h(1) h(2)],sprintf('%s=0',Pnames{pii}),sprintf('%s=1',Pnames{pii}),'Location','SouthEastOutside');
-        title(sprintf('%s %s',Fnames{1},Dnames{Dii}));
-        clear h;
-        
-        % save plot
-        figurename=sprintf('%s/%s_%s_%s.pdf',savingFolder,Fnames{1},Dnames{Dii},Pnames{pii});
-        saveas(gcf,figurename,'pdf');
-    end
-    close()
-end
+% for pii=1:nbrCovariates
+%     figure()
+%     for Dii=1:nbrDiffusionProperties
+%         for nii=1:nbrSubjects
+%             if (designdata(nii,pii) == 0)
+%                 h(1)=plot(arclength,Ydesign(nii,:,Dii),'-k','LineWidth', 2);
+%             else
+%                 h(2)=plot(arclength,Ydesign(nii,:,Dii),'-','Color',color{Dii},'LineWidth', 2);
+%             end
+%             hold on
+%         end
+%         hold off
+%         
+%         xlabel('arclength');
+%         ylabel(Dnames{Dii});
+%         xlim([min(arclength) max(arclength)]);
+%         legend([h(1) h(2)],sprintf('%s=0',Pnames{pii}),sprintf('%s=1',Pnames{pii}),'Location','SouthEastOutside');
+%         title(sprintf('%s %s',Fnames{1},Dnames{Dii}));
+%         clear h;
+%         
+%         % save plot
+%         figurename=sprintf('%s/%s_%s_%s.pdf',savingFolder,Fnames{1},Dnames{Dii},Pnames{pii});
+%         saveas(gcf,figurename,'pdf');
+%     end
+%     close()
+% end
 
 
 %% Plot Raw Data Average and Standard Deviation
-for pii=1:nbrCovariates
-    [Mavg]= mean(Ydesign(designdata(:,pii)==0,:,:)); % TD average for each diffusion paramter
-    [Mstddev]= std(Ydesign(designdata(:,pii)==0,:,:)); % TD standard deviation for each diffusion paramter
-    [Favg]= mean(Ydesign(designdata(:,pii)==1,:,:)); % SE average for each diffusion paramter
-    [Fstddev]= std(Ydesign(designdata(:,pii)==1,:,:)); % SE standard deviation for each diffusion paramter
-    for Dii=1:nbrDiffusionProperties
-        figure(Dii)
-        hold on
-        h(1)=plot(arclength, Mavg(:,:,Dii),'-k','LineWidth', 2);
-        plot(arclength, Mavg(:,:,Dii)+Mstddev(:,:,Dii),'--k','LineWidth',2);
-        plot(arclength, Mavg(:,:,Dii)-Mstddev(:,:,Dii),'--k','LineWidth',2);
-        
-        h(2)=plot(arclength, Favg(:,:,Dii),'-','Color',color{Dii},'LineWidth', 2);
-        plot(arclength, Favg(:,:,Dii)+Fstddev(:,:,Dii),'--','Color',color{Dii},'LineWidth',2);
-        plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{Dii},'LineWidth',2);
-        hold off
-        
-        xlabel('arclength');
-        ylabel(Dnames{Dii});
-        xlim([min(arclength) max(arclength)]);
-        legend([h(1) h(2)],sprintf('%s=0',Pnames{pii}),sprintf('%s=1',Pnames{pii}),'Location','SouthEastOutside');
-        title(sprintf('%s %s Average and Standard Deviation',Fnames{1},Dnames{Dii}));
-        clear h;
-        
-        % save plot
-        figurename=sprintf('%s/%s_%s_Avg_StdDev_%s.pdf',savingFolder,Fnames{1},Dnames{Dii},Pnames{pii});
-        saveas(gcf,figurename,'pdf');
-        close(Dii)
-    end
-end
+% for pii=1:nbrCovariates
+%     [Mavg]= mean(Ydesign(designdata(:,pii)==0,:,:)); % TD average for each diffusion paramter
+%     [Mstddev]= std(Ydesign(designdata(:,pii)==0,:,:)); % TD standard deviation for each diffusion paramter
+%     [Favg]= mean(Ydesign(designdata(:,pii)==1,:,:)); % SE average for each diffusion paramter
+%     [Fstddev]= std(Ydesign(designdata(:,pii)==1,:,:)); % SE standard deviation for each diffusion paramter
+%     for Dii=1:nbrDiffusionProperties
+%         figure(Dii)
+%         hold on
+%         h(1)=plot(arclength, Mavg(:,:,Dii),'-k','LineWidth', 2);
+%         plot(arclength, Mavg(:,:,Dii)+Mstddev(:,:,Dii),'--k','LineWidth',2);
+%         plot(arclength, Mavg(:,:,Dii)-Mstddev(:,:,Dii),'--k','LineWidth',2);
+%         
+%         h(2)=plot(arclength, Favg(:,:,Dii),'-','Color',color{Dii},'LineWidth', 2);
+%         plot(arclength, Favg(:,:,Dii)+Fstddev(:,:,Dii),'--','Color',color{Dii},'LineWidth',2);
+%         plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{Dii},'LineWidth',2);
+%         hold off
+%         
+%         xlabel('arclength');
+%         ylabel(Dnames{Dii});
+%         xlim([min(arclength) max(arclength)]);
+%         legend([h(1) h(2)],sprintf('%s=0',Pnames{pii}),sprintf('%s=1',Pnames{pii}),'Location','SouthEastOutside');
+%         title(sprintf('%s %s Average and Standard Deviation',Fnames{1},Dnames{Dii}));
+%         clear h;
+%         
+%         save plot
+%         figurename=sprintf('%s/%s_%s_Avg_StdDev_%s.pdf',savingFolder,Fnames{1},Dnames{Dii},Pnames{pii});
+%         saveas(gcf,figurename,'pdf');
+%         close(Dii)
+%     end
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Plotting Ends %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,15 +1,12 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <QObject>
 #include <QMap>
 
-class Data : public QObject
+class Data
 {
-    Q_OBJECT
-
 public:
-    explicit Data( QObject *parent = 0 );
+    explicit Data();
 
     /***************************************/
     /*************** Getters ***************/

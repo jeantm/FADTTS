@@ -23,8 +23,8 @@
    <string>FADTTSter</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_13">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1003,6 +1003,9 @@
               <string>Settings</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_13">
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
               <item>
                <widget class="QCheckBox" name="para_parameterTab_omnibus_checkBox">
                 <property name="text">
@@ -1227,11 +1230,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="qualityControl_tab">
-       <attribute name="title">
-        <string>Quality Control</string>
-       </attribute>
-      </widget>
       <widget class="QWidget" name="runTab">
        <attribute name="title">
         <string>Run</string>
@@ -1253,12 +1251,21 @@
         <item row="0" column="0" colspan="3">
          <widget class="QWidget" name="runTab_outputDir_widget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QGroupBox" name="runTab_outputDir_groupBox">
              <property name="title">
               <string>Output Directory</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
               <item>
                <widget class="QPushButton" name="runTab_outputDir_pushButton">
                 <property name="sizePolicy">
@@ -1316,12 +1323,21 @@
         <item row="1" column="0" colspan="3">
          <widget class="QWidget" name="runTab_executable_widget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QGroupBox" name="runTab_executable_groupBox">
              <property name="title">
               <string>Executable</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_12">
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
               <item row="2" column="3">
                <widget class="QLabel" name="runTab_iconMatlab_label">
                 <property name="sizePolicy">
@@ -1341,42 +1357,6 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="3">
-               <widget class="QLabel" name="runTab_iconMVCM_label">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
-               <widget class="QLineEdit" name="soft_runTab_matlab_lineEdit">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="acceptDrops">
-                 <bool>true</bool>
-                </property>
-                <property name="frame">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QPushButton" name="runTab_matlab_pushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Specify Matlab</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <widget class="QLineEdit" name="soft_runTab_mvcm_lineEdit"/>
-              </item>
               <item row="5" column="0">
                <widget class="QPushButton" name="runTab_mvcm_pushButton">
                 <property name="sizePolicy">
@@ -1390,7 +1370,43 @@
                 </property>
                </widget>
               </item>
-              <item row="7" column="2">
+              <item row="5" column="3">
+               <widget class="QLabel" name="runTab_iconMVCM_label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="runTab_matlab_pushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Specify Matlab</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" colspan="2">
+               <widget class="QLineEdit" name="soft_runTab_matlab_lineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="acceptDrops">
+                 <bool>true</bool>
+                </property>
+                <property name="frame">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1" colspan="2">
+               <widget class="QLineEdit" name="soft_runTab_mvcm_lineEdit"/>
+              </item>
+              <item row="6" column="1">
                <widget class="QLabel" name="label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1400,6 +1416,110 @@
                 </property>
                 <property name="text">
                  <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;Indicate path to the Matlab MVCM functions&lt;/i&gt;&lt;/span&gt;&lt;/html&gt;</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="qualityControlTab">
+       <attribute name="title">
+        <string>Quality Control</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QWidget" name="qualityControlTab_plot_widget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="qualityControlTab_plot_groupBox">
+             <property name="title">
+              <string>Plot</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="bottomMargin">
+               <number>6</number>
+              </property>
+              <item>
+               <widget class="QVTKWidget" name="qualityControlTab_plot_qvtkWidget" native="true"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="qualityControlTab_plottingEdition_widget" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="qualityControlTab_plottingEdition_groupBox">
+             <property name="title">
+              <string>Plotting Edition</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="qualityControlTab_specifyDataFile_pushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Specify data file</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="qualityControlTab_dataFile_lineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="qualityControlTab_displayPlot_pushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Display Plot</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="qualityControlTab_resetPlotting_pushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Reset Plotting</string>
                 </property>
                </widget>
               </item>
@@ -1484,6 +1604,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QVTKWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">QVTKWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>inputTab_addMultipleInputFiles_pushButton</tabstop>
   <tabstop>inputTab_addADFile_pushButton</tabstop>

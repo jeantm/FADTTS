@@ -130,6 +130,7 @@ void FADTTSWindow::InitFADTTSWindow()
     InitSubjectTab();
     InitParameterTab();
     InitRunTab();
+    InitQualityControlTab();
 
     DisplayCovariates();
 
@@ -286,10 +287,25 @@ void FADTTSWindow::InitRunTab()
     connect( this->runTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( RunFADTTS() ) );
 }
 
+void FADTTSWindow::InitQualityControlTab()
+{
+    // QVTK set up and initialization
+    m_qvtkWidget = new QVTKWidget();
+    m_qvtkWidget = this->qualityControlTab_plot_qvtkWidget;
+
+    // Set up 2D world
+    m_view = vtkSmartPointer<vtkContextView>::New();
+    m_view->SetInteractor(m_qvtkWidget->GetInteractor());
+    m_qvtkWidget->SetRenderWindow(m_view->GetRenderWindow());
+
+    m_plot.SetView( m_view );
+    m_plot.SetData( &m_data );
+
+    connect( this->qualityControlTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayVTKPlot() ) );
+}
 
 void FADTTSWindow::UpdateEditInputDialogCurrentDir( const QString newfilePath )
 {
-
     QDir dir = UpdateCurrentDir( newfilePath, m_currentInputFileDir );
     if( dir.exists() )
     {
@@ -493,10 +509,15 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
         }
     }
 
+    foreach ( QString prefID, m_data.GetPrefixList() )
+    {
+        m_inputTabInputFileLineEditMap[ prefID ]->clear();
+    }
+
     QMap<QString, QStringList>::ConstIterator iter = map.begin();
     while( iter != map.constEnd() )
     {
-        QString prefix = iter.key();
+        QString prefID = iter.key();
         QString file;
         if( iter.value().size() == 1 )
         {
@@ -507,7 +528,7 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
             file.clear();
         }
 
-        m_inputTabInputFileLineEditMap[ prefix ]->setText( file );
+        m_inputTabInputFileLineEditMap[ prefID ]->setText( file );
         ++iter;
     }
 }
@@ -1339,4 +1360,18 @@ bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selected
     {
         return true;
     }
+}
+
+
+
+
+
+/****************************************************************/
+/********************* Quality Control  tab *********************/
+/****************************************************************/
+
+/***********************  Private  slots  ***********************/
+void FADTTSWindow::DisplayVTKPlot()
+{
+    m_plot.DisplayVTKPlot();
 }

@@ -1,6 +1,11 @@
 #ifndef MATLABSCRIPT_H
 #define MATLABSCRIPT_H
 
+#include "para_Model_FADTTS.h"
+#include "soft_Model_FADTTS.h"
+
+#include <iostream>
+
 #include <QLocale>
 #include <QResource>
 #include <QTime>
@@ -8,10 +13,6 @@
 #include <QDir>
 #include <QTextStream>
 
-#include <iostream>
-
-#include "para_Model_FADTTS.h"
-#include "soft_Model_FADTTS.h"
 
 #ifndef FADTTS_TITLE
 #define FADTTS_TITLE "Unknown Title"
