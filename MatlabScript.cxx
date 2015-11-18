@@ -38,7 +38,7 @@ void MatlabScript::SetHeader()
 
 void MatlabScript::SetMVCMPath( QString mvcmPath )
 {
-    m_matlabScript.replace( "$addMVCMPath$", "addpath = \'" + mvcmPath + "\';\n" );
+    m_matlabScript.replace( "$addMVCMPath$", "addpath \'" + mvcmPath + "\';\n" );
 }
 
 void MatlabScript::SetFiberName( QString fiberName )
