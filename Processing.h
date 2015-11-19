@@ -19,22 +19,28 @@ public:
     /*****************************************************/
     /****************** Running Process ******************/
     /*****************************************************/
-    void RunScript( QString matlabExe, QString matlabScript );
+    void SetMatlabExe( QString matlabExe );
 
-    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
+    void SetMatlabScript( QString matlabScript );
 
-    bool IsCovariateFile(const QStringList fileData );
-
-    QStringList GetSelectedSubjects( QString selectedSubjectFile );
 
     QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
-                                                  int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
-                                                  QString outputDir, QString fiberName );
+                                                                 int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
+                                                                 QString outputDir, QString fiberName );
+
+    void RunScript();
 
 
     /*****************************************************/
     /****************** Data Processing ******************/
     /*****************************************************/
+    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
+
+    bool IsCovariateFile(const QStringList fileData );
+
+
+    QStringList GetSelectedSubjects( QString selectedSubjectFile );
+
     QStringList GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID );
 
     QStringList GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
@@ -57,7 +63,9 @@ public:
 private:
     static const QString m_csvSeparator;
 
-    QProcess* m_process;
+    QString m_matlabExe,  m_matlabScript;
+
+    QProcess *m_process;
 };
 
 #endif // PROCESSING_H

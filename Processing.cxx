@@ -1,4 +1,5 @@
 #include "Processing.h"
+#include <iostream>
 
 const QString Processing::m_csvSeparator = QLocale().groupSeparator();
 
@@ -8,72 +9,16 @@ Processing::Processing()
 
 
 /***************** Running Process *****************/
-void Processing::RunScript( QString matlabExe, QString matlabScript )
+void Processing::SetMatlabExe( QString matlabExe )
 {
-    QProcess process;
-
-    QStringList arguments;
-    QString mScript = "run('" + matlabScript + "')";
-    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
-
-    process.execute( matlabExe, arguments );
+    m_matlabExe = matlabExe;
 }
 
-bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
+void Processing::SetMatlabScript( QString matlabScript )
 {
-    int rowDataSize = fileData.at( 0 ).count();
-    foreach (QStringList rowData,  fileData)
-    {
-        if( rowDataSize != rowData.count() )
-        {
-            return false;
-        }
-    }
-    return true;
+    m_matlabScript = matlabScript;
 }
 
-bool Processing::IsCovariateFile( const QStringList fileData )
-{
-    bool ok;
-    foreach( QString data, fileData )
-    {
-        if( data.endsWith( '"' ) )
-        {
-            data.chop( 1 );
-        }
-        if( data.startsWith( '"' ) )
-        {
-            data.remove( 0, 1 );
-        }
-        data.toFloat( &ok );
-        if( !ok )
-        {
-            return !ok;
-        }
-    }
-
-    return !ok;
-}
-
-QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
-{
-    QStringList selectedSubjectList;
-    QFile file( selectedSubjectFile );
-    if( !file.fileName().isNull() )
-    {
-        if( file.open( QIODevice::ReadOnly ) )
-        {
-            QTextStream tsSelectedSubjectList( &file );
-            while( !tsSelectedSubjectList.atEnd() )
-            {
-                selectedSubjectList.append( tsSelectedSubjectList.readLine() );
-            }
-            file.close();
-        }
-    }
-
-    return selectedSubjectList;
-}
 
 QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
                                                           int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
@@ -184,8 +129,77 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
     return matlabInputFiles;
 }
 
+void Processing::RunScript()
+{
+    QProcess process;
+
+    QStringList arguments;
+    QString mScript = "run('" + m_matlabScript + "')";
+    std::cout << mScript.toStdString() << std::endl;
+    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
+
+    process.execute( m_matlabExe, arguments );
+}
+
 
 /****************** Other Processes ******************/
+bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
+{
+    int rowDataSize = fileData.at( 0 ).count();
+    foreach (QStringList rowData,  fileData)
+    {
+        if( rowDataSize != rowData.count() )
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Processing::IsCovariateFile( const QStringList fileData )
+{
+    bool ok;
+    foreach( QString data, fileData )
+    {
+        if( data.endsWith( '"' ) )
+        {
+            data.chop( 1 );
+        }
+        if( data.startsWith( '"' ) )
+        {
+            data.remove( 0, 1 );
+        }
+        data.toFloat( &ok );
+        if( !ok )
+        {
+            return !ok;
+        }
+    }
+
+    return !ok;
+}
+
+
+QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
+{
+    QStringList selectedSubjectList;
+    QFile file( selectedSubjectFile );
+    if( !file.fileName().isNull() )
+    {
+        if( file.open( QIODevice::ReadOnly ) )
+        {
+            QTextStream tsSelectedSubjectList( &file );
+            while( !tsSelectedSubjectList.atEnd() )
+            {
+                selectedSubjectList.append( tsSelectedSubjectList.readLine() );
+            }
+            file.close();
+        }
+    }
+
+    return selectedSubjectList;
+}
+
 QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID )
 {
     QStringList subjectList;

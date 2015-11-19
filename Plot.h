@@ -33,7 +33,7 @@ public slots:
     void DisplayVTKPlot();
 
 private:
-    Processing m_processing;
+    Processing m_process;
 
     Data *m_data;
 

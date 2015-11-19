@@ -36,6 +36,10 @@ class MatlabScript
 public :
    MatlabScript();
 
+   void SetMatlabOutputDir( QString matlabOutputDir );
+
+   void SetMatlabScriptName( QString matlabScriptName );
+
 
    void InitMatlabScript();
 
@@ -57,13 +61,17 @@ public :
 
    void SetPostHoc( bool postHoc );
 
-   QString GenerateMatlabFiles( QString matlabOutputDir, QString fiberName, int nbrPermutations );
+
+   QString GenerateMatlabFiles();
 
 
 private :
    static const QString m_csvSeparator;
 
-   QString m_matlabScript;
+   QString m_matlabScript, m_matlabOutputDir, m_matlabScriptName;
+
+
+   void GenerateMyFDR();
 };
 
 

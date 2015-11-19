@@ -38,31 +38,31 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     /*3rd tab: Parameteres*/
     std::map<std::pair<unsigned long,QString>,bool> itemList;
     itemList.clear();
-    for( unsigned long i = 0; i < para_parameterTab_covariates_listWidget->count(); i++ )
+    for( unsigned long i = 0; i < para_subjectTab_covariates_listWidget->count(); i++ )
     {
-        QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i );
+        QListWidgetItem *currentItem = para_subjectTab_covariates_listWidget->item( i );
         std::pair<unsigned long,QString> attribute;
         attribute = std::make_pair( i, currentItem->text() );
         itemList[ attribute ] = static_cast<bool>( currentItem->checkState() );
     }
-    m_para_m->setpara_parameterTab_covariates_listWidget( itemList );
+    m_para_m->setpara_subjectTab_covariates_listWidget( itemList );
 
 
-    m_para_m->setpara_parameterTab_omnibus_checkBox( para_parameterTab_omnibus_checkBox->checkState() );
-    m_para_m->setpara_parameterTab_postHoc_checkBox( para_parameterTab_postHoc_checkBox->checkState() );
+    m_para_m->setpara_executionTab_omnibus_checkBox( para_executionTab_omnibus_checkBox->checkState() );
+    m_para_m->setpara_executionTab_postHoc_checkBox( para_executionTab_postHoc_checkBox->checkState() );
 
-    m_para_m->setpara_parameterTab_nbrPermutations_spinBox( para_parameterTab_nbrPermutations_spinBox->value() );
+    m_para_m->setpara_executionTab_nbrPermutations_spinBox( para_executionTab_nbrPermutations_spinBox->value() );
 
 
     /*4th tab: Quality Control*/
 
 
     /*5th tab: Run*/
-    m_para_m->setpara_runTab_outputDir_lineEdit(para_runTab_outputDir_lineEdit->text() );
+    m_para_m->setpara_executionTab_outputDir_lineEdit(para_executionTab_outputDir_lineEdit->text() );
 
 
-    m_soft_m->setsoft_runTab_matlab_lineEdit( soft_runTab_matlab_lineEdit->text() );
-    m_soft_m->setsoft_runTab_mvcm_lineEdit( soft_runTab_mvcm_lineEdit->text() );
+    m_soft_m->setsoft_executionTab_matlab_lineEdit( soft_executionTab_matlab_lineEdit->text() );
+    m_soft_m->setsoft_executionTab_mvcm_lineEdit( soft_executionTab_mvcm_lineEdit->text() );
 
 
     m_sync = false;
@@ -100,33 +100,33 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         /*3rd tab: Parameteres*/
         std::map<std::pair<unsigned long,QString>,bool> itemList;
         itemList.clear();
-        for( unsigned long i = 0; i < para_parameterTab_covariates_listWidget->count(); i++ )
+        for( unsigned long i = 0; i < para_subjectTab_covariates_listWidget->count(); i++ )
         {
-            QListWidgetItem *currentItem = para_parameterTab_covariates_listWidget->item( i );
+            QListWidgetItem *currentItem = para_subjectTab_covariates_listWidget->item( i );
             std::pair<unsigned long,QString> attribute;
             attribute = std::make_pair( i, currentItem->text() );
             itemList[ attribute ] = static_cast<bool>( currentItem->checkState() );
         }
-        m_para_m->setpara_parameterTab_covariates_listWidget( itemList );
+        m_para_m->setpara_subjectTab_covariates_listWidget( itemList );
 
-        m_para_m->setpara_parameterTab_omnibus_checkBox( para_parameterTab_omnibus_checkBox->checkState() );
-        m_para_m->setpara_parameterTab_postHoc_checkBox( para_parameterTab_postHoc_checkBox->checkState() );
+        m_para_m->setpara_executionTab_omnibus_checkBox( para_executionTab_omnibus_checkBox->checkState() );
+        m_para_m->setpara_executionTab_postHoc_checkBox( para_executionTab_postHoc_checkBox->checkState() );
 
-        m_para_m->setpara_parameterTab_nbrPermutations_spinBox( para_parameterTab_nbrPermutations_spinBox->value() );
+        m_para_m->setpara_executionTab_nbrPermutations_spinBox( para_executionTab_nbrPermutations_spinBox->value() );
 
 
         /*4th tab: Quality Control*/
 
 
         /*5th tab: Run*/
-        m_para_m->setpara_runTab_outputDir_lineEdit(para_runTab_outputDir_lineEdit->text() );
+        m_para_m->setpara_executionTab_outputDir_lineEdit(para_executionTab_outputDir_lineEdit->text() );
     }
 
     if( prefix == "soft" )
     {
         /*5th tab: Run*/
-        m_soft_m->setsoft_runTab_matlab_lineEdit( soft_runTab_matlab_lineEdit->text() );
-        m_soft_m->setsoft_runTab_mvcm_lineEdit( soft_runTab_mvcm_lineEdit->text() );
+        m_soft_m->setsoft_executionTab_matlab_lineEdit( soft_executionTab_matlab_lineEdit->text() );
+        m_soft_m->setsoft_executionTab_mvcm_lineEdit( soft_executionTab_mvcm_lineEdit->text() );
     }
 
     m_sync = false;
@@ -165,30 +165,30 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     std::map<std::pair<unsigned long,QString>,bool> itemList;
     if( !m_para_m->getpara_inputTab_covariateFile_lineEdit().isEmpty() )
     {
-        itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
+        itemList = m_para_m->getpara_subjectTab_covariates_listWidget();
     }
-    para_parameterTab_covariates_listWidget->clear();
+    para_subjectTab_covariates_listWidget->clear();
     for( std::map<std::pair<unsigned long,QString>,bool>::iterator it = itemList.begin(); it != itemList.end(); it++ )
     {
-        QListWidgetItem *item = new QListWidgetItem( it->first.second , para_parameterTab_covariates_listWidget );
+        QListWidgetItem *item = new QListWidgetItem( it->first.second , para_subjectTab_covariates_listWidget );
         item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked );
         item->setFlags( Qt::ItemIsEnabled );
     }
 
-    para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
-    para_parameterTab_postHoc_checkBox->setChecked( m_para_m->getpara_parameterTab_postHoc_checkBox() );
+    para_executionTab_omnibus_checkBox->setChecked( m_para_m->getpara_executionTab_omnibus_checkBox() );
+    para_executionTab_postHoc_checkBox->setChecked( m_para_m->getpara_executionTab_postHoc_checkBox() );
 
-    para_parameterTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parameterTab_nbrPermutations_spinBox() );
+    para_executionTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_executionTab_nbrPermutations_spinBox() );
 
 
     /*4th tab: Quality Control*/
 
 
     /*5th tab: Run*/
-    para_runTab_outputDir_lineEdit->setText( m_para_m->getpara_runTab_outputDir_lineEdit() );
+    para_executionTab_outputDir_lineEdit->setText( m_para_m->getpara_executionTab_outputDir_lineEdit() );
 
-    soft_runTab_matlab_lineEdit->setText( m_soft_m->getsoft_runTab_matlab_lineEdit() );
-    soft_runTab_mvcm_lineEdit->setText( m_soft_m->getsoft_runTab_mvcm_lineEdit() );
+    soft_executionTab_matlab_lineEdit->setText( m_soft_m->getsoft_executionTab_matlab_lineEdit() );
+    soft_executionTab_mvcm_lineEdit->setText( m_soft_m->getsoft_executionTab_mvcm_lineEdit() );
 
 
     m_sync = false;
@@ -225,33 +225,33 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
 
 
         /*3rd tab: Parameteres*/
-        std::map<std::pair<unsigned long,QString>,bool> itemList = m_para_m->getpara_parameterTab_covariates_listWidget();
-        para_parameterTab_covariates_listWidget->clear();
+        std::map<std::pair<unsigned long,QString>,bool> itemList = m_para_m->getpara_subjectTab_covariates_listWidget();
+        para_subjectTab_covariates_listWidget->clear();
         for( std::map<std::pair<unsigned long,QString>,bool>::iterator it = itemList.begin(); it != itemList.end(); it++ )
         {
-            QListWidgetItem *item = new QListWidgetItem( it->first.second , para_parameterTab_covariates_listWidget );
+            QListWidgetItem *item = new QListWidgetItem( it->first.second , para_subjectTab_covariates_listWidget );
             item->setCheckState( it->second != 0 ? Qt::Checked : Qt::Unchecked );
             item->setFlags( Qt::ItemIsEnabled );
         }
 
-        para_parameterTab_omnibus_checkBox->setChecked( m_para_m->getpara_parameterTab_omnibus_checkBox() );
-        para_parameterTab_postHoc_checkBox->setChecked( m_para_m->getpara_parameterTab_postHoc_checkBox() );
+        para_executionTab_omnibus_checkBox->setChecked( m_para_m->getpara_executionTab_omnibus_checkBox() );
+        para_executionTab_postHoc_checkBox->setChecked( m_para_m->getpara_executionTab_postHoc_checkBox() );
 
-        para_parameterTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_parameterTab_nbrPermutations_spinBox() );
+        para_executionTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_executionTab_nbrPermutations_spinBox() );
 
 
         /*4th tab: Quality Control*/
 
 
         /*5th tab: Run*/
-        para_runTab_outputDir_lineEdit->setText( m_para_m->getpara_runTab_outputDir_lineEdit() );
+        para_executionTab_outputDir_lineEdit->setText( m_para_m->getpara_executionTab_outputDir_lineEdit() );
     }
 
     if( prefix == "soft" )
     {
         /*5th tab: Run*/
-        soft_runTab_matlab_lineEdit->setText( m_soft_m->getsoft_runTab_matlab_lineEdit() );
-        soft_runTab_mvcm_lineEdit->setText( m_soft_m->getsoft_runTab_mvcm_lineEdit() );
+        soft_executionTab_matlab_lineEdit->setText( m_soft_m->getsoft_executionTab_matlab_lineEdit() );
+        soft_executionTab_mvcm_lineEdit->setText( m_soft_m->getsoft_executionTab_mvcm_lineEdit() );
     }
 
     m_sync = false;

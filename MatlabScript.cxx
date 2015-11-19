@@ -9,6 +9,17 @@ MatlabScript::MatlabScript()
 /***************************************************************/
 /********************** Public functions ***********************/
 /***************************************************************/
+void MatlabScript::SetMatlabOutputDir( QString matlabOutputDir )
+{
+    m_matlabOutputDir = matlabOutputDir;
+}
+
+void MatlabScript::SetMatlabScriptName( QString matlabScriptName )
+{
+    m_matlabScriptName = matlabScriptName;
+}
+
+
 void MatlabScript::InitMatlabScript()
 {
     m_matlabScript.clear();
@@ -133,10 +144,37 @@ void MatlabScript::SetPostHoc( bool postHoc )
     m_matlabScript.replace( "$inputPostHoc$", "postHoc = " + QString::number( postHoc ) + ";" );
 }
 
-QString MatlabScript::GenerateMatlabFiles( QString matlabOutputDir, QString fiberName, int nbrPermutations )
+
+void MatlabScript::GenerateMyFDR()
 {
-    QDir().mkpath( matlabOutputDir );
-    QString matlabScriptPath = matlabOutputDir + "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + QString::number( nbrPermutations ) + "perm.m";
+    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/myFDR.m" );
+    QFile matlabFunctionResource( resource.absoluteFilePath() );
+    QFile matlabFunction( m_matlabOutputDir + "/myFRD.m" );
+
+    if ( !matlabFunctionResource.open( QIODevice::ReadOnly | QIODevice::Text ) )
+    {
+        QString criticalError = "Unable to open resource file: " + matlabFunctionResource.fileName() +
+                " because of error \"" + matlabFunctionResource.errorString() + "\"";
+        std::cerr << criticalError.toStdString() << std::endl;
+    }
+    else
+    {
+        if( matlabFunction.open( QIODevice::WriteOnly | QIODevice::Text ) )
+        {
+            QTextStream tsMatlabFunctionResource( &matlabFunctionResource );
+            QTextStream tsMatlabFunction( &matlabFunction );
+            tsMatlabFunction << tsMatlabFunctionResource.readAll();
+            matlabFunction.flush();
+            matlabFunction.close();
+            matlabFunctionResource.close();
+        }
+    }
+}
+
+QString MatlabScript::GenerateMatlabFiles()
+{
+    QDir().mkpath( m_matlabOutputDir );
+    QString matlabScriptPath = m_matlabOutputDir + m_matlabScriptName;
     QFile matlabScript( matlabScriptPath );
     if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )
     {
@@ -145,6 +183,8 @@ QString MatlabScript::GenerateMatlabFiles( QString matlabOutputDir, QString fibe
         matlabScript.flush();
         matlabScript.close();
     }
+
+    GenerateMyFDR();
 
     return matlabScriptPath;
 }

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 cmake_policy(VERSION 2.8)
 
 project(FADTTS)
-option(BUILD_TESTING "tests" OFF)
+option(BUILD_TESTING "tests" ON)
 
 # Setting paths
 set(CMAKE_MODULE_PATH
@@ -40,6 +40,7 @@ InfoDialog.cxx
 Data.cxx
 Processing.cxx
 MatlabScript.cxx
+MatlabThread.cxx
 Plot.cxx
 )
 
@@ -48,6 +49,7 @@ FADTTSWindowConfig.h
 FADTTSWindow.h
 EditInputDialog.h
 InfoDialog.h
+MatlabThread.h
 Plot.h
 )
 

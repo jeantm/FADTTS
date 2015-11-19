@@ -2,7 +2,6 @@
 #include <QApplication>
 #include "FADTTSterCLP.h"
 
-
 int main( int argc, char *argv[] )
 {
     PARSE_ARGS;

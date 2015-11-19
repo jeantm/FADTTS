@@ -363,7 +363,7 @@ if( omnibus == 1 )
     % this corrects the local p-values for multiple comparisons
     Lpvals_FDR = zeros( size( Lpvals ) );
     for i = 1:( nbrCovariates-1 )
-        Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
+        Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ), 'BHFDR', true );
     end
     
     % save FDR Local nbrCovariates-Values csv file
@@ -589,7 +589,7 @@ if( postHoc == 1 )
     posthoc_Lpvals_FDR = zeros( size( posthoc_Lpvals ) );
     for Dii = 1:nbrDiffusionProperties
         for pii = 1:( nbrCovariates-1 )
-            posthoc_Lpvals_FDR( :, Dii, pii ) = mafdr( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
+            posthoc_Lpvals_FDR( :, Dii, pii ) = myFDR( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
         end
     end
     

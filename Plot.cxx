@@ -38,7 +38,7 @@ void Plot::DisplayVTKPlot()
 
     // Loading data
     QString AD_MatlabInputFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/ad_CT_L_Parietal.txt";
-    QList<QStringList> AD_MatlabInputData = m_processing.GetDataFromFile( AD_MatlabInputFile );
+    QList<QStringList> AD_MatlabInputData = m_process.GetDataFromFile( AD_MatlabInputFile );
     QList<float> abscissa;
     foreach( QStringList rowData, AD_MatlabInputData )
     {
@@ -46,7 +46,7 @@ void Plot::DisplayVTKPlot()
     }
 
     QString AD_BetasFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/CT-L-Parietal_AD_betas.csv";
-    QList<QStringList> AD_BetasData = m_processing.GetDataFromFile( AD_BetasFile );
+    QList<QStringList> AD_BetasData = m_process.GetDataFromFile( AD_BetasFile );
     int nbrCovariates = AD_BetasData.size();
 
 
