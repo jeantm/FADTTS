@@ -1,7 +1,7 @@
 #include "FADTTSWindow.h"
-#include <QDebug>
+
 /****************************************************************/
-/******************** Configuration & Events ********************/
+/******************** Configuration && Events ********************/
 /****************************************************************/
 const QColor FADTTSWindow::m_green = QColor( 0,255,0,127 );
 const QColor FADTTSWindow::m_red = QColor( 255,0,0,127 );
@@ -34,6 +34,7 @@ FADTTSWindow::~FADTTSWindow()
 /*********************** Private slots ***********************/
 void FADTTSWindow::SaveParaSettings()
 {
+    SyncUiToModelStructure();
     QString dir;
     QString filename = QFileDialog::getSaveFileName( this , tr( "Save Param Settings" ) ,  dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
@@ -46,6 +47,7 @@ void FADTTSWindow::SaveParaSettings()
 
 void FADTTSWindow::LoadParaSettings()
 {
+    SyncUiToModelStructure();
     QString dir;
     QString filename = QFileDialog::getOpenFileName( this , tr( "Load Param Settings" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
@@ -58,6 +60,7 @@ void FADTTSWindow::LoadParaSettings()
 
 void FADTTSWindow::SaveSoftSettings()
 {
+    SyncUiToModelStructure();
     QString dir;
     QString filename = QFileDialog::getSaveFileName( this , tr( "Save Soft Settings" ) ,  dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
@@ -70,6 +73,7 @@ void FADTTSWindow::SaveSoftSettings()
 
 void FADTTSWindow::LoadSoftSettings()
 {
+    SyncUiToModelStructure();
     QString dir;
     QString filename = QFileDialog::getOpenFileName( this , tr( "Load Soft Settings" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
@@ -84,7 +88,6 @@ void FADTTSWindow::DisplayAbout()
 {
     QString messageBoxTitle = "About " + QString( FADTTS_TITLE );
     QString aboutFADTTS;
-    std::cout<<FADTTS_DESCRIPTION<<std::endl;
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Description:</b> " + QString( FADTTS_DESCRIPTION ) + "<br>"
             "<b>Contributors:</b> " + QString( FADTTS_CONTRIBUTORS );
@@ -94,23 +97,27 @@ void FADTTSWindow::DisplayAbout()
 
 void FADTTSWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton closeMBox =
-            QMessageBox::question( this, tr( "FADTTS" ), tr( "You are about to kill the running process.<br>Are you sure you want to continue?" ),
-                                   QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
+    if( m_matlabThread->isRunning() )
+    {
+        QMessageBox::StandardButton closeBox =
+                QMessageBox::question( this, tr( "FADTTSter" ), tr( "Data are still being processed.<br>Are you sure you want to exit FADTTSter?" ),
+                                       QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
 
-    switch( closeMBox )
-    {
-    case QMessageBox::No:
-        event->ignore();
-        break;
-    case QMessageBox::Yes:
-    {
-        event->accept();
-        break;
-    }
-    default:
-        event->accept();
-        break;
+        switch( closeBox )
+        {
+        case QMessageBox::No:
+            event->ignore();
+            break;
+        case QMessageBox::Yes:
+        {
+            m_matlabThread->terminate();
+            event->accept();
+            break;
+        }
+        default:
+            event->accept();
+            break;
+        }
     }
 }
 
@@ -129,10 +136,10 @@ void FADTTSWindow::InitFADTTSWindow()
     InitMenuBar();
     InitInputTab();
     InitSubjectTab();
-    InitParameterTab();
-    InitRunTab();
+    InitExecutionTab();
+    InitQualityControlTab();
 
-    DisplayCovariates( m_data.GetCovariates() );
+    DisplayCovariates();
 
     UpdateAvailableFileParamTab();
 }
@@ -148,10 +155,10 @@ void FADTTSWindow::InitMenuBar()
 
 void FADTTSWindow::InitInputTab()
 {
-    m_editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
+    m_editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog( this ) );
     m_editInputDialog->SetData( &m_data );
 
-    m_infoDialog = QSharedPointer<InfoDialog>( new InfoDialog );
+    m_infoDialog = QSharedPointer<InfoDialog>( new InfoDialog( this ) );
     m_infoDialog->SetData( &m_data );
 
 
@@ -219,11 +226,14 @@ void FADTTSWindow::InitInputTab()
 
 void FADTTSWindow::InitSubjectTab()
 {
-    m_sortedSubjectListWidget = new QListWidget();
+    m_sortedSubjectListWidget = new QListWidget( this );
     m_sortedSubjectListWidget = this->subjectTab_sortedSubjects_listWidget;
 
-    m_subjectFileLineEdit = new QLineEdit();
+    m_subjectFileLineEdit = new QLineEdit( this );
     m_subjectFileLineEdit = this->para_subjectTab_subjectFile_lineEdit;
+
+    m_covariateListWidget = new QListWidget( this );
+    m_covariateListWidget = this->para_subjectTab_covariates_listWidget;
 
     /** Map of CheckBoxes to select the files we want to work on and
      *  SignalMapper to link them to the slot SortSubjects() **/
@@ -239,6 +249,7 @@ void FADTTSWindow::InitSubjectTab()
         connect( m_paramTabFileCheckBoxMap[ m_data.GetPrefixList().at( i ) ], SIGNAL( toggled( const bool& ) ), signalMapperSelectFile,SLOT( map() ) );
         signalMapperSelectFile->setMapping( m_paramTabFileCheckBoxMap[ m_data.GetPrefixList().at( i ) ], m_data.GetPrefixList().at( i ) );
     }
+    connect( this->para_subjectTab_covariateFile_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( DisplayCovariates() ) );
 
     /** Map of Labels displaying the matrix data size of the files that have been chosen **/
     m_paramTabFileDataSizeLabelMap.insert( m_data.GetAxialDiffusivityPrefix(), this->subjectTab_adFileInfo_label );
@@ -257,39 +268,61 @@ void FADTTSWindow::InitSubjectTab()
     connect( this->subjectTab_unCheckAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllSubjectsVisible() ) );
     connect( this->subjectTab_sortedSubjects_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectSubject( QListWidgetItem * ) ) );
     connect( this->subjectTab_search_lineEdit, SIGNAL( textEdited( const QString& ) ), this, SLOT( SearchSubjects() ) );
-    connect( this->subjectTab_caseSensitive_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( SetCaseSensitivity( bool ) ) );
+    connect( this->subjectTab_caseSensitive_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( SetCaseSensitivity( const bool& ) ) );
+
+    connect( this->para_subjectTab_covariates_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectCovariate( QListWidgetItem * ) ) );
+    connect( this->subjectTab_covariatesCheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllCovariates() ) );
+    connect( this->subjectTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllCovariates() ) );
 }
 
-void FADTTSWindow::InitParameterTab()
+void FADTTSWindow::InitExecutionTab()
 {
-    m_covariateListWidget = new QListWidget();
-    m_covariateListWidget = this->para_parameterTab_covariates_listWidget;
+    m_matlabThread = new MatlabThread( this );
+    m_matlabThread->SetMatlabScript( &m_matlabScript );
+    m_matlabThread->SetProcess( &m_process );
 
-    connect( this->para_parameterTab_covariates_listWidget, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( SelectCovariate( QListWidgetItem * ) ) );
-    connect( this->parameterTab_covariatesCheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( CheckAllCovariates() ) );
-    connect( this->parameterTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( UnCheckAllCovariates() ) );
+//    m_log = new QPlainTextEdit( this );
+//    m_log = this->executionTab_log_plainTextEdit;
+//    m_log->setReadOnly( true );
 
-    this->para_parameterTab_nbrPermutations_spinBox->setMaximum( 2000 );
+    connect( this->executionTab_outputDir_pushButton, SIGNAL( clicked() ), this, SLOT( SetOutputDir() ) );
+    connect( this->para_executionTab_outputDir_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateOutputDir( const QString& ) ) );
+
+    connect( this->executionTab_matlab_pushButton, SIGNAL( clicked() ), this, SLOT( SetMatlabExe() ) );
+    connect( this->soft_executionTab_matlab_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateMatlabExe( const QString& ) ) );
+
+    connect( this->executionTab_mvcm_pushButton, SIGNAL( clicked() ), this, SLOT( SetMVCMPath() ) );
+    connect( this->soft_executionTab_mvcm_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateMVCMPath( const QString& ) ) );
+
+    connect( this->executionTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( RunFADTTS() ) );
+    connect( this->executionTab_stop_pushButton, SIGNAL( clicked() ), this, SLOT( StopFADTTS() ) );
+
+    this->para_executionTab_nbrPermutations_spinBox->setMaximum( 2000 );
+
+    this->executionTab_run_pushButton->setEnabled( true );
+    this->executionTab_stop_pushButton->setEnabled( false );
 }
 
-void FADTTSWindow::InitRunTab()
+void FADTTSWindow::InitQualityControlTab()
 {
-    connect( this->runTab_outputDir_pushButton, SIGNAL( clicked() ), this, SLOT( SetOutputDir() ) );
-    connect( this->para_runTab_outputDir_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateOutputDir( const QString& ) ) );
+    // QVTK set up and initialization
+    m_qvtkWidget = new QVTKWidget( this );
+    m_qvtkWidget = this->qualityControlTab_plot_qvtkWidget;
 
-    connect( this->runTab_matlab_pushButton, SIGNAL( clicked() ), this, SLOT( SetMatlabExe() ) );
-    connect( this->soft_runTab_matlab_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateMatlabExe( const QString& ) ) );
+    // Set up 2D world
+    m_view = vtkSmartPointer<vtkContextView>::New();
+    m_view->SetInteractor(m_qvtkWidget->GetInteractor());
+    m_qvtkWidget->SetRenderWindow(m_view->GetRenderWindow());
 
-    connect( this->runTab_mvcm_pushButton, SIGNAL( clicked() ), this, SLOT( SetMVCMPath() ) );
-    connect( this->soft_runTab_mvcm_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateMVCMPath( const QString& ) ) );
+    m_plot = new Plot( this );
+    m_plot->SetView( m_view );
+    m_plot->SetData( &m_data );
 
-    connect( this->runTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( RunFADTTS() ) );
+    connect( this->qualityControlTab_displayPlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( DisplayVTKPlot() ) );
 }
-
 
 void FADTTSWindow::UpdateEditInputDialogCurrentDir( const QString newfilePath )
 {
-
     QDir dir = UpdateCurrentDir( newfilePath, m_currentInputFileDir );
     if( dir.exists() )
     {
@@ -363,9 +396,7 @@ void FADTTSWindow::AddInputFile( const QString& prefID )
     QString filePath = lineEdit->text();
     QDir dir;
     SetDir( dir, filePath, m_currentInputFileDir );
-    qDebug() << "Test1";
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + prefID.toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
-    qDebug() << "Test2";
     if( !file.isEmpty() )
     {
         lineEdit->setText( file );
@@ -395,8 +426,8 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
         else
         {
             file.close();
-            QList<QStringList> fileData = m_processing.GetDataFromFile( filePath );
-            if( m_processing.IsMatrixDimensionOK( fileData ) )
+            QList<QStringList> fileData = m_process.GetDataFromFile( filePath );
+            if( m_process.IsMatrixDimensionOK( fileData ) )
             {
                 DisplayInputLineEditIcon( prefID, m_okPixmap );
                 m_data.SetFilename( prefID ) = filePath;
@@ -466,7 +497,7 @@ void FADTTSWindow::UpdateCovariateMapAfterFileEdition( const QMap<int, QString>&
 {
     m_data.ClearCovariates();
     m_data.SetCovariates() = newCovariateMapAfterFileEdition;
-    DisplayCovariates( m_data.GetCovariates() );
+    DisplayCovariates();
 }
 
 void FADTTSWindow::UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int&  newCovariateFileSubjectColumnIDAfterFileEdition )
@@ -495,10 +526,15 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
         }
     }
 
+    foreach ( QString prefID, m_data.GetPrefixList() )
+    {
+        m_inputTabInputFileLineEditMap[ prefID ]->clear();
+    }
+
     QMap<QString, QStringList>::ConstIterator iter = map.begin();
     while( iter != map.constEnd() )
     {
-        QString prefix = iter.key();
+        QString prefID = iter.key();
         QString file;
         if( iter.value().size() == 1 )
         {
@@ -509,7 +545,7 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
             file.clear();
         }
 
-        m_inputTabInputFileLineEditMap[ prefix ]->setText( file );
+        m_inputTabInputFileLineEditMap[ prefID ]->setText( file );
         ++iter;
     }
 }
@@ -537,7 +573,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
         int nbrColumns = fileData.at( 0 ).count();
 
         m_data.ClearSubjects( prefID );
-        QStringList subjects = m_processing.GetSubjectsFromInputFile( fileData, m_data.GetCovariateFileSubjectColumnID() );
+        QStringList subjects = m_process.GetSubjectsFromInputFile( fileData, m_data.GetCovariateFileSubjectColumnID() );
         m_data.SetSubjects( prefID, subjects );
 
         if( prefID == m_data.GetCovariatePrefix() )
@@ -547,7 +583,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
             m_data.SetNbrSubjects( prefID ) = subjects.count();
 
             m_data.ClearCovariates();
-            m_data.SetCovariates() = m_processing.GetCovariatesFromFileData( fileData, m_data.GetCovariateFileSubjectColumnID() );
+            m_data.SetCovariates() = m_process.GetCovariatesFromFileData( fileData, m_data.GetCovariateFileSubjectColumnID() );
             /** Intercept representes everything that has not been classified in one of the previous
              *  covariates. It is important to add it as 1st element of m_covariatesList **/
             m_data.AddInterceptToCovariates();
@@ -562,7 +598,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
 
     if( prefID == m_data.GetCovariatePrefix() )
     {
-        DisplayCovariates( m_data.GetCovariates() );
+        DisplayCovariates();
     }
 
     UpdateAvailableFileParamTab();
@@ -721,13 +757,13 @@ void FADTTSWindow::SelectSubject( QListWidgetItem *item )
 void FADTTSWindow::SortAndDisplaySubjects()
 {
     QString subjectFile = m_subjectFileLineEdit->text();
-    QStringList refSubjectList = m_processing.GetRefSubjects( subjectFile, GetFileDataOfSelectedFiles(), m_data.GetCovariateFileSubjectColumnID() );
-    QMap<QString, QStringList> allSubjects = m_processing.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjects() );
-    QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.SortSubjects( refSubjectList, allSubjects );
+    QStringList refSubjectList = m_process.GetRefSubjects( subjectFile, GetFileDataOfSelectedFiles(), m_data.GetCovariateFileSubjectColumnID() );
+    QMap<QString, QStringList> allSubjects = m_process.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjects() );
+    QMap< QString, QMap<QString, bool> > sortedSubjects = m_process.SortSubjects( refSubjectList, allSubjects );
 
     QStringList matchedSubjects;
     QMap<QString, QStringList > unMatchedSubjects;
-    m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
+    m_process.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
     DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
 
     SearchSubjects();
@@ -765,15 +801,7 @@ void FADTTSWindow::SearchSubjects()
         }
         palette.setColor( QPalette::Base, m_yellow );
         lineEdit->setPalette( palette );
-
-        if( nbrFound == 0 )
-        {
-            this->subjectTab_nbrFound_label->setText( QString::number( nbrFound ) + " subject(s) found"  );
-        }
-        else
-        {
-            this->subjectTab_nbrFound_label->setText( " No subject found"  );
-        }
+        this->subjectTab_nbrFound_label->setText( QString::number( nbrFound ) + " match(es)"  );
     }
     else
     {
@@ -962,11 +990,12 @@ void FADTTSWindow::UnCheckAllCovariates()
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
+void FADTTSWindow::DisplayCovariates()
 {
+    QMap<int, QString> covariateMap = m_data.GetCovariates();
     m_covariateListWidget->clear();
 
-    if( !( covariateMap.isEmpty() ) )
+    if( !( covariateMap.isEmpty() ) && this->para_subjectTab_covariateFile_checkBox->isChecked() )
     {
         QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
         while( iterCovariate != covariateMap.end() )
@@ -977,11 +1006,11 @@ void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
             m_covariateListWidget->addItem( covariateItem );
             ++iterCovariate;
         }
-        this->parameterTab_covariatesInformation_label->show();
+        this->subjectTab_covariatesInformation_label->show();
     }
     else
     {
-        this->parameterTab_covariatesInformation_label->hide();
+        this->subjectTab_covariatesInformation_label->hide();
     }
 }
 
@@ -993,7 +1022,7 @@ void FADTTSWindow::DisplayCovariates( QMap<int, QString> covariateMap )
 /***********************  Private  slots  ***********************/
 void FADTTSWindow::SetOutputDir()
 {
-    QLineEdit *lineEdit = this->para_runTab_outputDir_lineEdit;
+    QLineEdit *lineEdit = this->para_executionTab_outputDir_lineEdit;
     QString filePath = lineEdit->text();
     QDir dir = filePath;
 
@@ -1014,7 +1043,7 @@ void FADTTSWindow::SetOutputDir()
 
 void FADTTSWindow::UpdateOutputDir( const QString&  path )
 {
-    QLabel *label = this->runTab_iconOutputDir_label;
+    QLabel *label = this->executionTab_iconOutputDir_label;
     if( !path.isEmpty() )
     {
         if( QDir( path ).exists() )
@@ -1035,7 +1064,7 @@ void FADTTSWindow::UpdateOutputDir( const QString&  path )
 
 void FADTTSWindow::SetMatlabExe()
 {
-    QLineEdit *lineEdit = this->soft_runTab_matlab_lineEdit;
+    QLineEdit *lineEdit = this->soft_executionTab_matlab_lineEdit;
     QString filePath = lineEdit->text();
     QString file;
     QDir dir;
@@ -1062,7 +1091,7 @@ void FADTTSWindow::SetMatlabExe()
 void FADTTSWindow::UpdateMatlabExe( const QString& executable )
 {
     QFile matlabExe( executable );
-    QLabel *label = this->runTab_iconMatlab_label;
+    QLabel *label = this->executionTab_iconMatlab_label;
     if( executable.isEmpty() )
     {
         label->clear();
@@ -1085,18 +1114,18 @@ void FADTTSWindow::UpdateMatlabExe( const QString& executable )
 
 void FADTTSWindow::SetMVCMPath()
 {
-    QLineEdit *lineEdit = this->soft_runTab_mvcm_lineEdit;
+    QLineEdit *lineEdit = this->soft_executionTab_mvcm_lineEdit;
     QString filePath = lineEdit->text();
     QDir dir = filePath;
 
     QString dirPath;
     if( dir.exists() && !filePath.isEmpty() )
     {
-        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose Output Directory" ), dir.absolutePath(), QFileDialog::ShowDirsOnly );
+        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), dir.absolutePath(), QFileDialog::ShowDirsOnly );
     }
     else
     {
-        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose Output Directory" ), m_mvcmPath, QFileDialog::ShowDirsOnly );
+        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), m_mvcmPath, QFileDialog::ShowDirsOnly );
     }
     if( !dirPath.isEmpty() )
     {
@@ -1106,7 +1135,7 @@ void FADTTSWindow::SetMVCMPath()
 
 void FADTTSWindow::UpdateMVCMPath( const QString& path )
 {
-    QLabel *label = this->runTab_iconMVCM_label;
+    QLabel *label = this->executionTab_iconMVCM_label;
     if( !path.isEmpty() )
     {
         if( QDir( path ).exists() )
@@ -1126,78 +1155,115 @@ void FADTTSWindow::UpdateMVCMPath( const QString& path )
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void FADTTSWindow::RunFADTTS()
 {
     SyncUiToModelStructure();
 
     QString fiberName = this->para_inputTab_fiberName_lineEdit->text();
-    QString outputDir = m_data.GetOutputDir() + "/FADTTS_" + fiberName;
-    QDir().mkpath( outputDir );
-
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
-
-    bool fiberNameProvided = !fiberName.isEmpty();
-    bool atLeastOneDataFileSelected = ( this->para_subjectTab_adFile_checkBox->isChecked() | this->para_subjectTab_rdFile_checkBox->isChecked() |
-                                        this->para_subjectTab_mdFile_checkBox->isChecked() | this->para_subjectTab_faFile_checkBox->isChecked() );
-    bool covariateFileSelected = this->para_subjectTab_covariateFile_checkBox->isChecked();
-    bool atLeastOneCovariateSelected = selectedCovariates.count() != 0;
-    bool mvcmPathSpecified = !this->soft_runTab_mvcm_lineEdit->text().isEmpty();
-    if( !fiberNameProvided || !atLeastOneDataFileSelected || !covariateFileSelected || !atLeastOneCovariateSelected || !mvcmPathSpecified )
+    if( IsRunFADTTSOK( fiberName, selectedCovariates ) )
     {
-        QString warningText = "<b>FADTTS will not be executed for the following reason(s):</b><br>";
-        if( !fiberNameProvided )
-        {
-            warningText.append( "- No fiber name provided<br><i>Inputs Tab</i><br>" );
-        }
-        if( !atLeastOneDataFileSelected )
-        {
-            warningText.append( "- Provide and select at least 1 data file<br><i>Inputs Tab / Parameters Tab</i><br>" );
-        }
-        if( !covariateFileSelected )
-        {
-            warningText.append( "- No correct input covariate file provided and/or selected<br><i>Inputs Tab / Parameters Tab</i><br>" );
-        }
-        if( !atLeastOneCovariateSelected )
-        {
-            warningText.append( "- Select at least 1 covariate<br><i>Parameters Tab</i><br>" );
-        }
-        if( !mvcmPathSpecified )
-        {
-            warningText.append( "- Specify the path to FADTTS matlab function (MVCM)<br><i>Run Tab</i><br>" );
-        }
-        WarningPopUp( warningText );
+        this->executionTab_run_pushButton->setEnabled( false );
+        this->executionTab_stop_pushButton->setEnabled( true );
+
+        SetMatlabThread( fiberName, selectedCovariates );
+        m_matlabThread->start();
     }
-    else
+//    QString outputDir = m_data.GetOutputDir() + "/FADTTSter_TestLog" + fiberName;
+//    QDir().mkpath( outputDir );
+//    m_log->clear();
+
+//    // Log path
+//    QDir* output_dir = new QDir( outputDir );
+//    QFileInfo fi( outputDir );
+//    QString base = fi.baseName();
+//    QString log_path = output_dir->filePath(base + ".log");
+
+//    // Log File
+//    QFile* log_file = new::QFile( log_path );
+//    log_file->open( QIODevice::ReadWrite );
+//    m_textStreamLog = new::QTextStream( log_file );
+
+//    // QFileSystemWatcher
+//    QFileSystemWatcher* log_watcher = new::QFileSystemWatcher( this );
+//    log_watcher->addPath( log_path );
+//    connect( log_watcher, SIGNAL( fileChanged( QString ) ), this, SLOT( WriteLog() ) );
+//    m_matlabThread->start();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void FADTTSWindow::StopFADTTS()
+{
+    if( m_matlabThread->isRunning() )
     {
-        QStringList selectedPrefixes = GetSelectedPrefixes();
+        QMessageBox::StandardButton closeBox =
+                QMessageBox::question( this, tr( "FADTTSter" ), tr( "Data are still being processed.<br>Are you sure you want to stop the execution?" ),
+                                       QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
 
-        QMap< QPair< int, QString >, bool> selectedInputFiles = GetSelectedInputFiles();
-
-        QString selectedSubjectListFilePath = GenerateSelectedSubjectFile( outputDir );
-
-        QMap< QPair< int, QString >, bool> matlabInputFiles =
-                m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
-                                                       m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, outputDir,
-                                                       fiberName );
-
-        m_matlabScript.InitMatlabScript();
-        m_matlabScript.SetHeader();
-        m_matlabScript.SetMVCMPath( this->soft_runTab_mvcm_lineEdit->text() );
-        m_matlabScript.SetFiberName( fiberName );
-        m_matlabScript.SetDiffusionProperties( selectedPrefixes );
-        m_matlabScript.SetNbrPermutation( this->para_parameterTab_nbrPermutations_spinBox->value() );
-        m_matlabScript.SetCovariates( selectedCovariates );
-        m_matlabScript.SetInputFiles( matlabInputFiles );
-        m_matlabScript.SetOmnibus( this->para_parameterTab_omnibus_checkBox->isChecked() );
-        m_matlabScript.SetPostHoc( this->para_parameterTab_postHoc_checkBox->isChecked() );
-
-        QString matlabOutputDir = outputDir + "/MatlabOutputs";
-        QString matlabScript = m_matlabScript.GenerateMatlabFiles( matlabOutputDir, fiberName, this->para_parameterTab_nbrPermutations_spinBox->value() );
-
-        //        QString matlabExe = "/opt/matlab/bin/matlab";
-        //        m_processing.RunScript( matlabExe, matlabScript );
+        switch( closeBox )
+        {
+        case QMessageBox::No:
+            break;
+        case QMessageBox::Yes:
+        {
+            m_matlabThread->terminate();
+            this->executionTab_run_pushButton->setEnabled( true );
+            this->executionTab_stop_pushButton->setEnabled( false );
+            break;
+        }
+        default:
+            break;
+        }
     }
 }
+
+//void FADTTSWindow::WriteLog()
+//{
+//    QScrollBar *scrollBar = m_log->verticalScrollBar();
+
+//    QString line = m_textStreamLog->readAll();
+//    if( scrollBar->value() == scrollBar->maximum() )
+//    {
+//        m_log->insertPlainText( line );
+//        scrollBar->setValue( scrollBar->maximum() );
+//    }
+//    else
+//    {
+//        m_log->insertPlainText(line);
+//    }
+//}
 
 
 /*********************** Private function ***********************/
@@ -1304,3 +1370,118 @@ QString FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
 
     return selectedSubjects.fileName();
 }
+
+bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates )
+{
+    bool fiberNameProvided = !fiberName.isEmpty();
+    bool atLeastOneDataFileChosen = ( this->para_subjectTab_adFile_checkBox->isEnabled() || this->para_subjectTab_rdFile_checkBox->isEnabled() ||
+                                      this->para_subjectTab_mdFile_checkBox->isEnabled() || this->para_subjectTab_faFile_checkBox->isEnabled() );
+    bool covariateFileChosen = this->para_subjectTab_covariateFile_checkBox->isEnabled();
+    bool atLeastOneDataFileChecked = ( this->para_subjectTab_adFile_checkBox->isChecked() || this->para_subjectTab_rdFile_checkBox->isChecked() ||
+                                       this->para_subjectTab_mdFile_checkBox->isChecked() || this->para_subjectTab_faFile_checkBox->isChecked() );
+    bool covariateFileChecked = this->para_subjectTab_covariateFile_checkBox->isChecked();
+
+    bool atLeastOneCovariateChecked = selectedCovariates.count() != 0;
+    bool matlabExeSpecified = !this->soft_executionTab_matlab_lineEdit->text().isEmpty();
+    bool mvcmPathSpecified = !this->soft_executionTab_mvcm_lineEdit->text().isEmpty();
+
+    if( !fiberNameProvided || !atLeastOneDataFileChosen || !covariateFileChosen ||
+            !atLeastOneDataFileChecked || !covariateFileChecked ||
+            !atLeastOneCovariateChecked || !mvcmPathSpecified || !matlabExeSpecified )
+    {
+        QString warningText = "<b>FADTTSter will not be executed for the following reason(s):</b><br>";
+        if( !atLeastOneDataFileChosen || !covariateFileChosen )
+        {
+            warningText.append( "Inputs Tab<br>" );
+            if( !atLeastOneDataFileChosen )
+            {
+                warningText.append( "- Provide at least 1 data file (AD, RD, MR or FA)<br>" );
+            }
+            if( !covariateFileChosen )
+            {
+                warningText.append( "- No covariate file provided<br>" );
+            }
+        }
+        if( atLeastOneDataFileChosen || covariateFileChosen )
+        {
+            if( ( !atLeastOneDataFileChecked && atLeastOneDataFileChosen ) || ( !covariateFileChecked && covariateFileChosen ) || !atLeastOneCovariateChecked )
+            {
+                warningText.append( "Subjects / Covariates Tab<br>" );
+                if( !atLeastOneDataFileChecked && atLeastOneDataFileChosen )
+                {
+                    warningText.append( "- Select at least 1 data file (AD, RD, MR or FA)<br>" );
+                }
+                if( !covariateFileChecked && covariateFileChosen )
+                {
+                    warningText.append( "- Covariate file not selected<br>" );
+                }
+                if( covariateFileChecked )
+                {
+                    if( !atLeastOneCovariateChecked )
+                    {
+                        warningText.append( "- Select at least 1 covariate<br>" );
+                    }
+                }
+            }
+        }
+        if( !fiberNameProvided || !matlabExeSpecified || !mvcmPathSpecified )
+        {
+            warningText.append( "Execution Tab<br>" );
+            if( !fiberNameProvided )
+            {
+                warningText.append( "- No fiber name provided<br>" );
+            }
+            if( !matlabExeSpecified )
+            {
+                warningText.append( "- Specify the matlab executable<br>" );
+            }
+            if( !mvcmPathSpecified )
+            {
+                warningText.append( "- Specify the path to FADTTS matlab function (MVCM)<br>" );
+            }
+        }
+        WarningPopUp( warningText );
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+void FADTTSWindow::SetMatlabThread( QString fiberName, QMap<int, QString> selectedCovariates )
+{
+    QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + fiberName;
+    QDir().mkpath( outputDir );
+
+    QStringList selectedPrefixes = GetSelectedPrefixes();
+    QMap< QPair< int, QString >, bool> selectedInputFiles = GetSelectedInputFiles();
+    QString selectedSubjectListFilePath = GenerateSelectedSubjectFile( outputDir );
+    QMap< QPair< int, QString >, bool> matlabInputFiles =
+            m_process.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
+                                                m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, outputDir,
+                                                fiberName );
+    int nbrPermutations = this->para_executionTab_nbrPermutations_spinBox->value();
+
+    m_matlabScript.SetMatlabOutputDir( outputDir + "/MatlabOutputs" );
+    m_matlabScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + nbrPermutations + "perm.m" );
+    m_matlabScript.InitMatlabScript();
+    m_matlabScript.SetHeader();
+    m_matlabScript.SetMVCMPath( this->soft_executionTab_mvcm_lineEdit->text() );
+    m_matlabScript.SetFiberName( fiberName );
+    m_matlabScript.SetDiffusionProperties( selectedPrefixes );
+    m_matlabScript.SetNbrPermutation( nbrPermutations );
+    m_matlabScript.SetCovariates( selectedCovariates );
+    m_matlabScript.SetInputFiles( matlabInputFiles );
+    m_matlabScript.SetOmnibus( this->para_executionTab_omnibus_checkBox->isChecked() );
+    m_matlabScript.SetPostHoc( this->para_executionTab_postHoc_checkBox->isChecked() );
+
+    m_process.SetMatlabExe( this->soft_executionTab_matlab_lineEdit->text() );
+}
+
+
+/****************************************************************/
+/********************* Quality Control  tab *********************/
+/****************************************************************/
+
+/***********************  Private  slots  ***********************/

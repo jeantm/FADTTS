@@ -46,8 +46,11 @@ bool TestMatlabScript::Test_GenerateMatlabScript( QString outputDir, QString mat
     bool postHoc = true;
     mScript.SetPostHoc( postHoc );
 
+    mScript.SetMatlabOutputDir( outputDir + "/MatlabOutputs" );
+    mScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + nbrPermutations + "perm.m" );
+    mScript.SetMVCMPath( "/NIRAL/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS/" );
 
-    QString matlabScript = mScript.GenerateMatlabFiles( outputDir, fiberName, nbrPermutations );
+    QString matlabScript = mScript.GenerateMatlabFiles();
 
     bool scriptMatched = CompareFile( matlabScript, expectedMatlabScript );
 

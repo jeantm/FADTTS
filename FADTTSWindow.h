@@ -2,11 +2,18 @@
 #define FADTTSWINDOW_H
 
 #include "FADTTSWindowConfig.h"
-#include "Data.h"
 #include "EditInputDialog.h"
 #include "InfoDialog.h"
+#include "Data.h"
 #include "Processing.h"
 #include "MatlabScript.h"
+#include "MatlabThread.h"
+#include "Plot.h"
+
+#include <QSignalMapper>
+#include <QFileSystemWatcher>
+#include <QScrollBar>
+#include <QDebug>
 
 
 class FADTTSWindow : public FADTTSWindowConfig
@@ -83,6 +90,8 @@ private slots:
 
 
     /***************** Parameters  Tab *****************/
+    void DisplayCovariates();
+
     void SelectCovariate( QListWidgetItem *item );
 
     void CheckAllCovariates();
@@ -90,7 +99,7 @@ private slots:
     void UnCheckAllCovariates();
 
 
-    /******************** Run  Tab ********************/
+    /****************** Execution Tab ******************/
     void SetOutputDir();
 
     void UpdateOutputDir( const QString& path );
@@ -105,6 +114,13 @@ private slots:
 
 
     void RunFADTTS();
+
+    void StopFADTTS();
+
+//    void WriteLog();
+
+
+    /************** Quality Control  Tab **************/
 
 
 private:
@@ -126,6 +142,15 @@ private:
 
     QListWidget *m_sortedSubjectListWidget, *m_covariateListWidget;
 
+    QVTKWidget *m_qvtkWidget;
+
+//    QPlainTextEdit *m_log;
+
+    QTextStream* m_textStreamLog;
+
+    vtkSmartPointer<vtkContextView> m_view;
+
+
     QLineEdit *m_subjectFileLineEdit;
 
     typedef QMap<QString, QLabel*> labelMapType;
@@ -142,11 +167,17 @@ private:
 
     Qt::CaseSensitivity caseSensitivity;
 
+
     Data m_data;
 
-    Processing m_processing;
+    Processing m_process;
 
     MatlabScript m_matlabScript;
+
+    MatlabThread *m_matlabThread;
+
+    Plot *m_plot;
+
 
     QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
 
@@ -161,9 +192,9 @@ private:
 
     void InitSubjectTab();
 
-    void InitParameterTab();
+    void InitExecutionTab();
 
-    void InitRunTab();
+    void InitQualityControlTab();
 
 
     void UpdateEditInputDialogCurrentDir( const QString newfilePath );
@@ -206,10 +237,9 @@ private:
 
 
     /*************** Parameters Tab ***************/
-    void DisplayCovariates( QMap<int, QString> covariateMap );
 
 
-    /*************** Run Tab ***************/
+    /*************** Execution Tab ****************/
     QStringList GetSelectedPrefixes();
 
     QMap< QPair< int, QString >, bool> GetSelectedInputFiles();
@@ -219,6 +249,10 @@ private:
     QMap<int, QString> GetSelectedCovariates();
 
     QString GenerateSelectedSubjectFile( QString outputDir );
+
+    bool IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates );
+
+    void SetMatlabThread( QString fiberName, QMap<int, QString> selectedCovariates );
 };
 
 #endif // FADTTSWINDOW_H

@@ -1,6 +1,9 @@
 #ifndef EDITINPUTDIALOG_H
 #define EDITINPUTDIALOG_H
 
+#include "Data.h"
+#include "Processing.h"
+
 #include <QDialog>
 #include <QTableWidget>
 #include <QSpinBox>
@@ -9,8 +12,6 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
-#include "Data.h"
-#include "Processing.h"
 
 namespace Ui {
 class EditInputDialog;

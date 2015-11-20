@@ -1,9 +1,13 @@
 #ifndef INFODIALOG_H
 #define INFODIALOG_H
 
-#include <QtWidgets>
-
 #include "Data.h"
+
+#include <QDialog>
+#include <QLabel>
+#include <QFile>
+#include <QFileInfo>
+
 
 namespace Ui {
 class InfoDialog;

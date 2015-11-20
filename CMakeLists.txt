@@ -4,7 +4,6 @@ cmake_policy(VERSION 2.8)
 project(FADTTS)
 option(BUILD_TESTING "tests" ON)
 
-
 # Setting paths
 set(CMAKE_MODULE_PATH
 ${${PROJECT_NAME}_SOURCE_DIR}/CMake
@@ -12,82 +11,81 @@ ${${PROJECT_NAME}_BINARY_DIR}/CMake
 ${CMAKE_MODULE_PATH}
 )
 
-
-# Setting QtToCppXML
+# find QtToCppXML headers
 find_package(QtToCppXML REQUIRED)
 include(${QtToCppXML_USE_FILE})
 
+# find VTK headers
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
-# Setting Qt5
+# find Qt5 headers
 find_package(Qt5Widgets REQUIRED)
 include_directories(${Qt5Widgets_INCLUDES})
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 set(QT_LIBRARIES ${Qt5Widgets_LIBRARIES})
 
-
-# Setting SlicerExecutionModel
+# find SlicerExecutionModel headers
 find_package(SlicerExecutionModel REQUIRED)
 include(${SlicerExecutionModel_USE_FILE})
 
-
 # Qt to c++
-set(FADTTS_Sources
-FADTTSWindow.cxx
+set(FADTTS_src
+FADTTSter.cxx
 FADTTSWindowConfig.cxx
+FADTTSWindow.cxx
 EditInputDialog.cxx
 InfoDialog.cxx
 Data.cxx
 Processing.cxx
 MatlabScript.cxx
+MatlabThread.cxx
+Plot.cxx
 )
 
-set(FADTTS_Headers
-FADTTSWindow.h
+set(FADTTS_moc
 FADTTSWindowConfig.h
+FADTTSWindow.h
 EditInputDialog.h
 InfoDialog.h
-Data.h
-MatlabScript.h
+MatlabThread.h
+Plot.h
 )
 
-set(FADTTS_Forms
+set(FADTTS_ui
 FADTTSWindow.ui
 EditInputDialog.ui
 InfoDialog.ui
 )
 
-set(FADTTS_Resources
+set(FADTTS_rcc
 FADTTS_Resources.qrc
 )
 
-qt5_wrap_cpp(FADTTS_Headers_Moc ${FADTTS_Headers})
-qt5_wrap_ui(FADTTS_Headers_Form ${FADTTS_Forms})
-qt5_add_resources(FADTTS_Resources_rcc ${FADTTS_Resources})
+qt5_wrap_cpp(FADTTS_generated_moc ${FADTTS_moc})
+qt5_wrap_ui(FADTTS_generated_ui ${FADTTS_ui})
+qt5_add_resources(FADTTS_generated_rcc ${FADTTS_rcc})
 
-list(APPEND
-FADTTS_Sources
-${FADTTS_Headers_Moc}
-${FADTTS_Headers_Form}
-${FADTTS_Resources_rcc}
+list(APPEND FADTTS_src
+${FADTTS_generated_moc}
+${FADTTS_generated_ui}
+${FADTTS_generated_rcc}
 )
+QtToCppXML(SOURCES FADTTS_src NAME FADTTS UIXML_FILE FADTTSWindow.ui PREFIXES soft_ para_)
 
-QtToCppXML(SOURCES FADTTS_Sources NAME FADTTS UIXML_FILE FADTTSWindow.ui PREFIXES soft_ para_)
-
-
-# Generating FADTTS executable
+# generate FADTTSter executable
 SEMMacroBuildCLI(
-NAME FADTTS
+NAME FADTTSter
 EXECUTABLE_ONLY
-ADDITIONAL_SRCS ${FADTTS_Sources}
-TARGET_LIBRARIES ${QT_LIBRARIES}
+ADDITIONAL_SRCS ${FADTTS_src}
+TARGET_LIBRARIES ${QT_LIBRARIES} ${VTK_LIBRARIES}
 LINK_DIRECTORIES ${QT_LIBRARY_DIRS}
 INCLUDE_DIRECTORIES ${QT_INCLUDE_DIR}
 )
 
-
-# Getting xml info
-FILE(READ FADTTS.xml var)
+# get FADTTSter info
+FILE(READ FADTTSter.xml var)
 
 string(REGEX MATCH "<title>.*</title>" ext "${var}")
 string(REPLACE "<title>" "" title ${ext})
@@ -108,7 +106,6 @@ string(REGEX MATCH "<description>.*</description>" ext "${var}")
 string(REPLACE "<description>" "" description ${ext})
 string(REPLACE "</description>" "" description ${description})
 add_definitions(-DFADTTS_DESCRIPTION="${description}")
-
 
 # Tests
 if(BUILD_TESTING)

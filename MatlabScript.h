@@ -1,12 +1,18 @@
 #ifndef MATLABSCRIPT_H
 #define MATLABSCRIPT_H
 
-#include <QtWidgets>
+#include "para_Model_FADTTS.h"
+#include "soft_Model_FADTTS.h"
 
 #include <iostream>
 
-#include "para_Model_FADTTS.h"
-#include "soft_Model_FADTTS.h"
+#include <QLocale>
+#include <QResource>
+#include <QTime>
+#include <QMap>
+#include <QDir>
+#include <QTextStream>
+
 
 #ifndef FADTTS_TITLE
 #define FADTTS_TITLE "Unknown Title"
@@ -30,6 +36,10 @@ class MatlabScript
 public :
    MatlabScript();
 
+   void SetMatlabOutputDir( QString matlabOutputDir );
+
+   void SetMatlabScriptName( QString matlabScriptName );
+
 
    void InitMatlabScript();
 
@@ -51,13 +61,17 @@ public :
 
    void SetPostHoc( bool postHoc );
 
-   QString GenerateMatlabFiles( QString matlabOutputDir, QString fiberName, int nbrPermutations );
+
+   QString GenerateMatlabFiles();
 
 
 private :
    static const QString m_csvSeparator;
 
-   QString m_matlabScript;
+   QString m_matlabScript, m_matlabOutputDir, m_matlabScriptName;
+
+
+   void GenerateMyFDR();
 };
 
 

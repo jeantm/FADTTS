@@ -1,7 +1,6 @@
 #include "FADTTSWindow.h"
 #include <QApplication>
-#include "FADTTSCLP.h"
-
+#include "FADTTSterCLP.h"
 
 int main( int argc, char *argv[] )
 {
