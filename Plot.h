@@ -1,7 +1,6 @@
 #ifndef PLOT_H
 #define PLOT_H
 
-#include "Data.h"
 #include "Processing.h"
 
 #include <QVTKWidget.h>
@@ -15,6 +14,7 @@
 #include <vtkFloatArray.h>
 #include <vtkPlotPoints.h>
 #include <vtkAxis.h>
+#include <vtkTextProperty.h>
 
 
 class Plot : public QObject

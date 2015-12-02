@@ -1,14 +1,21 @@
 #include "Processing.h"
 #include <iostream>
 
+#include <QDebug>
+
 const QString Processing::m_csvSeparator = QLocale().groupSeparator();
 
-Processing::Processing()
+Processing::Processing( QObject *parent ) :
+    QObject( parent )
 {
 }
 
 
-/***************** Running Process *****************/
+/*****************************************************/
+/***************** Public  Functions *****************/
+/*****************************************************/
+
+/****************** Running Process ******************/
 void Processing::SetMatlabExe( QString matlabExe )
 {
     m_matlabExe = matlabExe;
@@ -17,6 +24,11 @@ void Processing::SetMatlabExe( QString matlabExe )
 void Processing::SetMatlabScript( QString matlabScript )
 {
     m_matlabScript = matlabScript;
+}
+
+void Processing::SetLogFile( QFile *logFile )
+{
+    m_logFilePath = logFile;
 }
 
 
@@ -131,18 +143,21 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
 
 void Processing::RunScript()
 {
-    QProcess process;
+    RedirectOutput();
 
     QStringList arguments;
-    QString mScript = "run('" + m_matlabScript + "')";
+//    QString mScript = "run('" + m_matlabScript + "')";
+    QString mScript = "run('/work/jeantm/Project/FADTTS_Test/test.m')";
     std::cout << mScript.toStdString() << std::endl;
     arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
 
-    process.execute( m_matlabExe, arguments );
+//    m_process->execute( m_matlabExe, arguments );
+    m_process->start( "/opt/matlab/bin/matlab", arguments );
+    m_process->waitForFinished();
 }
 
 
-/****************** Other Processes ******************/
+/****************** Data Processing ******************/
 bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
 {
     int rowDataSize = fileData.at( 0 ).count();
@@ -180,26 +195,6 @@ bool Processing::IsCovariateFile( const QStringList fileData )
 }
 
 
-QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
-{
-    QStringList selectedSubjectList;
-    QFile file( selectedSubjectFile );
-    if( !file.fileName().isNull() )
-    {
-        if( file.open( QIODevice::ReadOnly ) )
-        {
-            QTextStream tsSelectedSubjectList( &file );
-            while( !tsSelectedSubjectList.atEnd() )
-            {
-                selectedSubjectList.append( tsSelectedSubjectList.readLine() );
-            }
-            file.close();
-        }
-    }
-
-    return selectedSubjectList;
-}
-
 QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID )
 {
     QStringList subjectList;
@@ -224,27 +219,6 @@ QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInput
     subjectList.sort();
 
     return subjectList;
-}
-
-QStringList Processing::GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
-{
-    QStringList refSubjectList;
-    QMap< QPair< int, QString >, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
-    while( iterDataInSelectedFile != dataInSelectedInputFiles.end() )
-    {
-        QStringList currentSubjectList = GetSubjectsFromInputFile( iterDataInSelectedFile.value(), covariateFileSubjectColumnID );
-        foreach( QString subject, currentSubjectList )
-        {
-            if( !refSubjectList.contains( subject ) )
-            {
-                refSubjectList.append( subject );
-            }
-        }
-        ++iterDataInSelectedFile;
-    }
-    refSubjectList.removeDuplicates();
-
-    return refSubjectList;
 }
 
 QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
@@ -273,7 +247,6 @@ QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap< QPa
 
     return refSubjectList;
 }
-
 
 QMap<QString, QStringList> Processing::GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap )
 {
@@ -389,4 +362,60 @@ QMap<int, QString> Processing::GetCovariatesFromFileData( QList<QStringList> dat
     }
 
     return covariates;
+}
+
+
+/*****************************************************/
+/***************** Private Functions *****************/
+/*****************************************************/
+
+/****************** Running Process ******************/
+void Processing::RedirectOutput()
+{
+    m_process = new QProcess();
+    m_process->setProcessChannelMode( QProcess::MergedChannels );
+    m_process->setStandardOutputFile( m_logFilePath->fileName(), QProcess::Append );
+}
+
+
+/****************** Data Processing ******************/
+QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
+{
+    QStringList selectedSubjectList;
+    QFile file( selectedSubjectFile );
+    if( !file.fileName().isNull() )
+    {
+        if( file.open( QIODevice::ReadOnly ) )
+        {
+            QTextStream tsSelectedSubjectList( &file );
+            while( !tsSelectedSubjectList.atEnd() )
+            {
+                selectedSubjectList.append( tsSelectedSubjectList.readLine() );
+            }
+            file.close();
+        }
+    }
+
+    return selectedSubjectList;
+}
+
+QStringList Processing::GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
+{
+    QStringList refSubjectList;
+    QMap< QPair< int, QString >, QList<QStringList> >::ConstIterator iterDataInSelectedFile = dataInSelectedInputFiles.begin();
+    while( iterDataInSelectedFile != dataInSelectedInputFiles.end() )
+    {
+        QStringList currentSubjectList = GetSubjectsFromInputFile( iterDataInSelectedFile.value(), covariateFileSubjectColumnID );
+        foreach( QString subject, currentSubjectList )
+        {
+            if( !refSubjectList.contains( subject ) )
+            {
+                refSubjectList.append( subject );
+            }
+        }
+        ++iterDataInSelectedFile;
+    }
+    refSubjectList.removeDuplicates();
+
+    return refSubjectList;
 }

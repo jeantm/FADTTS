@@ -14,7 +14,7 @@ class MatlabThread : public QThread
 public:
     explicit MatlabThread( QObject *parent = 0 );
 
-    void SetProcess( Processing *newProcess );
+    void SetProcessing( Processing *newProcessing );
 
     void SetMatlabScript( MatlabScript *newMatlabScript );
 
@@ -25,11 +25,14 @@ public slots:
 private:
     void run();
 
-    bool done;
 
-    Processing *m_process;
+    QString m_outputDir, m_fiberName;
+
+    Processing *m_processing;
 
     MatlabScript *m_matlabScript;
+
+    QFile *m_logFile;
 
 };
 

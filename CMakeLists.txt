@@ -49,6 +49,7 @@ FADTTSWindowConfig.h
 FADTTSWindow.h
 EditInputDialog.h
 InfoDialog.h
+Processing.h
 MatlabThread.h
 Plot.h
 )

@@ -3,6 +3,8 @@
 
 #include "Data.h"
 
+#include <QDate>
+#include <QObject>
 #include <QProcess>
 #include <QFile>
 #include <QFileInfo>
@@ -11,10 +13,14 @@
 #include <QMap>
 
 
-class Processing
+class Processing : public QObject
 {
+    friend class TestProcessing; /** For unit tests **/
+
+    Q_OBJECT
+
 public:
-    Processing();
+    explicit Processing( QObject *parent = 0 );
 
     /*****************************************************/
     /****************** Running Process ******************/
@@ -22,6 +28,8 @@ public:
     void SetMatlabExe( QString matlabExe );
 
     void SetMatlabScript( QString matlabScript );
+
+    void SetLogFile( QFile *logFile );
 
 
     QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
@@ -39,11 +47,7 @@ public:
     bool IsCovariateFile(const QStringList fileData );
 
 
-    QStringList GetSelectedSubjects( QString selectedSubjectFile );
-
     QStringList GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID );
-
-    QStringList GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 
     QStringList GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 
@@ -63,9 +67,28 @@ public:
 private:
     static const QString m_csvSeparator;
 
-    QString m_matlabExe,  m_matlabScript;
+    QString m_matlabExe, m_matlabScript,
+    m_fiberName;
+
+    QFile *m_logFilePath;
+
+    QTextStream *m_logTextStream;
 
     QProcess *m_process;
+
+
+    /*****************************************************/
+    /****************** Running Process ******************/
+    /*****************************************************/
+    void RedirectOutput();
+
+
+    /*****************************************************/
+    /****************** Running Process ******************/
+    /*****************************************************/
+    QStringList GetSelectedSubjects( QString selectedSubjectFile );
+
+    QStringList GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
 };
 
 #endif // PROCESSING_H

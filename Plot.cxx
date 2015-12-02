@@ -103,9 +103,13 @@ void Plot::DisplayVTKPlot()
     }
 
     // Setting chart properties
+    chart->DrawAxesAtOriginOn();
     chart->GetAxis( vtkAxis::LEFT )->SetTitle( "AD" );
     chart->GetAxis( vtkAxis::LEFT )->SetRange( -0.05, 0.31 );
     chart->GetAxis( vtkAxis::LEFT )->SetBehavior( vtkAxis::FIXED );
     chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arclength" );
     chart->SetShowLegend( true );
+
+
+    chart->SetTitle( "Title Test" );
 }

@@ -33,7 +33,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -200,7 +200,7 @@
               <item row="5" column="11" colspan="2">
                <widget class="QPushButton" name="inputTab_editMDFile_pushButton">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -515,7 +515,7 @@
            <item>
             <widget class="QGroupBox" name="subjectTab_matchSubjects_groupBox">
              <property name="title">
-              <string>Sorted Subjects</string>
+              <string>Subjects</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_6">
               <item row="7" column="0" colspan="7">
@@ -612,7 +612,7 @@
                  </sizepolicy>
                 </property>
                 <property name="title">
-                 <string>Specify Reference Subjects</string>
+                 <string>Reference Subjects</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout">
                  <item row="2" column="2" colspan="2">
@@ -769,10 +769,10 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="5" colspan="2">
+              <item row="8" column="0">
                <widget class="QPushButton" name="subjectTab_saveCheckedSubjects_pushButton">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -1501,7 +1501,7 @@
               <string>Plotting Edition</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_14">
-              <item row="0" column="0">
+              <item row="1" column="0">
                <widget class="QPushButton" name="qualityControlTab_specifyDataFile_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1514,7 +1514,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
+              <item row="1" column="1">
                <widget class="QLineEdit" name="qualityControlTab_dataFile_lineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1524,7 +1524,7 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
+              <item row="2" column="0">
                <widget class="QPushButton" name="qualityControlTab_displayPlot_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1537,7 +1537,7 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
+              <item row="2" column="1">
                <widget class="QPushButton" name="qualityControlTab_resetPlotting_pushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1549,6 +1549,9 @@
                  <string>Reset Plotting</string>
                 </property>
                </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="comboBox"/>
               </item>
              </layout>
             </widget>
@@ -1640,6 +1643,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
   <tabstop>inputTab_addMultipleInputFiles_pushButton</tabstop>
   <tabstop>inputTab_addADFile_pushButton</tabstop>
   <tabstop>para_inputTab_adFile_lineEdit</tabstop>
@@ -1652,17 +1656,47 @@
   <tabstop>inputTab_editMDFile_pushButton</tabstop>
   <tabstop>inputTab_addFAFile_pushButton</tabstop>
   <tabstop>para_inputTab_faFile_lineEdit</tabstop>
+  <tabstop>inputTab_editFAFile_pushButton</tabstop>
   <tabstop>inputTab_addCovariateFile_pushButton</tabstop>
   <tabstop>para_inputTab_covariateFile_lineEdit</tabstop>
+  <tabstop>inputTab_editCovariateFile_pushButton</tabstop>
+  <tabstop>inputTab_fileInformation_pushButton</tabstop>
   <tabstop>inputTab_close_pushButton</tabstop>
   <tabstop>para_subjectTab_adFile_checkBox</tabstop>
   <tabstop>para_subjectTab_rdFile_checkBox</tabstop>
   <tabstop>para_subjectTab_mdFile_checkBox</tabstop>
   <tabstop>para_subjectTab_faFile_checkBox</tabstop>
   <tabstop>para_subjectTab_covariateFile_checkBox</tabstop>
-  <tabstop>subjectTab_loadSubjectFile_PushButton</tabstop>
-  <tabstop>subjectTab_resetSubjectFile_pushButton</tabstop>
+  <tabstop>subjectTab_covariatesCheckAll_pushButton</tabstop>
+  <tabstop>subjectTab_covariatesUncheckAll_pushButton</tabstop>
+  <tabstop>para_subjectTab_covariates_listWidget</tabstop>
+  <tabstop>subjectTab_checkAllVisible_pushButton</tabstop>
+  <tabstop>subjectTab_unCheckAllVisible_pushButton</tabstop>
   <tabstop>subjectTab_sortedSubjects_listWidget</tabstop>
+  <tabstop>subjectTab_search_lineEdit</tabstop>
+  <tabstop>subjectTab_caseSensitive_checkBox</tabstop>
+  <tabstop>subjectTab_saveCheckedSubjects_pushButton</tabstop>
+  <tabstop>subjectTab_loadSubjectFile_PushButton</tabstop>
+  <tabstop>para_subjectTab_subjectFile_lineEdit</tabstop>
+  <tabstop>subjectTab_resetSubjectFile_pushButton</tabstop>
+  <tabstop>para_inputTab_fiberName_lineEdit</tabstop>
+  <tabstop>para_executionTab_nbrPermutations_spinBox</tabstop>
+  <tabstop>para_executionTab_omnibus_checkBox</tabstop>
+  <tabstop>para_executionTab_postHoc_checkBox</tabstop>
+  <tabstop>executionTab_outputDir_pushButton</tabstop>
+  <tabstop>para_executionTab_outputDir_lineEdit</tabstop>
+  <tabstop>executionTab_matlab_pushButton</tabstop>
+  <tabstop>soft_executionTab_matlab_lineEdit</tabstop>
+  <tabstop>executionTab_mvcm_pushButton</tabstop>
+  <tabstop>soft_executionTab_mvcm_lineEdit</tabstop>
+  <tabstop>executionTab_log_plainTextEdit</tabstop>
+  <tabstop>executionTab_run_pushButton</tabstop>
+  <tabstop>executionTab_stop_pushButton</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>qualityControlTab_specifyDataFile_pushButton</tabstop>
+  <tabstop>qualityControlTab_dataFile_lineEdit</tabstop>
+  <tabstop>qualityControlTab_displayPlot_pushButton</tabstop>
+  <tabstop>qualityControlTab_resetPlotting_pushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

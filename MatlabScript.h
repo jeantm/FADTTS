@@ -1,8 +1,8 @@
 #ifndef MATLABSCRIPT_H
 #define MATLABSCRIPT_H
 
-#include "para_Model_FADTTS.h"
-#include "soft_Model_FADTTS.h"
+//#include "para_Model_FADTTS.h"
+//#include "soft_Model_FADTTS.h"
 
 #include <iostream>
 
@@ -15,7 +15,7 @@
 
 
 #ifndef FADTTS_TITLE
-#define FADTTS_TITLE "Unknown Title"
+#define FADTTS_TITLE "Unknown"
 #endif
 
 #ifndef FADTTS_VERSION

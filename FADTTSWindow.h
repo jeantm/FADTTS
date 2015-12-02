@@ -9,6 +9,7 @@
 #include "MatlabScript.h"
 #include "MatlabThread.h"
 #include "Plot.h"
+#include "Log.h"
 
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
@@ -65,7 +66,16 @@ private slots:
     void UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int& newCovariateFileSubjectColumnIDAfterFileEdition );
 
 
-    /*************** Subjects Tab ***************/
+    /*********** Subjects/Covariates Tab ***********/
+    void DisplayCovariates();
+
+    void SelectCovariate( QListWidgetItem *item );
+
+    void CheckAllCovariates();
+
+    void UnCheckAllCovariates();
+
+
     void LoadSubjectFile();
 
     void ResetSubjectFile();
@@ -89,24 +99,16 @@ private slots:
     void SetCaseSensitivity( bool checked );
 
 
-    /***************** Parameters  Tab *****************/
-    void DisplayCovariates();
-
-    void SelectCovariate( QListWidgetItem *item );
-
-    void CheckAllCovariates();
-
-    void UnCheckAllCovariates();
-
-
     /****************** Execution Tab ******************/
     void SetOutputDir();
 
     void UpdateOutputDir( const QString& path );
 
+
     void SetMatlabExe();
 
     void UpdateMatlabExe( const QString& executable );
+
 
     void SetMVCMPath();
 
@@ -117,7 +119,9 @@ private slots:
 
     void StopFADTTS();
 
-//    void WriteLog();
+    void DisplayLog();
+
+    void OnThreadFinished();
 
 
     /************** Quality Control  Tab **************/
@@ -137,50 +141,36 @@ private:
     QPixmap m_warningPixmap;
 
     QSharedPointer<EditInputDialog> m_editInputDialog;
-
     QSharedPointer<InfoDialog> m_infoDialog;
 
     QListWidget *m_sortedSubjectListWidget, *m_covariateListWidget;
-
     QVTKWidget *m_qvtkWidget;
-
-//    QPlainTextEdit *m_log;
-
-    QTextStream* m_textStreamLog;
-
+    QPlainTextEdit *m_logWindow;
     vtkSmartPointer<vtkContextView> m_view;
-
 
     QLineEdit *m_subjectFileLineEdit;
 
     typedef QMap<QString, QLabel*> labelMapType;
     labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap;
-
     typedef QMap<QString, QCheckBox*> checkBoxMapType;
     checkBoxMapType m_paramTabFileCheckBoxMap;
-
     typedef QMap<QString, QLineEdit*> lineEditMapType;
     lineEditMapType m_inputTabInputFileLineEditMap;
-
     typedef QMap<QString, QPushButton*> pushButtonMapType;
     pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
 
     Qt::CaseSensitivity caseSensitivity;
 
-
     Data m_data;
-
-    Processing m_process;
-
+    Processing m_processing;
     MatlabScript m_matlabScript;
-
     MatlabThread *m_matlabThread;
-
     Plot *m_plot;
 
+    QFile *m_logFile;
+    QTextStream* m_textStreamLog;
 
     QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
-
 
 
     /********* Configuration & Events *********/
@@ -215,28 +205,22 @@ private:
     void UpdateLineEditsAfterAddingMultipleFiles( const QStringList fileList );
 
 
-    void LaunchEditInputDialog( QString prefID );
-
-
     void UpdateInputFileInformation( const QString prefID );
 
-    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
-
-
     void DisplayInputLineEditIcon( const QString prefID , const QPixmap icon );
+
+    void LaunchEditInputDialog( QString prefID );
+
 
     void SetInfoCovariateFileSubjectColumnID();
 
 
-    /*************** Subjects Tab ***************/
+    /*********** Subjects/Covariates Tab **********/
     void UpdateAvailableFileParamTab();
 
     void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectMap );
 
     void DisplayNbrSubjectSelected();
-
-
-    /*************** Parameters Tab ***************/
 
 
     /*************** Execution Tab ****************/
@@ -248,11 +232,16 @@ private:
 
     QMap<int, QString> GetSelectedCovariates();
 
+
     QString GenerateSelectedSubjectFile( QString outputDir );
+
 
     bool IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates );
 
     void SetMatlabThread( QString fiberName, QMap<int, QString> selectedCovariates );
+
+    void SetLogDisplay( QString outputDir, QString fiberName, QMap< QPair< int, QString >, bool> matlabInputFiles,
+                        QMap<int, QString> selectedCovariates, int nbrPermutations, bool omnibusON, bool postHocON );
 };
 
 #endif // FADTTSWINDOW_H

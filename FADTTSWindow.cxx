@@ -279,11 +279,11 @@ void FADTTSWindow::InitExecutionTab()
 {
     m_matlabThread = new MatlabThread( this );
     m_matlabThread->SetMatlabScript( &m_matlabScript );
-    m_matlabThread->SetProcess( &m_process );
+    m_matlabThread->SetProcessing( &m_processing );
 
-//    m_log = new QPlainTextEdit( this );
-//    m_log = this->executionTab_log_plainTextEdit;
-//    m_log->setReadOnly( true );
+    m_logWindow = new QPlainTextEdit( this );
+    m_logWindow = this->executionTab_log_plainTextEdit;
+    m_logWindow->setReadOnly( true );
 
     connect( this->executionTab_outputDir_pushButton, SIGNAL( clicked() ), this, SLOT( SetOutputDir() ) );
     connect( this->para_executionTab_outputDir_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateOutputDir( const QString& ) ) );
@@ -296,6 +296,7 @@ void FADTTSWindow::InitExecutionTab()
 
     connect( this->executionTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( RunFADTTS() ) );
     connect( this->executionTab_stop_pushButton, SIGNAL( clicked() ), this, SLOT( StopFADTTS() ) );
+    connect( m_matlabThread, SIGNAL( finished() ), this, SLOT( OnThreadFinished() ) );
 
     this->para_executionTab_nbrPermutations_spinBox->setMaximum( 2000 );
 
@@ -320,6 +321,7 @@ void FADTTSWindow::InitQualityControlTab()
 
     connect( this->qualityControlTab_displayPlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( DisplayVTKPlot() ) );
 }
+
 
 void FADTTSWindow::UpdateEditInputDialogCurrentDir( const QString newfilePath )
 {
@@ -426,8 +428,8 @@ void FADTTSWindow::UpdateInputLineEdit( const QString& prefID )
         else
         {
             file.close();
-            QList<QStringList> fileData = m_process.GetDataFromFile( filePath );
-            if( m_process.IsMatrixDimensionOK( fileData ) )
+            QList<QStringList> fileData = m_processing.GetDataFromFile( filePath );
+            if( m_processing.IsMatrixDimensionOK( fileData ) )
             {
                 DisplayInputLineEditIcon( prefID, m_okPixmap );
                 m_data.SetFilename( prefID ) = filePath;
@@ -551,17 +553,6 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
 }
 
 
-void  FADTTSWindow::LaunchEditInputDialog( QString prefID )
-{
-    m_editInputDialog->SetLineEditPrefix( prefID );
-    m_editInputDialog->SetInputFile( m_inputTabInputFileLineEditMap[ prefID ]->text() );
-    m_editInputDialog->setModal( true );
-    m_editInputDialog->setWindowTitle( tr( qPrintable( "Edit " + prefID.toUpper() + " File" ) ) );
-    m_editInputDialog->DisplayFileData();
-    m_editInputDialog->exec();
-}
-
-
 void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
 {
     QString filePath = m_data.GetFilename( prefID );
@@ -573,7 +564,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
         int nbrColumns = fileData.at( 0 ).count();
 
         m_data.ClearSubjects( prefID );
-        QStringList subjects = m_process.GetSubjectsFromInputFile( fileData, m_data.GetCovariateFileSubjectColumnID() );
+        QStringList subjects = m_processing.GetSubjectsFromInputFile( fileData, m_data.GetCovariateFileSubjectColumnID() );
         m_data.SetSubjects( prefID, subjects );
 
         if( prefID == m_data.GetCovariatePrefix() )
@@ -583,7 +574,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
             m_data.SetNbrSubjects( prefID ) = subjects.count();
 
             m_data.ClearCovariates();
-            m_data.SetCovariates() = m_process.GetCovariatesFromFileData( fileData, m_data.GetCovariateFileSubjectColumnID() );
+            m_data.SetCovariates() = m_processing.GetCovariatesFromFileData( fileData, m_data.GetCovariateFileSubjectColumnID() );
             /** Intercept representes everything that has not been classified in one of the previous
              *  covariates. It is important to add it as 1st element of m_covariatesList **/
             m_data.AddInterceptToCovariates();
@@ -604,12 +595,20 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
     UpdateAvailableFileParamTab();
 }
 
-
 void FADTTSWindow::DisplayInputLineEditIcon( const QString prefID, const QPixmap icon )
 {
     DisplayIcon( m_inputTabIconLabelMap[ prefID ], icon );
 }
 
+void  FADTTSWindow::LaunchEditInputDialog( QString prefID )
+{
+    m_editInputDialog->SetLineEditPrefix( prefID );
+    m_editInputDialog->SetInputFile( m_inputTabInputFileLineEditMap[ prefID ]->text() );
+    m_editInputDialog->setModal( true );
+    m_editInputDialog->setWindowTitle( tr( qPrintable( "Edit " + prefID.toUpper() + " File" ) ) );
+    m_editInputDialog->DisplayFileData();
+    m_editInputDialog->exec();
+}
 
 
 void FADTTSWindow::SetInfoCovariateFileSubjectColumnID()
@@ -627,10 +626,83 @@ void FADTTSWindow::SetInfoCovariateFileSubjectColumnID()
 
 
 /****************************************************************/
-/************************* Subjects tab *************************/
+/******************** Subjects/Covariates tab *******************/
 /****************************************************************/
 
 /***********************  Private slots  ************************/
+void FADTTSWindow::DisplayCovariates()
+{
+    QMap<int, QString> covariateMap = m_data.GetCovariates();
+    m_covariateListWidget->clear();
+
+    if( !( covariateMap.isEmpty() ) && this->para_subjectTab_covariateFile_checkBox->isChecked() )
+    {
+        QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
+        while( iterCovariate != covariateMap.end() )
+        {
+            QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), m_covariateListWidget );
+            covariateItem->setCheckState( Qt::Checked );
+            covariateItem->setFlags( Qt::ItemIsEnabled );
+            m_covariateListWidget->addItem( covariateItem );
+            ++iterCovariate;
+        }
+        this->subjectTab_covariatesInformation_label->show();
+    }
+    else
+    {
+        this->subjectTab_covariatesInformation_label->hide();
+    }
+}
+
+void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
+{
+    if( item->flags() == Qt::ItemIsEnabled )
+    {
+        if( item->checkState() == Qt::Unchecked )
+        {
+            item->setCheckState( Qt::Checked );
+        }
+        else if( !item->text().contains( "Intercept" ) )
+        {
+            item->setCheckState( Qt::Unchecked );
+        }
+        else
+        {
+            QString warningMessage = "You are about to uncheck the Intercept. This action is not recommended.<br>Are you sure you want to do it?";
+            int ignoreWarning = QMessageBox::warning( this, tr( "Uncheck Intercept" ), tr( qPrintable( warningMessage ) ),
+                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::No );
+
+            if( ignoreWarning == QMessageBox::Yes )
+            {
+                item->setCheckState( Qt::Unchecked );
+            }
+        }
+    }
+}
+
+void FADTTSWindow::CheckAllCovariates()
+{
+    QListWidget *covariateListWidget = m_covariateListWidget;
+    for( int i = 0; i < covariateListWidget->count(); i++ )
+    {
+        covariateListWidget->item( i )->setCheckState( Qt::Checked );
+    }
+}
+
+void FADTTSWindow::UnCheckAllCovariates()
+{
+    QListWidget *covariateListWidget = m_covariateListWidget;
+    for( int i = 0; i < covariateListWidget->count(); i++ )
+    {
+        QListWidgetItem *currentItem = covariateListWidget->item( i );
+        if( !currentItem->text().contains( "Intercept" ) )
+        {
+            currentItem->setCheckState( Qt::Unchecked );
+        }
+    }
+}
+
+
 void FADTTSWindow::LoadSubjectFile()
 {
     QLineEdit *lineEdit = m_subjectFileLineEdit;
@@ -757,13 +829,13 @@ void FADTTSWindow::SelectSubject( QListWidgetItem *item )
 void FADTTSWindow::SortAndDisplaySubjects()
 {
     QString subjectFile = m_subjectFileLineEdit->text();
-    QStringList refSubjectList = m_process.GetRefSubjects( subjectFile, GetFileDataOfSelectedFiles(), m_data.GetCovariateFileSubjectColumnID() );
-    QMap<QString, QStringList> allSubjects = m_process.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjects() );
-    QMap< QString, QMap<QString, bool> > sortedSubjects = m_process.SortSubjects( refSubjectList, allSubjects );
+    QStringList refSubjectList = m_processing.GetRefSubjects( subjectFile, GetFileDataOfSelectedFiles(), m_data.GetCovariateFileSubjectColumnID() );
+    QMap<QString, QStringList> allSubjects = m_processing.GetAllSubjectsFromSelectedInputFiles( m_paramTabFileCheckBoxMap, m_data.GetSubjects() );
+    QMap< QString, QMap<QString, bool> > sortedSubjects = m_processing.SortSubjects( refSubjectList, allSubjects );
 
     QStringList matchedSubjects;
     QMap<QString, QStringList > unMatchedSubjects;
-    m_process.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
+    m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
     DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
 
     SearchSubjects();
@@ -936,87 +1008,7 @@ void FADTTSWindow::DisplayNbrSubjectSelected()
 
 
 /****************************************************************/
-/************************ Parameters tab ************************/
-/****************************************************************/
-
-/***********************  Private  slots  ***********************/
-void FADTTSWindow::SelectCovariate( QListWidgetItem *item )
-{
-    if( item->flags() == Qt::ItemIsEnabled )
-    {
-        if( item->checkState() == Qt::Unchecked )
-        {
-            item->setCheckState( Qt::Checked );
-        }
-        else if( !item->text().contains( "Intercept" ) )
-        {
-            item->setCheckState( Qt::Unchecked );
-        }
-        else
-        {
-            QString warningMessage = "You are about to uncheck the Intercept. This action is not recommended.<br>Are you sure you want to do it?";
-            int ignoreWarning = QMessageBox::warning( this, tr( "Uncheck Intercept" ), tr( qPrintable( warningMessage ) ),
-                                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::No );
-
-            if( ignoreWarning == QMessageBox::Yes )
-            {
-                item->setCheckState( Qt::Unchecked );
-            }
-        }
-    }
-}
-
-void FADTTSWindow::CheckAllCovariates()
-{
-    QListWidget *covariateListWidget = m_covariateListWidget;
-    for( int i = 0; i < covariateListWidget->count(); i++ )
-    {
-        covariateListWidget->item( i )->setCheckState( Qt::Checked );
-    }
-}
-
-void FADTTSWindow::UnCheckAllCovariates()
-{
-    QListWidget *covariateListWidget = m_covariateListWidget;
-    for( int i = 0; i < covariateListWidget->count(); i++ )
-    {
-        QListWidgetItem *currentItem = covariateListWidget->item( i );
-        if( !currentItem->text().contains( "Intercept" ) )
-        {
-            currentItem->setCheckState( Qt::Unchecked );
-        }
-    }
-}
-
-
-/*********************** Private function ***********************/
-void FADTTSWindow::DisplayCovariates()
-{
-    QMap<int, QString> covariateMap = m_data.GetCovariates();
-    m_covariateListWidget->clear();
-
-    if( !( covariateMap.isEmpty() ) && this->para_subjectTab_covariateFile_checkBox->isChecked() )
-    {
-        QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
-        while( iterCovariate != covariateMap.end() )
-        {
-            QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), m_covariateListWidget );
-            covariateItem->setCheckState( Qt::Checked );
-            covariateItem->setFlags( Qt::ItemIsEnabled );
-            m_covariateListWidget->addItem( covariateItem );
-            ++iterCovariate;
-        }
-        this->subjectTab_covariatesInformation_label->show();
-    }
-    else
-    {
-        this->subjectTab_covariatesInformation_label->hide();
-    }
-}
-
-
-/****************************************************************/
-/*************************** Run  tab ***************************/
+/************************ Execution  tab ************************/
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
@@ -1061,6 +1053,7 @@ void FADTTSWindow::UpdateOutputDir( const QString&  path )
         label->clear();
     }
 }
+
 
 void FADTTSWindow::SetMatlabExe()
 {
@@ -1112,6 +1105,7 @@ void FADTTSWindow::UpdateMatlabExe( const QString& executable )
     }
 }
 
+
 void FADTTSWindow::SetMVCMPath()
 {
     QLineEdit *lineEdit = this->soft_executionTab_mvcm_lineEdit;
@@ -1155,20 +1149,6 @@ void FADTTSWindow::UpdateMVCMPath( const QString& path )
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void FADTTSWindow::RunFADTTS()
 {
     SyncUiToModelStructure();
@@ -1183,46 +1163,13 @@ void FADTTSWindow::RunFADTTS()
         SetMatlabThread( fiberName, selectedCovariates );
         m_matlabThread->start();
     }
-//    QString outputDir = m_data.GetOutputDir() + "/FADTTSter_TestLog" + fiberName;
-//    QDir().mkpath( outputDir );
-//    m_log->clear();
 
-//    // Log path
-//    QDir* output_dir = new QDir( outputDir );
-//    QFileInfo fi( outputDir );
-//    QString base = fi.baseName();
-//    QString log_path = output_dir->filePath(base + ".log");
+//    this->executionTab_run_pushButton->setEnabled( false );
+//    this->executionTab_stop_pushButton->setEnabled( true );
 
-//    // Log File
-//    QFile* log_file = new::QFile( log_path );
-//    log_file->open( QIODevice::ReadWrite );
-//    m_textStreamLog = new::QTextStream( log_file );
-
-//    // QFileSystemWatcher
-//    QFileSystemWatcher* log_watcher = new::QFileSystemWatcher( this );
-//    log_watcher->addPath( log_path );
-//    connect( log_watcher, SIGNAL( fileChanged( QString ) ), this, SLOT( WriteLog() ) );
+//    SetMatlabThread( fiberName, selectedCovariates );
 //    m_matlabThread->start();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void FADTTSWindow::StopFADTTS()
 {
@@ -1239,8 +1186,7 @@ void FADTTSWindow::StopFADTTS()
         case QMessageBox::Yes:
         {
             m_matlabThread->terminate();
-            this->executionTab_run_pushButton->setEnabled( true );
-            this->executionTab_stop_pushButton->setEnabled( false );
+            m_logWindow->insertPlainText( "Thread terminated by user.\n");
             break;
         }
         default:
@@ -1249,21 +1195,29 @@ void FADTTSWindow::StopFADTTS()
     }
 }
 
-//void FADTTSWindow::WriteLog()
-//{
-//    QScrollBar *scrollBar = m_log->verticalScrollBar();
+void FADTTSWindow::DisplayLog()
+{
+    QScrollBar *scrollBar = m_logWindow->verticalScrollBar();
 
-//    QString line = m_textStreamLog->readAll();
-//    if( scrollBar->value() == scrollBar->maximum() )
-//    {
-//        m_log->insertPlainText( line );
-//        scrollBar->setValue( scrollBar->maximum() );
-//    }
-//    else
-//    {
-//        m_log->insertPlainText(line);
-//    }
-//}
+    QString line = m_textStreamLog->readAll();
+    if( scrollBar->value() == scrollBar->maximum() )
+    {
+        m_logWindow->insertPlainText( line );
+        scrollBar->setValue( scrollBar->maximum() );
+    }
+    else
+    {
+        m_logWindow->insertPlainText(line);
+    }
+}
+
+void FADTTSWindow::OnThreadFinished()
+{
+    this->executionTab_run_pushButton->setEnabled( true );
+    this->executionTab_stop_pushButton->setEnabled( false );
+    m_logFile->flush();
+    m_logFile->close();
+}
 
 
 /*********************** Private function ***********************/
@@ -1351,6 +1305,7 @@ QMap<int, QString> FADTTSWindow::GetSelectedCovariates()
     return selectedCovariates;
 }
 
+
 QString FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
 {
     QFile selectedSubjects( outputDir + "/" + this->para_inputTab_fiberName_lineEdit->text() + "_subjectList.txt" );
@@ -1370,6 +1325,7 @@ QString FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
 
     return selectedSubjects.fileName();
 }
+
 
 bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates )
 {
@@ -1458,13 +1414,15 @@ void FADTTSWindow::SetMatlabThread( QString fiberName, QMap<int, QString> select
     QMap< QPair< int, QString >, bool> selectedInputFiles = GetSelectedInputFiles();
     QString selectedSubjectListFilePath = GenerateSelectedSubjectFile( outputDir );
     QMap< QPair< int, QString >, bool> matlabInputFiles =
-            m_process.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
+            m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
                                                 m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, outputDir,
                                                 fiberName );
     int nbrPermutations = this->para_executionTab_nbrPermutations_spinBox->value();
+    bool omnibusON = this->para_executionTab_omnibus_checkBox->isChecked();
+    bool postHocON = this->para_executionTab_postHoc_checkBox->isChecked();
 
     m_matlabScript.SetMatlabOutputDir( outputDir + "/MatlabOutputs" );
-    m_matlabScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + nbrPermutations + "perm.m" );
+    m_matlabScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + QString::number( nbrPermutations ) + "perm.m" );
     m_matlabScript.InitMatlabScript();
     m_matlabScript.SetHeader();
     m_matlabScript.SetMVCMPath( this->soft_executionTab_mvcm_lineEdit->text() );
@@ -1473,12 +1431,65 @@ void FADTTSWindow::SetMatlabThread( QString fiberName, QMap<int, QString> select
     m_matlabScript.SetNbrPermutation( nbrPermutations );
     m_matlabScript.SetCovariates( selectedCovariates );
     m_matlabScript.SetInputFiles( matlabInputFiles );
-    m_matlabScript.SetOmnibus( this->para_executionTab_omnibus_checkBox->isChecked() );
-    m_matlabScript.SetPostHoc( this->para_executionTab_postHoc_checkBox->isChecked() );
+    m_matlabScript.SetOmnibus( omnibusON );
+    m_matlabScript.SetPostHoc( postHocON );
 
-    m_process.SetMatlabExe( this->soft_executionTab_matlab_lineEdit->text() );
+    m_processing.SetMatlabExe( this->soft_executionTab_matlab_lineEdit->text() );
+
+    SetLogDisplay( outputDir, fiberName, matlabInputFiles, selectedCovariates, nbrPermutations, omnibusON, postHocON );
 }
 
+void FADTTSWindow::SetLogDisplay( QString outputDir, QString fiberName, QMap< QPair< int, QString >, bool> matlabInputFiles,
+                                  QMap<int, QString> selectedCovariates, int nbrPermutations, bool omnibusON, bool postHocON )
+{
+    m_logWindow->clear();
+
+    // Log File
+    m_logFile = new::QFile( outputDir + "/" + fiberName + ".log" );
+    m_logFile->open(QIODevice::ReadWrite);
+    m_textStreamLog = new QTextStream( m_logFile );
+
+    // QFileSystemWatcher
+    QFileSystemWatcher* log_watcher = new QFileSystemWatcher( this );
+    log_watcher->addPath( m_logFile->fileName() );
+    connect( log_watcher, SIGNAL( fileChanged( QString ) ), this, SLOT( DisplayLog() ) );
+
+    //
+    m_processing.SetLogFile( m_logFile );
+
+    // Init log file
+    *m_textStreamLog << QDate::currentDate().toString( "MM/dd/yyyy" ) <<
+                            " " << QTime::currentTime().toString( "hh:mmap" ) << endl;
+    *m_textStreamLog << "FADTTSter: " << QString( FADTTS_VERSION ).prepend( "V" ) << endl;
+    *m_textStreamLog << "/****************************************************************/" << endl;
+    *m_textStreamLog << "/********************** FADTTSter LOG FILE **********************/" << endl;
+    *m_textStreamLog << "/****************************************************************/" << endl << endl;
+    *m_textStreamLog << "/**********************       Inputs       **********************/" << endl;
+    *m_textStreamLog << "- fiber name: " << fiberName << endl;
+    *m_textStreamLog << "- matlabInputFiles: ";
+    QMap< QPair< int, QString >, bool>::ConstIterator iterMatlabInputFiles = matlabInputFiles.begin();
+    while( iterMatlabInputFiles != matlabInputFiles.end() )
+    {
+        *m_textStreamLog << QFileInfo( QFile( iterMatlabInputFiles.key().second ) ).fileName() << ", ";
+        ++iterMatlabInputFiles;
+    }
+    *m_textStreamLog << endl;
+    *m_textStreamLog << "- nbr covariates: " << QString::number( selectedCovariates.size() ) << endl;
+    *m_textStreamLog << "- selected covariates: ";
+    QMap<int, QString>::ConstIterator iterCovariates = selectedCovariates.begin();
+    while( iterCovariates != selectedCovariates.end() )
+    {
+        *m_textStreamLog << iterCovariates.value() << ", ";
+        ++iterCovariates;
+    }
+    *m_textStreamLog << endl;
+    *m_textStreamLog << "- nbr permutations: " << QString::number( nbrPermutations ) << endl;
+    *m_textStreamLog << "- omnibus: " << omnibusON << endl;
+    *m_textStreamLog << "- post hoc: " << postHocON << endl << endl;
+    *m_textStreamLog << "/**********************       Process      **********************/" << endl;
+    *m_textStreamLog << "Thread starts running..." << endl << endl;
+    m_logFile->flush();
+}
 
 /****************************************************************/
 /********************* Quality Control  tab *********************/
