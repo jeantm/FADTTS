@@ -57,7 +57,6 @@ Plot.h
 set(FADTTS_ui
 FADTTSWindow.ui
 EditInputDialog.ui
-InfoDialog.ui
 )
 
 set(FADTTS_rcc

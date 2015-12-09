@@ -9,29 +9,25 @@
 #include <QFileInfo>
 
 
-namespace Ui {
-class InfoDialog;
-}
-
-class InfoDialog : public QDialog
+class InfoDialog : public QObject
 {
     friend class TestInfoDialog; /** For unit tests **/
     friend class TestFADTTSWindow; /** For unit tests **/
 
-    Q_OBJECT    
+    Q_OBJECT
 
 public:
-    explicit InfoDialog( QWidget *parent = 0 );
-    ~InfoDialog();
-    
+    explicit InfoDialog( QObject *parent = 0 );
+
+
     void DisplayFileInformation();
 
-    void SetData( Data *newData );
+    void SetData( Data *data );
+
+    void SetInformationLabelMap( QMap<QString, QLabel*> informationLabelMap );
 
 
 private:
-    Ui::InfoDialog *m_ui;
-
     QLabel *m_adFileInfo_label, *m_rdFileInfo_label, *m_mdFileInfo_label,
     *m_faFileInfo_label, *m_compFileInfo_label;
 

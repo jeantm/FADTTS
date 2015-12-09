@@ -1,66 +1,37 @@
 #include "InfoDialog.h"
-#include "ui_InfoDialog.h"
-
-InfoDialog::InfoDialog( QWidget *parent ) :
-    QDialog( parent ),
-    m_ui( new Ui::InfoDialog )
-{
-    m_ui->setupUi( this );
-
-    InitInfoDialog();
-}
-
-InfoDialog::~InfoDialog()
-{
-    delete m_ui;
-}
 
 
 /***************************************************************/
 /********************** Public functions ***********************/
 /***************************************************************/
+InfoDialog::InfoDialog( QObject *parent ) :
+    QObject( parent )
+{
+}
+
+
 void InfoDialog::DisplayFileInformation()
 {
-    SetFileInformationLabelMap();
     foreach( QString prefID, m_data->GetPrefixList() )
     {
         m_inputFileInformationLabelMap.value( prefID )->
-                setText( tr( qPrintable( "<center><b>" + prefID.toUpper() + " File</b></center><br>" + GetInputFileInformation( prefID ) ) ) );
+                setText( tr( qPrintable( GetInputFileInformation( prefID ) ) ) );
     }
 }
 
-void InfoDialog::SetData( Data *newData )
+void InfoDialog::SetData( Data *data )
 {
-    m_data = newData;
+    m_data = data;
 }
 
+void InfoDialog::SetInformationLabelMap( QMap<QString, QLabel *> informationLabelMap )
+{
+    m_inputFileInformationLabelMap = informationLabelMap;
+}
 
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-void InfoDialog::InitInfoDialog()
-{
-    m_adFileInfo_label = new QLabel();
-    m_adFileInfo_label = m_ui->adFileInfo_label;
-    m_rdFileInfo_label = new QLabel();
-    m_rdFileInfo_label = m_ui->rdFileInfo_label;
-    m_mdFileInfo_label = new QLabel();
-    m_mdFileInfo_label = m_ui->mdFileInfo_label;
-    m_faFileInfo_label = new QLabel();
-    m_faFileInfo_label = m_ui->faFileInfo_label;
-    m_compFileInfo_label = new QLabel();
-    m_compFileInfo_label = m_ui->compFileInfo_label;
-}
-
-void InfoDialog::SetFileInformationLabelMap()
-{
-    m_inputFileInformationLabelMap.insert( m_data->GetAxialDiffusivityPrefix(), m_adFileInfo_label );
-    m_inputFileInformationLabelMap.insert( m_data->GetRadialDiffusivityPrefix(), m_rdFileInfo_label );
-    m_inputFileInformationLabelMap.insert( m_data->GetMeanDiffusivityPrefix(), m_mdFileInfo_label );
-    m_inputFileInformationLabelMap.insert( m_data->GetFractionalAnisotropyPrefix(), m_ui->faFileInfo_label );
-    m_inputFileInformationLabelMap.insert( m_data->GetCovariatePrefix(), m_compFileInfo_label );
-}
-
 QString InfoDialog::GetInputFileInformation( const QString prefID )
 {
     QString fileInformation;

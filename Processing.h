@@ -22,26 +22,7 @@ class Processing : public QObject
 public:
     explicit Processing( QObject *parent = 0 );
 
-    /*****************************************************/
-    /****************** Running Process ******************/
-    /*****************************************************/
-    void SetMatlabExe( QString matlabExe );
 
-    void SetMatlabScript( QString matlabScript );
-
-    void SetLogFile( QFile *logFile );
-
-
-    QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
-                                                                 int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
-                                                                 QString outputDir, QString fiberName );
-
-    void RunScript();
-
-
-    /*****************************************************/
-    /****************** Data Processing ******************/
-    /*****************************************************/
     bool IsMatrixDimensionOK( const QList<QStringList> fileData );
 
     bool IsCovariateFile(const QStringList fileData );
@@ -64,28 +45,15 @@ public:
     QMap<int, QString> GetCovariatesFromFileData( QList<QStringList> dataCovariateFile, int covariateFileSubjectColumnID );
 
 
+    QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
+                                                                 int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
+                                                                 QString outputDir, QString fiberName );
+
+
 private:
     static const QString m_csvSeparator;
 
-    QString m_matlabExe, m_matlabScript,
-    m_fiberName;
 
-    QFile *m_logFilePath;
-
-    QTextStream *m_logTextStream;
-
-    QProcess *m_process;
-
-
-    /*****************************************************/
-    /****************** Running Process ******************/
-    /*****************************************************/
-    void RedirectOutput();
-
-
-    /*****************************************************/
-    /****************** Running Process ******************/
-    /*****************************************************/
     QStringList GetSelectedSubjects( QString selectedSubjectFile );
 
     QStringList GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );

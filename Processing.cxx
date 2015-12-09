@@ -14,150 +14,6 @@ Processing::Processing( QObject *parent ) :
 /*****************************************************/
 /***************** Public  Functions *****************/
 /*****************************************************/
-
-/****************** Running Process ******************/
-void Processing::SetMatlabExe( QString matlabExe )
-{
-    m_matlabExe = matlabExe;
-}
-
-void Processing::SetMatlabScript( QString matlabScript )
-{
-    m_matlabScript = matlabScript;
-}
-
-void Processing::SetLogFile( QFile *logFile )
-{
-    m_logFilePath = logFile;
-}
-
-
-QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
-                                                          int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
-                                                          QString outputDir, QString fiberName )
-{
-    QMap< QPair< int, QString >, bool> matlabInputFiles;
-    QStringList selectedSubjectList = GetSelectedSubjects( selectedSubjectFile );
-
-    QMap< QPair< int, QString >, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
-    while( iterSelectedInputFile != selectedInputFiles.end() )
-    {
-        QString fileName = iterSelectedInputFile.key().second;
-        QFile matlabInputFile( outputDir + "/" + fiberName + "_" +
-                               QFileInfo( QFile( fileName ) ).fileName().split( "." ).first() + "_MatlabInput.csv" );
-        matlabInputFile.open( QIODevice::WriteOnly );
-        QTextStream tsM( &matlabInputFile );
-        QStringList rowData;
-
-        QList<QStringList> fileData = GetDataFromFile( fileName );
-
-        int nbRows = fileData.count();
-        int nbColumns = fileData.at( 0 ).count();
-
-        QStringList subjectAdded;
-        if( IsCovariateFile( fileData.at( 1 ) ) )
-        {
-            for( int r = 0; r < nbRows; r++ )
-            {
-                QString currentSubject = fileData.at( r ).at( covariateFileSubjectColumnId );
-
-                rowData.clear();
-                if( !subjectAdded.contains( currentSubject ) )
-                {
-                    if( r == 0 )
-                    {
-                        rowData << currentSubject;
-
-                        QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
-                        while( iterCovariate != selectedCovariates.constEnd() )
-                        {
-                            int covID = iterCovariate.key();
-                            if( covID != -1 )
-                            {
-                                rowData << fileData.at( r ).at( covID );
-                            }
-                            ++iterCovariate;
-                        }
-                    }
-
-                    if( selectedSubjectList.contains( currentSubject ) )
-                    {
-                        rowData << currentSubject;
-
-                        QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
-                        while( iterCovariate != selectedCovariates.constEnd() )
-                        {
-                            int covID = iterCovariate.key();
-                            if( covID != -1 )
-                            {
-                                rowData << fileData.at( r ).at( covID );
-                            }
-                            ++iterCovariate;
-                        }
-                    }
-
-                    if( !rowData.isEmpty() )
-                    {
-                        tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
-                    }
-                    subjectAdded.append( currentSubject );
-                }
-            }
-        }
-        else
-        {
-            QList<int> subjectID;
-            for( int c = 0; c < nbColumns; c++ )
-            {
-                QString currentSubject = fileData.at( 0 ).at( c );
-                if( ( c == 0 || ( selectedSubjectList.contains( currentSubject ) && !subjectAdded.contains( currentSubject ) ) ) )
-                {
-                    subjectID.append( c );
-                    subjectAdded.append( currentSubject );
-                }
-            }
-
-            for( int r = 0; r < nbRows; ++r )
-            {
-                rowData.clear();
-                foreach ( int id, subjectID )
-                {
-                    rowData << fileData.at( r ).at( id );
-                }
-                tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
-            }
-        }
-        matlabInputFile.flush();
-        matlabInputFile.close();
-
-        QPair< int, QString > currentPair;
-        currentPair.first = iterSelectedInputFile.key().first;
-        currentPair.second = matlabInputFile.fileName();
-        matlabInputFiles.insert( currentPair, iterSelectedInputFile.value() );
-
-        ++iterSelectedInputFile;
-    }
-
-    return matlabInputFiles;
-}
-
-void Processing::RunScript()
-{
-    RedirectOutput();
-
-    QStringList arguments;
-//    QString mScript = "run('" + m_matlabScript + "')";
-    QString mScript = "run('/work/jeantm/Project/FADTTS_Test/test.m')";
-    std::cout << mScript.toStdString() << std::endl;
-    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
-
-//    m_process->execute( m_matlabExe, arguments );
-    m_process->start( "/opt/matlab/bin/matlab", arguments );
-    m_process->waitForFinished();
-}
-
-
-/****************** Data Processing ******************/
 bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
 {
     int rowDataSize = fileData.at( 0 ).count();
@@ -364,21 +220,119 @@ QMap<int, QString> Processing::GetCovariatesFromFileData( QList<QStringList> dat
     return covariates;
 }
 
+QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
+                                                          int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
+                                                          QString outputDir, QString fiberName )
+{
+    QMap< QPair< int, QString >, bool> matlabInputFiles;
+    QStringList selectedSubjectList = GetSelectedSubjects( selectedSubjectFile );
+
+    QMap< QPair< int, QString >, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
+    while( iterSelectedInputFile != selectedInputFiles.end() )
+    {
+        QString fileName = iterSelectedInputFile.key().second;
+        QFile matlabInputFile( outputDir + "/" + fiberName + "_" +
+                               QFileInfo( QFile( fileName ) ).fileName().split( "." ).first() + "_MatlabInput.csv" );
+        matlabInputFile.open( QIODevice::WriteOnly );
+        QTextStream tsM( &matlabInputFile );
+        QStringList rowData;
+
+        QList<QStringList> fileData = GetDataFromFile( fileName );
+
+        int nbRows = fileData.count();
+        int nbColumns = fileData.at( 0 ).count();
+
+        QStringList subjectAdded;
+        if( IsCovariateFile( fileData.at( 1 ) ) )
+        {
+            for( int r = 0; r < nbRows; r++ )
+            {
+                QString currentSubject = fileData.at( r ).at( covariateFileSubjectColumnId );
+
+                rowData.clear();
+                if( !subjectAdded.contains( currentSubject ) )
+                {
+                    if( r == 0 )
+                    {
+                        rowData << currentSubject;
+
+                        QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
+                        while( iterCovariate != selectedCovariates.constEnd() )
+                        {
+                            int covID = iterCovariate.key();
+                            if( covID != -1 )
+                            {
+                                rowData << fileData.at( r ).at( covID );
+                            }
+                            ++iterCovariate;
+                        }
+                    }
+
+                    if( selectedSubjectList.contains( currentSubject ) )
+                    {
+                        rowData << currentSubject;
+
+                        QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
+                        while( iterCovariate != selectedCovariates.constEnd() )
+                        {
+                            int covID = iterCovariate.key();
+                            if( covID != -1 )
+                            {
+                                rowData << fileData.at( r ).at( covID );
+                            }
+                            ++iterCovariate;
+                        }
+                    }
+
+                    if( !rowData.isEmpty() )
+                    {
+                        tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
+                    }
+                    subjectAdded.append( currentSubject );
+                }
+            }
+        }
+        else
+        {
+            QList<int> subjectID;
+            for( int c = 0; c < nbColumns; c++ )
+            {
+                QString currentSubject = fileData.at( 0 ).at( c );
+                if( ( c == 0 || ( selectedSubjectList.contains( currentSubject ) && !subjectAdded.contains( currentSubject ) ) ) )
+                {
+                    subjectID.append( c );
+                    subjectAdded.append( currentSubject );
+                }
+            }
+
+            for( int r = 0; r < nbRows; ++r )
+            {
+                rowData.clear();
+                foreach ( int id, subjectID )
+                {
+                    rowData << fileData.at( r ).at( id );
+                }
+                tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
+            }
+        }
+        matlabInputFile.flush();
+        matlabInputFile.close();
+
+        QPair< int, QString > currentPair;
+        currentPair.first = iterSelectedInputFile.key().first;
+        currentPair.second = matlabInputFile.fileName();
+        matlabInputFiles.insert( currentPair, iterSelectedInputFile.value() );
+
+        ++iterSelectedInputFile;
+    }
+
+    return matlabInputFiles;
+}
+
 
 /*****************************************************/
 /***************** Private Functions *****************/
 /*****************************************************/
-
-/****************** Running Process ******************/
-void Processing::RedirectOutput()
-{
-    m_process = new QProcess();
-    m_process->setProcessChannelMode( QProcess::MergedChannels );
-    m_process->setStandardOutputFile( m_logFilePath->fileName(), QProcess::Append );
-}
-
-
-/****************** Data Processing ******************/
 QStringList Processing::GetSelectedSubjects( QString selectedSubjectFile )
 {
     QStringList selectedSubjectList;

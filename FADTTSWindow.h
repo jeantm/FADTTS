@@ -9,11 +9,11 @@
 #include "MatlabScript.h"
 #include "MatlabThread.h"
 #include "Plot.h"
-#include "Log.h"
 
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
 #include <QScrollBar>
+#include <QProgressBar>
 #include <QDebug>
 
 
@@ -22,7 +22,7 @@ class FADTTSWindow : public FADTTSWindowConfig
     friend class TestFADTTSWindow;
 
     Q_OBJECT
-    
+
 public:
     /********* Configuration & Events *********/
     FADTTSWindow();
@@ -54,10 +54,6 @@ private slots:
     void UpdateInputLineEdit( const QString& prefID );
 
     void EditInputFile( const QString& prefID );
-
-
-    void DisplayInputFileInformation();
-
 
     void UpdateInputLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID );
 
@@ -94,12 +90,14 @@ private slots:
 
     void SortAndDisplaySubjects();
 
-    void SearchSubjects();
+    void SearchAllSubjects();
 
     void SetCaseSensitivity( bool checked );
 
 
     /****************** Execution Tab ******************/
+    void SetCurrentFiberNameInfo( const QString& fibername );
+
     void SetOutputDir();
 
     void UpdateOutputDir( const QString& path );
@@ -121,10 +119,17 @@ private slots:
 
     void DisplayLog();
 
+    void ClearLog();
+
     void OnThreadFinished();
 
 
-    /************** Quality Control  Tab **************/
+    /************** Plotting  Tab **************/
+    void DisplayPlot();
+
+    void ResetPlot();
+
+    void SavePlot();
 
 
 private:
@@ -143,7 +148,9 @@ private:
     QSharedPointer<EditInputDialog> m_editInputDialog;
     QSharedPointer<InfoDialog> m_infoDialog;
 
-    QListWidget *m_sortedSubjectListWidget, *m_covariateListWidget;
+    QProgressBar *m_progressBar;
+
+    QListWidget *m_matchedSubjectListWidget, *m_covariateListWidget, *m_unmatchedSubjectListWidget;
     QVTKWidget *m_qvtkWidget;
     QPlainTextEdit *m_logWindow;
     vtkSmartPointer<vtkContextView> m_view;
@@ -151,7 +158,7 @@ private:
     QLineEdit *m_subjectFileLineEdit;
 
     typedef QMap<QString, QLabel*> labelMapType;
-    labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap;
+    labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap, m_inputFileInformationLabelMap;
     typedef QMap<QString, QCheckBox*> checkBoxMapType;
     checkBoxMapType m_paramTabFileCheckBoxMap;
     typedef QMap<QString, QLineEdit*> lineEditMapType;
@@ -172,6 +179,8 @@ private:
 
     QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
 
+    int m_nbrSelectedSubjects;
+
 
     /********* Configuration & Events *********/
     void InitFADTTSWindow();
@@ -180,11 +189,11 @@ private:
 
     void InitInputTab();
 
-    void InitSubjectTab();
+    void InitSubjectCovariateTab();
 
     void InitExecutionTab();
 
-    void InitQualityControlTab();
+    void InitPlottingTab();
 
 
     void UpdateEditInputDialogCurrentDir( const QString newfilePath );
@@ -220,7 +229,12 @@ private:
 
     void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectMap );
 
+    void DisplaySubjectInformation();
+
     void DisplayNbrSubjectSelected();
+
+
+    int SearchSubjects( QListWidget *list );
 
 
     /*************** Execution Tab ****************/
@@ -242,6 +256,10 @@ private:
 
     void SetLogDisplay( QString outputDir, QString fiberName, QMap< QPair< int, QString >, bool> matlabInputFiles,
                         QMap<int, QString> selectedCovariates, int nbrPermutations, bool omnibusON, bool postHocON );
+
+
+    /************** Plotting  Tab **************/
+    void HideShowPlotTab();
 };
 
 #endif // FADTTSWINDOW_H

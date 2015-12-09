@@ -599,362 +599,364 @@ bool TestFADTTSWindow::Test_UpdateInputFileInformation( QString inputADFile, QSt
 
 bool TestFADTTSWindow::Test_DisplaySortedSubjects()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+//    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
 
-    para_Model_FADTTS para_m;
-    para_Save_FADTTS para_s;
-    para_Load_FADTTS para_l;
-    fadttsWindow->SetParaLoad( &para_l );
-    fadttsWindow->SetParaSave( &para_s );
-    fadttsWindow->SetParaModel( &para_m );
+//    para_Model_FADTTS para_m;
+//    para_Save_FADTTS para_s;
+//    para_Load_FADTTS para_l;
+//    fadttsWindow->SetParaLoad( &para_l );
+//    fadttsWindow->SetParaSave( &para_s );
+//    fadttsWindow->SetParaModel( &para_m );
 
-    QStringList matchedSubjects;
-    QMap<QString, QStringList > unMatchedSubjectMap;
-    int nbrMatchedSubjects;
-    int nbrUnmatchedSubjects;
+//    QStringList matchedSubjects;
+//    QMap<QString, QStringList > unMatchedSubjectMap;
+//    int nbrMatchedSubjects;
+//    int nbrUnmatchedSubjects;
 
-    /************************************************/
-    /************* All Subjects Matched *************/
-    /************************************************/
-    bool checkStateAllSubjectsMatched = true;
-    bool backgroundColorAllSubjectsMatched = true;
-    bool flagsAllSubjectsMatched = true;
+//    /************************************************/
+//    /************* All Subjects Matched *************/
+//    /************************************************/
+//    bool checkStateAllSubjectsMatched = true;
+//    bool backgroundColorAllSubjectsMatched = true;
+//    bool flagsAllSubjectsMatched = true;
 
-    matchedSubjects << "Minou" << "Clemon" << "Marty" << "Duchesse" << "JB" << "Antheuny" << "PouletCoco" << "Bab" << "Thizy";
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
+//    matchedSubjects << "Minou" << "Clemon" << "Marty" << "Duchesse" << "JB" << "Antheuny" << "PouletCoco" << "Bab" << "Thizy";
+//    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
 
-    nbrMatchedSubjects = matchedSubjects.size();
-    int nbrSubjectsAllSubjectsMatched = fadttsWindow->m_sortedSubjectListWidget->count();
-    bool sizeAllSubjectsMatchedOK = nbrMatchedSubjects == nbrSubjectsAllSubjectsMatched;
-    if( sizeAllSubjectsMatchedOK )
-    {
-        for( int i = 0; i < nbrMatchedSubjects; i++ )
-        {
-            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
-            if( item->checkState() != Qt::Checked )
-            {
-                checkStateAllSubjectsMatched = false;
-            }
-            if( item->backgroundColor() != fadttsWindow->m_green )
-            {
-                backgroundColorAllSubjectsMatched = false;
-            }
-            if( item->flags() != Qt::ItemIsEnabled )
-            {
-                flagsAllSubjectsMatched = false;
-            }
-        }
-    }
+//    nbrMatchedSubjects = matchedSubjects.size();
+//    int nbrSubjectsAllSubjectsMatched = fadttsWindow->m_sortedSubjectListWidget->count();
+//    bool sizeAllSubjectsMatchedOK = nbrMatchedSubjects == nbrSubjectsAllSubjectsMatched;
+//    if( sizeAllSubjectsMatchedOK )
+//    {
+//        for( int i = 0; i < nbrMatchedSubjects; i++ )
+//        {
+//            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
+//            if( item->checkState() != Qt::Checked )
+//            {
+//                checkStateAllSubjectsMatched = false;
+//            }
+//            if( item->backgroundColor() != fadttsWindow->m_green )
+//            {
+//                backgroundColorAllSubjectsMatched = false;
+//            }
+//            if( item->flags() != Qt::ItemIsEnabled )
+//            {
+//                flagsAllSubjectsMatched = false;
+//            }
+//        }
+//    }
 
-    QString expectedSortedSubjectsInformationAllSubjectsMatched = "All subjects matched ( " + QString::number( matchedSubjects.size() ) + " )";
-    QString sortedSubjectsInformationDisplayedAllSubjectsMatched = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
+//    QString expectedSortedSubjectsInformationAllSubjectsMatched = "All subjects matched ( " + QString::number( matchedSubjects.size() ) + " )";
+//    QString sortedSubjectsInformationDisplayedAllSubjectsMatched = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
 
-    bool sortedSubjectsInformationAllSubjectsMatched = expectedSortedSubjectsInformationAllSubjectsMatched == sortedSubjectsInformationDisplayedAllSubjectsMatched;
-
-
-    /************************************************/
-    /******** Matched and Unmatched Subjects ********/
-    /************************************************/
-    bool checkStateMatchedAndUnmatchedSubjects_matchedSubjects = true;
-    bool backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects = true;
-    bool flagsMatchedAndUnmatchedSubjects_matchedSubjects = true;
-
-    bool textMatchedAndUnmatchedSubjects_unmatchedSubjects = true;
-    bool backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects = true;
-    bool flagsMatchedAndUnmatchedSubjects_unmatchedSubjects = true;
-
-    QStringList inStan;
-    inStan << "ad" << "rd" << "md" << "fa" << "COMP";
-    QStringList inKyle;
-    inKyle << "ad" << "rd" << "md" << "fa";
-    QStringList inKenny;
-    inKenny << "ad" << "rd" << "md";
-    QStringList inCartman;
-    inCartman << "ad" << "rd";
-    QStringList inButters;
-    inButters << "ad";
-    unMatchedSubjectMap.insert( "Stan", inStan );
-    unMatchedSubjectMap.insert( "Kyle", inKyle );
-    unMatchedSubjectMap.insert( "Kenny", inKenny );
-    unMatchedSubjectMap.insert( "Cartman", inCartman );
-    unMatchedSubjectMap.insert( "Butters", inButters );
-    nbrUnmatchedSubjects = unMatchedSubjectMap.size();
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
-
-    int nbrSubjectsMatchedAndUnmatchedSubjects = fadttsWindow->m_sortedSubjectListWidget->count();
-    bool sizeMatchedAndUnmatchedSubjectsOK = ( nbrMatchedSubjects + nbrUnmatchedSubjects ) == nbrSubjectsMatchedAndUnmatchedSubjects;
-    if( sizeMatchedAndUnmatchedSubjectsOK )
-    {
-        for( int i = 0; i < nbrMatchedSubjects; i++ )
-        {
-            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
-            if( item->checkState() != Qt::Checked )
-            {
-                checkStateMatchedAndUnmatchedSubjects_matchedSubjects = false;
-            }
-            if( item->backgroundColor() != fadttsWindow->m_green )
-            {
-                backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects = false;
-            }
-            if( item->flags() != Qt::ItemIsEnabled )
-            {
-                flagsMatchedAndUnmatchedSubjects_matchedSubjects = false;
-            }
-        }
-        QMap<QString, QStringList >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.begin();
-        for( int i = nbrMatchedSubjects; i < ( nbrMatchedSubjects + nbrUnmatchedSubjects ); i++ )
-        {
-            QStringList sortedText = iterUnmatchedSubjects.value();
-            sortedText.sort();
-            QString expectedText = iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " );
-
-            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
-            if( item->text() != expectedText )
-            {
-                textMatchedAndUnmatchedSubjects_unmatchedSubjects = false;
-            }
-            if( item->backgroundColor() != fadttsWindow->m_red )
-            {
-                backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects = false;
-            }
-            if( item->flags() == Qt::ItemIsEnabled )
-            {
-                flagsMatchedAndUnmatchedSubjects_unmatchedSubjects = false;
-            }
-            ++iterUnmatchedSubjects;
-        }
-    }
-
-    QString expectedSortedSubjectsInformationMatchedAndUnmatchedSubjects = QString::number( matchedSubjects.size() ) + "/" + QString::number( nbrMatchedSubjects + nbrUnmatchedSubjects ) + " matched      " +
-            QString::number( unMatchedSubjectMap.size() ) + "/" + QString::number( nbrMatchedSubjects + nbrUnmatchedSubjects ) + " unmatched";
-    QString sortedSubjectsInformationDisplayedMatchedAndUnmatchedSubjects = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
-
-    bool sortedSubjectsInformationMatchedAndUnmatchedSubjects = expectedSortedSubjectsInformationMatchedAndUnmatchedSubjects == sortedSubjectsInformationDisplayedMatchedAndUnmatchedSubjects;
+//    bool sortedSubjectsInformationAllSubjectsMatched = expectedSortedSubjectsInformationAllSubjectsMatched == sortedSubjectsInformationDisplayedAllSubjectsMatched;
 
 
-    /************************************************/
-    /************** No Subjects Matched *************/
-    /************************************************/
-    bool textNoSubjectsMatched = true;
-    bool backgroundColorNoSubjectsMatched = true;
-    bool flagsNoSubjectsMatched = true;
+//    /************************************************/
+//    /******** Matched and Unmatched Subjects ********/
+//    /************************************************/
+//    bool checkStateMatchedAndUnmatchedSubjects_matchedSubjects = true;
+//    bool backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects = true;
+//    bool flagsMatchedAndUnmatchedSubjects_matchedSubjects = true;
 
-    matchedSubjects.clear();
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
+//    bool textMatchedAndUnmatchedSubjects_unmatchedSubjects = true;
+//    bool backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects = true;
+//    bool flagsMatchedAndUnmatchedSubjects_unmatchedSubjects = true;
 
-    int nbrSubjectsNoSubjectsMatched = fadttsWindow->m_sortedSubjectListWidget->count();
-    bool sizeNoSubjectsMatchedOK = nbrUnmatchedSubjects == nbrSubjectsNoSubjectsMatched;
-    if( sizeNoSubjectsMatchedOK )
-    {
-        QMap<QString, QStringList >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.begin();
-        for( int i = nbrMatchedSubjects; i < ( nbrUnmatchedSubjects ); i++ )
-        {
-            QStringList sortedText = iterUnmatchedSubjects.value();
-            QString expectedText = iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " );
+//    QStringList inStan;
+//    inStan << "ad" << "rd" << "md" << "fa" << "COMP";
+//    QStringList inKyle;
+//    inKyle << "ad" << "rd" << "md" << "fa";
+//    QStringList inKenny;
+//    inKenny << "ad" << "rd" << "md";
+//    QStringList inCartman;
+//    inCartman << "ad" << "rd";
+//    QStringList inButters;
+//    inButters << "ad";
+//    unMatchedSubjectMap.insert( "Stan", inStan );
+//    unMatchedSubjectMap.insert( "Kyle", inKyle );
+//    unMatchedSubjectMap.insert( "Kenny", inKenny );
+//    unMatchedSubjectMap.insert( "Cartman", inCartman );
+//    unMatchedSubjectMap.insert( "Butters", inButters );
+//    nbrUnmatchedSubjects = unMatchedSubjectMap.size();
+//    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
 
-            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
-            if( item->text() != expectedText )
-            {
-                textNoSubjectsMatched = false;
-            }
-            if( item->backgroundColor() != fadttsWindow->m_red )
-            {
-                backgroundColorNoSubjectsMatched = false;
-            }
-            if( item->flags() = Qt::ItemIsEnabled )
-            {
-                flagsNoSubjectsMatched = false;
-            }
-        }
-    }
+//    int nbrSubjectsMatchedAndUnmatchedSubjects = fadttsWindow->m_sortedSubjectListWidget->count();
+//    bool sizeMatchedAndUnmatchedSubjectsOK = ( nbrMatchedSubjects + nbrUnmatchedSubjects ) == nbrSubjectsMatchedAndUnmatchedSubjects;
+//    if( sizeMatchedAndUnmatchedSubjectsOK )
+//    {
+//        for( int i = 0; i < nbrMatchedSubjects; i++ )
+//        {
+//            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
+//            if( item->checkState() != Qt::Checked )
+//            {
+//                checkStateMatchedAndUnmatchedSubjects_matchedSubjects = false;
+//            }
+//            if( item->backgroundColor() != fadttsWindow->m_green )
+//            {
+//                backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects = false;
+//            }
+//            if( item->flags() != Qt::ItemIsEnabled )
+//            {
+//                flagsMatchedAndUnmatchedSubjects_matchedSubjects = false;
+//            }
+//        }
+//        QMap<QString, QStringList >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.begin();
+//        for( int i = nbrMatchedSubjects; i < ( nbrMatchedSubjects + nbrUnmatchedSubjects ); i++ )
+//        {
+//            QStringList sortedText = iterUnmatchedSubjects.value();
+//            sortedText.sort();
+//            QString expectedText = iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " );
 
-    QString expectedSortedSubjectsInformationNoSubjectsMatched = "Warning! No subject matched ( " + QString::number( unMatchedSubjectMap.size() ) + " )";
-    QString sortedSubjectsInformationDisplayedNoSubjectsMatched = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
+//            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
+//            if( item->text() != expectedText )
+//            {
+//                textMatchedAndUnmatchedSubjects_unmatchedSubjects = false;
+//            }
+//            if( item->backgroundColor() != fadttsWindow->m_red )
+//            {
+//                backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects = false;
+//            }
+//            if( item->flags() == Qt::ItemIsEnabled )
+//            {
+//                flagsMatchedAndUnmatchedSubjects_unmatchedSubjects = false;
+//            }
+//            ++iterUnmatchedSubjects;
+//        }
+//    }
 
-    bool sortedSubjectsInformationNoSubjectsMatched = expectedSortedSubjectsInformationNoSubjectsMatched == sortedSubjectsInformationDisplayedNoSubjectsMatched;
+//    QString expectedSortedSubjectsInformationMatchedAndUnmatchedSubjects = QString::number( matchedSubjects.size() ) + "/" + QString::number( nbrMatchedSubjects + nbrUnmatchedSubjects ) + " matched      " +
+//            QString::number( unMatchedSubjectMap.size() ) + "/" + QString::number( nbrMatchedSubjects + nbrUnmatchedSubjects ) + " unmatched";
+//    QString sortedSubjectsInformationDisplayedMatchedAndUnmatchedSubjects = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
+
+//    bool sortedSubjectsInformationMatchedAndUnmatchedSubjects = expectedSortedSubjectsInformationMatchedAndUnmatchedSubjects == sortedSubjectsInformationDisplayedMatchedAndUnmatchedSubjects;
 
 
-    /************************************************/
-    /****************** No Subjects *****************/
-    /************************************************/
-    unMatchedSubjectMap.clear();
+//    /************************************************/
+//    /************** No Subjects Matched *************/
+//    /************************************************/
+//    bool textNoSubjectsMatched = true;
+//    bool backgroundColorNoSubjectsMatched = true;
+//    bool flagsNoSubjectsMatched = true;
 
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
+//    matchedSubjects.clear();
+//    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
 
-    QString sortedSubjectsInformationDisplayedNoSubjects = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
+//    int nbrSubjectsNoSubjectsMatched = fadttsWindow->m_sortedSubjectListWidget->count();
+//    bool sizeNoSubjectsMatchedOK = nbrUnmatchedSubjects == nbrSubjectsNoSubjectsMatched;
+//    if( sizeNoSubjectsMatchedOK )
+//    {
+//        QMap<QString, QStringList >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.begin();
+//        for( int i = nbrMatchedSubjects; i < ( nbrUnmatchedSubjects ); i++ )
+//        {
+//            QStringList sortedText = iterUnmatchedSubjects.value();
+//            QString expectedText = iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " );
 
-    int nbrSubjectsNoSubjects = fadttsWindow->m_sortedSubjectListWidget->count();
-    bool sizeNoSubjectsOK = nbrSubjectsNoSubjects == 0;
-    bool sortedSubjectsInformationNoSubjects = sortedSubjectsInformationDisplayedNoSubjects.isEmpty();
+//            QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
+//            if( item->text() != expectedText )
+//            {
+//                textNoSubjectsMatched = false;
+//            }
+//            if( item->backgroundColor() != fadttsWindow->m_red )
+//            {
+//                backgroundColorNoSubjectsMatched = false;
+//            }
+//            if( item->flags() = Qt::ItemIsEnabled )
+//            {
+//                flagsNoSubjectsMatched = false;
+//            }
+//        }
+//    }
+
+//    QString expectedSortedSubjectsInformationNoSubjectsMatched = "Warning! No subject matched ( " + QString::number( unMatchedSubjectMap.size() ) + " )";
+//    QString sortedSubjectsInformationDisplayedNoSubjectsMatched = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
+
+//    bool sortedSubjectsInformationNoSubjectsMatched = expectedSortedSubjectsInformationNoSubjectsMatched == sortedSubjectsInformationDisplayedNoSubjectsMatched;
 
 
-    if( !sizeAllSubjectsMatchedOK || !checkStateAllSubjectsMatched || !backgroundColorAllSubjectsMatched || !flagsAllSubjectsMatched || !sortedSubjectsInformationAllSubjectsMatched ||
-            !sizeMatchedAndUnmatchedSubjectsOK || !checkStateMatchedAndUnmatchedSubjects_matchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects ||
-            !flagsMatchedAndUnmatchedSubjects_matchedSubjects || !textMatchedAndUnmatchedSubjects_unmatchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects ||
-            !flagsMatchedAndUnmatchedSubjects_unmatchedSubjects || !sortedSubjectsInformationMatchedAndUnmatchedSubjects ||
-            !sizeNoSubjectsMatchedOK || !textNoSubjectsMatched || !backgroundColorNoSubjectsMatched || !flagsNoSubjectsMatched || !sortedSubjectsInformationNoSubjectsMatched ||
-            !sizeNoSubjectsOK || !sortedSubjectsInformationNoSubjects )
-    {
-        std::cerr << std::endl << "Test_DisplaySortedSubjects() FAILED:" << std::endl;
-        if( !sizeAllSubjectsMatchedOK || !checkStateAllSubjectsMatched || !backgroundColorAllSubjectsMatched || !flagsAllSubjectsMatched || !sortedSubjectsInformationAllSubjectsMatched )
-        {
-            std::cerr << "\t+ Test with only matched subjects:" << std::endl;
-            if( !sizeAllSubjectsMatchedOK )
-            {
-                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( nbrMatchedSubjects, nbrSubjectsAllSubjectsMatched );
-            }
-            if( !checkStateAllSubjectsMatched || !backgroundColorAllSubjectsMatched || !flagsAllSubjectsMatched )
-            {
-                DisplayErrorMatchedSubjects_DisplayNbrSubjectSelected( checkStateAllSubjectsMatched, backgroundColorAllSubjectsMatched, flagsAllSubjectsMatched );
-            }
-            if( !sortedSubjectsInformationAllSubjectsMatched )
-            {
-                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( expectedSortedSubjectsInformationAllSubjectsMatched, sortedSubjectsInformationDisplayedAllSubjectsMatched );
-            }
-        }
-        if( !sizeNoSubjectsMatchedOK || !textNoSubjectsMatched || !backgroundColorNoSubjectsMatched || !flagsNoSubjectsMatched || !sortedSubjectsInformationNoSubjectsMatched )
-        {
-            std::cerr << "\t+ Test with only unmatched subjects:" << std::endl;
-            if( !sizeNoSubjectsMatchedOK )
-            {
-                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( nbrUnmatchedSubjects, nbrSubjectsNoSubjectsMatched );
-            }
-            if( !textNoSubjectsMatched || !backgroundColorNoSubjectsMatched || !flagsNoSubjectsMatched )
-            {
-                DisplayErrorUnMatchedSubjects_DisplayNbrSubjectSelected( textNoSubjectsMatched, backgroundColorNoSubjectsMatched, flagsNoSubjectsMatched );
-            }
-            if( !sortedSubjectsInformationNoSubjectsMatched )
-            {
-                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( expectedSortedSubjectsInformationNoSubjectsMatched, sortedSubjectsInformationDisplayedNoSubjectsMatched );
-            }
-        }
-        if( !sizeMatchedAndUnmatchedSubjectsOK || !checkStateMatchedAndUnmatchedSubjects_matchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects ||
-                !flagsMatchedAndUnmatchedSubjects_matchedSubjects || !textMatchedAndUnmatchedSubjects_unmatchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects ||
-                !flagsMatchedAndUnmatchedSubjects_unmatchedSubjects || !sortedSubjectsInformationMatchedAndUnmatchedSubjects )
-        {
-            std::cerr << "\t+ Test with both matched and unmatched subjects:" << std::endl;
-            if( !sizeMatchedAndUnmatchedSubjectsOK )
-            {
-                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( nbrMatchedSubjects + nbrUnmatchedSubjects, nbrSubjectsMatchedAndUnmatchedSubjects );
-            }
-            if( !checkStateMatchedAndUnmatchedSubjects_matchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects || !flagsMatchedAndUnmatchedSubjects_matchedSubjects )
-            {
-                DisplayErrorMatchedSubjects_DisplayNbrSubjectSelected( checkStateMatchedAndUnmatchedSubjects_matchedSubjects, backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects, flagsMatchedAndUnmatchedSubjects_matchedSubjects );
-            }
-            if( !textMatchedAndUnmatchedSubjects_unmatchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects || !flagsMatchedAndUnmatchedSubjects_unmatchedSubjects )
-            {
-                DisplayErrorUnMatchedSubjects_DisplayNbrSubjectSelected( textMatchedAndUnmatchedSubjects_unmatchedSubjects, backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects, flagsMatchedAndUnmatchedSubjects_unmatchedSubjects );
-            }
-            if( !sortedSubjectsInformationMatchedAndUnmatchedSubjects )
-            {
-                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( expectedSortedSubjectsInformationMatchedAndUnmatchedSubjects, sortedSubjectsInformationDisplayedMatchedAndUnmatchedSubjects );
-            }
-        }
-        if( !sizeNoSubjectsOK || !sortedSubjectsInformationNoSubjects )
-        {
-            std::cerr << "\t+ Test with no subjects:" << std::endl;
-            if( !sizeNoSubjectsOK )
-            {
-                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( 0, nbrSubjectsNoSubjects );
-            }
-            if( !sortedSubjectsInformationNoSubjects )
-            {
-                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( "", sortedSubjectsInformationDisplayedNoSubjects );
-            }
-        }
-    }
-    else
-    {
-        std::cout << std::endl << "Test_DisplaySortedSubjects() PASSED" << std::endl;
-    }
+//    /************************************************/
+//    /****************** No Subjects *****************/
+//    /************************************************/
+//    unMatchedSubjectMap.clear();
 
-    return ( sizeAllSubjectsMatchedOK & checkStateAllSubjectsMatched & backgroundColorAllSubjectsMatched & flagsAllSubjectsMatched & sortedSubjectsInformationAllSubjectsMatched &
-             sizeMatchedAndUnmatchedSubjectsOK & checkStateMatchedAndUnmatchedSubjects_matchedSubjects & backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects &
-             flagsMatchedAndUnmatchedSubjects_matchedSubjects & textMatchedAndUnmatchedSubjects_unmatchedSubjects & backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects &
-             flagsMatchedAndUnmatchedSubjects_unmatchedSubjects & sortedSubjectsInformationMatchedAndUnmatchedSubjects &
-             sizeNoSubjectsMatchedOK & textNoSubjectsMatched & backgroundColorNoSubjectsMatched & flagsNoSubjectsMatched & sortedSubjectsInformationNoSubjectsMatched &
-             sizeNoSubjectsOK & sortedSubjectsInformationNoSubjects );
+//    fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjectMap );
+
+//    QString sortedSubjectsInformationDisplayedNoSubjects = fadttsWindow->subjectTab_sortedSubjectsInformation_label->text();
+
+//    int nbrSubjectsNoSubjects = fadttsWindow->m_sortedSubjectListWidget->count();
+//    bool sizeNoSubjectsOK = nbrSubjectsNoSubjects == 0;
+//    bool sortedSubjectsInformationNoSubjects = sortedSubjectsInformationDisplayedNoSubjects.isEmpty();
+
+
+//    if( !sizeAllSubjectsMatchedOK || !checkStateAllSubjectsMatched || !backgroundColorAllSubjectsMatched || !flagsAllSubjectsMatched || !sortedSubjectsInformationAllSubjectsMatched ||
+//            !sizeMatchedAndUnmatchedSubjectsOK || !checkStateMatchedAndUnmatchedSubjects_matchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects ||
+//            !flagsMatchedAndUnmatchedSubjects_matchedSubjects || !textMatchedAndUnmatchedSubjects_unmatchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects ||
+//            !flagsMatchedAndUnmatchedSubjects_unmatchedSubjects || !sortedSubjectsInformationMatchedAndUnmatchedSubjects ||
+//            !sizeNoSubjectsMatchedOK || !textNoSubjectsMatched || !backgroundColorNoSubjectsMatched || !flagsNoSubjectsMatched || !sortedSubjectsInformationNoSubjectsMatched ||
+//            !sizeNoSubjectsOK || !sortedSubjectsInformationNoSubjects )
+//    {
+//        std::cerr << std::endl << "Test_DisplaySortedSubjects() FAILED:" << std::endl;
+//        if( !sizeAllSubjectsMatchedOK || !checkStateAllSubjectsMatched || !backgroundColorAllSubjectsMatched || !flagsAllSubjectsMatched || !sortedSubjectsInformationAllSubjectsMatched )
+//        {
+//            std::cerr << "\t+ Test with only matched subjects:" << std::endl;
+//            if( !sizeAllSubjectsMatchedOK )
+//            {
+//                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( nbrMatchedSubjects, nbrSubjectsAllSubjectsMatched );
+//            }
+//            if( !checkStateAllSubjectsMatched || !backgroundColorAllSubjectsMatched || !flagsAllSubjectsMatched )
+//            {
+//                DisplayErrorMatchedSubjects_DisplayNbrSubjectSelected( checkStateAllSubjectsMatched, backgroundColorAllSubjectsMatched, flagsAllSubjectsMatched );
+//            }
+//            if( !sortedSubjectsInformationAllSubjectsMatched )
+//            {
+//                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( expectedSortedSubjectsInformationAllSubjectsMatched, sortedSubjectsInformationDisplayedAllSubjectsMatched );
+//            }
+//        }
+//        if( !sizeNoSubjectsMatchedOK || !textNoSubjectsMatched || !backgroundColorNoSubjectsMatched || !flagsNoSubjectsMatched || !sortedSubjectsInformationNoSubjectsMatched )
+//        {
+//            std::cerr << "\t+ Test with only unmatched subjects:" << std::endl;
+//            if( !sizeNoSubjectsMatchedOK )
+//            {
+//                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( nbrUnmatchedSubjects, nbrSubjectsNoSubjectsMatched );
+//            }
+//            if( !textNoSubjectsMatched || !backgroundColorNoSubjectsMatched || !flagsNoSubjectsMatched )
+//            {
+//                DisplayErrorUnMatchedSubjects_DisplayNbrSubjectSelected( textNoSubjectsMatched, backgroundColorNoSubjectsMatched, flagsNoSubjectsMatched );
+//            }
+//            if( !sortedSubjectsInformationNoSubjectsMatched )
+//            {
+//                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( expectedSortedSubjectsInformationNoSubjectsMatched, sortedSubjectsInformationDisplayedNoSubjectsMatched );
+//            }
+//        }
+//        if( !sizeMatchedAndUnmatchedSubjectsOK || !checkStateMatchedAndUnmatchedSubjects_matchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects ||
+//                !flagsMatchedAndUnmatchedSubjects_matchedSubjects || !textMatchedAndUnmatchedSubjects_unmatchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects ||
+//                !flagsMatchedAndUnmatchedSubjects_unmatchedSubjects || !sortedSubjectsInformationMatchedAndUnmatchedSubjects )
+//        {
+//            std::cerr << "\t+ Test with both matched and unmatched subjects:" << std::endl;
+//            if( !sizeMatchedAndUnmatchedSubjectsOK )
+//            {
+//                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( nbrMatchedSubjects + nbrUnmatchedSubjects, nbrSubjectsMatchedAndUnmatchedSubjects );
+//            }
+//            if( !checkStateMatchedAndUnmatchedSubjects_matchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects || !flagsMatchedAndUnmatchedSubjects_matchedSubjects )
+//            {
+//                DisplayErrorMatchedSubjects_DisplayNbrSubjectSelected( checkStateMatchedAndUnmatchedSubjects_matchedSubjects, backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects, flagsMatchedAndUnmatchedSubjects_matchedSubjects );
+//            }
+//            if( !textMatchedAndUnmatchedSubjects_unmatchedSubjects || !backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects || !flagsMatchedAndUnmatchedSubjects_unmatchedSubjects )
+//            {
+//                DisplayErrorUnMatchedSubjects_DisplayNbrSubjectSelected( textMatchedAndUnmatchedSubjects_unmatchedSubjects, backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects, flagsMatchedAndUnmatchedSubjects_unmatchedSubjects );
+//            }
+//            if( !sortedSubjectsInformationMatchedAndUnmatchedSubjects )
+//            {
+//                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( expectedSortedSubjectsInformationMatchedAndUnmatchedSubjects, sortedSubjectsInformationDisplayedMatchedAndUnmatchedSubjects );
+//            }
+//        }
+//        if( !sizeNoSubjectsOK || !sortedSubjectsInformationNoSubjects )
+//        {
+//            std::cerr << "\t+ Test with no subjects:" << std::endl;
+//            if( !sizeNoSubjectsOK )
+//            {
+//                DisplayErrorNbrSubjects_DisplayNbrSubjectSelected( 0, nbrSubjectsNoSubjects );
+//            }
+//            if( !sortedSubjectsInformationNoSubjects )
+//            {
+//                DisplayErrorSortedSubjectsInformation_DisplayNbrSubjectSelected( "", sortedSubjectsInformationDisplayedNoSubjects );
+//            }
+//        }
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_DisplaySortedSubjects() PASSED" << std::endl;
+//    }
+
+//    return ( sizeAllSubjectsMatchedOK & checkStateAllSubjectsMatched & backgroundColorAllSubjectsMatched & flagsAllSubjectsMatched & sortedSubjectsInformationAllSubjectsMatched &
+//             sizeMatchedAndUnmatchedSubjectsOK & checkStateMatchedAndUnmatchedSubjects_matchedSubjects & backgroundColorMatchedAndUnmatchedSubjects_matchedSubjects &
+//             flagsMatchedAndUnmatchedSubjects_matchedSubjects & textMatchedAndUnmatchedSubjects_unmatchedSubjects & backgroundColorMatchedAndUnmatchedSubjects_unmatchedSubjects &
+//             flagsMatchedAndUnmatchedSubjects_unmatchedSubjects & sortedSubjectsInformationMatchedAndUnmatchedSubjects &
+//             sizeNoSubjectsMatchedOK & textNoSubjectsMatched & backgroundColorNoSubjectsMatched & flagsNoSubjectsMatched & sortedSubjectsInformationNoSubjectsMatched &
+//             sizeNoSubjectsOK & sortedSubjectsInformationNoSubjects );
+    return false;
 }
 
 bool TestFADTTSWindow::Test_DisplayNbrSubjectSelected()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+//    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
 
-    para_Model_FADTTS para_m;
-    para_Save_FADTTS para_s;
-    para_Load_FADTTS para_l;
-    fadttsWindow->SetParaLoad( &para_l );
-    fadttsWindow->SetParaSave( &para_s );
-    fadttsWindow->SetParaModel( &para_m );
+//    para_Model_FADTTS para_m;
+//    para_Save_FADTTS para_s;
+//    para_Load_FADTTS para_l;
+//    fadttsWindow->SetParaLoad( &para_l );
+//    fadttsWindow->SetParaSave( &para_s );
+//    fadttsWindow->SetParaModel( &para_m );
 
-    QStringList subjects;
-    subjects << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Pip" << "Tweek" << "Timmy" << "Wendy";
+//    QStringList subjects;
+//    subjects << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Pip" << "Tweek" << "Timmy" << "Wendy";
 
-    /************************************************/
-    /******************** Test 1 ********************/
-    /************************************************/
-    foreach( QString subject, subjects )
-    {
-        QListWidgetItem *item = new QListWidgetItem( subject, fadttsWindow->m_sortedSubjectListWidget );
-        item->setCheckState( Qt::Checked );
-        item->setFlags( Qt::ItemIsEnabled );
-        fadttsWindow->m_sortedSubjectListWidget->addItem( item );
-    }
-    fadttsWindow->DisplayNbrSubjectSelected();
-    QString checkedSubjectsInformationExpectedTest1 = QString::number( subjects.count() ) + " subjects selected";
-    QString checkedSubjectsInformationDisplayedTest1 = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text();
+//    /************************************************/
+//    /******************** Test 1 ********************/
+//    /************************************************/
+//    foreach( QString subject, subjects )
+//    {
+//        QListWidgetItem *item = new QListWidgetItem( subject, fadttsWindow->m_sortedSubjectListWidget );
+//        item->setCheckState( Qt::Checked );
+//        item->setFlags( Qt::ItemIsEnabled );
+//        fadttsWindow->m_sortedSubjectListWidget->addItem( item );
+//    }
+//    fadttsWindow->DisplayNbrSubjectSelected();
+//    QString checkedSubjectsInformationExpectedTest1 = QString::number( subjects.count() ) + " subjects selected";
+//    QString checkedSubjectsInformationDisplayedTest1 = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text();
 
-    bool resultTest1 = checkedSubjectsInformationExpectedTest1 == checkedSubjectsInformationDisplayedTest1;
-
-
-    /************************************************/
-    /******************** Test 2 ********************/
-    /************************************************/
-    for( int i = 0; i < fadttsWindow->m_sortedSubjectListWidget->count()-3; i++ )
-    {
-        QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
-        item->setCheckState( Qt::Unchecked );
-    }
-    fadttsWindow->DisplayNbrSubjectSelected();
-    QString checkedSubjectsInformationExpectedTest2 = QString::number( 3 ) + " subjects selected";
-    QString checkedSubjectsInformationDisplayedTest2 = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text();
-
-    bool resultTest2 = checkedSubjectsInformationExpectedTest2 == checkedSubjectsInformationDisplayedTest2;
-
-    /************************************************/
-    /******************** Test 3 ********************/
-    /************************************************/
-    fadttsWindow->subjectTab_checkedSubjectsInformation_label->clear();
-
-    QString checkedSubjectsInformationDisplayedTest3 = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text();
-    bool resultTest3 = checkedSubjectsInformationDisplayedTest3.isEmpty();
+//    bool resultTest1 = checkedSubjectsInformationExpectedTest1 == checkedSubjectsInformationDisplayedTest1;
 
 
-    if( !resultTest1 || !resultTest2 || !resultTest3 )
-    {
-        std::cerr << std::endl << "Test_DisplayNbrSubjectSelected() FAILED:" << std::endl;
-        if( !resultTest1 )
-        {
-            std::cerr << "\t+ All subjects in m_sortedSubjectListWidget are checked:" << std::endl;
-            DisplayErrorCheckedSubjectsInformation_DisplayNbrSubjectSelected( checkedSubjectsInformationExpectedTest1, checkedSubjectsInformationDisplayedTest1 );
-        }
-        if( !resultTest2 )
-        {
-            std::cerr << "\t+ Some subjects in m_sortedSubjectListWidget are unchecked:" << std::endl;
-            DisplayErrorCheckedSubjectsInformation_DisplayNbrSubjectSelected( checkedSubjectsInformationExpectedTest2, checkedSubjectsInformationDisplayedTest2 );
-        }
-        if( !resultTest3 )
-        {
-            std::cerr << "\t+ Test with no covariate file:" << std::endl;
-            DisplayErrorCheckedSubjectsInformation_DisplayNbrSubjectSelected( "", checkedSubjectsInformationDisplayedTest3 );
-        }
-    }
-    else
-    {
-        std::cout << std::endl << "Test_DisplayNbrSubjectSelected() PASSED" << std::endl;
-    }
+//    /************************************************/
+//    /******************** Test 2 ********************/
+//    /************************************************/
+//    for( int i = 0; i < fadttsWindow->m_sortedSubjectListWidget->count()-3; i++ )
+//    {
+//        QListWidgetItem *item = fadttsWindow->m_sortedSubjectListWidget->item( i );
+//        item->setCheckState( Qt::Unchecked );
+//    }
+//    fadttsWindow->DisplayNbrSubjectSelected();
+//    QString checkedSubjectsInformationExpectedTest2 = QString::number( 3 ) + " subjects selected";
+//    QString checkedSubjectsInformationDisplayedTest2 = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text();
 
-    return ( resultTest1 & resultTest2 & resultTest3 );
+//    bool resultTest2 = checkedSubjectsInformationExpectedTest2 == checkedSubjectsInformationDisplayedTest2;
+
+//    /************************************************/
+//    /******************** Test 3 ********************/
+//    /************************************************/
+//    fadttsWindow->subjectTab_checkedSubjectsInformation_label->clear();
+
+//    QString checkedSubjectsInformationDisplayedTest3 = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text();
+//    bool resultTest3 = checkedSubjectsInformationDisplayedTest3.isEmpty();
+
+
+//    if( !resultTest1 || !resultTest2 || !resultTest3 )
+//    {
+//        std::cerr << std::endl << "Test_DisplayNbrSubjectSelected() FAILED:" << std::endl;
+//        if( !resultTest1 )
+//        {
+//            std::cerr << "\t+ All subjects in m_sortedSubjectListWidget are checked:" << std::endl;
+//            DisplayErrorCheckedSubjectsInformation_DisplayNbrSubjectSelected( checkedSubjectsInformationExpectedTest1, checkedSubjectsInformationDisplayedTest1 );
+//        }
+//        if( !resultTest2 )
+//        {
+//            std::cerr << "\t+ Some subjects in m_sortedSubjectListWidget are unchecked:" << std::endl;
+//            DisplayErrorCheckedSubjectsInformation_DisplayNbrSubjectSelected( checkedSubjectsInformationExpectedTest2, checkedSubjectsInformationDisplayedTest2 );
+//        }
+//        if( !resultTest3 )
+//        {
+//            std::cerr << "\t+ Test with no covariate file:" << std::endl;
+//            DisplayErrorCheckedSubjectsInformation_DisplayNbrSubjectSelected( "", checkedSubjectsInformationDisplayedTest3 );
+//        }
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_DisplayNbrSubjectSelected() PASSED" << std::endl;
+//    }
+
+//    return ( resultTest1 & resultTest2 & resultTest3 );
+    return false;
 }
 
 bool TestFADTTSWindow::Test_SearchSubjects()
