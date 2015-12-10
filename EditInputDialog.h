@@ -56,7 +56,7 @@ private slots:
 
     void ChangeCovariateFileSubjectColumnID( int idColumn );
 
-    void SaveFile();
+    bool SaveFile();
 
 
 private:
@@ -67,8 +67,6 @@ private:
     QTableWidget *m_dataTableWidget;
 
     QSpinBox *m_covariateFileSubjectColumnIDSpinBox;
-
-    QLabel *m_fileInformationLabel, *m_covariateFileSubjectColumnIDLabel;
 
     Data *m_data;
 
@@ -82,10 +80,6 @@ private:
     void InitEditInputDialog();
 
     void UploadFileData();
-
-    void RefreshFileInfo();
-
-    bool SaveCSVFile();
 
     void ResetTableWidget();
 
