@@ -1394,10 +1394,11 @@ bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selected
     bool atLeastOneDataFileChecked = ( this->para_subjectCovariateTab_adFile_checkBox->isChecked() || this->para_subjectCovariateTab_rdFile_checkBox->isChecked() ||
                                        this->para_subjectCovariateTab_mdFile_checkBox->isChecked() || this->para_subjectCovariateTab_faFile_checkBox->isChecked() );
     bool covariateFileChecked = this->para_subjectCovariateTab_covariateFile_checkBox->isChecked();
-
     bool atLeastOneCovariateChecked = selectedCovariates.count() != 0;
-    bool matlabExeSpecified = !this->soft_executionTab_matlab_lineEdit->text().isEmpty();
-    bool mvcmPathSpecified = !this->soft_executionTab_mvcm_lineEdit->text().isEmpty();
+//    bool matlabExeSpecified = !this->soft_executionTab_matlab_lineEdit->text().isEmpty();
+//    bool mvcmPathSpecified = !this->soft_executionTab_mvcm_lineEdit->text().isEmpty();
+    bool matlabExeSpecified = true;
+    bool mvcmPathSpecified = true;
 
     if( !fiberNameProvided || !atLeastOneDataFileChosen || !covariateFileChosen ||
             !atLeastOneDataFileChecked || !covariateFileChecked ||

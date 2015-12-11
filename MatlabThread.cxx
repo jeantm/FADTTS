@@ -50,7 +50,7 @@ void MatlabThread::run()
 {
     QString matlabScriptPath = m_matlabScript->GenerateMatlabFiles();
     SetMatlabScriptPath( matlabScriptPath );
-    RunScript();
+//    RunScript();
 }
 
 void MatlabThread::RedirectOutput()
@@ -69,7 +69,6 @@ void MatlabThread::RunScript()
     std::cout << mScript.toStdString() << std::endl;
     arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
 
-//    m_process->start( m_matlabExe, arguments );
-    m_process->start( "/opt/matlab/bin/matlab", arguments );
+    m_process->start( m_matlabExe, arguments );
     m_process->waitForFinished();
 }
