@@ -313,13 +313,15 @@ void FADTTSWindow::InitExecutionTab()
     connect( this->executionTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( RunFADTTS() ) );
     connect( this->executionTab_stop_pushButton, SIGNAL( clicked() ), this, SLOT( StopFADTTS() ) );
     connect( m_matlabThread, SIGNAL( finished() ), this, SLOT( OnThreadFinished() ) );
-
+    connect( this->para_executionTab_matlab_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( RunningMatlabAfterFileGeneration( const bool& ) ) );
     connect( this->executionTab_clearLog_pushButton, SIGNAL( clicked() ), this, SLOT( ClearLog() ) );
 
     this->para_executionTab_nbrPermutations_spinBox->setMaximum( 2000 );
 
     this->executionTab_run_pushButton->setEnabled( true );
     this->executionTab_stop_pushButton->setEnabled( false );
+
+    RunningMatlabAfterFileGeneration( false );
 }
 
 void FADTTSWindow::InitPlottingTab()
@@ -888,21 +890,19 @@ void FADTTSWindow::UpdateAvailableFileParamTab()
     {
         int nbrRows = m_data.GetNbrRows( iterCheckBox.key() );
         int nbrColumns = m_data.GetNbrColumns( iterCheckBox.key() );
-        if( ( nbrRows == 0 ) || ( nbrColumns == 0 ) )
+        bool isDefine = !( ( nbrRows == 0 ) | ( nbrColumns == 0 ) );
+        if( isDefine )
         {
-            text = tr( "N/A" );
-            iterLabel.value()->setEnabled( false );
-            iterCheckBox.value()->setChecked( false );
-            iterCheckBox.value()->setEnabled( false );
+            text = tr( qPrintable( QString::number( nbrRows ) + "x" + QString::number( nbrColumns ) ) );
         }
         else
         {
-            text = tr( qPrintable( QString::number( nbrRows ) + "x" + QString::number( nbrColumns ) ) );
-            iterLabel.value()->setEnabled( true );
-            iterCheckBox.value()->setChecked( true );
-            iterCheckBox.value()->setEnabled( true );
+            text = tr( "N/A" );
         }
+        iterLabel.value()->setEnabled( isDefine );
         iterLabel.value()->setText( text );
+        iterCheckBox.value()->setEnabled( isDefine );
+        iterCheckBox.value()->setChecked( isDefine );
         ++iterLabel;
         ++iterCheckBox;
     }
@@ -1108,6 +1108,61 @@ void FADTTSWindow::UpdateOutputDir( const QString&  path )
     HideShowPlotTab();
 }
 
+void FADTTSWindow::RunningMatlabAfterFileGeneration( const bool& choice )
+{
+    QLabel *matlabIcon = this->executionTab_iconMatlab_label;
+    QPushButton *matlabPushButton = this->executionTab_matlab_pushButton;
+    QLineEdit *matlabLineEdit = this->soft_executionTab_matlab_lineEdit;
+    if( !choice )
+    {
+        matlabLineEdit->clear();
+    }
+    matlabIcon->setEnabled( choice );
+    matlabPushButton->setEnabled( choice );
+    matlabLineEdit->setEnabled( choice );
+}
+
+void FADTTSWindow::SetMVCMPath()
+{
+    QLineEdit *lineEdit = this->soft_executionTab_mvcm_lineEdit;
+    QString filePath = lineEdit->text();
+    QDir dir = filePath;
+
+    QString dirPath;
+    if( dir.exists() && !filePath.isEmpty() )
+    {
+        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), dir.absolutePath(), QFileDialog::ShowDirsOnly );
+    }
+    else
+    {
+        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), m_mvcmPath, QFileDialog::ShowDirsOnly );
+    }
+    if( !dirPath.isEmpty() )
+    {
+        lineEdit->setText( dirPath );
+    }
+}
+
+void FADTTSWindow::UpdateMVCMPath( const QString& path )
+{
+    QLabel *label = this->executionTab_iconMVCM_label;
+    if( !path.isEmpty() )
+    {
+        if( QDir( path ).exists() )
+        {
+            DisplayIcon( label, m_okPixmap );
+            m_mvcmPath = path;
+        }
+        else
+        {
+            DisplayIcon( label, m_koPixmap );
+        }
+    }
+    else
+    {
+        label->clear();
+    }
+}
 
 void FADTTSWindow::SetMatlabExe()
 {
@@ -1156,49 +1211,6 @@ void FADTTSWindow::UpdateMatlabExe( const QString& executable )
         }
 
         UpdateCurrentDir( executable, m_currentMatlabExeDir );
-    }
-}
-
-
-void FADTTSWindow::SetMVCMPath()
-{
-    QLineEdit *lineEdit = this->soft_executionTab_mvcm_lineEdit;
-    QString filePath = lineEdit->text();
-    QDir dir = filePath;
-
-    QString dirPath;
-    if( dir.exists() && !filePath.isEmpty() )
-    {
-        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), dir.absolutePath(), QFileDialog::ShowDirsOnly );
-    }
-    else
-    {
-        dirPath = QFileDialog::getExistingDirectory( this, tr( "Choose MVCM Directory" ), m_mvcmPath, QFileDialog::ShowDirsOnly );
-    }
-    if( !dirPath.isEmpty() )
-    {
-        lineEdit->setText( dirPath );
-    }
-}
-
-void FADTTSWindow::UpdateMVCMPath( const QString& path )
-{
-    QLabel *label = this->executionTab_iconMVCM_label;
-    if( !path.isEmpty() )
-    {
-        if( QDir( path ).exists() )
-        {
-            DisplayIcon( label, m_okPixmap );
-            m_mvcmPath = path;
-        }
-        else
-        {
-            DisplayIcon( label, m_koPixmap );
-        }
-    }
-    else
-    {
-        label->clear();
     }
 }
 
@@ -1396,8 +1408,19 @@ bool FADTTSWindow::IsRunFADTTSOK( QString fiberName, QMap<int, QString> selected
     bool covariateFileChecked = this->para_subjectCovariateTab_covariateFile_checkBox->isChecked();
 
     bool atLeastOneCovariateChecked = selectedCovariates.count() != 0;
-    bool matlabExeSpecified = !this->soft_executionTab_matlab_lineEdit->text().isEmpty();
     bool mvcmPathSpecified = !this->soft_executionTab_mvcm_lineEdit->text().isEmpty();
+    bool matlabExeSpecified;
+    bool runMatlab = this->para_executionTab_matlab_checkBox->isChecked();
+    m_matlabThread->SetRunMatlab( runMatlab );
+    if( !runMatlab )
+    {
+        matlabExeSpecified = true;
+    }
+    else
+    {
+        matlabExeSpecified = !this->soft_executionTab_matlab_lineEdit->text().isEmpty();
+    }
+
 
     if( !fiberNameProvided || !atLeastOneDataFileChosen || !covariateFileChosen ||
             !atLeastOneDataFileChecked || !covariateFileChecked ||
@@ -1584,28 +1607,22 @@ void FADTTSWindow::HideShowPlotTab()
     }
     m_plot->SetMatlabOutputDir( matlabOutputDir );
 
-    if( matlabOutputDir.isEmpty() )
+    bool isMatlabOutputDirDefine = !matlabOutputDir.isEmpty();
+    if( isMatlabOutputDirDefine )
     {
-        this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( false );
-        this->plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
-        this->plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
-        this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( false );
-        this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( false );
-        this->plottingTab_titleLegendTab->setEnabled( false );
-        this->plottingTab_editTab->setEnabled( false );
-        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
-        this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
-    }
-    else
-    {
-        this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( true );
-        this->plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
-        this->plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
-        this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( true );
-        this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( true );
-        this->plottingTab_titleLegendTab->setEnabled( true );
-        this->plottingTab_editTab->setEnabled( true );
         this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( fibername );
         this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( outputDirectory );
     }
+    else
+    {
+        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
+        this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
+    }
+    this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( isMatlabOutputDirDefine );
+    this->plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
+    this->plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
+    this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( isMatlabOutputDirDefine );
+    this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( isMatlabOutputDirDefine );
+    this->plottingTab_titleLegendTab->setEnabled( isMatlabOutputDirDefine );
+    this->plottingTab_editTab->setEnabled( isMatlabOutputDirDefine );
 }

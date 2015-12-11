@@ -24,6 +24,8 @@ public:
 
     void SetLogFile( QFile *logFile );
 
+    void SetRunMatlab( bool runMatlab );
+
 
     void terminate();
 
@@ -50,6 +52,8 @@ private:
     QFile *m_logFile;
 
     QProcess *m_process;
+
+    bool m_runMatlab;
 
 };
 

@@ -35,6 +35,11 @@ void MatlabThread::SetLogFile( QFile *logFile )
     m_logFile = logFile;
 }
 
+void MatlabThread::SetRunMatlab( bool runMatlab )
+{
+    m_runMatlab = runMatlab;
+}
+
 
 void MatlabThread::terminate()
 {
@@ -49,8 +54,11 @@ void MatlabThread::terminate()
 void MatlabThread::run()
 {
     QString matlabScriptPath = m_matlabScript->GenerateMatlabFiles();
-    SetMatlabScriptPath( matlabScriptPath );
-    RunScript();
+    if( m_runMatlab )
+    {
+        SetMatlabScriptPath( matlabScriptPath );
+        RunScript();
+    }
 }
 
 void MatlabThread::RedirectOutput()
@@ -69,7 +77,6 @@ void MatlabThread::RunScript()
     std::cout << mScript.toStdString() << std::endl;
     arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
 
-//    m_process->start( m_matlabExe, arguments );
-    m_process->start( "/opt/matlab/bin/matlab", arguments );
+    m_process->start( m_matlabExe, arguments );
     m_process->waitForFinished();
 }

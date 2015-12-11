@@ -39,7 +39,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -1188,6 +1188,34 @@
         <string>Execution</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_17">
+        <item row="0" column="2" rowspan="7">
+         <widget class="QGroupBox" name="executionTab_executable_groupBox">
+          <property name="title">
+           <string>Execution log</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QPlainTextEdit" name="executionTab_log_plainTextEdit"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="executionTab_clearLog_pushButton">
+             <property name="text">
+              <string>Clear Log</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="executionTab_settings_groupBox">
           <property name="sizePolicy">
@@ -1325,34 +1353,6 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="2" rowspan="7">
-         <widget class="QGroupBox" name="executionTab_executable_groupBox">
-          <property name="title">
-           <string>Execution log</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_13">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="QPlainTextEdit" name="executionTab_log_plainTextEdit"/>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="executionTab_clearLog_pushButton">
-             <property name="text">
-              <string>Clear Log</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="1" column="0" rowspan="6" colspan="2">
          <widget class="QGroupBox" name="executionTab_outputs_groupBox">
           <property name="title">
@@ -1371,10 +1371,40 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item row="0" column="5">
-            <widget class="QLineEdit" name="para_executionTab_outputDir_lineEdit"/>
+           <item row="2" column="6">
+            <widget class="QLabel" name="executionTab_iconMVCM_label">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
            </item>
-           <item row="1" column="6">
+           <item row="5" column="0" colspan="7">
+            <spacer name="executionTab_verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="4" column="5">
+            <widget class="QLineEdit" name="soft_executionTab_matlab_lineEdit">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="acceptDrops">
+              <bool>true</bool>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="6">
             <widget class="QLabel" name="executionTab_iconMatlab_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1388,13 +1418,6 @@
                <height>0</height>
               </size>
              </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="6">
-            <widget class="QLabel" name="executionTab_iconMVCM_label">
              <property name="text">
               <string/>
              </property>
@@ -1425,21 +1448,8 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="5">
-            <widget class="QLineEdit" name="soft_executionTab_matlab_lineEdit">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="acceptDrops">
-              <bool>true</bool>
-             </property>
-             <property name="frame">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QPushButton" name="executionTab_run_pushButton">
+           <item row="6" column="1" colspan="3">
+            <widget class="QPushButton" name="executionTab_stop_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1447,20 +1457,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Run</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="5">
-            <widget class="QPushButton" name="executionTab_matlab_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Specify Matlab Executable</string>
+              <string>Stop</string>
              </property>
             </widget>
            </item>
@@ -1477,6 +1474,42 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="5">
+            <widget class="QLineEdit" name="para_executionTab_outputDir_lineEdit"/>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="executionTab_run_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Run</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4" colspan="3">
+            <widget class="QProgressBar" name="executionTab_progressBar">
+             <property name="value">
+              <number>24</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="5">
+            <widget class="QPushButton" name="executionTab_matlab_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Specify Matlab Executable</string>
+             </property>
+            </widget>
+           </item>
            <item row="2" column="0" colspan="5">
             <widget class="QPushButton" name="executionTab_mvcm_pushButton">
              <property name="sizePolicy">
@@ -1487,26 +1520,6 @@
              </property>
              <property name="text">
               <string>Specify MVCM Directory </string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1" colspan="3">
-            <widget class="QPushButton" name="executionTab_stop_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Stop</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="4" colspan="3">
-            <widget class="QProgressBar" name="executionTab_progressBar">
-             <property name="value">
-              <number>24</number>
              </property>
             </widget>
            </item>
@@ -1529,18 +1542,12 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0" colspan="7">
-            <spacer name="executionTab_verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
+           <item row="3" column="0" colspan="6">
+            <widget class="QCheckBox" name="para_executionTab_matlab_checkBox">
+             <property name="text">
+              <string>Run matlab after file generation</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -2634,8 +2641,6 @@
   <tabstop>para_subjectCovariateTab_covariates_listWidget</tabstop>
   <tabstop>executionTab_outputDir_pushButton</tabstop>
   <tabstop>para_executionTab_outputDir_lineEdit</tabstop>
-  <tabstop>executionTab_matlab_pushButton</tabstop>
-  <tabstop>soft_executionTab_matlab_lineEdit</tabstop>
   <tabstop>executionTab_mvcm_pushButton</tabstop>
   <tabstop>soft_executionTab_mvcm_lineEdit</tabstop>
   <tabstop>executionTab_log_plainTextEdit</tabstop>

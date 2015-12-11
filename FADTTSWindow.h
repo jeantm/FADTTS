@@ -102,15 +102,15 @@ private slots:
 
     void UpdateOutputDir( const QString& path );
 
+    void SetMVCMPath();
+
+    void UpdateMVCMPath( const QString& path );
+
+    void RunningMatlabAfterFileGeneration( const bool& choice );
 
     void SetMatlabExe();
 
     void UpdateMatlabExe( const QString& executable );
-
-
-    void SetMVCMPath();
-
-    void UpdateMVCMPath( const QString& path );
 
 
     void RunFADTTS();
