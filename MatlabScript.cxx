@@ -173,7 +173,7 @@ void MatlabScript::GenerateMyFDR()
 
 QString MatlabScript::GenerateMatlabFiles()
 {
-    QDir().mkpath( m_matlabOutputDir );
+    QDir().mkpath( m_matlabOutputDir + "/MatlabOutputs" );
     QString matlabScriptPath = m_matlabOutputDir + m_matlabScriptName;
     QFile matlabScript( matlabScriptPath );
     if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )

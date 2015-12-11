@@ -1,5 +1,5 @@
 #include "Plot.h"
-
+#include <QDebug>
 
 /***************************************************************/
 /********************** Public functions ***********************/
@@ -7,17 +7,26 @@
 Plot::Plot( QObject *parent ) :
     QObject( parent )
 {
+    m_chart = vtkSmartPointer<vtkChartXY>::New();
 }
 
 
-void Plot::SetData( Data *newData )
+void Plot::SetQVTKWidget( QVTKWidget *qvtkWidget )
 {
-    m_data = newData;
+    m_qvtkWidget = qvtkWidget;
+    m_view = vtkSmartPointer<vtkContextView>::New();
+    m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
+    m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
 }
 
-void Plot::SetView( vtkSmartPointer<vtkContextView> newView )
+void Plot::SetData( Data *data )
 {
-    m_view = newView;
+    m_data = data;
+}
+
+void Plot::SetMatlabOutputDir( QString matlabOutputDir )
+{
+    m_matlabOutputDir = matlabOutputDir;
 }
 
 
@@ -32,9 +41,7 @@ void Plot::DisplayVTKPlot()
 {
     // Resetting scene
     m_view->GetScene()->ClearItems();
-    vtkSmartPointer<vtkChartXY> chart =
-            vtkSmartPointer<vtkChartXY>::New();
-    m_view->GetScene()->AddItem(chart);
+    m_view->GetScene()->AddItem( m_chart );
 
     // Loading data
     QString AD_MatlabInputFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/ad_CT_L_Parietal.txt";
@@ -84,12 +91,12 @@ void Plot::DisplayVTKPlot()
 
     // Adding plots
     QMap< QString, vtkPlot* > plot;
-    plot.insert( "Intercept", chart->AddPlot( vtkChart::LINE ) );
-    plot.insert( "SSRIExposure", chart->AddPlot( vtkChart::LINE ) );
-    plot.insert( "Sex", chart->AddPlot( vtkChart::LINE ) );
-    plot.insert( "GestAgeBirth", chart->AddPlot( vtkChart::LINE ) );
-    plot.insert( "DaysSinceBirth", chart->AddPlot( vtkChart::LINE ) );
-    plot.insert( "DTIDirection", chart->AddPlot( vtkChart::LINE ) );
+    plot.insert( "Intercept", m_chart->AddPlot( vtkChart::LINE ) );
+    plot.insert( "SSRIExposure", m_chart->AddPlot( vtkChart::LINE ) );
+    plot.insert( "Sex", m_chart->AddPlot( vtkChart::LINE ) );
+    plot.insert( "GestAgeBirth", m_chart->AddPlot( vtkChart::LINE ) );
+    plot.insert( "DaysSinceBirth", m_chart->AddPlot( vtkChart::LINE ) );
+    plot.insert( "DTIDirection", m_chart->AddPlot( vtkChart::LINE ) );
     QMap< QString, vtkPlot* >::ConstIterator iterPlot = plot.begin();
     int i = 1;
     while( iterPlot != plot.end() )
@@ -103,13 +110,29 @@ void Plot::DisplayVTKPlot()
     }
 
     // Setting chart properties
-    chart->DrawAxesAtOriginOn();
-    chart->GetAxis( vtkAxis::LEFT )->SetTitle( "AD" );
-    chart->GetAxis( vtkAxis::LEFT )->SetRange( -0.05, 0.31 );
-    chart->GetAxis( vtkAxis::LEFT )->SetBehavior( vtkAxis::FIXED );
-    chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arclength" );
-    chart->SetShowLegend( true );
+    m_chart->DrawAxesAtOriginOn();
+    m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "AD" );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( -0.05, 0.31 );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetBehavior( vtkAxis::FIXED );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arclength" );
+    m_chart->SetShowLegend( true );
 
 
-    chart->SetTitle( "Title Test" );
+    m_chart->SetTitle( "Title Test" );
+}
+
+
+void Plot::ResetPlot()
+{
+    m_chart->ClearPlots();
+}
+
+void Plot::SavePlot()
+{
+//    QRect rectangle;
+//    QPixmap pixmap( rectangle.size() );
+//    QRect rectangle;
+//    QPixmap pixmap;
+//    m_qvtkWidget->render( &pixmap, QPoint(), QRegion( rectangle ) );
+//    pixmap.save( m_matlabOutputDir + "/example.png" );
 }

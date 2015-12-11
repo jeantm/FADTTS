@@ -96,7 +96,7 @@ private slots:
 
 
     /****************** Execution Tab ******************/
-    void SetCurrentFiberNameInfo( const QString& fibername );
+    void SetCurrentFiberNameInfo();
 
     void SetOutputDir();
 
@@ -129,8 +129,6 @@ private slots:
 
     void ResetPlot();
 
-    void SavePlot();
-
 
 private:
     static const QColor m_green;
@@ -146,14 +144,13 @@ private:
     QPixmap m_warningPixmap;
 
     QSharedPointer<EditInputDialog> m_editInputDialog;
-    QSharedPointer<InfoDialog> m_infoDialog;
+
 
     QProgressBar *m_progressBar;
 
     QListWidget *m_matchedSubjectListWidget, *m_covariateListWidget, *m_unmatchedSubjectListWidget;
     QVTKWidget *m_qvtkWidget;
     QPlainTextEdit *m_logWindow;
-    vtkSmartPointer<vtkContextView> m_view;
 
     QLineEdit *m_subjectFileLineEdit;
 
@@ -169,6 +166,7 @@ private:
     Qt::CaseSensitivity caseSensitivity;
 
     Data m_data;
+    InfoDialog m_infoDialog;
     Processing m_processing;
     MatlabScript m_matlabScript;
     MatlabThread *m_matlabThread;
@@ -177,7 +175,8 @@ private:
     QFile *m_logFile;
     QTextStream* m_textStreamLog;
 
-    QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
+    QString m_currentInputFileDir, m_currentSubjectFileDir,
+    m_currentMatlabExeDir, m_mvcmPath;
 
     int m_nbrSelectedSubjects;
 

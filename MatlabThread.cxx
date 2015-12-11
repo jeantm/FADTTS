@@ -65,8 +65,7 @@ void MatlabThread::RunScript()
     RedirectOutput();
 
     QStringList arguments;
-//    QString mScript = "run('" + m_matlabScript + "')";
-    QString mScript = "run('/work/jeantm/Project/FADTTS_Test/test.m')";
+    QString mScript = "run('" + m_matlabScriptPath + "')";
     std::cout << mScript.toStdString() << std::endl;
     arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
 

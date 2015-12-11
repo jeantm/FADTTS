@@ -12,15 +12,17 @@ disp('Running matlab script...')
 %%% Path for FADTTS functions in matlab %%%
 $addMVCMPath$
 
+
+disp('1. Set/Load')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%% Inputs %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+disp('Setting inputs...')
+%%% loadingFolder %%%
+[ loadingFolder, loadingName, loadingExt ] = fileparts( mfilename( 'fullpath' ) );
 
 %%% savingFolder %%%
-[ savingFolder, savingName, savingExt ] = fileparts( mfilename( 'fullpath' ) );
-
-%%% loadingFolder %%%
-loadingFolder = strcat( savingFolder, '/..' );
+savingFolder = strcat( loadingFolder, '/MatlabOutputs' );
 
 %%% Input FiberName %%%
 $inputFiberName$
@@ -57,16 +59,16 @@ magenta = [1 0 1];
 
 color = cell(11,1);
 color{1}=red;
-color{2}=blue;
+color{2}=cyan;
 color{3}=green;
 color{4}=violet;
 color{5}=orange;
 color{6}=yellow;
-color{7}=lime;
+color{7}=magenta;
 color{8}=darkCyan;
-color{9}=cyan;
+color{9}=blue;
 color{10}=marron;
-color{11}=magenta;
+color{11}=lime;
 
 % Fiber Names
 Fnames = cell( 1, 1 );
@@ -82,6 +84,7 @@ $allProperties$
 numPerms = nbrPermutations; % Use 100 when testing scripts. Use 1000 when running scripts for real.
 
 
+disp('Loading covariate file...')
 %% COVARIATES
 % this file has all covariates organized in columns (without headings):
 $matlabCOMPInputFile$
@@ -94,11 +97,13 @@ $covariates$
 covars=cell(1,1);
 covars{1}='ALLcovars';
 
+disp('Loading fiber data file...')
 %% LOAD FIBER DATA
 % diffusionFiles should be a (arclength)X(subject) matrix.
 % the first column has arc-lengths
 $diffusionFiles$
 
+disp('Processing arclength...')
 %% ARCLENGTH
 % reading (x,y,z) coordinates
 
@@ -135,7 +140,7 @@ nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 %         end
 %         hold off
 %         
-%         xlabel('arclength');
+%         xlabel('Arc Length');
 %         ylabel(Dnames{Dii});
 %         xlim([min(arclength) max(arclength)]);
 %         legend([h(1) h(2)],sprintf('%s=0',Pnames{pii}),sprintf('%s=1',Pnames{pii}),'Location','SouthEastOutside');
@@ -168,7 +173,7 @@ nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 %         plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{Dii},'LineWidth',2);
 %         hold off
 %         
-%         xlabel('arclength');
+%         xlabel('Arc Length');
 %         ylabel(Dnames{Dii});
 %         xlim([min(arclength) max(arclength)]);
 %         legend([h(1) h(2)],sprintf('%s=0',Pnames{pii}),sprintf('%s=1',Pnames{pii}),'Location','SouthEastOutside');
@@ -187,8 +192,9 @@ nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 
 
 
-
+disp('2. Betas')
 %% 2. fit a model using local polynomial kernel smoothing
+disp('Calculating betas...')
 % calculating Betas
 [ mh ] = MVCM_lpks_wob( NoSetup, arclength_allPos, Xdesign, Ydesign );
 [ efitBetas, efitBetas1, InvSigmats, efitYdesign ] = MVCM_lpks_wb1( NoSetup, arclength_allPos, Xdesign, Ydesign, mh );
@@ -211,7 +217,7 @@ for Dii=1:nbrDiffusionProperties
     end
     hold off
     
-    xlabel('arclength');
+    xlabel('Arc Length');
     ylabel(Dnames{Dii});
     xlim([min(arclength) max(arclength)]);
     legend([h(:)],Pnames(1:nbrCovariates),'Location','SouthEastOutside');
@@ -222,6 +228,7 @@ for Dii=1:nbrDiffusionProperties
     figurename=sprintf('%s/%s_%s_Old_betas.pdf',savingFolder,Fnames{1},Dnames{Dii});
     saveas(gcf,figurename,'pdf');
     
+    disp('Saving beta file...')
     % save Beta txt file
     savefile=sprintf('%s/%s_%s_betas.csv', savingFolder, Fnames{1}, Dnames{Dii});
     temp=efitBetas(:,:,Dii);
@@ -236,6 +243,7 @@ end
 
 
 
+disp('Smoothing individual function...')
 %% smoothing individual function
 ResYdesign = Ydesign - efitYdesign;
 [ ResEtas, efitEtas, eSigEta ] = MVCM_sif( arclength_allPos, ResYdesign );
@@ -276,7 +284,7 @@ for Dii=1:nbrDiffusionProperties
     plot(arclength,mSigEtaEig(3,2:end,Dii),'-b.','LineWidth', 2); % 3rd eigenvector
     hold off
     
-    xlabel('arclength');
+    xlabel('Arc Length');
     ylabel(Dnames{Dii});
     xlim([min(arclength) max(arclength)]);
     legend('1st eigenvector','2nd eigenvector','3rd eigenvector','Location','SouthEastOutside');
@@ -294,14 +302,18 @@ end
 
 
 
+
+disp('3. Omnibus')
 %% 3. Omnibus Hypothesis Test
 if( omnibus == 1 )
     Gstats = zeros( 1, nbrCovariates-1 );
     Lstats = zeros( nbrArclengths, nbrCovariates-1 );
     Gpvals = zeros( 1, nbrCovariates-1 );
     
+    disp('Calculating bias...')
     [ ebiasBetas ] = MVCM_bias( NoSetup, arclength_allPos, Xdesign, Ydesign, InvSigmats, mh );
     
+    disp('Calculating individual and global statistics...')
     for pp=2:nbrCovariates
         %individual and global statistics calculation
         cdesign=zeros( 1, nbrCovariates );
@@ -334,7 +346,7 @@ if( omnibus == 1 )
     end
     hold off
     
-    xlabel('arclength');
+    xlabel('Arc Length');
     ylabel('-log10(p)');
     xlim([min(arclength) max(arclength)]);
     xL = get(gca,'XLim');
@@ -347,6 +359,7 @@ if( omnibus == 1 )
     saveas(gcf,sprintf('%s/%s_%s_Local_pvalues.pdf',savingFolder,Fnames{1},params{1}),'pdf');
     close()
     
+    disp('Saving local nbrCovariates-Values file...')
     %save Local nbrCovariates-Values csv file
     csvwrite(sprintf('%s/%s_%s_Local_pvalues.csv',savingFolder,Fnames{1},params{1}),Lpvals);  % column for each covariate; local p-values are computed at each arclength
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -358,9 +371,11 @@ if( omnibus == 1 )
     
     %% Global p-value
     Gpvals
+    disp('Saving lobal p-values...')
     csvwrite( sprintf( '%s/%s_%s_Global_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Gpvals ); %save csv file
     
 
+    disp('Correcting local p-values...')
     %% correct local p-values with FDR
     % this corrects the local p-values for multiple comparisons
     Lpvals_FDR = zeros( size( Lpvals ) );
@@ -369,6 +384,7 @@ if( omnibus == 1 )
     end
     
     % save FDR Local nbrCovariates-Values csv file
+    disp('Saving FDR Local nbrCovariates-Values file...')
     csvwrite( sprintf( '%s/%s_%s_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Lpvals_FDR );
     
     
@@ -385,7 +401,7 @@ if( omnibus == 1 )
     end
     hold off
     
-    xlabel('arclength');
+    xlabel('Arc Length');
     ylabel('-log10(p)');
     xlim([min(arclength) max(arclength)]);
     xL = get(gca,'XLim');
@@ -404,7 +420,7 @@ if( omnibus == 1 )
         figure()
         plot(arclength,-log10(Lpvals_FDR(:,pii)),'-','Color',color{pii},'LineWidth', 2,'Marker','.','MarkerSize',15);
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel('-log10(p)');
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
@@ -435,7 +451,7 @@ if( omnibus == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel(Dnames{Dii});
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
@@ -463,13 +479,13 @@ if( omnibus == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel('Beta Values');
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
         line(xL,[0 0],'Color','black'); % line at zero
         legend([h(:)],Dnames(1:nbrDiffusionProperties),'Location','SouthEastOutside');
-        title(sprintf('%s %s Significant Estimated Coefficients',Fnames{1},Pnames{pii}));
+        title(sprintf('%s %s Significant Betas',Fnames{1},Pnames{pii}));
         clear h;
         
         % save plot
@@ -491,13 +507,13 @@ if( omnibus == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel('Beta Values');
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
         line(xL,[0 0],'Color','black'); % line at zero
         legend([h(:)],Dnames(1:nbrDiffusionProperties),'Location','SouthEastOutside');
-        title(sprintf('%s %s Significant Estimated Coefficients',Fnames{1},Pnames{pii}));
+        title(sprintf('%s %s Significant Betas',Fnames{1},Pnames{pii}));
         clear h;
         
         % save plot
@@ -511,7 +527,7 @@ if( omnibus == 1 )
     
     
     
-    
+    disp('Calculating omnibus covariate confidence bands...')
     %% Omnibus Covariate Confidence Bands
     [Gvalue] = MVCM_cb_Gval( arclength_allPos, Xdesign, ResYdesign, InvSigmats, mh, GG );
     alpha = 0.05;
@@ -533,7 +549,7 @@ if( omnibus == 1 )
             plot(arclength,CBands(2*pii,:,Dii),'--r','LineWidth', 2); % Upper Conf Band
             hold off
             
-            xlabel('arclength');
+            xlabel('Arc Length');
             ylabel(Dnames{Dii});
             xlim([min(arclength) max(arclength)]);
             xL = get(gca,'XLim');
@@ -558,13 +574,15 @@ end
 
 
 
-
+disp('4. Post-hoc')
 %% 4. Post-hoc Hypothesis Test --> Which Diffusion Parameter is significant where for each covariate? nbrArclengths univariate test in a multivariate model.
 if( postHoc == 1 )
+    disp('Comparing the significance of each diffusion parameter for each covariate...')
     % for comparing the significance of each diffusion parameter for each covariate
     posthoc_Gpvals = zeros( nbrDiffusionProperties, nbrCovariates-1 );
     posthoc_Lpvals = zeros( nbrArclengths, nbrDiffusionProperties, nbrCovariates-1 );
     
+    disp('Calculating individual and global statistics...')
     for pii = 2:nbrCovariates; % each covariate's betas
         for Dii = 1:nbrDiffusionProperties
             Cdesign = zeros( 1, nbrDiffusionProperties*nbrCovariates );
@@ -583,9 +601,11 @@ if( postHoc == 1 )
     posthoc_Gpvals % for FA, RD, AD, MD for each covariate
     
     % Save Post-hoc test Global p-values for each diffusion parameter
+    disp('Saving post-hoc test global p-values for each diffusion parameter file...')
     csvwrite( sprintf( '%s/%s_posthoc_Global_pvalues.csv', savingFolder, Fnames{1} ), posthoc_Gpvals ); %save csv file
     
 
+    disp('Correcting post-hoc local p-values...')
     %% correct posthoc test local p-values with FDR
     % this corrects the posthoc local p-values for multiple comparisons
     posthoc_Lpvals_FDR = zeros( size( posthoc_Lpvals ) );
@@ -596,6 +616,7 @@ if( postHoc == 1 )
     end
     
     % save FDR Local nbrCovariates-Values csv file
+    disp('Saving FDR local nbrCovariates-Values file...')
     for Dii = 1:nbrDiffusionProperties
         csvwrite( sprintf( '%s/%s_%s_posthoc_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
         csvwrite( sprintf( '%s/%s_%s_posthoc_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
@@ -616,7 +637,7 @@ if( postHoc == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel('-log10(p)');
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
@@ -645,13 +666,13 @@ if( postHoc == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel('Beta Values');
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
         line(xL,[0 0],'Color','black'); % line at zero
         legend([h(:)],Dnames(1:nbrDiffusionProperties),'Location','SouthEastOutside');
-        title(sprintf('%s %s Post-Hoc Significant Estimated Coefficients',Fnames{1},Pnames{pii}));
+        title(sprintf('%s %s Post-Hoc Significant Betas',Fnames{1},Pnames{pii}));
         clear h;
         
         % save plot
@@ -673,14 +694,14 @@ if( postHoc == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel('Beta Values');
         xlim([min(arclength) max(arclength)]);
-        ylim([-0.03 0.02]); % Change this limit to SouthEastOutside fit your data for visualization
+        ylim([-0.02 0.015]); % Change this limit to SouthEastOutside fit your data for visualization
         xL = get(gca,'XLim');
         line(xL,[0 0],'Color','black'); % line at zero
         legend([h(:)],Dnames(1:nbrDiffusionProperties),'Location','SouthEastOutside');
-        title(sprintf('%s %s Post-Hoc Significant Estimated Coefficients',Fnames{1},Pnames{pii}));
+        title(sprintf('%s %s Post-Hoc Significant Betas',Fnames{1},Pnames{pii}));
         clear h;
         
         % save plot
@@ -707,7 +728,7 @@ if( postHoc == 1 )
         end
         hold off
         
-        xlabel('arclength');
+        xlabel('Arc Length');
         ylabel(Dnames{Dii});
         xlim([min(arclength) max(arclength)]);
         xL = get(gca,'XLim');
@@ -730,4 +751,7 @@ if( postHoc == 1 )
     
 end
 % End of Post-hoc Hypothesis Test
-disp('Done running matlab script')
+
+
+disp('End of script.')
+

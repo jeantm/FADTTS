@@ -25,7 +25,6 @@ FADTTSWindow::FADTTSWindow()
 FADTTSWindow::~FADTTSWindow()
 {
     m_editInputDialog.clear();
-    m_infoDialog.clear();
 }
 
 
@@ -156,8 +155,7 @@ void FADTTSWindow::InitInputTab()
     m_editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog( this ) );
     m_editInputDialog->SetData( &m_data );
 
-    m_infoDialog = QSharedPointer<InfoDialog>( new InfoDialog( this ) );
-    m_infoDialog->SetData( &m_data );
+    m_infoDialog.SetData( &m_data );
 
 
     connect( this->inputTab_addMultipleInputFiles_pushButton, SIGNAL( clicked() ), this, SLOT( AddMultipleInputFiles() ) );
@@ -221,7 +219,7 @@ void FADTTSWindow::InitInputTab()
     m_inputFileInformationLabelMap.insert( m_data.GetMeanDiffusivityPrefix(), this->inputTab_mdFileInfo_label );
     m_inputFileInformationLabelMap.insert( m_data.GetFractionalAnisotropyPrefix(), this->inputTab_faFileInfo_label );
     m_inputFileInformationLabelMap.insert( m_data.GetCovariatePrefix(), this->inputTab_covariateFileInfo_label );
-    m_infoDialog->SetInformationLabelMap( m_inputFileInformationLabelMap );
+    m_infoDialog.SetInformationLabelMap( m_inputFileInformationLabelMap );
 
 
     /** Signal/Slot connection to receive updates from m_editInputDialog **/
@@ -234,15 +232,15 @@ void FADTTSWindow::InitSubjectCovariateTab()
 {
     caseSensitivity = Qt::CaseInsensitive;
 
-    m_matchedSubjectListWidget = new QListWidget( this );
+    m_matchedSubjectListWidget = new QListWidget();
     m_matchedSubjectListWidget = this->subjectCovariateTab_matchedSubjectsInformation_listWidget;
-    m_unmatchedSubjectListWidget = new QListWidget( this );
+    m_unmatchedSubjectListWidget = new QListWidget();
     m_unmatchedSubjectListWidget =this->subjectCovariateTab_unmatchedSubjectsInformation_listWidget;
 
-    m_subjectFileLineEdit = new QLineEdit( this );
+    m_subjectFileLineEdit = new QLineEdit();
     m_subjectFileLineEdit = this->para_subjectCovariateTab_subjectFile_lineEdit;
 
-    m_covariateListWidget = new QListWidget( this );
+    m_covariateListWidget = new QListWidget();
     m_covariateListWidget = this->para_subjectCovariateTab_covariates_listWidget;
 
     /** Map of CheckBoxes to select the files we want to work on and
@@ -287,21 +285,21 @@ void FADTTSWindow::InitSubjectCovariateTab()
 
 void FADTTSWindow::InitExecutionTab()
 {
-    m_matlabThread = new MatlabThread( this );
+    m_matlabThread = new MatlabThread();
     m_matlabThread->SetMatlabScript( &m_matlabScript );
     m_matlabThread->SetProcessing( &m_processing );
 
-    m_logWindow = new QPlainTextEdit( this );
+    m_logWindow = new QPlainTextEdit();
     m_logWindow = this->executionTab_log_plainTextEdit;
     m_logWindow->setReadOnly( true );
 
-    m_progressBar = new QProgressBar( this );
+    m_progressBar = new QProgressBar();
     m_progressBar = this->executionTab_progressBar;
     m_progressBar->setMinimum( 0 );
     m_progressBar->setMaximum( 0 );
     m_progressBar->hide();
 
-    connect( this->para_executionTab_fiberName_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( SetCurrentFiberNameInfo( const QString& ) ) );
+    connect( this->para_executionTab_fiberName_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( SetCurrentFiberNameInfo() ) );
 
     connect( this->executionTab_outputDir_pushButton, SIGNAL( clicked() ), this, SLOT( SetOutputDir() ) );
     connect( this->para_executionTab_outputDir_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( UpdateOutputDir( const QString& ) ) );
@@ -326,22 +324,18 @@ void FADTTSWindow::InitExecutionTab()
 
 void FADTTSWindow::InitPlottingTab()
 {
-    // QVTK set up and initialization
-    m_qvtkWidget = new QVTKWidget( this );
+    m_qvtkWidget = new QVTKWidget();
     m_qvtkWidget = this->plottingTab_plot_qvtkWidget;
 
-    // Set up 2D world
-    m_view = vtkSmartPointer<vtkContextView>::New();
-    m_view->SetInteractor(m_qvtkWidget->GetInteractor());
-    m_qvtkWidget->SetRenderWindow(m_view->GetRenderWindow());
-
-    m_plot = new Plot( this );
-    m_plot->SetView( m_view );
+    m_plot = new Plot();
+    m_plot->SetQVTKWidget( m_qvtkWidget );
     m_plot->SetData( &m_data );
 
     connect( this->plottingTab_loadSetDataTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayPlot() ) );
     connect( this->plottingTab_loadSetDataTab_resetPlot_pushButton, SIGNAL( clicked() ), this, SLOT( ResetPlot() ) );
-    connect( this->plottingTab_loadSetDataTab_savePlot_pushButton, SIGNAL( clicked() ), this, SLOT( SavePlot() ) );
+    connect( this->plottingTab_loadSetDataTab_savePlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( SavePlot() ) );
+
+    HideShowPlotTab();
 }
 
 
@@ -606,7 +600,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
     }
 
     UpdateAvailableFileParamTab();
-    m_infoDialog->DisplayFileInformation();
+    m_infoDialog.DisplayFileInformation();
 }
 
 void FADTTSWindow::DisplayInputLineEditIcon( const QString prefID, const QPixmap icon )
@@ -1066,16 +1060,8 @@ int FADTTSWindow::SearchSubjects( QListWidget *list )
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
-void FADTTSWindow::SetCurrentFiberNameInfo( const QString& fibername )
+void FADTTSWindow::SetCurrentFiberNameInfo()
 {
-    if( !fibername.isEmpty() )
-    {
-        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "<b><span style=""font-size:8pt;"">" + fibername + "</span></b>" );
-    }
-    else
-    {
-        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "<span style=""font-size:8pt;"">N/A</span>" );
-    }
     HideShowPlotTab();
 }
 
@@ -1109,17 +1095,14 @@ void FADTTSWindow::UpdateOutputDir( const QString&  path )
         {
             DisplayIcon( label, m_okPixmap );
             m_data.SetOutputDir() = path;
-            this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "<b><span style=""font-size:8pt;"">" + path + "</span></b>" );
         }
         else
         {
             DisplayIcon( label, m_koPixmap );
-            this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "<span style=""font-size:8pt;"">N/A</span>" );
         }
     }
     else
     {
-        this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "<span style=""font-size:8pt;"">N/A</span>" );
         label->clear();
     }
     HideShowPlotTab();
@@ -1226,21 +1209,16 @@ void FADTTSWindow::RunFADTTS()
 
     QString fiberName = this->para_executionTab_fiberName_lineEdit->text();
     QMap<int, QString> selectedCovariates = GetSelectedCovariates();
-//    if( IsRunFADTTSOK( fiberName, selectedCovariates ) )
-//    {
-//        this->executionTab_run_pushButton->setEnabled( false );
-//        this->executionTab_stop_pushButton->setEnabled( true );
+    if( IsRunFADTTSOK( fiberName, selectedCovariates ) )
+    {
+        this->executionTab_run_pushButton->setEnabled( false );
+        this->executionTab_stop_pushButton->setEnabled( true );
 
-//        SetMatlabThread( fiberName, selectedCovariates );
-//        m_matlabThread->start();
-//    }
+        SetMatlabThread( fiberName, selectedCovariates );
 
-    this->executionTab_run_pushButton->setEnabled( false );
-    this->executionTab_stop_pushButton->setEnabled( true );
-
-    SetMatlabThread( fiberName, selectedCovariates );
-    m_progressBar->show();
-    m_matlabThread->start();
+        m_progressBar->show();
+        m_matlabThread->start();
+    }
 }
 
 void FADTTSWindow::StopFADTTS()
@@ -1501,7 +1479,7 @@ void FADTTSWindow::SetMatlabThread( QString fiberName, QMap<int, QString> select
     bool omnibusON = this->para_executionTab_omnibus_checkBox->isChecked();
     bool postHocON = this->para_executionTab_postHoc_checkBox->isChecked();
 
-    m_matlabScript.SetMatlabOutputDir( outputDir + "/MatlabOutputs" );
+    m_matlabScript.SetMatlabOutputDir( outputDir );
     m_matlabScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + QString::number( nbrPermutations ) + "perm.m" );
     m_matlabScript.InitMatlabScript();
     m_matlabScript.SetHeader();
@@ -1579,43 +1557,55 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QString fiberName, QMap< QP
 /***********************  Private  slots  ***********************/
 void FADTTSWindow::DisplayPlot()
 {
+    plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( false );
+    plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( true );
+    plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( true );
     m_plot->DisplayVTKPlot();
 }
 
 void FADTTSWindow::ResetPlot()
 {
-}
-
-void FADTTSWindow::SavePlot()
-{
+    plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( true );
+    plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
+    plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
+    m_plot->ResetPlot();
 }
 
 
 /***********************  Private  functions  ***********************/
 void FADTTSWindow::HideShowPlotTab()
 {
-    QString fibername = this->plottingTab_loadSetDataTab_currentFibernameSet_label->text();
-    QString outputDirectory = this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text();
-    qDebug() << "fibername" << fibername << "outputDirectory" << outputDirectory;
+    QString fibername = this->para_executionTab_fiberName_lineEdit->text();
+    QString outputDirectory = this->para_executionTab_outputDir_lineEdit->text();
+    QString matlabOutputDir = outputDirectory + "/FADTTSter_" + fibername + "/MatlabOutputs";
+    if( !QDir( matlabOutputDir ).exists() )
+    {
+        matlabOutputDir = "";
+    }
+    m_plot->SetMatlabOutputDir( matlabOutputDir );
 
-//    if( ( fibername == "N/A" ) || ( outputDirectory == "N/A" ) )
-//    {
-//        qDebug() << "KO";
-//        this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( false );
-//        this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( false );
-//        this->plottingTab_titleLegendTab->setEnabled( false );
-//        this->plottingTab_editTab->setEnabled( false );
-//    }
-//    else
-//    {
-//        qDebug() << "OK";
-//        this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( true );
-//        this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( true );
-//        this->plottingTab_titleLegendTab->setEnabled( true );
-//        this->plottingTab_editTab->setEnabled( true );
-//    }
-    this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( false );
-    this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( false );
-    this->plottingTab_titleLegendTab->setEnabled( false );
-    this->plottingTab_editTab->setEnabled( false );
+    if( matlabOutputDir.isEmpty() )
+    {
+        this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( false );
+        this->plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
+        this->plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
+        this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( false );
+        this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( false );
+        this->plottingTab_titleLegendTab->setEnabled( false );
+        this->plottingTab_editTab->setEnabled( false );
+        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
+        this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
+    }
+    else
+    {
+        this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( true );
+        this->plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
+        this->plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
+        this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( true );
+        this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( true );
+        this->plottingTab_titleLegendTab->setEnabled( true );
+        this->plottingTab_editTab->setEnabled( true );
+        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( fibername );
+        this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( outputDirectory );
+    }
 }
