@@ -99,7 +99,6 @@ void FADTTSWindow::closeEvent(QCloseEvent *event)
         QMessageBox::StandardButton closeBox =
                 QMessageBox::question( this, tr( "FADTTSter" ), tr( "Data are still being processed.<br>Are you sure you want to exit FADTTSter?" ),
                                        QMessageBox::No | QMessageBox::Yes, QMessageBox::No );
-
         switch( closeBox )
         {
         case QMessageBox::No:
@@ -333,9 +332,15 @@ void FADTTSWindow::InitPlottingTab()
     m_plot->SetQVTKWidget( m_qvtkWidget );
     m_plot->SetData( &m_data );
 
+    connect( this->plottingTab_loadSetDataTab_plotSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectPlot( const QString& ) ) );
+    connect( this->plottingTab_loadSetDataTab_outcomeSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectOutcome( const QString& ) ) );
+    connect( this->plottingTab_loadSetDataTab_covariateSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectCovariate( const QString& ) ) );
+
     connect( this->plottingTab_loadSetDataTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayPlot() ) );
     connect( this->plottingTab_loadSetDataTab_resetPlot_pushButton, SIGNAL( clicked() ), this, SLOT( ResetPlot() ) );
     connect( this->plottingTab_loadSetDataTab_savePlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( SavePlot() ) );
+    connect( this->plottingTab_loadSetDataTab_yRange_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnyRangeToggled( const bool& ) ) );
+    this->plottingTab_loadSetDataTab_yRange_checkBox->setChecked( false );
 
     HideShowPlotTab();
 }
@@ -1578,20 +1583,69 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QString fiberName, QMap< QP
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
+void FADTTSWindow::SelectPlot( const QString& plotSelected )
+{
+    m_plot->SelectPlot( plotSelected );
+
+    if( plotSelected == "No Plot" )
+    {
+        NoPlot();
+    }
+    if( plotSelected == "Raw Data" )
+    {
+        PlotDataRawSelected();
+    }
+    if( plotSelected == "Raw Stats" )
+    {
+        PlotDataStatsSelected();
+    }
+    if( plotSelected == "Omnibus" )
+    {
+        PlotOmnibusSelected();
+    }
+    if( plotSelected == "Post-Hoc" )
+    {
+        PlotPostHocSelected();
+    }
+}
+
+void FADTTSWindow::SelectOutcome( const QString& outcomeSelected )
+{
+    m_plot->SelectOutcome( outcomeSelected );
+}
+
+void FADTTSWindow::SelectCovariate( const QString& covariateSelected )
+{
+    m_plot->SelectCovariate( covariateSelected );
+}
+
+void FADTTSWindow::OnyRangeToggled( const bool& checkState )
+{
+    if( !checkState )
+    {
+        this->plottingTab_loadSetDataTab_yRangeMin_doubleSpinBox->setValue( -0.5 );
+        this->plottingTab_loadSetDataTab_yRangeMax_doubleSpinBox->setValue( 0.5 );
+    }
+    this->plottingTab_loadSetDataTab_yRangeMin_label->setEnabled( checkState );
+    this->plottingTab_loadSetDataTab_yRangeMin_doubleSpinBox->setEnabled( checkState );
+    this->plottingTab_loadSetDataTab_yRangeMax_label->setEnabled( checkState );
+    this->plottingTab_loadSetDataTab_yRangeMax_doubleSpinBox->setEnabled( checkState );
+}
+
+
 void FADTTSWindow::DisplayPlot()
 {
-    plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( false );
-    plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( true );
-    plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( true );
+    m_plot->ResetPlot();
     m_plot->DisplayVTKPlot();
+    this->plottingTab_titleLegendTab->setEnabled( true );
+    this->plottingTab_editTab->setEnabled( true );
 }
 
 void FADTTSWindow::ResetPlot()
 {
-    plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( true );
-    plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
-    plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
     m_plot->ResetPlot();
+    this->plottingTab_titleLegendTab->setEnabled( false );
+    this->plottingTab_editTab->setEnabled( false );
 }
 
 
@@ -1605,9 +1659,13 @@ void FADTTSWindow::HideShowPlotTab()
     {
         matlabOutputDir = "";
     }
-    m_plot->SetMatlabOutputDir( matlabOutputDir );
+    else
+    {
+        m_plot->SetDirectory( outputDirectory + "/FADTTSter_" + fibername );
+    }
 
     bool isMatlabOutputDirDefine = !matlabOutputDir.isEmpty();
+    this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( isMatlabOutputDirDefine );
     if( isMatlabOutputDirDefine )
     {
         this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( fibername );
@@ -1615,14 +1673,71 @@ void FADTTSWindow::HideShowPlotTab()
     }
     else
     {
-        this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
-        this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
+        ResetPlotTab();
     }
-    this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( isMatlabOutputDirDefine );
-    this->plottingTab_loadSetDataTab_resetPlot_pushButton->setEnabled( false );
-    this->plottingTab_loadSetDataTab_savePlot_pushButton->setEnabled( false );
-    this->plottingTab_loadSetDataTab_load_groupBox->setEnabled( isMatlabOutputDirDefine );
-    this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( isMatlabOutputDirDefine );
-    this->plottingTab_titleLegendTab->setEnabled( isMatlabOutputDirDefine );
-    this->plottingTab_editTab->setEnabled( isMatlabOutputDirDefine );
+    NoPlot();
+}
+
+
+void FADTTSWindow::NoPlot()
+{
+    IsPlotSelected( false, false, false );
+}
+
+void FADTTSWindow::PlotDataRawSelected()
+{
+    IsPlotSelected( true, true, false );
+}
+
+void FADTTSWindow::PlotDataStatsSelected()
+{
+    IsPlotSelected( true, true, false );
+}
+
+void FADTTSWindow::PlotOmnibusSelected()
+{
+    IsPlotSelected( true, true, true );
+}
+
+void FADTTSWindow::PlotPostHocSelected()
+{
+    IsPlotSelected( true, true, true );
+}
+
+void FADTTSWindow::IsPlotSelected( bool isPlotSelected, bool outcome, bool covariate )
+{
+    this->plottingTab_loadSetDataTab_outcomeSelection_comboBox->setEnabled( outcome );
+    this->plottingTab_loadSetDataTab_outcomeSelection_comboBox->setCurrentText( "" );
+    this->plottingTab_loadSetDataTab_outcomeSelection_label->setEnabled( outcome );
+    this->plottingTab_loadSetDataTab_covariateSelection_comboBox->setEnabled( covariate );
+    this->plottingTab_loadSetDataTab_covariateSelection_comboBox->setCurrentText( "" );
+    this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariate );
+
+    this->plottingTab_loadSetDataTab_currentFile_label->setEnabled( isPlotSelected );
+    this->plottingTab_loadSetDataTab_currentFileSet_label->setEnabled( isPlotSelected );
+
+    this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( isPlotSelected );
+
+    this->plottingTab_loadSetDataTab_title_lineEdit->clear();
+    this->plottingTab_loadSetDataTab_xName_lineEdit->clear();
+    this->plottingTab_loadSetDataTab_yName_lineEdit->clear();
+    this->plottingTab_loadSetDataTab_yRange_checkBox->setChecked( false );
+
+    this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( isPlotSelected );
+}
+
+void FADTTSWindow::ResetPlotTab()
+{
+    m_plot->ResetPlot();
+    m_plot->ResetDataFile();
+
+    this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
+    this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
+
+    this->plottingTab_loadSetDataTab_plotSelection_comboBox->setCurrentText( "No Plot" );
+
+    this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( false );
+
+    this->plottingTab_titleLegendTab->setEnabled( false );
+    this->plottingTab_editTab->setEnabled( false );
 }

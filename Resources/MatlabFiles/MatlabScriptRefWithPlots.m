@@ -229,7 +229,7 @@ for Dii=1:nbrDiffusionProperties
     saveas(gcf,figurename,'pdf');
     
     disp('Saving beta file...')
-    % save Beta txt file
+    % save Beta csv file
     savefile=sprintf('%s/%s_%s_betas.csv', savingFolder, Fnames{1}, Dnames{Dii});
     temp=efitBetas(:,:,Dii);
     csvwrite(savefile,temp);

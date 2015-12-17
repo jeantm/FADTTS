@@ -3,6 +3,8 @@
 
 #include "Processing.h"
 
+#include <QDir>
+
 #include <QVTKWidget.h>
 
 #include <vtkVersion.h>
@@ -31,14 +33,24 @@ public:
 
     void SetData( Data *data );
 
-    void SetMatlabOutputDir( QString matlabOutputDir );
+    void SetDirectory( QString directory );
+
+    void SelectOutcome( QString outcome );
+
+    void SelectPlot( QString plotSelected );
+
+    void SelectCovariate( QString covariateSelected );
 
 
-public slots:
+    void ResetDataFile();
+
+
     void DisplayVTKPlot();
 
     void ResetPlot();
 
+
+public slots:
     void SavePlot();
 
 
@@ -50,11 +62,28 @@ private:
     vtkSmartPointer<vtkContextView> m_view;
     vtkSmartPointer<vtkChartXY> m_chart;
 
-    QString m_matlabOutputDir;
+    QString m_matlabOutputDir, m_directory,
+    m_plotSelected, m_outcome, m_covariateSelected;
+
+    QStringList m_csvRawData, m_csvBetas, m_csvOmnibus, m_csvPostHoc;
 
     QVTKWidget *m_qvtkWidget;
 
 
+    void SetPlotFiles();
+
+
+    void FindyMinMax( QStringList rowData, QString &yMin, QString &yMax );
+
+    bool LoadData( QList<float> &abscissa, QList<QStringList> &ordinate, int &nbrLine , QString &yMin, QString &yMax );
+
+    void AddAxis( QMap< QString, vtkSmartPointer<vtkFloatArray> > &axis, vtkSmartPointer<vtkTable> &table, int nbrLine );
+
+    void AddData( vtkSmartPointer<vtkTable> &table, QList<float> abscissa, QList<QStringList> ordinate, int nbrLine );
+
+    void AddPlots( QMap< QString, vtkPlot* > &plot, vtkSmartPointer<vtkTable> &table, int nbrLine );
+
+    void SetChartProperties( QString title, QString xName, QString yName, QString yMin, QString yMax );
 };
 
 #endif // PLOT_H

@@ -125,6 +125,15 @@ private slots:
 
 
     /************** Plotting  Tab **************/
+    void SelectPlot( const QString& plotSelected );
+
+    void SelectOutcome( const QString& outcomeSelected );
+
+    void SelectCovariate( const QString& covariateSelected );
+
+    void OnyRangeToggled( const bool& checkState );
+
+
     void DisplayPlot();
 
     void ResetPlot();
@@ -259,6 +268,21 @@ private:
 
     /************** Plotting  Tab **************/
     void HideShowPlotTab();
+
+
+    void NoPlot();
+
+    void PlotDataRawSelected();
+
+    void PlotDataStatsSelected();
+
+    void PlotOmnibusSelected();
+
+    void PlotPostHocSelected();
+
+    void IsPlotSelected( bool isPlotSelected, bool outcome, bool covariate );
+
+    void ResetPlotTab();
 };
 
 #endif // FADTTSWINDOW_H
