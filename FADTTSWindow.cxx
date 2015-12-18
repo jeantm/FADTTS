@@ -332,9 +332,18 @@ void FADTTSWindow::InitPlottingTab()
     m_plot->SetQVTKWidget( m_qvtkWidget );
     m_plot->SetData( &m_data );
 
+    m_outcomeComboBox = new QComboBox();
+    m_outcomeComboBox = this->plottingTab_loadSetDataTab_outcomeSelection_comboBox;
+
+    m_covariateComboBox = new QComboBox();
+    m_covariateComboBox = this->plottingTab_loadSetDataTab_covariateSelection_comboBox;
+
+    connect( m_plot, SIGNAL( OutcomeUsed( const QStringList&  ) ), this, SLOT( UpdateOutcomeUsed( const QStringList& ) ) );
+    connect( m_plot, SIGNAL( CovariateUsed( const QStringList&  ) ), this, SLOT( UpdateCovariateUsed( const QStringList& ) ) );
+
     connect( this->plottingTab_loadSetDataTab_plotSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectPlot( const QString& ) ) );
-    connect( this->plottingTab_loadSetDataTab_outcomeSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectOutcome( const QString& ) ) );
-    connect( this->plottingTab_loadSetDataTab_covariateSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectCovariate( const QString& ) ) );
+    connect( m_outcomeComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectOutcome( const QString& ) ) );
+    connect( m_covariateComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectCovariate( const QString& ) ) );
 
     connect( this->plottingTab_loadSetDataTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayPlot() ) );
     connect( this->plottingTab_loadSetDataTab_resetPlot_pushButton, SIGNAL( clicked() ), this, SLOT( ResetPlot() ) );
@@ -1583,6 +1592,24 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QString fiberName, QMap< QP
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
+void FADTTSWindow::UpdateOutcomeUsed( const QStringList& outcomeUsed )
+{
+    m_outcomeComboBox->clear();
+    m_outcomeComboBox->addItem( "" );
+    m_outcomeComboBox->addItem( "All" );
+    m_outcomeComboBox->addItems( outcomeUsed );
+}
+
+void FADTTSWindow::UpdateCovariateUsed( const QStringList& covariateUsed )
+{
+    m_covariateComboBox->clear();
+    m_covariateComboBox->addItem( "" );
+    m_covariateComboBox->addItem( "All" );
+    m_covariateComboBox->addItem( "Intercept" );
+    m_covariateComboBox->addItems( covariateUsed );
+}
+
+
 void FADTTSWindow::SelectPlot( const QString& plotSelected )
 {
     m_plot->SelectPlot( plotSelected );
@@ -1636,7 +1663,9 @@ void FADTTSWindow::OnyRangeToggled( const bool& checkState )
 void FADTTSWindow::DisplayPlot()
 {
     m_plot->ResetPlot();
+    m_plot->IsCovariateBinary();
     m_plot->DisplayVTKPlot();
+
     this->plottingTab_titleLegendTab->setEnabled( true );
     this->plottingTab_editTab->setEnabled( true );
 }
@@ -1681,36 +1710,36 @@ void FADTTSWindow::HideShowPlotTab()
 
 void FADTTSWindow::NoPlot()
 {
-    IsPlotSelected( false, false, false );
+    PlotSelected( false, false, false );
 }
 
 void FADTTSWindow::PlotDataRawSelected()
 {
-    IsPlotSelected( true, true, false );
+    PlotSelected( true, true, true );
 }
 
 void FADTTSWindow::PlotDataStatsSelected()
 {
-    IsPlotSelected( true, true, false );
+    PlotSelected( true, true, true );
 }
 
 void FADTTSWindow::PlotOmnibusSelected()
 {
-    IsPlotSelected( true, true, true );
+    PlotSelected( true, true, true );
 }
 
 void FADTTSWindow::PlotPostHocSelected()
 {
-    IsPlotSelected( true, true, true );
+    PlotSelected( true, true, true );
 }
 
-void FADTTSWindow::IsPlotSelected( bool isPlotSelected, bool outcome, bool covariate )
+void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covariate )
 {
-    this->plottingTab_loadSetDataTab_outcomeSelection_comboBox->setEnabled( outcome );
-    this->plottingTab_loadSetDataTab_outcomeSelection_comboBox->setCurrentText( "" );
+    m_outcomeComboBox->setEnabled( outcome );
+    m_outcomeComboBox->setCurrentText( "" );
     this->plottingTab_loadSetDataTab_outcomeSelection_label->setEnabled( outcome );
-    this->plottingTab_loadSetDataTab_covariateSelection_comboBox->setEnabled( covariate );
-    this->plottingTab_loadSetDataTab_covariateSelection_comboBox->setCurrentText( "" );
+    m_covariateComboBox->setEnabled( covariate );
+    m_covariateComboBox->setCurrentText( "" );
     this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariate );
 
     this->plottingTab_loadSetDataTab_currentFile_label->setEnabled( isPlotSelected );

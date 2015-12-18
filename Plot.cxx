@@ -38,7 +38,7 @@ void Plot::SelectPlot( QString plotSelected )
 
 void Plot::SelectOutcome( QString outcome )
 {
-    m_outcome = outcome;
+    m_outcomeSelected = outcome;
 }
 
 void Plot::SelectCovariate( QString covariateSelected )
@@ -49,12 +49,28 @@ void Plot::SelectCovariate( QString covariateSelected )
 
 void Plot::ResetDataFile()
 {
-    m_csvRawData.clear();
+    m_csvRawDataFile.clear();
     m_csvBetas.clear();
     m_csvOmnibus.clear();
     m_csvPostHoc.clear();
 }
 
+
+void Plot::IsCovariateBinary()
+{
+    m_isCovariateBinary = false;
+    m_indexColumn = 0;
+    QMap< QPair< int, QString >, bool >::ConstIterator iterCovariates = m_covariates.begin();
+    while( iterCovariates != m_covariates.end() )
+    {
+        if( iterCovariates.key().second == m_covariateSelected )
+        {
+            m_isCovariateBinary = iterCovariates.value();
+            m_indexColumn = iterCovariates.key().first;
+        }
+        ++iterCovariates;
+    }
+}
 
 void Plot::DisplayVTKPlot()
 {
@@ -65,33 +81,41 @@ void Plot::DisplayVTKPlot()
     // Loading data
     QList<float> abscissa;
     QList<QStringList> ordinate;
-    int nbrLine;
+    int nbrPlot;
     QString yMin;
     QString yMax;
-    bool dataAvailable = LoadData( abscissa, ordinate, nbrLine, yMin, yMax );
+    bool dataAvailable = LoadData( abscissa, ordinate, nbrPlot, yMin, yMax );
 
     if( dataAvailable )
     {
+        qDebug() << "abscissa.size: " << abscissa.size();
+        qDebug() << "ordinate.size: " << ordinate.size() << " x " << ordinate.first().size();
+        qDebug() << "nbrPlot: " << nbrPlot;
+
         // Creating a table with 2 named arrays
         vtkSmartPointer<vtkTable> table =
                 vtkSmartPointer<vtkTable>::New();
         QMap< QString, vtkSmartPointer<vtkFloatArray> > axis;
-        AddAxis( axis, table, nbrLine );
+        AddAxis( axis, table, nbrPlot );
 
         // Adding data
-        AddData( table, abscissa, ordinate, nbrLine );
+        AddData( table, abscissa, ordinate, nbrPlot );
 
         // Adding plots
         QMap< QString, vtkPlot* > plot;
-        AddPlots( plot, table, nbrLine );
+        float red = 0;
+        float green = 0;
+        float blue = 255;
+        float opacity = 255;
+        AddPlots( plot, table, nbrPlot, red, green, blue, opacity  );
 
         // Setting chart properties
         QString title = "Title Test";
         QString xName = "Arclength";
         QString yName = "AD";
-        qDebug() << "yMin: " << yMin.toFloat();
-        qDebug() << "yMax: " << yMax.toFloat();
-        SetChartProperties( title, xName, yName, yMin, yMax );
+        yMin.toFloat();
+        yMax.toFloat();
+        SetChartProperties( title, xName, yName, yMin, yMax);
     }
 }
 
@@ -118,13 +142,69 @@ void Plot::SavePlot()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-void Plot::SetPlotFiles()
+void Plot::ProcessCovariates()
+{
+    QStringList firstRaw = m_csvRawData.value( 4 ).first();
+    QStringList firstDataRaw = m_csvRawData.value( 4 ).at( 1 );
+    QStringList covariates;
+    qDebug() << "firstRaw: " << firstRaw;
+    qDebug() << "firstDataRaw: " << firstDataRaw;
+
+    for( int i = 1; i < firstRaw.size(); i++ )
+    {
+        QPair< int, QString > currentPair;
+        currentPair.first = i ;
+        currentPair.second = firstRaw.at( i );
+        bool currentBool = ( firstDataRaw .at( i ).toInt() == 0 ) | ( firstDataRaw.at( i ).toInt() == 1 );
+        m_covariates.insert( currentPair, currentBool );
+
+        covariates.append( currentPair.second );
+    }
+    emit CovariateUsed( covariates );
+    qDebug() << "m_covariates: " << m_covariates;
+}
+
+void Plot::SetRawData( QStringList rawDataFileNames )
+{
+    foreach( QString path, rawDataFileNames )
+    {
+        QString currentPath = m_directory + "/" + path;
+        int index;
+        if( path.contains( "_ad_", Qt::CaseInsensitive ) )
+        {
+            index = 0;
+        }
+        if( path.contains( "_md_", Qt::CaseInsensitive ) )
+        {
+            index = 1;
+        }
+        if( path.contains( "_rd_", Qt::CaseInsensitive ) )
+        {
+            index = 2;
+        }
+        if( path.contains( "_fa_", Qt::CaseInsensitive ) )
+        {
+            index = 3;
+        }
+        if( path.contains( "_comp_", Qt::CaseInsensitive ) )
+        {
+            index = 4;
+        }
+        m_csvRawData.insert( index, m_process.GetDataFromFile( currentPath ) );
+    }
+    ProcessCovariates();
+}
+
+void Plot::SetRawDataFiles()
 {
     QStringList nameFilterRawData( "*RawData*.csv" );
-    m_csvRawData = QDir( m_directory ).entryList( nameFilterRawData );
+    m_csvRawDataFile = QDir( m_directory ).entryList( nameFilterRawData );
+    SetRawData( m_csvRawDataFile );
+}
 
-    QStringList nameFilterBetas( "*Betas*.csv" );
-    m_csvBetas = QDir( m_matlabOutputDir ).entryList( nameFilterBetas );
+void Plot::SetPlotFiles()
+{
+    SetRawDataFiles();
 
     QStringList nameFilterOmnibus( "*Omnibus*.csv" );
     m_csvOmnibus = QDir( m_matlabOutputDir ).entryList( nameFilterOmnibus );
@@ -163,25 +243,156 @@ void Plot::FindyMinMax( QStringList rowData, QString &yMin, QString &yMax )
     }
 }
 
-bool Plot::LoadData( QList<float> &abscissa, QList<QStringList> &ordinate, int &nbrLine, QString &yMin, QString &yMax )
+
+void Plot::LoadRawData( QList<float> &abscissa, QList<QStringList> &ordinate, int &nbrPlot, QString &yMin, QString &yMax )
 {
+    QStringList rawDataFile = m_csvRawDataFile.filter( "_" + m_outcomeSelected + "_", Qt::CaseInsensitive );
+    if( !rawDataFile.isEmpty() )
+    {
+        QList<QStringList> data = m_process.GetDataFromFile( m_directory + "/" + rawDataFile.first() );
+        data.removeFirst();
+        foreach( QStringList rowData, data )
+        {
+            abscissa.append( rowData.first().toFloat() );
+            rowData.removeFirst();
+            FindyMinMax( rowData, yMin, yMax );
+            ordinate.append( rowData );
+        }
+    }
+}
+
+
+void Plot::SeparateData( QList<QStringList> ordinate, QList<QStringList> &temp0Bin, QList<QStringList> &temp1Bin)
+{
+    for( int i = 0; i < ordinate.size(); i++ )
+    {
+        QStringList temp0Subj;
+        QStringList temp1Subj;
+        for( int j = 0; j < ordinate.first().size(); j++ )
+        {
+            if( m_isCovariateBinary && ( m_csvRawData.value( 4 ).at( j ).at( m_indexColumn ).toInt() == 0 ) )
+            {
+                temp0Subj.append( ordinate.at( i ).at( j ) );
+            }
+            else
+            {
+                temp1Subj.append( ordinate.at( i ).at( j ) );
+            }
+        }
+        if( !temp0Subj.isEmpty() )
+        {
+            temp0Bin.append( temp0Subj );
+        }
+        if( !temp1Subj.isEmpty() )
+        {
+            temp1Bin.append( temp1Subj );
+        }
+    }
+}
+
+void Plot::GetMeanAndStdDv( QList<QStringList> tempBin, QStringList &tempMean, QStringList &tempStdDv )
+{
+    int nbrPts = tempBin.size();
+    int nbrSubjects = tempBin.first().size();
+    for( int i = 0; i < nbrPts; i++ )
+    {
+        float currentMean = 0;
+        for( int j = 0; j < nbrSubjects; j++ )
+        {
+            currentMean += tempBin.at( i ).at( j ).toFloat();
+        }
+        currentMean = currentMean / nbrSubjects;
+        tempMean.append( QString::number( currentMean / nbrSubjects ) );
+
+        float currentStdDv = 0;
+        for( int j = 0; j < nbrSubjects; j++ )
+        {
+            currentStdDv += std::sqrt( std::pow( currentMean - tempBin.at( i ).at( j ).toFloat(), currentMean - tempBin.at( i ).at( j ).toFloat() ) );
+        }
+        tempStdDv.append( QString::number( currentMean / nbrSubjects ) );
+    }
+}
+
+void Plot::ProcessRawStats( QList<QStringList> tempBin, QStringList &tempBinMean, QStringList &tempBinUp, QStringList &tempBinDown )
+{
+    QStringList tempBinStdDv;
+    if( !tempBin.isEmpty() )
+    {
+        GetMeanAndStdDv( tempBin, tempBinMean, tempBinStdDv );
+        for( int i = 0; i < tempBin.size(); i++ )
+        {
+            tempBinUp.append( QString::number( tempBinMean.at( i ).toFloat() + tempBinStdDv.at( i ).toFloat() ) );
+            tempBinDown.append( QString::number( tempBinMean.at( i ).toFloat() - tempBinStdDv.at( i ).toFloat() ) );
+        }
+    }
+}
+
+void Plot::SetRawStatsData( QList<QStringList> &ordinate, QStringList &temp0BinUp, QStringList &temp0BinMean, QStringList &temp0BinDown,
+                            QStringList &temp1BinUp, QStringList &temp1BinMean, QStringList &temp1BinDown )
+{
+    int nbrPts = ordinate.size();
+    ordinate.clear();
+    for( int i = 0; i < nbrPts; i++ )
+    {
+        QStringList row;
+        if( !temp0BinUp.isEmpty() )
+        {
+            row.append( QString::number( temp0BinUp.at( i ).toFloat() ) );
+            row.append( QString::number( temp0BinMean.at( i ).toFloat() ) );
+            row.append( QString::number( temp0BinDown.at( i ).toFloat() ) );
+        }
+        row.append( QString::number( temp1BinUp.at( i ).toFloat() ) );
+        row.append( QString::number( temp1BinMean.at( i ).toFloat() ) );
+        row.append( QString::number( temp1BinDown.at( i ).toFloat() ) );
+        ordinate.append( row );
+    }
+}
+
+void Plot::LoadRawStats( QList<QStringList> &ordinate, QString &yMin, QString &yMax )
+{
+    if( !ordinate.isEmpty() )
+    {
+        QList<QStringList> temp0Bin;
+        QList<QStringList> temp1Bin;
+        SeparateData( ordinate, temp0Bin, temp1Bin);
+
+        QStringList temp0BinUp;
+        QStringList temp0BinMean;
+        QStringList temp0BinDown;
+        ProcessRawStats( temp0Bin, temp0BinMean, temp0BinUp, temp0BinDown);
+
+        QStringList temp1BinUp;
+        QStringList temp1BinMean;
+        QStringList temp1BinDown;
+        ProcessRawStats( temp1Bin, temp1BinMean, temp1BinUp, temp1BinDown);
+
+        SetRawStatsData( ordinate, temp0BinUp, temp0BinMean, temp0BinDown, temp1BinUp, temp1BinMean, temp1BinDown );
+
+        yMin.clear();
+        yMax.clear();
+        foreach ( QStringList rowData , ordinate)
+        {
+            FindyMinMax( rowData, yMin, yMax );
+        }
+
+        qDebug() << "new ordinate:" << ordinate.size() << "x" << ordinate.first().size();
+    }
+}
+
+bool Plot::LoadData( QList<float> &abscissa, QList<QStringList> &ordinate, int &nbrPlot, QString &yMin, QString &yMax )
+{
+    nbrPlot = 0;
     if( ( m_plotSelected == "Raw Data" ) || ( m_plotSelected == "Raw Stats" ) )
     {
-        QStringList adFile = m_csvRawData.filter( "_" + m_outcome + "_", Qt::CaseInsensitive );
-        if( !adFile.isEmpty() )
+        LoadRawData( abscissa, ordinate, nbrPlot, yMin, yMax );
+
+        if( m_plotSelected == "Raw Stats" )
         {
-            QList<QStringList> data = m_process.GetDataFromFile( m_directory + "/" + adFile.first() );
-            data.removeFirst();
-            foreach( QStringList rowData, data )
-            {
-                abscissa.append( rowData.first().toFloat() );
-                rowData.removeAt( 0 );
-                FindyMinMax( rowData, yMin, yMax );
-                ordinate.append( rowData );
-            }
-            nbrLine = ordinate.size();
+            LoadRawStats( ordinate, yMin, yMax );
         }
-        return !adFile.isEmpty();
+        nbrPlot = ordinate.first().size();
+
+        return !( abscissa.isEmpty() | ordinate.isEmpty() );
     }
     if( m_plotSelected == "Omnibus" )
     {
@@ -196,7 +407,7 @@ bool Plot::LoadData( QList<float> &abscissa, QList<QStringList> &ordinate, int &
 //        ordinate = m_process.GetDataFromFile( AD_BetasFile );
 //        yMin = QString::number( -0.05 );
 //        yMax = QString::number( 0.31 );
-//        nbrLine = ordinate.size();
+//        nbrPlot = ordinate.size();
         return false;
     }
     if( m_plotSelected == "Post-Hoc" )
@@ -206,12 +417,13 @@ bool Plot::LoadData( QList<float> &abscissa, QList<QStringList> &ordinate, int &
     return false;
 }
 
-void Plot::AddAxis( QMap< QString, vtkSmartPointer<vtkFloatArray> > &axis, vtkSmartPointer<vtkTable> &table, int nbrLine )
+
+void Plot::AddAxis( QMap< QString, vtkSmartPointer<vtkFloatArray> > &axis, vtkSmartPointer<vtkTable> &table, int nbrPlot )
 {
     axis.insert( "Arclength", vtkSmartPointer<vtkFloatArray>::New() );
-    for( int i = 0; i < nbrLine; i++ )
+    for( int i = 0; i < nbrPlot; i++ )
     {
-        axis.insert( "Subject " + i, vtkSmartPointer<vtkFloatArray>::New() );
+        axis.insert( "Subject " + QString::number( i + 1 ), vtkSmartPointer<vtkFloatArray>::New() );
     }
 
     QMap< QString, vtkSmartPointer<vtkFloatArray> >::ConstIterator iterAxis = axis.begin();
@@ -240,16 +452,16 @@ void Plot::AddAxis( QMap< QString, vtkSmartPointer<vtkFloatArray> > &axis, vtkSm
 //    }
 }
 
-void Plot::AddData( vtkSmartPointer<vtkTable> &table, QList<float> abscissa, QList<QStringList> ordinate, int nbrLine )
+void Plot::AddData( vtkSmartPointer<vtkTable> &table, QList<float> abscissa, QList<QStringList> ordinate, int nbrPlot )
 {
     int nbrPoints = abscissa.size();
     table->SetNumberOfRows( nbrPoints );
     for( int i = 0; i < nbrPoints; i++ )
     {
         table->SetValue( i, 0, abscissa.at( i ) );
-        for( int j = 0; j < nbrLine; j++ )
+        for( int j = 0; j < nbrPlot; j++ )
         {
-            table->SetValue( i, j + 1, ordinate.at( j ).at( i ).toFloat() );
+            table->SetValue( i, j + 1, ordinate.at( i ).at( j ).toFloat() );
         }
     }
 
@@ -267,18 +479,27 @@ void Plot::AddData( vtkSmartPointer<vtkTable> &table, QList<float> abscissa, QLi
 //    }
 }
 
-void Plot::AddPlots( QMap< QString, vtkPlot* > &plot, vtkSmartPointer<vtkTable> &table, int nbrLine )
+void Plot::AddPlots( QMap< QString, vtkPlot* > &plot, vtkSmartPointer<vtkTable> &table, int nbrPlot, float red, float green, float blue, float opacity )
 {
-    for( int i = 0; i < nbrLine; i++ )
+    for( int i = 0; i < nbrPlot; i++ )
     {
-        plot.insert( "Subject " + i, m_chart->AddPlot( vtkChart::LINE ) );
+        plot.insert( "Subject " + QString::number( i + 1 ), m_chart->AddPlot( vtkChart::LINE ) );
     }
+
     QMap< QString, vtkPlot* >::ConstIterator iterPlot = plot.begin();
     int i = 1;
     while( iterPlot != plot.end() )
     {
         iterPlot.value()->SetInputData( table.GetPointer(), 0, i );
-        iterPlot.value()->SetColor( 0, 0, 255, 255 );
+
+        if( m_isCovariateBinary && ( m_csvRawData.value( 4 ).at( i ).at( m_indexColumn ).toInt() == 0 ) )
+        {
+            iterPlot.value()->SetColor( 0, 0, 255, 255 );
+        }
+        else
+        {
+            iterPlot.value()->SetColor( 255, 0, 0, 255 );
+        }
         iterPlot.value()->SetWidth( 1.0 );
         ++iterPlot;
         i++;
@@ -322,3 +543,5 @@ void Plot::SetChartProperties( QString title, QString xName, QString yName, QStr
 //    m_chart->SetShowLegend( true );
 //    m_chart->SetTitle( "Title Test" );
 }
+
+

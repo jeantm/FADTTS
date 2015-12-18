@@ -125,6 +125,11 @@ private slots:
 
 
     /************** Plotting  Tab **************/
+    void UpdateOutcomeUsed( const QStringList& );
+
+    void UpdateCovariateUsed( const QStringList& );
+
+
     void SelectPlot( const QString& plotSelected );
 
     void SelectOutcome( const QString& outcomeSelected );
@@ -180,6 +185,8 @@ private:
     MatlabScript m_matlabScript;
     MatlabThread *m_matlabThread;
     Plot *m_plot;
+
+    QComboBox *m_outcomeComboBox, *m_covariateComboBox;
 
     QFile *m_logFile;
     QTextStream* m_textStreamLog;
@@ -280,7 +287,7 @@ private:
 
     void PlotPostHocSelected();
 
-    void IsPlotSelected( bool isPlotSelected, bool outcome, bool covariate );
+    void PlotSelected( bool isPlotSelected, bool outcome, bool covariate );
 
     void ResetPlotTab();
 };

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1208</width>
-    <height>805</height>
+    <height>778</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,7 +39,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -73,99 +73,6 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item row="0" column="1" colspan="3">
-            <widget class="QLabel" name="inputTab_addMultipleInputFilesInfo_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;To add several files at the same time, click on 'Add Input Filesand select them. The files must start with ad_, rd_, md_, fa_ or COMP_. Select one file per prefix.&lt;br/&gt;If multiple files starting with the same prefix are selected, they will be ignored.&lt;/i&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1" colspan="3">
-            <widget class="QLineEdit" name="para_inputTab_covariateFile_lineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" colspan="3">
-            <widget class="QLineEdit" name="para_inputTab_adFile_lineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="5">
-            <widget class="QLabel" name="inputTab_iconADFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QPushButton" name="inputTab_addFAFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>201</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Specify FA Data File</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="inputTab_addRDFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>201</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Specify RD Data File</string>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="6">
             <widget class="QPushButton" name="inputTab_editRDFile_pushButton">
              <property name="sizePolicy">
@@ -189,95 +96,8 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="4">
-            <widget class="QLabel" name="inputTab_subjectColumnID_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="5">
-            <widget class="QLabel" name="inputTab_iconCovariateFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1" colspan="3">
-            <widget class="QLineEdit" name="para_inputTab_mdFile_lineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="6">
-            <widget class="QPushButton" name="inputTab_editADFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="6">
-            <widget class="QPushButton" name="inputTab_editCovariateFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0" colspan="3">
-            <widget class="QLabel" name="inputTab_prefixMeaning_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;AD = Axial Diffusivity, RD = Radial Diffusivity, MD = Mean Diffusivity, FA = Fractional Anisotropy&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QPushButton" name="inputTab_addMDFile_pushButton">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="inputTab_addMultipleInputFiles_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -291,45 +111,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Specify MD Data File</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="5">
-            <widget class="QLabel" name="inputTab_iconFAFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="5">
-            <widget class="QLabel" name="inputTab_iconRDFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
+              <string>Add Input Files</string>
              </property>
             </widget>
            </item>
@@ -383,6 +165,170 @@
              </property>
             </widget>
            </item>
+           <item row="5" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_mdFile_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="6">
+            <widget class="QPushButton" name="inputTab_editADFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="inputTab_addFAFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>201</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Specify FA Data File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="inputTab_addRDFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>201</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Specify RD Data File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="3">
+            <widget class="QLabel" name="inputTab_addMultipleInputFilesInfo_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;To add several files at the same time, click on 'Add Input Filesand select them. The files must start with ad_, rd_, md_, fa_ or COMP_. Select one file per prefix.&lt;br/&gt;If multiple files starting with the same prefix are selected, they will be ignored.&lt;/i&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_covariateFile_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="inputTab_addADFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>201</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Specify AD Data File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_rdFile_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_adFile_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="5">
+            <widget class="QLabel" name="inputTab_iconADFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="5">
+            <widget class="QLabel" name="inputTab_iconRDFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
            <item row="6" column="6">
             <widget class="QPushButton" name="inputTab_editFAFile_pushButton">
              <property name="sizePolicy">
@@ -428,8 +374,72 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="inputTab_addADFile_pushButton">
+           <item row="8" column="6">
+            <widget class="QPushButton" name="inputTab_editCovariateFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0" colspan="3">
+            <widget class="QLabel" name="inputTab_prefixMeaning_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;AD = Axial Diffusivity, RD = Radial Diffusivity, MD = Mean Diffusivity, FA = Fractional Anisotropy&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="4">
+            <widget class="QLabel" name="inputTab_subjectColumnID_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="5">
+            <widget class="QLabel" name="inputTab_iconCovariateFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="inputTab_addMDFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -443,100 +453,90 @@
               </size>
              </property>
              <property name="text">
-              <string>Specify AD Data File</string>
+              <string>Specify MD Data File</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1" colspan="3">
-            <widget class="QLineEdit" name="para_inputTab_rdFile_lineEdit">
+           <item row="6" column="5">
+            <widget class="QLabel" name="inputTab_iconFAFile_label">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="inputTab_addMultipleInputFiles_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="minimumSize">
               <size>
-               <width>201</width>
+               <width>20</width>
                <height>0</height>
               </size>
              </property>
              <property name="text">
-              <string>Add Input Files</string>
+              <string/>
              </property>
             </widget>
            </item>
            <item row="11" column="0" colspan="7">
             <widget class="QWidget" name="inputTab_fileInfo_widget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <layout class="QGridLayout" name="gridLayout_8">
               <property name="topMargin">
                <number>6</number>
               </property>
-              <item row="0" column="7">
-               <widget class="QLabel" name="inputTab_faFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fractional Anisotropy File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="5" rowspan="2">
+              <item row="7" column="1" rowspan="2">
                <widget class="QLabel" name="inputTab_mdFileInfo_label">
                 <property name="text">
-                 <string/>
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
-              <item row="0" column="8" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine_4">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="9" rowspan="2">
-               <widget class="QLabel" name="inputTab_covariateFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="7" rowspan="2">
-               <widget class="QLabel" name="inputTab_faFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5">
+              <item row="6" column="1">
                <widget class="QLabel" name="inputTab_mdFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mean Diffusivity File&lt;/span&gt;</string>
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Mean Diffusivity File&lt;/span&gt;</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="2" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+              <item row="0" column="3">
+               <widget class="QLabel" name="inputTab_covariateFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Covariates File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1" rowspan="2">
+               <widget class="QLabel" name="inputTab_adFileInfo_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
@@ -549,61 +549,70 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Axial Diffusivity File&lt;/span&gt;</string>
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Axial Diffusivity File&lt;/span&gt;</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="9">
-               <widget class="QLabel" name="inputTab_covariateFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Covariates File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLabel" name="inputTab_rdFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Radial Diffusivity File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="6" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine_3">
+              <item row="0" column="2" rowspan="14">
+               <widget class="Line" name="inputTab_line">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
-              <item row="1" column="3" rowspan="2">
-               <widget class="QLabel" name="inputTab_rdFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" rowspan="2">
-               <widget class="QLabel" name="inputTab_adFileInfo_label">
+              <item row="3" column="1">
+               <widget class="QLabel" name="inputTab_rdFileInfoHeader_label">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string/>
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Radial Diffusivity File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" rowspan="2">
+               <widget class="QLabel" name="inputTab_rdFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
-              <item row="0" column="4" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine_2">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+              <item row="9" column="1">
+               <widget class="QLabel" name="inputTab_faFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Fractional Anisotropy File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1" rowspan="4">
+               <widget class="QLabel" name="inputTab_faFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3" rowspan="13">
+               <widget class="QLabel" name="inputTab_covariateFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
                 </property>
                </widget>
               </item>
@@ -1892,7 +1901,21 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <item row="0" column="0" colspan="10">
+               <item row="5" column="0" rowspan="2" colspan="5">
+                <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFile_label">
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Current file&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="5">
+                <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFileSet_label">
+                 <property name="text">
+                  <string>N/A</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="5">
                 <widget class="QComboBox" name="plottingTab_loadSetDataTab_plotSelection_comboBox">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1927,33 +1950,7 @@
                  </item>
                 </widget>
                </item>
-               <item row="1" column="0" rowspan="10">
-                <widget class="QRadioButton" name="radioButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="0" rowspan="2">
-                <widget class="QRadioButton" name="radioButton_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1" rowspan="10" colspan="2">
+               <item row="1" column="0" rowspan="2">
                 <widget class="QLabel" name="plottingTab_loadSetDataTab_outcomeSelection_label">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1962,11 +1959,18 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;By outcome&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Outcomes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="3" rowspan="10" colspan="7">
+               <item row="3" column="0" rowspan="2">
+                <widget class="QLabel" name="plottingTab_loadSetDataTab_covariateSelection_label">
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Covariates&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" rowspan="2" colspan="2">
                 <widget class="QComboBox" name="plottingTab_loadSetDataTab_outcomeSelection_comboBox">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2001,75 +2005,8 @@
                  </item>
                 </widget>
                </item>
-               <item row="15" column="1" rowspan="2" colspan="2">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_covariateSelection_label">
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;By covariate&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="15" column="3" rowspan="2" colspan="7">
-                <widget class="QComboBox" name="plottingTab_loadSetDataTab_covariateSelection_comboBox">
-                 <item>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Intercept</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="18" column="0" rowspan="2" colspan="10">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFile_label">
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Current file&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="20" column="0" colspan="10">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFileSet_label">
-                 <property name="text">
-                  <string>N/A</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="1" colspan="9">
-                <widget class="QCheckBox" name="checkBox">
-                 <property name="text">
-                  <string>AD</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="1" colspan="9">
-                <widget class="QCheckBox" name="checkBox_16">
-                 <property name="text">
-                  <string>RD</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="13" column="1" colspan="9">
-                <widget class="QCheckBox" name="checkBox_19">
-                 <property name="text">
-                  <string>MD</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="14" column="1" colspan="9">
-                <widget class="QCheckBox" name="checkBox_15">
-                 <property name="text">
-                  <string>FA</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="17" column="1" colspan="9">
-                <widget class="QCheckBox" name="checkBox_13">
-                 <property name="text">
-                  <string>Intercept</string>
-                 </property>
-                </widget>
+               <item row="3" column="1" rowspan="2" colspan="2">
+                <widget class="QComboBox" name="plottingTab_loadSetDataTab_covariateSelection_comboBox"/>
                </item>
               </layout>
              </widget>

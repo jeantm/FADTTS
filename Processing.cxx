@@ -192,6 +192,7 @@ void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> >
 QList<QStringList> Processing::GetDataFromFile( QString filePath )
 {
     QFile file( filePath );
+    file.open( QIODevice::ReadOnly );
 
     QTextStream ts( &file );
     QList<QStringList> fileData;
@@ -230,7 +231,7 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
         QString fileName = iterSelectedInputFile.key().second;
-        QFile matlabInputFile( outputDir + "/" + fiberName + "_RowData_" +
+        QFile matlabInputFile( outputDir + "/" + fiberName + "_RawData_" +
                                QFileInfo( QFile( fileName ) ).fileName().split( "." ).first() + ".csv" );
         matlabInputFile.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInputFile );
