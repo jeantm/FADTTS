@@ -20,6 +20,7 @@
 #include <vtkTextProperty.h>
 #include <vtkWindowToImageFilter.h>
 #include <vtkPNGWriter.h>
+#include <vtkPen.h>
 
 
 class Plot : public QObject
@@ -32,8 +33,6 @@ public:
 
     void SetQVTKWidget( QVTKWidget *qvtkWidget );
 
-    void SetData( Data *data );
-
     void SetDirectory( QString directory );
 
     void SelectPlot( QString plotSelected );
@@ -41,6 +40,16 @@ public:
     void SelectOutcome( QString outcome );    
 
     void SelectCovariate( QString covariateSelected );
+
+    void SetTitle( QString title );
+
+    void SetxName( QString xName );
+
+    void SetyName( QString yName );
+
+    void SetYMin( bool yMinChecked, double yMin );
+
+    void SetYMax( bool yMaxChecked, double yMax );
 
 
     void ResetDataFile();
@@ -64,63 +73,83 @@ signals:
 
 
 private:
+    QVTKWidget *m_qvtkWidget;
+
     Processing m_process;
 
-    Data *m_data;
-
     vtkSmartPointer<vtkContextView> m_view;
+
     vtkSmartPointer<vtkChartXY> m_chart;
 
-    QString m_matlabOutputDir, m_directory,
-    m_plotSelected, m_outcomeSelected, m_covariateSelected;
+    vtkSmartPointer<vtkTable> m_table;
+
+    QMap< QPair< int, QString >, vtkSmartPointer<vtkFloatArray> > m_axis;
+
+    QMap< QPair< int, QString >, vtkPlot* > m_plot;
+
+    QMap< int, QList < QStringList > > m_csvRawData;
+
+    QMap< QPair < int, QString >, bool > m_covariates;
+
+    QList< double > m_abscissa;
+
+    QList< QList < double > > m_ordinate;
 
     QStringList m_csvRawDataFile, m_csvBetas, m_csvOmnibus, m_csvPostHoc;
 
-    QMap < int, QList < QStringList > > m_csvRawData;
+    QString m_matlabOutputDir, m_directory,
+    m_plotSelected, m_outcomeSelected, m_covariateSelected,
+    m_title, m_xName, m_yName;
 
-    QMap< QPair< int, QString >, bool > m_covariates;
+    double m_yMin, m_yMax, m_yMinGiven, m_yMaxGiven;
 
-    QVTKWidget *m_qvtkWidget;
+    int m_indexColumn, m_nbrPlot, m_nbrPoint;
 
-    bool m_isCovariateBinary;
-
-    int m_indexColumn;
+    bool m_isCovariateBinary, m_yMinChecked, m_yMaxChecked;
 
 
     void ProcessCovariates();
 
-    void SetRawData( QStringList rawDataFileNames );
+    void SetRawData();
 
     void SetRawDataFiles();
 
-    void SetPlotFiles();
+    void SetOmnibusFiles();
+
+    void SetPostHocFiles();
+
+    void ResetLoadData();
+
+    QList < double > DataToDouble( QStringList rowData );
 
 
-    void FindyMinMax( QStringList rowData, QString &yMin, QString &yMax );
+    void FindyMinMax();
 
-    void LoadRawData( QList<float> &abscissa, QList<QStringList> &ordinate, int &nbrPlot, QString &yMin, QString &yMax );
+    void LoadAbscissa();
 
-    void SeparateData( QList<QStringList> ordinate, QList<QStringList> &temp0Bin, QList<QStringList> &temp1Bin);
+    void LoadRawData();
 
-    void GetMeanAndStdDv( QList<QStringList> tempBin, QStringList &tempMean, QStringList &tempStdDv );
+    void SeparateData( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin );
 
-    void ProcessRawStats( QList<QStringList> tempBin, QStringList &tempBinMean, QStringList &tempBinUp, QStringList &tempBinDown );
+    void GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean, QList < double > &tempStdDv );
 
-    void SetRawStatsData( QList<QStringList> &ordinate, QStringList &temp0BinUp, QStringList &temp0BinMean, QStringList &temp0BinDown,
-                                QStringList &temp1BinUp, QStringList &temp1BinMean, QStringList &temp1BinDown );
+    void ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean, QList < double > &tempBinUp, QList < double > &tempBinDown );
 
-    void LoadRawStats( QList<QStringList> &ordinate , QString &yMin, QString &yMax );
+    void SetRawStatsData( QList < double > &temp0BinUp, QList < double > &temp0BinMean, QList < double > &temp0BinDown,
+                          QList < double > &temp1BinUp, QList < double > &temp1BinMean, QList < double > &temp1BinDown );
 
-    bool LoadData( QList<float> &abscissa, QList<QStringList> &ordinate, int &nbrPlot , QString &yMin, QString &yMax );
+    void LoadRawStats();
+
+    bool LoadData();
 
 
-    void AddAxis( QMap< QString, vtkSmartPointer<vtkFloatArray> > &axis, vtkSmartPointer<vtkTable> &table, int nbrPlot );
+    void AddAxis();
 
-    void AddData( vtkSmartPointer<vtkTable> &table, QList<float> abscissa, QList<QStringList> ordinate, int nbrPlot );
+    void AddData();
 
-    void AddPlots( QMap< QString, vtkPlot* > &plot, vtkSmartPointer<vtkTable> &table, int nbrPlot, float red, float green, float blue, float opacity );
+    void AddPlots( float red, float green, float blue, float opacity );
 
-    void SetChartProperties( QString title, QString xName, QString yName, QString yMin, QString yMax );
+    void SetChartProperties();
 };
 
 #endif // PLOT_H

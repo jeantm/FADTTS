@@ -330,7 +330,7 @@ void FADTTSWindow::InitPlottingTab()
 
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget );
-    m_plot->SetData( &m_data );
+//    m_plot->SetData( &m_data );
 
     m_outcomeComboBox = new QComboBox();
     m_outcomeComboBox = this->plottingTab_loadSetDataTab_outcomeSelection_comboBox;
@@ -338,8 +338,8 @@ void FADTTSWindow::InitPlottingTab()
     m_covariateComboBox = new QComboBox();
     m_covariateComboBox = this->plottingTab_loadSetDataTab_covariateSelection_comboBox;
 
-    connect( m_plot, SIGNAL( OutcomeUsed( const QStringList&  ) ), this, SLOT( UpdateOutcomeUsed( const QStringList& ) ) );
-    connect( m_plot, SIGNAL( CovariateUsed( const QStringList&  ) ), this, SLOT( UpdateCovariateUsed( const QStringList& ) ) );
+    connect( m_plot, SIGNAL( OutcomeUsed( const QStringList&  ) ), this, SLOT( UpdateOutcomeGiven( const QStringList& ) ) );
+    connect( m_plot, SIGNAL( CovariateUsed( const QStringList&  ) ), this, SLOT( UpdateCovariateGiven( const QStringList& ) ) );
 
     connect( this->plottingTab_loadSetDataTab_plotSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectPlot( const QString& ) ) );
     connect( m_outcomeComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectOutcome( const QString& ) ) );
@@ -348,8 +348,10 @@ void FADTTSWindow::InitPlottingTab()
     connect( this->plottingTab_loadSetDataTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayPlot() ) );
     connect( this->plottingTab_loadSetDataTab_resetPlot_pushButton, SIGNAL( clicked() ), this, SLOT( ResetPlot() ) );
     connect( this->plottingTab_loadSetDataTab_savePlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( SavePlot() ) );
-    connect( this->plottingTab_loadSetDataTab_yRange_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnyRangeToggled( const bool& ) ) );
-    this->plottingTab_loadSetDataTab_yRange_checkBox->setChecked( false );
+    connect( this->plottingTab_loadSetDataTab_yMin_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMinToggled( const bool& ) ) );
+    connect( this->plottingTab_loadSetDataTab_yMax_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMaxToggled( const bool& ) ) );
+    this->plottingTab_loadSetDataTab_yMin_checkBox->setChecked( false );
+    this->plottingTab_loadSetDataTab_yMax_checkBox->setChecked( false );
 
     HideShowPlotTab();
 }
@@ -1592,21 +1594,21 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QString fiberName, QMap< QP
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
-void FADTTSWindow::UpdateOutcomeUsed( const QStringList& outcomeUsed )
+void FADTTSWindow::UpdateOutcomeGiven( const QStringList& outcomeGiven )
 {
     m_outcomeComboBox->clear();
     m_outcomeComboBox->addItem( "" );
     m_outcomeComboBox->addItem( "All" );
-    m_outcomeComboBox->addItems( outcomeUsed );
+    m_outcomeComboBox->addItems( outcomeGiven );
 }
 
-void FADTTSWindow::UpdateCovariateUsed( const QStringList& covariateUsed )
+void FADTTSWindow::UpdateCovariateGiven( const QStringList& covariateGiven )
 {
     m_covariateComboBox->clear();
     m_covariateComboBox->addItem( "" );
     m_covariateComboBox->addItem( "All" );
     m_covariateComboBox->addItem( "Intercept" );
-    m_covariateComboBox->addItems( covariateUsed );
+    m_covariateComboBox->addItems( covariateGiven );
 }
 
 
@@ -1646,24 +1648,33 @@ void FADTTSWindow::SelectCovariate( const QString& covariateSelected )
     m_plot->SelectCovariate( covariateSelected );
 }
 
-void FADTTSWindow::OnyRangeToggled( const bool& checkState )
+void FADTTSWindow::OnYMinToggled( const bool& checkState )
 {
     if( !checkState )
     {
-        this->plottingTab_loadSetDataTab_yRangeMin_doubleSpinBox->setValue( -0.5 );
-        this->plottingTab_loadSetDataTab_yRangeMax_doubleSpinBox->setValue( 0.5 );
+        this->plottingTab_loadSetDataTab_yMin_doubleSpinBox->setValue( -0.5 );
     }
-    this->plottingTab_loadSetDataTab_yRangeMin_label->setEnabled( checkState );
-    this->plottingTab_loadSetDataTab_yRangeMin_doubleSpinBox->setEnabled( checkState );
-    this->plottingTab_loadSetDataTab_yRangeMax_label->setEnabled( checkState );
-    this->plottingTab_loadSetDataTab_yRangeMax_doubleSpinBox->setEnabled( checkState );
+    this->plottingTab_loadSetDataTab_yMin_doubleSpinBox->setEnabled( checkState );
+}
+
+void FADTTSWindow::OnYMaxToggled( const bool& checkState )
+{
+    if( !checkState )
+    {
+        this->plottingTab_loadSetDataTab_yMax_doubleSpinBox->setValue( 0.5 );
+    }
+    this->plottingTab_loadSetDataTab_yMax_doubleSpinBox->setEnabled( checkState );
 }
 
 
 void FADTTSWindow::DisplayPlot()
 {
     m_plot->ResetPlot();
-    m_plot->IsCovariateBinary();
+    m_plot->SetTitle( this->plottingTab_loadSetDataTab_title_lineEdit->text() );
+    m_plot->SetxName( this->plottingTab_loadSetDataTab_xName_lineEdit->text() );
+    m_plot->SetyName( this->plottingTab_loadSetDataTab_yName_lineEdit->text() );
+    m_plot->SetYMin( this->plottingTab_loadSetDataTab_yMin_checkBox->isChecked(), this->plottingTab_loadSetDataTab_yMin_doubleSpinBox->value() );
+    m_plot->SetYMax( this->plottingTab_loadSetDataTab_yMax_checkBox->isChecked(), this->plottingTab_loadSetDataTab_yMax_doubleSpinBox->value() );
     m_plot->DisplayVTKPlot();
 
     this->plottingTab_titleLegendTab->setEnabled( true );
@@ -1673,8 +1684,6 @@ void FADTTSWindow::DisplayPlot()
 void FADTTSWindow::ResetPlot()
 {
     m_plot->ResetPlot();
-    this->plottingTab_titleLegendTab->setEnabled( false );
-    this->plottingTab_editTab->setEnabled( false );
 }
 
 
@@ -1750,7 +1759,8 @@ void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covaria
     this->plottingTab_loadSetDataTab_title_lineEdit->clear();
     this->plottingTab_loadSetDataTab_xName_lineEdit->clear();
     this->plottingTab_loadSetDataTab_yName_lineEdit->clear();
-    this->plottingTab_loadSetDataTab_yRange_checkBox->setChecked( false );
+    this->plottingTab_loadSetDataTab_yMin_checkBox->setChecked( false );
+    this->plottingTab_loadSetDataTab_yMax_checkBox->setChecked( false );
 
     this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( isPlotSelected );
 }

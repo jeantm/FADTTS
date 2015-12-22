@@ -125,9 +125,9 @@ private slots:
 
 
     /************** Plotting  Tab **************/
-    void UpdateOutcomeUsed( const QStringList& );
+    void UpdateOutcomeGiven( const QStringList& outcomeGiven );
 
-    void UpdateCovariateUsed( const QStringList& );
+    void UpdateCovariateGiven( const QStringList& covariateGiven );
 
 
     void SelectPlot( const QString& plotSelected );
@@ -136,7 +136,9 @@ private slots:
 
     void SelectCovariate( const QString& covariateSelected );
 
-    void OnyRangeToggled( const bool& checkState );
+    void OnYMinToggled( const bool& checkState );
+
+    void OnYMaxToggled( const bool& checkState );
 
 
     void DisplayPlot();
