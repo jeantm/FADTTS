@@ -25,9 +25,14 @@ void Plot::SetDirectory( QString directory )
     m_directory = directory;
     m_matlabOutputDir = directory + "/MatlabOutputs";
 
-    SetRawDataFiles();
-    SetOmnibusFiles();
-    SetPostHocFiles();
+    GetRawDataFiles();
+    GetBetaFiles();
+    GetOmnibusLpvalueFiles();
+    GetOmnibusFDRLpvalueFiles();
+    GetPostHocLpvalueFiles();
+    GetPostHocFDRLpvalueFiles();
+
+    SetCovariates();
 }
 
 void Plot::SelectPlot( QString plotSelected )
@@ -48,43 +53,38 @@ void Plot::SelectCovariate( QString covariateSelected )
 void Plot::SetTitle( QString title )
 {
     m_title = title;
-    qDebug() << "title: " << title;
 }
 
 void Plot::SetxName( QString xName )
 {
     m_xName = xName;
-    qDebug() << "xName: " << xName;
 }
 
 void Plot::SetyName( QString yName )
 {
     m_yName = yName;
-    qDebug() << "yName: " << yName;
 }
 
 void Plot::SetYMin( bool yMinChecked, double yMin )
 {
     m_yMinChecked = yMinChecked;
     m_yMinGiven = yMin;
-
-    qDebug() << "yMin: " << yMin;
 }
 
 void Plot::SetYMax( bool yMaxChecked, double yMax )
 {
     m_yMaxChecked = yMaxChecked;
     m_yMaxGiven = yMax;
-
-    qDebug() << "yMax: " << yMax;
 }
 
 void Plot::ResetDataFile()
 {
     m_csvRawDataFile.clear();
-    m_csvBetas.clear();
-    m_csvOmnibus.clear();
-    m_csvPostHoc.clear();
+    m_csvBetaFile.clear();
+    m_csvOmnibusLpvalueFile.clear();
+    m_csvOmnibusFDRLpvalueFile.clear();
+    m_csvPostHocLpvalueFile.clear();
+    m_csvPostHocFDRLpvalueFile.clear();
 }
 
 
@@ -98,6 +98,7 @@ void Plot::DisplayVTKPlot()
     ResetLoadData();
     LoadAbscissa();
     bool dataAvailable = LoadData();
+//    dataAvailable = false;
 
     if( dataAvailable )
     {
@@ -106,13 +107,15 @@ void Plot::DisplayVTKPlot()
         qDebug() << "m_nbrPlot: " << m_nbrPlot;
 
         // Creating a table with 2 named arrays
+        qDebug() << "Adding axis";
         AddAxis();
 
         // Adding data
+        qDebug() << "Adding data";
         AddData();
 
         // Adding plots
-
+        qDebug() << "Adding plots";
         float red = 0;
         float green = 0;
         float blue = 255;
@@ -120,6 +123,7 @@ void Plot::DisplayVTKPlot()
         AddPlots( red, green, blue, opacity );
 
         // Setting chart properties
+        qDebug() << "Setting chart properties";
         SetChartProperties();
     }
 }
@@ -147,7 +151,7 @@ void Plot::SavePlot()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-void Plot::ProcessCovariates()
+void Plot::SetCovariates()
 {
     QStringList firstRaw = m_csvRawData.value( 4 ).first();
     QStringList firstDataRaw = m_csvRawData.value( 4 ).at( 1 );
@@ -166,55 +170,86 @@ void Plot::ProcessCovariates()
     emit CovariateUsed( covariates );
 }
 
-void Plot::SetRawData()
+void Plot::SetFiles( QStringList files, QMap< int, QList < QStringList > > &data )
 {
-    foreach( QString path, m_csvRawDataFile )
+    QStringList outcomeUsed;
+    foreach( QString path, files )
     {
         QString currentPath = m_directory + "/" + path;
         int index;
         if( path.contains( "_ad_", Qt::CaseInsensitive ) )
         {
             index = 0;
+            outcomeUsed.append( "AD" );
         }
         if( path.contains( "_md_", Qt::CaseInsensitive ) )
         {
             index = 1;
+            outcomeUsed.append( "RD" );
         }
         if( path.contains( "_rd_", Qt::CaseInsensitive ) )
         {
             index = 2;
+            outcomeUsed.append( "MD" );
         }
         if( path.contains( "_fa_", Qt::CaseInsensitive ) )
         {
             index = 3;
+            outcomeUsed.append( "FA" );
         }
         if( path.contains( "_comp_", Qt::CaseInsensitive ) )
         {
             index = 4;
         }
-        m_csvRawData.insert( index, m_process.GetDataFromFile( currentPath ) );
+        data.insert( index, m_process.GetDataFromFile( currentPath ) );
     }
-    ProcessCovariates();
+    OutcomeUsed( outcomeUsed );
+    qDebug() << files << " : " << data.size();
 }
 
-void Plot::SetRawDataFiles()
+
+void Plot::GetRawDataFiles()
 {
-    QStringList nameFilterRawData( "*RawData*.csv" );
+    QStringList nameFilterRawData( "*RawData.csv" );
     m_csvRawDataFile = QDir( m_directory ).entryList( nameFilterRawData );
-    SetRawData();
+    SetFiles( m_csvRawDataFile, m_csvRawData );
 }
 
-void Plot::SetOmnibusFiles()
+void Plot::GetBetaFiles()
 {
-    QStringList nameFilterOmnibus( "*Omnibus*.csv" );
-    m_csvOmnibus = QDir( m_matlabOutputDir ).entryList( nameFilterOmnibus );
+    QStringList nameFilterBeta( "*Betas.csv" );
+    m_csvBetaFile = QDir( m_matlabOutputDir ).entryList( nameFilterBeta );
+    SetFiles( m_csvBetaFile, m_csvBeta );
 }
 
-void Plot::SetPostHocFiles()
+void Plot::GetOmnibusLpvalueFiles()
 {
-    QStringList nameFilterPostHoc( "*PostHoc*.csv" );
-    m_csvPostHoc = QDir( m_matlabOutputDir ).entryList( nameFilterPostHoc );
+    QStringList nameFilterOmnibusLpvalue( "*Omnibus_Local_pvalues.csv" );
+    m_csvOmnibusLpvalueFile = QDir( m_matlabOutputDir ).entryList( nameFilterOmnibusLpvalue );
+    SetFiles( m_csvOmnibusLpvalueFile, m_csvOmnibusLpvalue );
 }
+
+void Plot::GetOmnibusFDRLpvalueFiles()
+{
+    QStringList nameFilterOmnibusFDRLpvalue( "*Omnibus_FDR_Local_pvalues.csv" );
+    m_csvOmnibusFDRLpvalueFile = QDir( m_matlabOutputDir ).entryList( nameFilterOmnibusFDRLpvalue );
+    SetFiles( m_csvOmnibusFDRLpvalueFile, m_csvOmnibusFDRLpvalue );
+}
+
+void Plot::GetPostHocLpvalueFiles()
+{
+    QStringList nameFilterPostHocLpvalue( "*PostHoc_Local_pvalues.csv" );
+    m_csvPostHocLpvalueFile = QDir( m_matlabOutputDir ).entryList( nameFilterPostHocLpvalue );
+    SetFiles( m_csvPostHocLpvalueFile, m_csvPostHocLpvalue );
+}
+
+void Plot::GetPostHocFDRLpvalueFiles()
+{
+    QStringList nameFilterPostHocFDRLpvalueFiles( "*PostHoc_FDR_Local_pvalues.csv" );
+    m_csvPostHocFDRLpvalueFile = QDir( m_matlabOutputDir ).entryList( nameFilterPostHocFDRLpvalueFiles );
+    SetFiles( m_csvPostHocFDRLpvalueFile, m_csvPostHocFDRLpvalue );
+}
+
 
 
 void Plot::ResetLoadData()
@@ -280,31 +315,6 @@ void Plot::FindyMinMax()
     qDebug() << "m_yMax: " << m_yMax;
 }
 
-void Plot::LoadAbscissa()
-{
-    QList<QStringList> data = m_process.GetDataFromFile( m_directory + "/" + m_csvRawDataFile.first() );
-    data.removeFirst();
-    foreach( QStringList rowData, data )
-    {
-        m_abscissa.append( rowData.first().toDouble() );
-    }
-    m_nbrPoint = m_abscissa.size();
-}
-
-void Plot::LoadRawData()
-{
-    QStringList rawDataFile = m_csvRawDataFile.filter( "_" + m_outcomeSelected + "_", Qt::CaseInsensitive );
-    if( !rawDataFile.isEmpty() )
-    {
-        QList<QStringList> data = m_process.GetDataFromFile( m_directory + "/" + rawDataFile.first() );
-        data.removeFirst();
-        foreach( QStringList rowData, data )
-        {
-            rowData.removeFirst();
-            m_ordinate.append( DataToDouble( rowData ) );
-        }
-    }
-}
 
 QList < double > Plot::DataToDouble( QStringList rowData )
 {
@@ -400,6 +410,32 @@ void Plot::SetRawStatsData( QList < double > &temp0BinUp, QList < double > &temp
     }
 }
 
+void Plot::LoadAbscissa()
+{
+    QList<QStringList> data = m_process.GetDataFromFile( m_directory + "/" + m_csvRawDataFile.first() );
+    data.removeFirst();
+    foreach( QStringList rowData, data )
+    {
+        m_abscissa.append( rowData.first().toDouble() );
+    }
+    m_nbrPoint = m_abscissa.size();
+}
+
+void Plot::LoadRawData()
+{
+    QStringList rawDataFile = m_csvRawDataFile.filter( "_" + m_outcomeSelected + "_", Qt::CaseInsensitive );
+    if( !rawDataFile.isEmpty() )
+    {
+        QList<QStringList> data = m_process.GetDataFromFile( m_directory + "/" + rawDataFile.first() );
+        data.removeFirst();
+        foreach( QStringList rowData, data )
+        {
+            rowData.removeFirst();
+            m_ordinate.append( DataToDouble( rowData ) );
+        }
+    }
+}
+
 void Plot::LoadRawStats()
 {
     if( !m_ordinate.isEmpty() )
@@ -422,11 +458,63 @@ void Plot::LoadRawStats()
     }
 }
 
+void Plot::LoadBetas()
+{
+
+}
+
+void Plot::LoadOmnibusLpvalues()
+{
+
+}
+
+void Plot::LoadOmnibusFDRLpvalues()
+{
+
+}
+
+void Plot::LoadPostHocLpvalues()
+{
+
+}
+
+void Plot::LoadPostHocFDRLpvalues()
+{
+
+}
+
+
+void Plot::LoadOmnibus()
+{
+    QStringList omnibusDataFile = m_csvOmnibusFile.filter( "_" + m_outcomeSelected + "_", Qt::CaseInsensitive );
+    if( !omnibusDataFile.isEmpty() )
+    {
+        QList<QStringList> data = m_process.GetDataFromFile( m_matlabOutputDir + "/" + omnibusDataFile.first() );
+        foreach( QStringList omnibusData, data )
+        {
+            m_ordinate.append( DataToDouble( omnibusData ) );
+        }
+    }
+}
+
+void Plot::LoadPostHoc()
+{
+    QStringList postHocDataFile = m_csvPostHocFile.filter( "_" + m_outcomeSelected + "_", Qt::CaseInsensitive );
+    if( !postHocDataFile.isEmpty() )
+    {
+        QList<QStringList> data = m_process.GetDataFromFile( m_matlabOutputDir + "/" + postHocDataFile.first() );
+        foreach( QStringList postHocData, data )
+        {
+            m_ordinate.append( DataToDouble( postHocData ) );
+        }
+    }
+}
+
 bool Plot::LoadData()
 {
-    if( ( m_plotSelected == "Raw Data" ) || ( m_plotSelected == "Raw Stats" ) )
+    if( !m_outcomeSelected.isEmpty() )
     {
-        if( !m_outcomeSelected.isEmpty() )
+        if( ( m_plotSelected == "Raw Data" ) || ( m_plotSelected == "Raw Stats" ) )
         {
             IsCovariateBinary();
             LoadRawData();
@@ -437,34 +525,21 @@ bool Plot::LoadData()
             }
             m_nbrPlot = m_ordinate.first().size();
         }
+
+        if( m_plotSelected == "Omnibus" )
+        {
+            LoadOmnibus();
+            m_nbrPlot = m_ordinate.size();
+        }
+
+        if( m_plotSelected == "Post-Hoc" )
+        {
+            LoadPostHoc();
+            m_nbrPlot = m_ordinate.first().size();
+        }
+
         FindyMinMax();
         return !( m_abscissa.isEmpty() | m_ordinate.isEmpty() );
-    }
-    if( m_plotSelected == "Omnibus" )
-    {
-//        QString AD_MatlabInputFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/ad_CT_L_Parietal.txt";
-//        QList<QStringList> AD_MatlabInputData = m_process.GetDataFromFile( AD_MatlabInputFile );
-//        foreach( QStringList rowData, AD_MatlabInputData )
-//        {
-//            m_abscissa.append( rowData.first().toFloat() );
-//        }
-
-//        QString AD_BetasFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/CT-L-Parietal_AD_betas.csv";
-//        ordinate = m_process.GetDataFromFile( AD_BetasFile );
-        return false;
-    }
-    if( m_plotSelected == "Post-Hoc" )
-    {
-//        QString AD_MatlabInputFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/ad_CT_L_Parietal.txt";
-//        QList<QStringList> AD_MatlabInputData = m_process.GetDataFromFile( AD_MatlabInputFile );
-//        foreach( QStringList rowData, AD_MatlabInputData )
-//        {
-//            m_abscissa.append( rowData.first().toFloat() );
-//        }
-
-//        QString AD_BetasFile = "/work/jeantm/Project/FADTTS_Origin/DataShaili/CT_L_Parietal-AllOutput/CT-L-Parietal_AD_betas.csv";
-//        ordinate = m_process.GetDataFromFile( AD_BetasFile );
-        return false;
     }
     return false;
 }
@@ -487,6 +562,7 @@ void Plot::AddAxis()
             m_axis.insert( currentPair, vtkSmartPointer<vtkFloatArray>::New() );
         }
     }
+
     if( m_plotSelected == "Raw Stats" )
     {
         if( m_nbrPlot == 6 )
@@ -539,25 +615,18 @@ void Plot::AddAxis()
             m_axis.insert( downPair, vtkSmartPointer<vtkFloatArray>::New() );
         }
     }
-    if( m_plotSelected == "Omnibus" )
+
+    if( m_plotSelected == "Omnibus" || m_plotSelected == "Post-Hoc" )
     {
-        //    m_axis.insert( "Arclength", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "Intercept", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "SSRIExposure", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "Sex", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "GestAgeBirth", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "DaysSinceBirth", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "DTIDirection", vtkSmartPointer<vtkFloatArray>::New() );
-    }
-    if( m_plotSelected == "Post-Hoc" )
-    {
-        //    m_axis.insert( "Arclength", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "Intercept", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "SSRIExposure", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "Sex", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "GestAgeBirth", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "DaysSinceBirth", vtkSmartPointer<vtkFloatArray>::New() );
-        //    m_axis.insert( "DTIDirection", vtkSmartPointer<vtkFloatArray>::New() );
+        QMap< QPair < int, QString >, bool >::ConstIterator iterCovariates = m_covariates.begin();
+        while( iterCovariates != m_covariates.end() )
+        {
+            QPair< int, QString > currentPair;
+            currentPair.first = iterCovariates.key().first + 1;
+            currentPair.second = iterCovariates.key().second;
+            m_axis.insert( currentPair, vtkSmartPointer<vtkFloatArray>::New() );
+            ++iterCovariates;
+        }
     }
 
     QMap< QPair< int, QString >, vtkSmartPointer<vtkFloatArray> >::ConstIterator iterAxis = m_axis.begin();
@@ -571,14 +640,28 @@ void Plot::AddAxis()
 
 void Plot::AddData()
 {
+    qDebug() << "m_nbrPoint: " << m_nbrPoint << "m_nbrPlot: " << m_nbrPlot;
     m_table->SetNumberOfRows( m_nbrPoint );
+
+    // Adding abscissa
     for( int i = 0; i < m_nbrPoint; i++ )
     {
         m_table->SetValue( i, 0, m_abscissa.at( i ) );
-//        m_table->SetValue( 0, i, m_abscissa.at( i ) );
-        for( int j = 0; j < m_nbrPlot; j++ )
+    }
+
+    // Adding plots data
+    for( int j = 0; j < m_nbrPlot; j++ )
+    {
+        for( int i = 0; i < m_nbrPoint; i++ )
         {
-            m_table->SetValue( i, j + 1, m_ordinate.at( i ).at( j ) );
+            if( ( m_plotSelected == "Raw Data" ) || ( m_plotSelected == "Raw Stats" ) )
+            {
+                m_table->SetValue( i, j + 1, m_ordinate.at( i ).at( j ) );
+            }
+            if( m_plotSelected == "Omnibus" )
+            {
+                m_table->SetValue( i, j + 1, m_ordinate.at( j ).at( i ) );
+            }
         }
     }
 }
@@ -614,6 +697,7 @@ void Plot::AddPlots( float red, float green, float blue, float opacity )
             i++;
         }
     }
+
     if( m_plotSelected == "Raw Stats" )
     {
         if( m_nbrPlot == 6 )
@@ -651,17 +735,17 @@ void Plot::AddPlots( float red, float green, float blue, float opacity )
         else
         {
             QPair< int, QString > upPair;
-            upPair.first = 1;
+            upPair.first = 0;
             upPair.second = m_covariateSelected + " up";
             m_plot.insert( upPair, m_chart->AddPlot( vtkChart::LINE ) );
 
             QPair< int, QString > meanPair;
-            meanPair.first = 2;
+            meanPair.first = 1;
             meanPair.second = m_covariateSelected + " mean";
             m_plot.insert( meanPair, m_chart->AddPlot( vtkChart::LINE ) );
 
             QPair< int, QString > downPair;
-            downPair.first = 3;
+            downPair.first = 2;
             downPair.second = m_covariateSelected + " down";
             m_plot.insert( downPair, m_chart->AddPlot( vtkChart::LINE ) );
         }
@@ -690,10 +774,32 @@ void Plot::AddPlots( float red, float green, float blue, float opacity )
             i++;
         }
     }
+
     if( m_plotSelected == "Omnibus" )
     {
+        QMap< QPair < int, QString >, bool >::ConstIterator iterCovariates = m_covariates.begin();
+        while( iterCovariates != m_covariates.end() )
+        {
+            QPair< int, QString > currentPair;
+            currentPair.first = iterCovariates.key().first + 1;
+            currentPair.second = iterCovariates.key().second;
+            m_plot.insert( currentPair, m_chart->AddPlot( vtkChart::LINE ) );
+            ++iterCovariates;
+        }
 
+        QMap< QPair< int, QString >, vtkPlot* >::ConstIterator iterPlot = m_plot.begin();
+        int i = 1;
+        while( iterPlot != m_plot.end() )
+        {
+            iterPlot.value()->SetInputData( m_table.GetPointer(), 0, i );
+            vtkPlotPoints::SafeDownCast( iterPlot.value() )->SetMarkerStyle( vtkPlotPoints::CIRCLE );
+            iterPlot.value()->SetColor( 255*0.3*i, 255*0.2*i, 0, 255 );
+            iterPlot.value()->SetWidth( 1.0 );
+            ++iterPlot;
+            i++;
+        }
     }
+
     if( m_plotSelected == "Post-Hoc" )
     {
 
@@ -722,7 +828,8 @@ void Plot::SetChartProperties()
 {
     if( m_title.isEmpty() )
     {
-        m_title = "Title";
+//        m_title = "Title";
+        m_title =  m_plotSelected + " " + m_outcomeSelected + " " + m_covariateSelected;
     }
     if( m_xName.isEmpty() )
     {
@@ -730,7 +837,7 @@ void Plot::SetChartProperties()
     }
     if( m_yName.isEmpty() )
     {
-        m_yName = "yName";
+        m_yName = "";
     }
     if( m_yMinChecked )
     {
@@ -745,20 +852,18 @@ void Plot::SetChartProperties()
 
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( m_xName.toStdString() );
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( m_abscissa.first(), m_abscissa.last() );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( std::floor( m_abscissa.first() ) );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( std::ceil( m_abscissa.last() ) );
-//    int intTempo = m_chart->GetAxis( vtkAxis::BOTTOM )->GetNumberOfTicks();
-//    qDebug() << "intTempo: " << intTempo;
-//    m_chart->GetAxis( vtkAxis::BOTTOM )->SetNumberOfTicks( intTempo + 1 );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 80, 80, 80, 255 );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( m_abscissa.first() );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( m_abscissa.last() );
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( std::floor( m_abscissa.first() ), std::ceil( m_abscissa.last() ) );
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( std::floor( m_abscissa.first() ) );
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( std::ceil( m_abscissa.last() ) );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 127, 127, 127, 255 );
 
     m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( m_yName.toStdString() );
     m_chart->GetAxis( vtkAxis::LEFT )->SetRange( m_yMin, m_yMax );
     m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( m_yMin );
     m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( m_yMax );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 80, 80, 80, 255 );
-
-//    m_chart->ForceAxesToBoundsOn();
+    m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 127, 127, 127, 255 );
 
     m_chart->SetTitle( m_title.toStdString() );
     m_chart->GetTitleProperties()->SetBold( 1 );

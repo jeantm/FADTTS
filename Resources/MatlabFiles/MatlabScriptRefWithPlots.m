@@ -225,12 +225,12 @@ for Dii=1:nbrDiffusionProperties
     clear h;
     
     % save plot
-    figurename=sprintf('%s/%s_%s_Old_betas.pdf',savingFolder,Fnames{1},Dnames{Dii});
+    figurename=sprintf('%s/%s_%s_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii});
     saveas(gcf,figurename,'pdf');
     
     disp('Saving beta file...')
     % save Beta csv file
-    savefile=sprintf('%s/%s_%s_betas.csv', savingFolder, Fnames{1}, Dnames{Dii});
+    savefile=sprintf('%s/%s_%s_Betas.csv', savingFolder, Fnames{1}, Dnames{Dii});
     temp=efitBetas(:,:,Dii);
     csvwrite(savefile,temp);
     clear temp;
@@ -356,12 +356,12 @@ if( omnibus == 1 )
     clear h;
     
     %save plot
-    saveas(gcf,sprintf('%s/%s_%s_Local_pvalues.pdf',savingFolder,Fnames{1},params{1}),'pdf');
+    saveas(gcf,sprintf('%s/%s_%s_Omnibus_Local_pvalues.pdf',savingFolder,Fnames{1},params{1}),'pdf');
     close()
     
     disp('Saving local nbrCovariates-Values file...')
     %save Local nbrCovariates-Values csv file
-    csvwrite(sprintf('%s/%s_%s_Local_pvalues.csv',savingFolder,Fnames{1},params{1}),Lpvals);  % column for each covariate; local p-values are computed at each arclength
+    csvwrite(sprintf('%s/%s_%s_Omnibus_Local_pvalues.csv',savingFolder,Fnames{1},params{1}),Lpvals);  % column for each covariate; local p-values are computed at each arclength
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%% Plotting Ends %%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -372,7 +372,7 @@ if( omnibus == 1 )
     %% Global p-value
     Gpvals
     disp('Saving lobal p-values...')
-    csvwrite( sprintf( '%s/%s_%s_Global_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Gpvals ); %save csv file
+    csvwrite( sprintf( '%s/%s_%s_Omnibus_Global_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Gpvals ); %save csv file
     
 
     disp('Correcting local p-values...')
@@ -380,12 +380,12 @@ if( omnibus == 1 )
     % this corrects the local p-values for multiple comparisons
     Lpvals_FDR = zeros( size( Lpvals ) );
     for i = 1:( nbrCovariates-1 )
-	Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
+    Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ));
     end
     
     % save FDR Local nbrCovariates-Values csv file
     disp('Saving FDR Local nbrCovariates-Values file...')
-    csvwrite( sprintf( '%s/%s_%s_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Lpvals_FDR );
+    csvwrite( sprintf( '%s/%s_%s_Omnibus_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Lpvals_FDR );
     
     
     
@@ -411,7 +411,7 @@ if( omnibus == 1 )
     clear h;
     
     %save plot
-    saveas(gcf,sprintf('%s/%s_%s_Corrected_Local_pvalues.pdf',savingFolder,Fnames{1},params{1}),'pdf');
+    saveas(gcf,sprintf('%s/%s_%s_Omnibus_FDR_Local_pvalues.pdf',savingFolder,Fnames{1},params{1}),'pdf');
     close()
     
 
@@ -430,7 +430,7 @@ if( omnibus == 1 )
         clear h;
         
         %save plot
-        saveas(gcf,sprintf('%s/%s_%s_Corrected_%s_Local_pvalues.pdf',savingFolder,Fnames{1},params{1},Pnames{pii}),'pdf');
+        saveas(gcf,sprintf('%s/%s_%s_Omnibus_FDR_%s_Local_pvalues.pdf',savingFolder,Fnames{1},params{1},Pnames{pii}),'pdf');
         close()
     end
     
@@ -461,7 +461,7 @@ if( omnibus == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_%s_All_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
+        figurename=sprintf('%s/%s_%s_%s_Omnibus_FDR_All_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
         saveas(gcf,figurename,'pdf');
         close()
     end
@@ -489,7 +489,7 @@ if( omnibus == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_SigBetas.pdf',savingFolder,Fnames{1},Pnames{pii});
+        figurename=sprintf('%s/%s_%s_Omnibus_FDR_SigBetas.pdf',savingFolder,Fnames{1},Pnames{pii});
         saveas(gcf,figurename,'pdf');
         close()
     end
@@ -517,7 +517,7 @@ if( omnibus == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s_%s_SigBetas_ylimit.pdf',Fnames{1},Pnames{pii});
+        figurename=sprintf('%s_%s_Omnibus_FDR_SigBetas_ylimit.pdf',Fnames{1},Pnames{pii});
         saveas(gcf,figurename,'pdf');
         close()
     end
@@ -557,7 +557,7 @@ if( omnibus == 1 )
             title(sprintf('95 percent confidence band for %s (%s)',Pnames{pii},Dnames{Dii}));
             
             % save plot
-            figurename=sprintf('%s/%s_%s_%s_confidence_band.pdf',savingFolder,Fnames{1},Dnames{Dii},Pnames{pii});
+            figurename=sprintf('%s/%s_%s_%s_Omnibus_confidence_band.pdf',savingFolder,Fnames{1},Dnames{Dii},Pnames{pii});
             saveas(gcf,figurename,'pdf');
             close()
         end
@@ -602,7 +602,7 @@ if( postHoc == 1 )
     
     % Save Post-hoc test Global p-values for each diffusion parameter
     disp('Saving post-hoc test global p-values for each diffusion parameter file...')
-    csvwrite( sprintf( '%s/%s_posthoc_Global_pvalues.csv', savingFolder, Fnames{1} ), posthoc_Gpvals ); %save csv file
+    csvwrite( sprintf( '%s/%s_PostHoc_Global_pvalues.csv', savingFolder, Fnames{1} ), posthoc_Gpvals ); %save csv file
     
 
     disp('Correcting post-hoc local p-values...')
@@ -611,15 +611,15 @@ if( postHoc == 1 )
     posthoc_Lpvals_FDR = zeros( size( posthoc_Lpvals ) );
     for Dii = 1:nbrDiffusionProperties
         for pii = 1:( nbrCovariates-1 )
-            posthoc_Lpvals_FDR( :, Dii, pii ) = mafdr( posthoc_Lpvals( :, Dii, pii ), 'BHFDR', true );
+            posthoc_Lpvals_FDR( :, Dii, pii ) = myFDR( posthoc_Lpvals( :, Dii, pii ) );
         end
     end
     
     % save FDR Local nbrCovariates-Values csv file
     disp('Saving FDR local nbrCovariates-Values file...')
     for Dii = 1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_%s_posthoc_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
-        csvwrite( sprintf( '%s/%s_%s_posthoc_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
+        csvwrite( sprintf( '%s/%s_%s_PostHoc_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
+        csvwrite( sprintf( '%s/%s_%s_PostHoc_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
     end
     
     
@@ -646,7 +646,7 @@ if( postHoc == 1 )
         title(sprintf('%s %s Posthoc Corrected Local p-values',Fnames{1},Pnames{pii}));
         
         % save local p-value plot
-        saveas(gcf,sprintf('%s/%s_%s_posthoc_corrected_Local_pvalues.pdf',savingFolder,Fnames{1},Pnames{pii}),'pdf');
+        saveas(gcf,sprintf('%s/%s_%s_PostHoc_FDR_Local_pvalues.pdf',savingFolder,Fnames{1},Pnames{pii}),'pdf');
         close()
     end
     
@@ -676,7 +676,7 @@ if( postHoc == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_posthoc_corrected_SigBetas.pdf',savingFolder,Fnames{1},Pnames{pii});
+        figurename=sprintf('%s/%s_%s_PostHoc_FDR_SigBetas.pdf',savingFolder,Fnames{1},Pnames{pii});
         saveas(gcf,figurename,'pdf');
         close()
     end
@@ -705,7 +705,7 @@ if( postHoc == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_posthoc_corrected_SigBetas_ylimit.pdf',savingFolder,Fnames{1},Pnames{pii});
+        figurename=sprintf('%s/%s_%s_PostHoc_FDR_SigBetas_ylimit.pdf',savingFolder,Fnames{1},Pnames{pii});
         saveas(gcf,figurename,'pdf');
         close()
     end
@@ -738,7 +738,7 @@ if( postHoc == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_%s_posthoc_corrected_All_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
+        figurename=sprintf('%s/%s_%s_%s_PostHoc_FDR_All_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
         saveas(gcf,figurename,'pdf');
         close()
     end

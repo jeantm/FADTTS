@@ -231,8 +231,8 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
         QString fileName = iterSelectedInputFile.key().second;
-        QFile matlabInputFile( outputDir + "/" + fiberName + "_RawData_" +
-                               QFileInfo( QFile( fileName ) ).fileName().split( "." ).first() + ".csv" );
+        QFile matlabInputFile( outputDir + "/" + fiberName + "_" +
+                               QFileInfo( QFile( fileName ) ).fileName().split( "." ).first().split( "_" ).first().toUpper() + "_RawData.csv" );
         matlabInputFile.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInputFile );
         QStringList rowData;

@@ -149,7 +149,7 @@ void MatlabScript::GenerateMyFDR()
 {
     QResource resource( ":/MatlabFiles/Resources/MatlabFiles/myFDR.m" );
     QFile matlabFunctionResource( resource.absoluteFilePath() );
-    QFile matlabFunction( m_matlabOutputDir + "/myFRD.m" );
+    QFile matlabFunction( m_matlabOutputDir + "/myFDR.m" );
 
     if ( !matlabFunctionResource.open( QIODevice::ReadOnly | QIODevice::Text ) )
     {

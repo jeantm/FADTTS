@@ -330,7 +330,6 @@ void FADTTSWindow::InitPlottingTab()
 
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget );
-//    m_plot->SetData( &m_data );
 
     m_outcomeComboBox = new QComboBox();
     m_outcomeComboBox = this->plottingTab_loadSetDataTab_outcomeSelection_comboBox;
@@ -1750,9 +1749,6 @@ void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covaria
     m_covariateComboBox->setEnabled( covariate );
     m_covariateComboBox->setCurrentText( "" );
     this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariate );
-
-    this->plottingTab_loadSetDataTab_currentFile_label->setEnabled( isPlotSelected );
-    this->plottingTab_loadSetDataTab_currentFileSet_label->setEnabled( isPlotSelected );
 
     this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( isPlotSelected );
 

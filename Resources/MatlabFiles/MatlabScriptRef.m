@@ -176,7 +176,7 @@ if( omnibus == 1 )
     % this corrects the local p-values for multiple comparisons
     Lpvals_FDR = zeros( size( Lpvals ) );
     for i = 1:( nbrCovariates-1 )
-        Lpvals_FDR( :, i ) = mafdr( Lpvals( :, i ), 'BHFDR', true );
+        Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ));
     end
     
     % save FDR Local nbrCovariates-Values csv file
@@ -190,7 +190,7 @@ if( omnibus == 1 )
     alpha = 0.05;
     [CBands] = MVCM_CBands( nbrSubjects, alpha, Gvalue, efitBetas, zeros( size( ebiasBetas ) ) ); % new Conf Bands formula
     disp('Saving omnibus covariate confidence bands...')
-    csvwrite( sprintf( '%s/%s_ConfidenceBand.csv', savingFolder, Fnames{1}, Dnames{Dii}, Pnames{pii}), CBands );
+    csvwrite( sprintf( '%s/%s_Omnibus_ConfidenceBand.csv', savingFolder, Fnames{1}, Dnames{Dii}, Pnames{pii}), CBands );
 end
 % End of Omnibus Hypothesis Test
 

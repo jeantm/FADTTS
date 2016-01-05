@@ -87,7 +87,8 @@ private:
 
     QMap< QPair< int, QString >, vtkPlot* > m_plot;
 
-    QMap< int, QList < QStringList > > m_csvRawData;
+    QMap< int, QList < QStringList > > m_csvRawData, m_csvBeta, m_csvOmnibusLpvalue, m_csvOmnibusFDRLpvalue,
+    m_csvPostHocLpvalue, m_csvPostHocFDRLpvalue;
 
     QMap< QPair < int, QString >, bool > m_covariates;
 
@@ -95,7 +96,8 @@ private:
 
     QList< QList < double > > m_ordinate;
 
-    QStringList m_csvRawDataFile, m_csvBetas, m_csvOmnibus, m_csvPostHoc;
+    QStringList m_csvRawDataFile, m_csvBetaFile, m_csvOmnibusLpvalueFile, m_csvOmnibusFDRLpvalueFile,
+    m_csvPostHocLpvalueFile, m_csvPostHocFDRLpvalueFile;
 
     QString m_matlabOutputDir, m_directory,
     m_plotSelected, m_outcomeSelected, m_covariateSelected,
@@ -108,15 +110,21 @@ private:
     bool m_isCovariateBinary, m_yMinChecked, m_yMaxChecked;
 
 
-    void ProcessCovariates();
+    void SetCovariates();
 
-    void SetRawData();
+    void SetFiles( QStringList files, QMap< int, QList < QStringList > > &data );
 
-    void SetRawDataFiles();
+    void GetRawDataFiles();
 
-    void SetOmnibusFiles();
+    void GetBetaFiles();
 
-    void SetPostHocFiles();
+    void GetOmnibusLpvalueFiles();
+
+    void GetOmnibusFDRLpvalueFiles();
+
+    void GetPostHocLpvalueFiles();
+
+    void GetPostHocFDRLpvalueFiles();
 
     void ResetLoadData();
 
@@ -139,6 +147,10 @@ private:
                           QList < double > &temp1BinUp, QList < double > &temp1BinMean, QList < double > &temp1BinDown );
 
     void LoadRawStats();
+
+    void LoadOmnibus();
+
+    void LoadPostHoc();
 
     bool LoadData();
 
