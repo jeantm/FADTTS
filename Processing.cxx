@@ -220,19 +220,19 @@ QMap<int, QString> Processing::GetCovariatesFromFileData( QList<QStringList> dat
     return covariates;
 }
 
-QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
-                                                          int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
-                                                          QString outputDir, QString fiberName )
+QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QMap< int, QString > outcomeSelected,
+                                                                         QString selectedSubjectFile, int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
+                                                                         QString outputDir, QString fiberName )
 {
     QMap< QPair< int, QString >, bool> matlabInputFiles;
     QStringList selectedSubjectList = GetSelectedSubjects( selectedSubjectFile );
 
     QMap< QPair< int, QString >, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
+    QMap< int, QString >::ConstIterator iterOutcomeSelected = outcomeSelected.begin();
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
         QString fileName = iterSelectedInputFile.key().second;
-        QFile matlabInputFile( outputDir + "/" + fiberName + "_" +
-                               QFileInfo( QFile( fileName ) ).fileName().split( "." ).first().split( "_" ).first().toUpper() + "_RawData.csv" );
+        QFile matlabInputFile( outputDir + "/" + fiberName + "_" + iterOutcomeSelected.value().toUpper() + "_RawData.csv" );
         matlabInputFile.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInputFile );
         QStringList rowData;
@@ -324,6 +324,7 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
         matlabInputFiles.insert( currentPair, iterSelectedInputFile.value() );
 
         ++iterSelectedInputFile;
+        ++iterOutcomeSelected;
     }
 
     return matlabInputFiles;

@@ -123,126 +123,127 @@ bool TestProcessing::Test_GetSelectedSubjects( QString selectedSubjectsFileTest 
 bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2,
                                                     QString matlabInputADFile, QString matlabInputCovariateFile, QString selectedSubjectsFileTest )
 {
-    Processing processing;
-    int i = 0;
-    bool ADFilesMatched = true;
-    bool CovariateFileMatchedTest1 = true;
-    bool CovariateFileMatchedTest2 = true;
+//    Processing processing;
+//    int i = 0;
+//    bool ADFilesMatched = true;
+//    bool CovariateFileMatchedTest1 = true;
+//    bool CovariateFileMatchedTest2 = true;
 
-    QMap< QPair< int, QString >, bool > expectedOutput;
-    QPair< int, QString > adMatlabFilePair;
-    adMatlabFilePair.first = 0;
-    adMatlabFilePair.second = matlabInputADFile;
-    QPair< int, QString > compMatlabFilePair;
-    compMatlabFilePair.first = 4;
-    compMatlabFilePair.second = matlabInputCovariateFile;
-    expectedOutput.insert( adMatlabFilePair, false );
-    expectedOutput.insert( compMatlabFilePair, true );
-    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput1 = expectedOutput.begin();
-    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput2 = expectedOutput.begin();
+//    QMap< QPair< int, QString >, bool > expectedOutput;
+//    QPair< int, QString > adMatlabFilePair;
+//    adMatlabFilePair.first = 0;
+//    adMatlabFilePair.second = matlabInputADFile;
+//    QPair< int, QString > compMatlabFilePair;
+//    compMatlabFilePair.first = 4;
+//    compMatlabFilePair.second = matlabInputCovariateFile;
+//    expectedOutput.insert( adMatlabFilePair, false );
+//    expectedOutput.insert( compMatlabFilePair, true );
+//    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput1 = expectedOutput.begin();
+//    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput2 = expectedOutput.begin();
 
-    /************************************************/
-    /******************** Test 1 ********************/
-    /************************************************/
-    // AD, RA, MD and FA file
-    // Covariates file: subjects on 1st column
-    QMap< QPair< int, QString >, bool > selectedInputFilesTest1;
-    QPair< int, QString > adFilePair;
-    adFilePair.first = 0;
-    adFilePair.second = inputADFile;
-    QPair< int, QString > compFilePairTest1;
-    compFilePairTest1.first = 4;
-    compFilePairTest1.second = inputCovariateFileTest1;
-    selectedInputFilesTest1.insert( adFilePair, false );
-    selectedInputFilesTest1.insert( compFilePairTest1, true );
-    int subjectCovariatesColumnIdTest1 = 0;
-    QMap<int, QString> selectedCovariatesTest1;
-    selectedCovariatesTest1.insert( -1, "Intercept" );
-    selectedCovariatesTest1.insert( 1, "COMP" );
-    selectedCovariatesTest1.insert( 2, "Gender" );
-    selectedCovariatesTest1.insert( 3, "GestAgeBirth" );
-    QString fiberNameTest1 = "Test1";
+//    /************************************************/
+//    /******************** Test 1 ********************/
+//    /************************************************/
+//    // AD, RA, MD and FA file
+//    // Covariates file: subjects on 1st column
+//    QMap< QPair< int, QString >, bool > selectedInputFilesTest1;
+//    QPair< int, QString > adFilePair;
+//    adFilePair.first = 0;
+//    adFilePair.second = inputADFile;
+//    QPair< int, QString > compFilePairTest1;
+//    compFilePairTest1.first = 4;
+//    compFilePairTest1.second = inputCovariateFileTest1;
+//    selectedInputFilesTest1.insert( adFilePair, false );
+//    selectedInputFilesTest1.insert( compFilePairTest1, true );
+//    int subjectCovariatesColumnIdTest1 = 0;
+//    QMap<int, QString> selectedCovariatesTest1;
+//    selectedCovariatesTest1.insert( -1, "Intercept" );
+//    selectedCovariatesTest1.insert( 1, "COMP" );
+//    selectedCovariatesTest1.insert( 2, "Gender" );
+//    selectedCovariatesTest1.insert( 3, "GestAgeBirth" );
+//    QString fiberNameTest1 = "Test1";
 
-    QMap< QPair< int, QString >, bool > matlabInputFilesTest1 =
-            processing.GenerateMatlabInputFiles( selectedInputFilesTest1, selectedSubjectsFileTest,
-                                                 subjectCovariatesColumnIdTest1, selectedCovariatesTest1,
-                                                 outputDir, fiberNameTest1 );
+//    QMap< QPair< int, QString >, bool > matlabInputFilesTest1 =
+//            processing.GenerateMatlabInputFiles( selectedInputFilesTest1, selectedSubjectsFileTest,
+//                                                 subjectCovariatesColumnIdTest1, selectedCovariatesTest1,
+//                                                 outputDir, fiberNameTest1 );
 
-    QMap< QPair< int, QString >, bool >::ConstIterator iterTest1 = matlabInputFilesTest1.begin();
-    while( iterTest1 != matlabInputFilesTest1.end() )
-    {
-        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 == 0 ) )
-        {
-            ADFilesMatched = false;
-        }
-        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 != 0 ) )
-        {
-            CovariateFileMatchedTest1 = false;
-        }
-        ++iterExpectedOutput1;
-        ++iterTest1;
-        i++;
-    }
-
-
-    /************************************************/
-    /******************** Test 2 ********************/
-    /************************************************/
-    // Covariates file: subjects not on 1st column
-    QMap< QPair< int, QString >, bool > selectedInputFilesTest2;
-    QPair< int, QString > compFilePairTest2;
-    compFilePairTest2.first = 4;
-    compFilePairTest2.second = inputCovariateFileTest2;
-    selectedInputFilesTest2.insert( adFilePair, false );
-    selectedInputFilesTest2.insert( compFilePairTest2, true );
-    int subjectCovariatesColumnIdTest2 = 3;
-    QMap<int, QString> selectedCovariatesTest2;
-    selectedCovariatesTest2.insert( -1, "Intercept" );
-    selectedCovariatesTest2.insert( 0, "COMP" );
-    selectedCovariatesTest2.insert( 1, "Gender" );
-    selectedCovariatesTest2.insert( 2, "GestAgeBirth" );
-    QString fiberNameTest2 = "Test2";
-
-    QMap< QPair< int, QString >, bool > matlabInputFilesTest2 =
-            processing.GenerateMatlabInputFiles( selectedInputFilesTest2, selectedSubjectsFileTest,
-                                                 subjectCovariatesColumnIdTest2, selectedCovariatesTest2,
-                                                 outputDir, fiberNameTest2 );
-
-    QMap< QPair< int, QString >, bool >::ConstIterator iterTest2 = matlabInputFilesTest2.begin();
-    while( iterTest2 != matlabInputFilesTest2.end() )
-    {
-        if( !CompareFile( iterExpectedOutput2.key().second, iterTest2.key().second ) && ( i%2 != 0 ) )
-        {
-            CovariateFileMatchedTest2 = false;
-        }
-        ++iterExpectedOutput2;
-        ++iterTest2;
-        i++;
-    }
+//    QMap< QPair< int, QString >, bool >::ConstIterator iterTest1 = matlabInputFilesTest1.begin();
+//    while( iterTest1 != matlabInputFilesTest1.end() )
+//    {
+//        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 == 0 ) )
+//        {
+//            ADFilesMatched = false;
+//        }
+//        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 != 0 ) )
+//        {
+//            CovariateFileMatchedTest1 = false;
+//        }
+//        ++iterExpectedOutput1;
+//        ++iterTest1;
+//        i++;
+//    }
 
 
-    if( !ADFilesMatched || !CovariateFileMatchedTest1 || !CovariateFileMatchedTest2 )
-    {
-        std::cerr << std::endl << "Test_GenerateMatlabInputFiles() FAILED:" << std::endl;
-        if( !ADFilesMatched )
-        {
-            std::cerr << "\t+ Matlab Script for AD, RD, MD or FA file not generated correctly" << std::endl;
-        }
-        if( !CovariateFileMatchedTest1 )
-        {
-            std::cerr << "\t+ Matlab Script for covariates file not generated correctly when subjects on 1st column" << std::endl;
-        }
-        if( !CovariateFileMatchedTest2 )
-        {
-            std::cerr << "\t+ Matlab Script for covariates file not generated correctly when subjects not on 1st column" << std::endl;
-        }
-    }
-    else
-    {
-        std::cout << std::endl << "Test_GenerateMatlabInputFiles() PASSED" << std::endl;
-    }
+//    /************************************************/
+//    /******************** Test 2 ********************/
+//    /************************************************/
+//    // Covariates file: subjects not on 1st column
+//    QMap< QPair< int, QString >, bool > selectedInputFilesTest2;
+//    QPair< int, QString > compFilePairTest2;
+//    compFilePairTest2.first = 4;
+//    compFilePairTest2.second = inputCovariateFileTest2;
+//    selectedInputFilesTest2.insert( adFilePair, false );
+//    selectedInputFilesTest2.insert( compFilePairTest2, true );
+//    int subjectCovariatesColumnIdTest2 = 3;
+//    QMap<int, QString> selectedCovariatesTest2;
+//    selectedCovariatesTest2.insert( -1, "Intercept" );
+//    selectedCovariatesTest2.insert( 0, "COMP" );
+//    selectedCovariatesTest2.insert( 1, "Gender" );
+//    selectedCovariatesTest2.insert( 2, "GestAgeBirth" );
+//    QString fiberNameTest2 = "Test2";
 
-    return ( ADFilesMatched & CovariateFileMatchedTest1 & CovariateFileMatchedTest2 );
+//    QMap< QPair< int, QString >, bool > matlabInputFilesTest2 =
+//            processing.GenerateMatlabInputFiles( selectedInputFilesTest2, selectedSubjectsFileTest,
+//                                                 subjectCovariatesColumnIdTest2, selectedCovariatesTest2,
+//                                                 outputDir, fiberNameTest2 );
+
+//    QMap< QPair< int, QString >, bool >::ConstIterator iterTest2 = matlabInputFilesTest2.begin();
+//    while( iterTest2 != matlabInputFilesTest2.end() )
+//    {
+//        if( !CompareFile( iterExpectedOutput2.key().second, iterTest2.key().second ) && ( i%2 != 0 ) )
+//        {
+//            CovariateFileMatchedTest2 = false;
+//        }
+//        ++iterExpectedOutput2;
+//        ++iterTest2;
+//        i++;
+//    }
+
+
+//    if( !ADFilesMatched || !CovariateFileMatchedTest1 || !CovariateFileMatchedTest2 )
+//    {
+//        std::cerr << std::endl << "Test_GenerateMatlabInputFiles() FAILED:" << std::endl;
+//        if( !ADFilesMatched )
+//        {
+//            std::cerr << "\t+ Matlab Script for AD, RD, MD or FA file not generated correctly" << std::endl;
+//        }
+//        if( !CovariateFileMatchedTest1 )
+//        {
+//            std::cerr << "\t+ Matlab Script for covariates file not generated correctly when subjects on 1st column" << std::endl;
+//        }
+//        if( !CovariateFileMatchedTest2 )
+//        {
+//            std::cerr << "\t+ Matlab Script for covariates file not generated correctly when subjects not on 1st column" << std::endl;
+//        }
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_GenerateMatlabInputFiles() PASSED" << std::endl;
+//    }
+
+//    return ( ADFilesMatched & CovariateFileMatchedTest1 & CovariateFileMatchedTest2 );
+    return false;
 }
 
 

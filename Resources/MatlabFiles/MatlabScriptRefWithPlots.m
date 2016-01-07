@@ -213,7 +213,7 @@ for Dii=1:nbrDiffusionProperties
     hold on
     h(1)=plot(arclength,efitBetas(1,:,Dii),'-k','LineWidth', 2);
     for pii=2:nbrCovariates
-        h(pii)=plot(arclength,efitBetas(1,:,Dii),'Color',color{pii},'LineWidth', 2);
+        h(pii)=plot(arclength,efitBetas(pii,:,Dii),'Color',color{pii},'LineWidth', 2);
     end
     hold off
     
@@ -341,8 +341,8 @@ if( omnibus == 1 )
     %% plot local p values  - These p-values are NOT corrected for multiple comparisons
     figure()
     hold on
-    for pii=1:nbrCovariates-1
-        h=plot(arclength,-log10(Lpvals(:,pii)),'Color',color{pii},'LineWidth', 2);
+    for pii=2:nbrCovariates
+        h=plot(arclength,-log10(Lpvals(:,pii-1)),'Color',color{pii-1},'LineWidth', 2);
     end
     hold off
     
@@ -379,8 +379,8 @@ if( omnibus == 1 )
     %% correct local p-values with FDR
     % this corrects the local p-values for multiple comparisons
     Lpvals_FDR = zeros( size( Lpvals ) );
-    for i = 1:( nbrCovariates-1 )
-    Lpvals_FDR( :, i ) = myFDR( Lpvals( :, i ));
+    for pii = 2:nbrCovariates
+    Lpvals_FDR( :, pii-1 ) = myFDR( Lpvals( :, pii-1 ));
     end
     
     % save FDR Local nbrCovariates-Values csv file
@@ -396,8 +396,8 @@ if( omnibus == 1 )
     %% plot corrected local p values for all covariates
     figure()
     hold on
-    for pii=1:nbrCovariates-1
-        h=plot(arclength,-log10(Lpvals_FDR(:,pii)),'Color',color{pii},'LineWidth', 2);
+    for pii=2:nbrCovariates
+        h=plot(arclength,-log10(Lpvals_FDR(:,pii-1)),'Color',color{pii-1},'LineWidth', 2);
     end
     hold off
     
@@ -416,9 +416,9 @@ if( omnibus == 1 )
     
 
     %% plot corrected local p values for each covariates
-    for pii=1:nbrCovariates-1
+    for pii=2:nbrCovariates
         figure()
-        plot(arclength,-log10(Lpvals_FDR(:,pii)),'-','Color',color{pii},'LineWidth', 2,'Marker','.','MarkerSize',15);
+        plot(arclength,-log10(Lpvals_FDR(:,pii-1)),'-','Color',color{pii-1},'LineWidth', 2,'Marker','.','MarkerSize',15);
         
         xlabel('Arc Length');
         ylabel('-log10(p)');
@@ -461,7 +461,7 @@ if( omnibus == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_%s_Omnibus_FDR_All_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
+        figurename=sprintf('%s/%s_%s_%s_Omnibus_FDR_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
         saveas(gcf,figurename,'pdf');
         close()
     end
@@ -610,8 +610,8 @@ if( postHoc == 1 )
     % this corrects the posthoc local p-values for multiple comparisons
     posthoc_Lpvals_FDR = zeros( size( posthoc_Lpvals ) );
     for Dii = 1:nbrDiffusionProperties
-        for pii = 1:( nbrCovariates-1 )
-            posthoc_Lpvals_FDR( :, Dii, pii ) = myFDR( posthoc_Lpvals( :, Dii, pii ) );
+        for pii = 2:nbrCovariates
+            posthoc_Lpvals_FDR( :, Dii, pii-1 ) = myFDR( posthoc_Lpvals( :, Dii, pii-1 ) );
         end
     end
     
@@ -738,7 +738,7 @@ if( postHoc == 1 )
         clear h;
         
         % save plot
-        figurename=sprintf('%s/%s_%s_%s_PostHoc_FDR_All_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
+        figurename=sprintf('%s/%s_%s_%s_PostHoc_FDR_Betas.pdf',savingFolder,Fnames{1},Dnames{Dii},covars{1});
         saveas(gcf,figurename,'pdf');
         close()
     end

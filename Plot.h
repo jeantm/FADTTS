@@ -35,6 +35,11 @@ public:
 
     void SetDirectory( QString directory );
 
+    void ResetDataFile();
+
+    void ResetPlot();
+
+
     void SelectPlot( QString plotSelected );
 
     void SelectOutcome( QString outcome );    
@@ -52,14 +57,7 @@ public:
     void SetYMax( bool yMaxChecked, double yMax );
 
 
-    void ResetDataFile();
-
-
-    void IsCovariateBinary();
-
     void DisplayVTKPlot();
-
-    void ResetPlot();
 
 
 public slots:
@@ -69,7 +67,7 @@ public slots:
 signals:
     void OutcomeUsed( const QStringList&  );
 
-    void CovariateUsed( const QStringList&  );
+    void CovariateUsed( const QMap< int, QString >&  );
 
 
 private:
@@ -83,14 +81,21 @@ private:
 
     vtkSmartPointer<vtkTable> m_table;
 
-    QMap< QPair< int, QString >, vtkSmartPointer<vtkFloatArray> > m_axis;
+//    QMap< QPair< int, QString >, vtkSmartPointer<vtkFloatArray> > m_entries;
+//    QMap< QString, vtkSmartPointer<vtkFloatArray> > m_entries;
 
-    QMap< QPair< int, QString >, vtkPlot* > m_plot;
+    QMap< int, vtkPlot* > m_line;
 
-    QMap< int, QList < QStringList > > m_csvRawData, m_csvBeta, m_csvOmnibusLpvalue, m_csvOmnibusFDRLpvalue,
+    QMap< QString, QList < QList < double > > > m_csvRawData, m_csvBeta,
     m_csvPostHocLpvalue, m_csvPostHocFDRLpvalue;
 
-    QMap< QPair < int, QString >, bool > m_covariates;
+    QList < QList < double > > m_csvOmnibusLpvalue, m_csvOmnibusFDRLpvalue;
+
+    QList < QStringList > m_csvCovariate;
+
+    QStringList m_outcomeUsed;
+
+    QMap< int, QString > m_covariateNoIntercept, m_allCovariate, m_binaryCovariate;
 
     QList< double > m_abscissa;
 
@@ -110,9 +115,29 @@ private:
     bool m_isCovariateBinary, m_yMinChecked, m_yMaxChecked;
 
 
-    void SetCovariates();
+    void SortFiles( QString directory, QStringList files, QMap< QString, QList < QList < double > > > &data );
 
-    void SetFiles( QStringList files, QMap< int, QList < QStringList > > &data );
+    void TransposeData( QList < QList < double > > &data, int iMin, int jMin );
+
+    void Transpose( QMap< QString, QList < QList < double > > > &data, int iMin, int jMin );
+
+    QList < double > DataToDouble( QStringList rowData );
+
+    QList < QList < double > > ToDouble( QList < QStringList > data );
+
+
+    void SetRawData( QStringList files, QMap< QString, QList < QList < double > > > &data );
+
+    void SetBeta(QStringList files, QMap< QString, QList<QList<double> > > &data );
+
+    void SetOmnibusLpvalue( QStringList files );
+
+    void SetOmnibusFDRLpvalue( QStringList files );
+
+    void SetPostHocLpvalue( QStringList files, QMap< QString, QList < QList < double > > > &data );
+
+    void SetPostHocFDRLpvalue( QStringList files, QMap< QString, QList < QList < double > > > &data );
+
 
     void GetRawDataFiles();
 
@@ -126,40 +151,87 @@ private:
 
     void GetPostHocFDRLpvalueFiles();
 
+
+    void SetOutcomes();
+
+    void SetCovariates();
+
+    void SetAbscissa();
+
+
     void ResetLoadData();
 
-    QList < double > DataToDouble( QStringList rowData );
 
-
-    void FindyMinMax();
-
-    void LoadAbscissa();
-
-    void LoadRawData();
-
-    void SeparateData( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin );
+    void SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin );
 
     void GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean, QList < double > &tempStdDv );
 
     void ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean, QList < double > &tempBinUp, QList < double > &tempBinDown );
 
-    void SetRawStatsData( QList < double > &temp0BinUp, QList < double > &temp0BinMean, QList < double > &temp0BinDown,
-                          QList < double > &temp1BinUp, QList < double > &temp1BinMean, QList < double > &temp1BinDown );
 
-    void LoadRawStats();
+    QList< QList < double > > LoadRawData();
 
-    void LoadOmnibus();
+    QList< QList < double > > LoadRawStats();
 
-    void LoadPostHoc();
+    QList< QList < double > > LoadBetas();
+
+    QList< QList < double > > LoadBetaByCovariate( QString covariate );
+
+    QList< QList < double > > LoadOmnibusLpvalues();
+
+    QList< QList < double > > LoadOmnibusFDRLpvalues();
+
+    QList< QList < double > > LoadPostHocLpvalues();
+
+    QList< QList < double > > LoadPostHocFDRLpvalues();
 
     bool LoadData();
 
 
-    void AddAxis();
+    void AddEntryRawData();
 
-    void AddData();
+    void AddEntryRawStats();
 
-    void AddPlots( float red, float green, float blue, float opacity );
+    void AddEntryCovariate( QMap< int, QString > covariates );
+
+    void AddEntryOutcome();
+
+    void AddEntry();
+
+
+    void SetData();
+
+
+
+
+
+    void InitLines();
+
+    void AddLineRawData();
+
+    void AddLineRawStats();
+
+    void AddLineRawBeta();
+
+
+
+    void AddLines();
+
+
+
+
+
+
+    void FindyMinMax();
+
+
+
+
+
+
+
+
+
 
     void SetChartProperties();
 };

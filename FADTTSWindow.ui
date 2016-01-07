@@ -1757,31 +1757,6 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>AD</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>RD</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>MD</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>FA</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
                <item row="1" column="0" rowspan="2">
@@ -1856,12 +1831,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Omnibus FDR Betas</string>
+                   <string>Omnibus FDR Significant Betas by Properties</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Omnibus FDR Significant Betas</string>
+                   <string>Omnibus FDR Significant Betas by Covariates</string>
                   </property>
                  </item>
                  <item>
@@ -1876,12 +1851,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Post-Hoc FDR Betas</string>
+                   <string>Post-Hoc FDR Significant Betas by Properties</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Post-Hoc FDR Significant Betas</string>
+                   <string>Post-Hoc FDR Significant Betas by Covariates</string>
                   </property>
                  </item>
                 </widget>

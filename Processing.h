@@ -45,8 +45,8 @@ public:
     QMap<int, QString> GetCovariatesFromFileData( QList<QStringList> dataCovariateFile, int covariateFileSubjectColumnID );
 
 
-    QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
-                                                                 int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
+    QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QMap< int, QString > outcomeSelected,
+                                                                 QString selectedSubjectFile, int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
                                                                  QString outputDir, QString fiberName );
 
 

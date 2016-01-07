@@ -127,7 +127,7 @@ private slots:
     /************** Plotting  Tab **************/
     void UpdateOutcomeGiven( const QStringList& outcomeGiven );
 
-    void UpdateCovariateGiven( const QStringList& covariateGiven );
+    void UpdateCovariateGiven( const QMap< int, QString >& covariateGiven );
 
 
     void SelectPlot( const QString& plotSelected );
@@ -180,6 +180,8 @@ private:
     pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
 
     Qt::CaseSensitivity caseSensitivity;
+
+    QMap< int, QString > m_outcomeSelected;
 
     Data m_data;
     InfoDialog m_infoDialog;
@@ -278,16 +280,6 @@ private:
     /************** Plotting  Tab **************/
     void HideShowPlotTab();
 
-
-    void NoPlot();
-
-    void PlotDataRawSelected();
-
-    void PlotDataStatsSelected();
-
-    void PlotOmnibusSelected();
-
-    void PlotPostHocSelected();
 
     void PlotSelected( bool isPlotSelected, bool outcome, bool covariate );
 

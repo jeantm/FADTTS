@@ -337,8 +337,8 @@ void FADTTSWindow::InitPlottingTab()
     m_covariateComboBox = new QComboBox();
     m_covariateComboBox = this->plottingTab_loadSetDataTab_covariateSelection_comboBox;
 
-    connect( m_plot, SIGNAL( OutcomeUsed( const QStringList&  ) ), this, SLOT( UpdateOutcomeGiven( const QStringList& ) ) );
-    connect( m_plot, SIGNAL( CovariateUsed( const QStringList&  ) ), this, SLOT( UpdateCovariateGiven( const QStringList& ) ) );
+    connect( m_plot, SIGNAL( OutcomeUsed( const QStringList& ) ), this, SLOT( UpdateOutcomeGiven( const QStringList& ) ) );
+    connect( m_plot, SIGNAL( CovariateUsed( const QMap< int, QString >& ) ), this, SLOT( UpdateCovariateGiven( const QMap< int, QString >& ) ) );
 
     connect( this->plottingTab_loadSetDataTab_plotSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectPlot( const QString& ) ) );
     connect( m_outcomeComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectOutcome( const QString& ) ) );
@@ -1319,6 +1319,7 @@ QStringList FADTTSWindow::GetSelectedPrefixes()
 
 QMap< QPair< int, QString >, bool > FADTTSWindow::GetSelectedInputFiles()
 {
+    m_outcomeSelected.clear();
     QMap< QPair< int, QString >, bool > selectedInputFiles;
     int i = 0;
     foreach ( QString prefID, m_data.GetPrefixList() )
@@ -1328,6 +1329,7 @@ QMap< QPair< int, QString >, bool > FADTTSWindow::GetSelectedInputFiles()
         {
             currentPair.first = i;
             currentPair.second = m_data.GetFilename( prefID );
+            m_outcomeSelected.insert( i, prefID );
             selectedInputFiles.insert( currentPair, prefID != m_data.GetCovariatePrefix() ? false : true );
         }
         i++;
@@ -1510,7 +1512,7 @@ void FADTTSWindow::SetMatlabThread( QString fiberName, QMap<int, QString> select
     QMap< QPair< int, QString >, bool> selectedInputFiles = GetSelectedInputFiles();
     QString selectedSubjectListFilePath = GenerateSelectedSubjectFile( outputDir );
     QMap< QPair< int, QString >, bool> matlabInputFiles =
-            m_processing.GenerateMatlabInputFiles( selectedInputFiles, selectedSubjectListFilePath,
+            m_processing.GenerateMatlabInputFiles( selectedInputFiles, m_outcomeSelected, selectedSubjectListFilePath,
                                                 m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, outputDir,
                                                 fiberName );
     int nbrPermutations = this->para_executionTab_nbrPermutations_spinBox->value();
@@ -1597,17 +1599,19 @@ void FADTTSWindow::UpdateOutcomeGiven( const QStringList& outcomeGiven )
 {
     m_outcomeComboBox->clear();
     m_outcomeComboBox->addItem( "" );
-    m_outcomeComboBox->addItem( "All" );
     m_outcomeComboBox->addItems( outcomeGiven );
 }
 
-void FADTTSWindow::UpdateCovariateGiven( const QStringList& covariateGiven )
+void FADTTSWindow::UpdateCovariateGiven( const QMap<int, QString> &covariateGiven )
 {
     m_covariateComboBox->clear();
     m_covariateComboBox->addItem( "" );
-    m_covariateComboBox->addItem( "All" );
-    m_covariateComboBox->addItem( "Intercept" );
-    m_covariateComboBox->addItems( covariateGiven );
+    QMap<int, QString>::ConstIterator iterCovariateGiven = covariateGiven.begin();
+    while( iterCovariateGiven != covariateGiven.end() )
+    {
+        m_covariateComboBox->addItem( iterCovariateGiven.value() );
+        ++iterCovariateGiven;
+    }
 }
 
 
@@ -1617,23 +1621,51 @@ void FADTTSWindow::SelectPlot( const QString& plotSelected )
 
     if( plotSelected == "No Plot" )
     {
-        NoPlot();
+        PlotSelected( false, false, false );
     }
     if( plotSelected == "Raw Data" )
     {
-        PlotDataRawSelected();
+        PlotSelected( true, true, true );
     }
     if( plotSelected == "Raw Stats" )
     {
-        PlotDataStatsSelected();
+        PlotSelected( true, true, true );
     }
-    if( plotSelected == "Omnibus" )
+    if( plotSelected == "Raw Betas" )
     {
-        PlotOmnibusSelected();
+        PlotSelected( true, true, false );
     }
-    if( plotSelected == "Post-Hoc" )
+    if( plotSelected == "Omnibus Local pvalues" )
     {
-        PlotPostHocSelected();
+        PlotSelected( true, false, false );
+    }
+    if( plotSelected == "Omnibus FDR Local pvalues" )
+    {
+        PlotSelected( true, false, false );
+    }
+    if( plotSelected == "Omnibus FDR Significant Betas by Properties" )
+    {
+        PlotSelected( true, true, false );
+    }
+    if( plotSelected == "Omnibus FDR Significant Betas by Covariates" )
+    {
+        PlotSelected( true, false, true );
+    }
+    if( plotSelected == "Post-Hoc Local pvalues" )
+    {
+        PlotSelected( true, true, false );
+    }
+    if( plotSelected == "Post-Hoc FDR Local pvalues" )
+    {
+        PlotSelected( true, true, false );
+    }
+    if( plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
+    {
+        PlotSelected( true, true, false );
+    }
+    if( plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
+    {
+        PlotSelected( true, false, true );
     }
 }
 
@@ -1712,34 +1744,9 @@ void FADTTSWindow::HideShowPlotTab()
     {
         ResetPlotTab();
     }
-    NoPlot();
-}
-
-
-void FADTTSWindow::NoPlot()
-{
     PlotSelected( false, false, false );
 }
 
-void FADTTSWindow::PlotDataRawSelected()
-{
-    PlotSelected( true, true, true );
-}
-
-void FADTTSWindow::PlotDataStatsSelected()
-{
-    PlotSelected( true, true, true );
-}
-
-void FADTTSWindow::PlotOmnibusSelected()
-{
-    PlotSelected( true, true, true );
-}
-
-void FADTTSWindow::PlotPostHocSelected()
-{
-    PlotSelected( true, true, true );
-}
 
 void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covariate )
 {
@@ -1763,8 +1770,8 @@ void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covaria
 
 void FADTTSWindow::ResetPlotTab()
 {
-    m_plot->ResetPlot();
     m_plot->ResetDataFile();
+    m_plot->ResetPlot();
 
     this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
     this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
