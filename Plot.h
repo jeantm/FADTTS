@@ -33,7 +33,7 @@ public:
 
     void SetQVTKWidget( QVTKWidget *qvtkWidget );
 
-    void SetDirectory( QString directory );
+    void InitPlot( QString directory );
 
     void ResetDataFile();
 
@@ -63,6 +63,8 @@ public:
 public slots:
     void SavePlot();
 
+    void AlphaValueChanged( const double& newAlpha );
+
 
 signals:
     void OutcomeUsed( const QStringList&  );
@@ -79,10 +81,7 @@ private:
 
     vtkSmartPointer<vtkChartXY> m_chart;
 
-    vtkSmartPointer<vtkTable> m_table;
-
-//    QMap< QPair< int, QString >, vtkSmartPointer<vtkFloatArray> > m_entries;
-//    QMap< QString, vtkSmartPointer<vtkFloatArray> > m_entries;
+    vtkSmartPointer<vtkTable> m_table, m_tableSigBetas;
 
     QMap< int, vtkPlot* > m_line;
 
@@ -108,11 +107,12 @@ private:
     m_plotSelected, m_outcomeSelected, m_covariateSelected,
     m_title, m_xName, m_yName;
 
-    double m_yMin, m_yMax, m_yMinGiven, m_yMaxGiven;
+    double m_yMin, m_yMax, m_yMinGiven, m_yMaxGiven, m_alpha;
 
     int m_indexColumn, m_nbrPlot, m_nbrPoint;
 
     bool m_isCovariateBinary, m_yMinChecked, m_yMaxChecked;
+
 
 
     void SortFiles( QString directory, QStringList files, QMap< QString, QList < QList < double > > > &data );
@@ -134,8 +134,6 @@ private:
 
     void SetOmnibusFDRLpvalue( QStringList files );
 
-    void SetPostHocLpvalue( QStringList files, QMap< QString, QList < QList < double > > > &data );
-
     void SetPostHocFDRLpvalue( QStringList files, QMap< QString, QList < QList < double > > > &data );
 
 
@@ -146,8 +144,6 @@ private:
     void GetOmnibusLpvalueFiles();
 
     void GetOmnibusFDRLpvalueFiles();
-
-    void GetPostHocLpvalueFiles();
 
     void GetPostHocFDRLpvalueFiles();
 
@@ -168,6 +164,8 @@ private:
 
     void ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean, QList < double > &tempBinUp, QList < double > &tempBinDown );
 
+    QList< QList < double > > Tolog10( QList< QList < double > > data );
+
 
     QList< QList < double > > LoadRawData();
 
@@ -175,13 +173,11 @@ private:
 
     QList< QList < double > > LoadBetas();
 
-    QList< QList < double > > LoadBetaByCovariate( QString covariate );
+    QList< QList < double > > LoadBetaByCovariate();
 
     QList< QList < double > > LoadOmnibusLpvalues();
 
     QList< QList < double > > LoadOmnibusFDRLpvalues();
-
-    QList< QList < double > > LoadPostHocLpvalues();
 
     QList< QList < double > > LoadPostHocFDRLpvalues();
 
@@ -202,36 +198,32 @@ private:
     void SetData();
 
 
-
-
-
     void InitLines();
 
     void AddLineRawData();
 
     void AddLineRawStats();
 
-    void AddLineRawBeta();
+    void AddLineRawBetas();
 
+    void AddLineOmnibusPvalue();
 
+    void AddLinePostHocPvalue();
+
+    void AddLineOmnibusFDRSigBetaByProperty();
+
+    void AddLineOmnibusFDRSigBetaByCovariate();
+
+    void AddLinePostHocFDRSigBetaByProperty();
+
+    void AddLinePostHocFDRSigBetaByCovariate();
 
     void AddLines();
 
 
-
-
-
+    void SetDefaultTitle();
 
     void FindyMinMax();
-
-
-
-
-
-
-
-
-
 
     void SetChartProperties();
 };

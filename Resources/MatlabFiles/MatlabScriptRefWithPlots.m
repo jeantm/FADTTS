@@ -407,7 +407,7 @@ if( omnibus == 1 )
     xL = get(gca,'XLim');
     line(xL,[1.3 1.3],'Color','black'); % line at 1.3 to mark significance level
     h=legend(Pnames(2:nbrCovariates),'Location','SouthEastOutside');
-    title(sprintf('%s %s Corrected Local p-values',Fnames{1},params{1}));
+    title(sprintf('%s %s FDR Local p-values',Fnames{1},params{1}));
     clear h;
     
     %save plot
@@ -426,7 +426,7 @@ if( omnibus == 1 )
         xL = get(gca,'XLim');
         line(xL,[1.3 1.3],'Color','black'); % line at 1.3 to mark significance level (0.05)
         h=legend(Pnames{pii},'Location','SouthEastOutside');
-        title(sprintf('%s %s Corrected %s Local p-values',Fnames{1},params{1},Pnames{pii}));
+        title(sprintf('%s %s FDR %s Local p-values',Fnames{1},params{1},Pnames{pii}));
         clear h;
         
         %save plot
@@ -643,7 +643,7 @@ if( postHoc == 1 )
         xL = get(gca,'XLim');
         line(xL,[1.3 1.3],'Color','black'); % line at 1.3 to mark significance level
         legend([Dnames(1:nbrDiffusionProperties)],'Location','SouthEastOutside');
-        title(sprintf('%s %s Posthoc Corrected Local p-values',Fnames{1},Pnames{pii}));
+        title(sprintf('%s %s Posthoc FDR Local p-values',Fnames{1},Pnames{pii}));
         
         % save local p-value plot
         saveas(gcf,sprintf('%s/%s_%s_PostHoc_FDR_Local_pvalues.pdf',savingFolder,Fnames{1},Pnames{pii}),'pdf');

@@ -349,6 +349,7 @@ void FADTTSWindow::InitPlottingTab()
     connect( this->plottingTab_loadSetDataTab_savePlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( SavePlot() ) );
     connect( this->plottingTab_loadSetDataTab_yMin_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMinToggled( const bool& ) ) );
     connect( this->plottingTab_loadSetDataTab_yMax_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMaxToggled( const bool& ) ) );
+    connect( this->plottingTab_loadSetDataTab_alpha_doubleSpinBox, SIGNAL( valueChanged( const double& ) ), m_plot, SLOT( AlphaValueChanged( const double& ) ) );
     this->plottingTab_loadSetDataTab_yMin_checkBox->setChecked( false );
     this->plottingTab_loadSetDataTab_yMax_checkBox->setChecked( false );
 
@@ -1621,51 +1622,47 @@ void FADTTSWindow::SelectPlot( const QString& plotSelected )
 
     if( plotSelected == "No Plot" )
     {
-        PlotSelected( false, false, false );
+        PlotSelected( false, false, false, false );
     }
     if( plotSelected == "Raw Data" )
     {
-        PlotSelected( true, true, true );
+        PlotSelected( true, true, true, false );
     }
     if( plotSelected == "Raw Stats" )
     {
-        PlotSelected( true, true, true );
+        PlotSelected( true, true, true, false );
     }
     if( plotSelected == "Raw Betas" )
     {
-        PlotSelected( true, true, false );
+        PlotSelected( true, true, false, false );
     }
     if( plotSelected == "Omnibus Local pvalues" )
     {
-        PlotSelected( true, false, false );
+        PlotSelected( true, false, false, false );
     }
     if( plotSelected == "Omnibus FDR Local pvalues" )
     {
-        PlotSelected( true, false, false );
+        PlotSelected( true, false, false, false );
     }
     if( plotSelected == "Omnibus FDR Significant Betas by Properties" )
     {
-        PlotSelected( true, true, false );
+        PlotSelected( true, true, false, true );
     }
     if( plotSelected == "Omnibus FDR Significant Betas by Covariates" )
     {
-        PlotSelected( true, false, true );
-    }
-    if( plotSelected == "Post-Hoc Local pvalues" )
-    {
-        PlotSelected( true, true, false );
+        PlotSelected( true, false, true, true );
     }
     if( plotSelected == "Post-Hoc FDR Local pvalues" )
     {
-        PlotSelected( true, true, false );
+        PlotSelected( true, false, true, false );
     }
     if( plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
     {
-        PlotSelected( true, true, false );
+        PlotSelected( true, true, false, true );
     }
     if( plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
     {
-        PlotSelected( true, false, true );
+        PlotSelected( true, false, true, true );
     }
 }
 
@@ -1730,7 +1727,7 @@ void FADTTSWindow::HideShowPlotTab()
     }
     else
     {
-        m_plot->SetDirectory( outputDirectory + "/FADTTSter_" + fibername );
+        m_plot->InitPlot( outputDirectory + "/FADTTSter_" + fibername );
     }
 
     bool isMatlabOutputDirDefine = !matlabOutputDir.isEmpty();
@@ -1744,11 +1741,11 @@ void FADTTSWindow::HideShowPlotTab()
     {
         ResetPlotTab();
     }
-    PlotSelected( false, false, false );
+    PlotSelected( false, false, false, false );
 }
 
 
-void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covariate )
+void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covariate, bool alpha )
 {
     m_outcomeComboBox->setEnabled( outcome );
     m_outcomeComboBox->setCurrentText( "" );
@@ -1756,6 +1753,9 @@ void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covaria
     m_covariateComboBox->setEnabled( covariate );
     m_covariateComboBox->setCurrentText( "" );
     this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariate );
+    this->plottingTab_loadSetDataTab_alpha_label->setEnabled( alpha );
+    this->plottingTab_loadSetDataTab_alpha_doubleSpinBox->setEnabled( alpha );
+    this->plottingTab_loadSetDataTab_alpha_doubleSpinBox->setValue( 0.05 );
 
     this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( isPlotSelected );
 

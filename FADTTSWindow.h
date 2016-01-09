@@ -281,7 +281,7 @@ private:
     void HideShowPlotTab();
 
 
-    void PlotSelected( bool isPlotSelected, bool outcome, bool covariate );
+    void PlotSelected( bool isPlotSelected, bool outcome, bool covariate, bool alpha );
 
     void ResetPlotTab();
 };

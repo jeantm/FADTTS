@@ -1737,7 +1737,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QLabel" name="label">
+                <widget class="QLabel" name="plottingTab_loadSetDataTab_alpha_label">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -1773,7 +1773,7 @@
                 </widget>
                </item>
                <item row="5" column="1" colspan="2">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                <widget class="QDoubleSpinBox" name="plottingTab_loadSetDataTab_alpha_doubleSpinBox">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1837,11 +1837,6 @@
                  <item>
                   <property name="text">
                    <string>Omnibus FDR Significant Betas by Covariates</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Post-Hoc Local pvalues</string>
                   </property>
                  </item>
                  <item>
