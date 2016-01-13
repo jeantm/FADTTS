@@ -67,10 +67,6 @@ designdata = [ ones( size( data2, 1 ), 1 ) data2 ]; % intercept + covariates
 Pnames = cell( nbrCovariates, 1 );
 $covariates$
 
-%Covariates Tested for file names
-covars=cell(1,1);
-covars{1}='ALLcovars';
-
 disp('Loading fiber data file...')
 %% LOAD FIBER DATA
 % diffusionFiles should be a (arclength)X(subject) matrix.
@@ -119,7 +115,7 @@ disp('Calculating betas...')
 disp('Saving betas...')
 % save Beta csv file
 for i = 1:nbrDiffusionProperties
-    csvwrite(sprintf('%s/%s_Betas_%s.csv', savingFolder, Fnames{1}, Dnames{i}),efitBetas(:,:,i));
+    csvwrite(sprintf('%s/%s_%s_Betas.csv', savingFolder, Fnames{1}, Dnames{i}),efitBetas(:,:,i));
 end
 
 
@@ -164,12 +160,12 @@ if( omnibus == 1 )
     Lpvals = 1-chi2cdf( Lstats, nbrDiffusionProperties );
     disp('Saving local p-values...')
     %save Local nbrCovariates-Values csv file
-    csvwrite( sprintf('%s/%s_Omnibus_Local_pvalues_%s.csv', savingFolder, Fnames{1}, params{1} ), Lpvals );  % column for each covariate; local p-values are computed at each arclength
+    csvwrite( sprintf('%s/%s_%s_Omnibus_Local_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Lpvals );  % column for each covariate; local p-values are computed at each arclength
 
     %% Global p-value
     Gpvals
     disp('Saving global p-values...')
-    csvwrite( sprintf( '%s/%s_Omnibus_Global_pvalues_%s.csv', savingFolder, Fnames{1}, params{1} ), Gpvals ); % save csv file
+    csvwrite( sprintf( '%s/%s_%s_Omnibus_Global_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Gpvals ); % save csv file
     
     disp('Correcting local p-values...')
     %% correct local p-values with FDR
@@ -181,7 +177,7 @@ if( omnibus == 1 )
     
     % save FDR Local nbrCovariates-Values csv file
     disp('Saving FDR local p-values...')
-    csvwrite( sprintf( '%s/%s_Omnibus_FDR_Local_pvalues_%s.csv', savingFolder, Fnames{1}, params{1} ), Lpvals_FDR );
+    csvwrite( sprintf( '%s/%s_%s_Omnibus_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, params{1} ), Lpvals_FDR );
     
 
     disp('Calculating omnibus covariate confidence bands...')
@@ -240,8 +236,8 @@ if( postHoc == 1 )
     % save FDR Local nbrCovariates-Values csv file
     disp('Saving FDR local p-values...')
     for Dii = 1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_PostHoc_Local_pvalues_%s.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
-        csvwrite( sprintf( '%s/%s_PostHoc_FDR_Local_pvalues_%s.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
+        csvwrite( sprintf( '%s/%s_%s_PostHoc_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
+        csvwrite( sprintf( '%s/%s_%s_PostHoc_FDR_Local_pvalues.csv', savingFolder, Fnames{1}, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
     end
 end
 % End of Post-hoc Hypothesis Test

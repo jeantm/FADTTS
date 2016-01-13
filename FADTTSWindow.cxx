@@ -331,27 +331,32 @@ void FADTTSWindow::InitPlottingTab()
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget );
 
-    m_outcomeComboBox = new QComboBox();
-    m_outcomeComboBox = this->plottingTab_loadSetDataTab_outcomeSelection_comboBox;
+    m_propertyComboBox = new QComboBox();
+    m_propertyComboBox = this->plottingTab_loadSetDataTab_propertySelection_comboBox;
 
     m_covariateComboBox = new QComboBox();
     m_covariateComboBox = this->plottingTab_loadSetDataTab_covariateSelection_comboBox;
 
-    connect( m_plot, SIGNAL( OutcomeUsed( const QStringList& ) ), this, SLOT( UpdateOutcomeGiven( const QStringList& ) ) );
-    connect( m_plot, SIGNAL( CovariateUsed( const QMap< int, QString >& ) ), this, SLOT( UpdateCovariateGiven( const QMap< int, QString >& ) ) );
+    connect( m_plot, SIGNAL( PropertiesUsed( const QStringList& ) ), this, SLOT( UpdatePropertiesGiven( const QStringList& ) ) );
+    connect( m_plot, SIGNAL( CovariatesUsed( const QMap< int, QString >& ) ), this, SLOT( UpdateCovariateGiven( const QMap< int, QString >& ) ) );
+    connect( m_plot, SIGNAL( SetEditTab( bool& ) ), this, SLOT( HideShowEditTab( bool& ) ) );
 
     connect( this->plottingTab_loadSetDataTab_plotSelection_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectPlot( const QString& ) ) );
-    connect( m_outcomeComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectOutcome( const QString& ) ) );
+    connect( m_propertyComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectProperty( const QString& ) ) );
     connect( m_covariateComboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( SelectCovariate( const QString& ) ) );
 
     connect( this->plottingTab_loadSetDataTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( DisplayPlot() ) );
     connect( this->plottingTab_loadSetDataTab_resetPlot_pushButton, SIGNAL( clicked() ), this, SLOT( ResetPlot() ) );
     connect( this->plottingTab_loadSetDataTab_savePlot_pushButton, SIGNAL( clicked() ), m_plot, SLOT( SavePlot() ) );
+    connect( this->plottingTab_loadSetDataTab_set_groupBox, SIGNAL( toggled( const bool& ) ), m_plot, SLOT( PlotSettingCheckState( const bool& ) ) );
     connect( this->plottingTab_loadSetDataTab_yMin_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMinToggled( const bool& ) ) );
     connect( this->plottingTab_loadSetDataTab_yMax_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMaxToggled( const bool& ) ) );
     connect( this->plottingTab_loadSetDataTab_alpha_doubleSpinBox, SIGNAL( valueChanged( const double& ) ), m_plot, SLOT( AlphaValueChanged( const double& ) ) );
     this->plottingTab_loadSetDataTab_yMin_checkBox->setChecked( false );
     this->plottingTab_loadSetDataTab_yMax_checkBox->setChecked( false );
+
+//    connect( this->plottingTab_editPlot_legend_pushButton, SIGNAL( clicked() ), this, SLOT( NewPlotLegend() ) );
+
 
     HideShowPlotTab();
 }
@@ -586,7 +591,7 @@ void FADTTSWindow::UpdateInputFileInformation( const QString prefID )
     {
         QList<QStringList> fileData = m_data.GetFileData( prefID );
         int nbrRows = fileData.count();
-        int nbrColumns = fileData.at( 0 ).count();
+        int nbrColumns = fileData.first().count();
 
         m_data.ClearSubjects( prefID );
         QStringList subjects = m_processing.GetSubjectsFromInputFile( fileData, m_data.GetCovariateFileSubjectColumnID() );
@@ -1246,6 +1251,12 @@ void FADTTSWindow::RunFADTTS()
 
         m_progressBar->show();
         m_matlabThread->start();
+        *m_textStreamLog << endl << "File generation completed..." << endl;
+        if( !this->para_executionTab_matlab_checkBox->isChecked() )
+        {
+            *m_textStreamLog << endl << "Matlab script won't be run ( user choice )." << endl;
+        }
+        HideShowPlotTab();
     }
 }
 
@@ -1320,7 +1331,7 @@ QStringList FADTTSWindow::GetSelectedPrefixes()
 
 QMap< QPair< int, QString >, bool > FADTTSWindow::GetSelectedInputFiles()
 {
-    m_outcomeSelected.clear();
+    m_propertySelected.clear();
     QMap< QPair< int, QString >, bool > selectedInputFiles;
     int i = 0;
     foreach ( QString prefID, m_data.GetPrefixList() )
@@ -1330,7 +1341,7 @@ QMap< QPair< int, QString >, bool > FADTTSWindow::GetSelectedInputFiles()
         {
             currentPair.first = i;
             currentPair.second = m_data.GetFilename( prefID );
-            m_outcomeSelected.insert( i, prefID );
+            m_propertySelected.insert( i, prefID );
             selectedInputFiles.insert( currentPair, prefID != m_data.GetCovariatePrefix() ? false : true );
         }
         i++;
@@ -1513,7 +1524,7 @@ void FADTTSWindow::SetMatlabThread( QString fiberName, QMap<int, QString> select
     QMap< QPair< int, QString >, bool> selectedInputFiles = GetSelectedInputFiles();
     QString selectedSubjectListFilePath = GenerateSelectedSubjectFile( outputDir );
     QMap< QPair< int, QString >, bool> matlabInputFiles =
-            m_processing.GenerateMatlabInputFiles( selectedInputFiles, m_outcomeSelected, selectedSubjectListFilePath,
+            m_processing.GenerateMatlabInputFiles( selectedInputFiles, m_propertySelected, selectedSubjectListFilePath,
                                                 m_data.GetCovariateFileSubjectColumnID(), selectedCovariates, outputDir,
                                                 fiberName );
     int nbrPermutations = this->para_executionTab_nbrPermutations_spinBox->value();
@@ -1596,11 +1607,11 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QString fiberName, QMap< QP
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
-void FADTTSWindow::UpdateOutcomeGiven( const QStringList& outcomeGiven )
+void FADTTSWindow::UpdatePropertiesGiven( const QStringList& propertiesGiven )
 {
-    m_outcomeComboBox->clear();
-    m_outcomeComboBox->addItem( "" );
-    m_outcomeComboBox->addItems( outcomeGiven );
+    m_propertyComboBox->clear();
+    m_propertyComboBox->addItem( "" );
+    m_propertyComboBox->addItems( propertiesGiven );
 }
 
 void FADTTSWindow::UpdateCovariateGiven( const QMap<int, QString> &covariateGiven )
@@ -1615,6 +1626,11 @@ void FADTTSWindow::UpdateCovariateGiven( const QMap<int, QString> &covariateGive
     }
 }
 
+void FADTTSWindow::HideShowEditTab( bool& show )
+{
+    this->plottingTab_editPlotTab->setEnabled( show );
+    this->plottingTab_editTab->setEnabled( show );
+}
 
 void FADTTSWindow::SelectPlot( const QString& plotSelected )
 {
@@ -1632,9 +1648,13 @@ void FADTTSWindow::SelectPlot( const QString& plotSelected )
     {
         PlotSelected( true, true, true, false );
     }
-    if( plotSelected == "Raw Betas" )
+    if( plotSelected == "Raw Betas by Properties" )
     {
         PlotSelected( true, true, false, false );
+    }
+    if( plotSelected == "Raw Betas by Covariates" )
+    {
+        PlotSelected( true, false, true, false );
     }
     if( plotSelected == "Omnibus Local pvalues" )
     {
@@ -1666,9 +1686,9 @@ void FADTTSWindow::SelectPlot( const QString& plotSelected )
     }
 }
 
-void FADTTSWindow::SelectOutcome( const QString& outcomeSelected )
+void FADTTSWindow::SelectProperty( const QString& propertySelected )
 {
-    m_plot->SelectOutcome( outcomeSelected );
+    m_plot->SelectProperty( propertySelected );
 }
 
 void FADTTSWindow::SelectCovariate( const QString& covariateSelected )
@@ -1705,13 +1725,43 @@ void FADTTSWindow::DisplayPlot()
     m_plot->SetYMax( this->plottingTab_loadSetDataTab_yMax_checkBox->isChecked(), this->plottingTab_loadSetDataTab_yMax_doubleSpinBox->value() );
     m_plot->DisplayVTKPlot();
 
-    this->plottingTab_titleLegendTab->setEnabled( true );
-    this->plottingTab_editTab->setEnabled( true );
+    ResetEditTab();
 }
 
 void FADTTSWindow::ResetPlot()
 {
     m_plot->ResetPlot();
+}
+
+
+void FADTTSWindow::NewPlotTitle()
+{
+//    qDebug() << endl << "NewPlotTitle";
+//    m_plot->UpdatePlotTitle( this->plottingTab_editPlot_titleName_lineEdit->text(),
+//                             this->plottingTab_editPlot_titleBold_checkBox->isChecked(),
+//                             this->plottingTab_editPlot_titleItalic_checkBox->isChecked(),
+//                             this->plottingTab_editPlot_titleSize_doubleSpinBox->value() );
+}
+
+void FADTTSWindow::NewPlotAxis()
+{
+//    qDebug() << endl << "NewPlotAxis";
+//    m_plot->UpdatePlotAxis( this->plottingTab_editPlot_xName_lineEdit->text(),
+//                            this->plottingTab_editPlot_yName_lineEdit->text(),
+//                            this->plottingTab_editPlot_axisBold_checkBox->isChecked(),
+//                            this->plottingTab_editPlot_axisItalic_checkBox->isChecked() );
+}
+
+void FADTTSWindow::NewPlotLegend()
+{
+//    qDebug() << endl << "NewPlotLegend";
+//    m_plot->UpdatePlotLegend( this->plottingTab_editPlot_legendPosition_comboBox->currentText(),
+//                              this->plottingTab_editPlot_legendSelection_comboBox->currentText(),
+//                              this->plottingTab_editPlot_legendName_lineEdit->text(),
+//                              this->plottingTab_editPlot_legendColor_comboBox->currentText(),
+//                              this->plottingTab_editPlot_legendLineThickness_doubleSpinBox->value(),
+//                              this->plottingTab_editPlot_legendMarkerType_comboBox->currentText(),
+//                              this->plottingTab_editPlot_legendMarkerThickness_doubleSpinBox->value() );
 }
 
 
@@ -1727,7 +1777,7 @@ void FADTTSWindow::HideShowPlotTab()
     }
     else
     {
-        m_plot->InitPlot( outputDirectory + "/FADTTSter_" + fibername );
+        m_plot->InitPlot( outputDirectory + "/FADTTSter_" + fibername, fibername );
     }
 
     bool isMatlabOutputDirDefine = !matlabOutputDir.isEmpty();
@@ -1745,11 +1795,11 @@ void FADTTSWindow::HideShowPlotTab()
 }
 
 
-void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covariate, bool alpha )
+void FADTTSWindow::PlotSelected( bool isPlotSelected, bool property, bool covariate, bool alpha )
 {
-    m_outcomeComboBox->setEnabled( outcome );
-    m_outcomeComboBox->setCurrentText( "" );
-    this->plottingTab_loadSetDataTab_outcomeSelection_label->setEnabled( outcome );
+    m_propertyComboBox->setEnabled( property );
+    m_propertyComboBox->setCurrentText( "" );
+    this->plottingTab_loadSetDataTab_propertySelection_label->setEnabled( property );
     m_covariateComboBox->setEnabled( covariate );
     m_covariateComboBox->setCurrentText( "" );
     this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariate );
@@ -1758,6 +1808,7 @@ void FADTTSWindow::PlotSelected( bool isPlotSelected, bool outcome, bool covaria
     this->plottingTab_loadSetDataTab_alpha_doubleSpinBox->setValue( 0.05 );
 
     this->plottingTab_loadSetDataTab_set_groupBox->setEnabled( isPlotSelected );
+    this->plottingTab_loadSetDataTab_set_groupBox->setChecked( false );
 
     this->plottingTab_loadSetDataTab_title_lineEdit->clear();
     this->plottingTab_loadSetDataTab_xName_lineEdit->clear();
@@ -1780,6 +1831,30 @@ void FADTTSWindow::ResetPlotTab()
 
     this->plottingTab_loadSetDataTab_displayPlot_pushButton->setEnabled( false );
 
-    this->plottingTab_titleLegendTab->setEnabled( false );
+    this->plottingTab_editPlotTab->setEnabled( false );
     this->plottingTab_editTab->setEnabled( false );
+}
+
+void FADTTSWindow::ResetEditTab()
+{
+//    this->plottingTab_editPlot_titleName_lineEdit->clear();
+//    this->plottingTab_editPlot_titleBold_checkBox->setChecked( false );
+//    this->plottingTab_editPlot_titleItalic_checkBox->setChecked( false );
+//    this->plottingTab_editPlot_titleSize_doubleSpinBox->setValue( 12.0 );
+//    this->plottingTab_editPlot_title_groupBox->setChecked( false );
+
+//    this->plottingTab_editPlot_xName_lineEdit->clear();
+//    this->plottingTab_editPlot_yName_lineEdit->clear();
+//    this->plottingTab_editPlot_axisBold_checkBox->setChecked( false );
+//    this->plottingTab_editPlot_axisItalic_checkBox->setChecked( false );
+//    this->plottingTab_editPlot_axis_groupBox->setChecked( false );
+
+//    this->plottingTab_editPlot_legendPosition_comboBox->setCurrentText( "" );
+//    this->plottingTab_editPlot_legendSelection_comboBox->setCurrentText( "" );
+//    this->plottingTab_editPlot_legendName_lineEdit->clear();
+//    this->plottingTab_editPlot_legendColor_comboBox->setCurrentText( "" );
+//    this->plottingTab_editPlot_legendLineThickness_doubleSpinBox->setValue( 2.00 );
+//    this->plottingTab_editPlot_legendMarkerType_comboBox->setCurrentText( "" );
+//    this->plottingTab_editPlot_legendMarkerThickness_doubleSpinBox->setValue( 1.00 );
+//    this->plottingTab_editPlot_legend_groupBox->setChecked( false );
 }

@@ -125,14 +125,16 @@ private slots:
 
 
     /************** Plotting  Tab **************/
-    void UpdateOutcomeGiven( const QStringList& outcomeGiven );
+    void UpdatePropertiesGiven( const QStringList& propertiesGiven );
 
     void UpdateCovariateGiven( const QMap< int, QString >& covariateGiven );
+
+    void HideShowEditTab( bool& );
 
 
     void SelectPlot( const QString& plotSelected );
 
-    void SelectOutcome( const QString& outcomeSelected );
+    void SelectProperty( const QString& propertySelected );
 
     void SelectCovariate( const QString& covariateSelected );
 
@@ -144,6 +146,13 @@ private slots:
     void DisplayPlot();
 
     void ResetPlot();
+
+
+    void NewPlotTitle();
+
+    void NewPlotAxis();
+
+    void NewPlotLegend();
 
 
 private:
@@ -181,7 +190,7 @@ private:
 
     Qt::CaseSensitivity caseSensitivity;
 
-    QMap< int, QString > m_outcomeSelected;
+    QMap< int, QString > m_propertySelected;
 
     Data m_data;
     InfoDialog m_infoDialog;
@@ -190,7 +199,7 @@ private:
     MatlabThread *m_matlabThread;
     Plot *m_plot;
 
-    QComboBox *m_outcomeComboBox, *m_covariateComboBox;
+    QComboBox *m_propertyComboBox, *m_covariateComboBox;
 
     QFile *m_logFile;
     QTextStream* m_textStreamLog;
@@ -281,9 +290,11 @@ private:
     void HideShowPlotTab();
 
 
-    void PlotSelected( bool isPlotSelected, bool outcome, bool covariate, bool alpha );
+    void PlotSelected( bool isPlotSelected, bool property, bool covariate, bool alpha );
 
     void ResetPlotTab();
+
+    void ResetEditTab();
 };
 
 #endif // FADTTSWINDOW_H

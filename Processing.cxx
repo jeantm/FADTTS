@@ -16,7 +16,7 @@ Processing::Processing( QObject *parent ) :
 /*****************************************************/
 bool Processing::IsMatrixDimensionOK( const QList<QStringList> fileData )
 {
-    int rowDataSize = fileData.at( 0 ).count();
+    int rowDataSize = fileData.first().count();
     foreach (QStringList rowData,  fileData)
     {
         if( rowDataSize != rowData.count() )
@@ -56,7 +56,7 @@ QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInput
     QStringList subjectList;
     QList<QStringList> data = dataInInputFile;
     int nbRows = data.count();
-    int nbColumns = data.at( 0 ).count();
+    int nbColumns = data.first().count();
 
     if( IsCovariateFile( data.at( 1 ) ) )
     {
@@ -69,7 +69,7 @@ QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInput
     {
         for( int c = 1; c < nbColumns; c++ )
         {
-            subjectList.append( data.at( 0 ).at( c ) );
+            subjectList.append( data.first().at( c ) );
         }
     }
     subjectList.sort();
@@ -208,19 +208,19 @@ QList<QStringList> Processing::GetDataFromFile( QString filePath )
 QMap<int, QString> Processing::GetCovariatesFromFileData( QList<QStringList> dataCovariateFile, int covariateFileSubjectColumnID )
 {
     QMap<int, QString> covariates;
-    int nbrColumns = dataCovariateFile.at( 0 ).count();
+    int nbrColumns = dataCovariateFile.first().count();
     for( int c = 0; c < nbrColumns; ++c )
     {
         if( c != covariateFileSubjectColumnID )
         {
-            covariates.insert( c, dataCovariateFile.at( 0 ).at( c ) );
+            covariates.insert( c, dataCovariateFile.first().at( c ) );
         }
     }
 
     return covariates;
 }
 
-QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QMap< int, QString > outcomeSelected,
+QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QMap< int, QString > propertySelected,
                                                                          QString selectedSubjectFile, int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
                                                                          QString outputDir, QString fiberName )
 {
@@ -228,11 +228,11 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
     QStringList selectedSubjectList = GetSelectedSubjects( selectedSubjectFile );
 
     QMap< QPair< int, QString >, bool>::ConstIterator iterSelectedInputFile = selectedInputFiles.begin();
-    QMap< int, QString >::ConstIterator iterOutcomeSelected = outcomeSelected.begin();
+    QMap< int, QString >::ConstIterator iterPropertySelected = propertySelected.begin();
     while( iterSelectedInputFile != selectedInputFiles.end() )
     {
         QString fileName = iterSelectedInputFile.key().second;
-        QFile matlabInputFile( outputDir + "/" + fiberName + "_" + iterOutcomeSelected.value().toUpper() + "_RawData.csv" );
+        QFile matlabInputFile( outputDir + "/" + fiberName + "_" + iterPropertySelected.value().toUpper() + "_RawData.csv" );
         matlabInputFile.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInputFile );
         QStringList rowData;
@@ -240,7 +240,7 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
         QList<QStringList> fileData = GetDataFromFile( fileName );
 
         int nbRows = fileData.count();
-        int nbColumns = fileData.at( 0 ).count();
+        int nbColumns = fileData.first().count();
 
         QStringList subjectAdded;
         if( IsCovariateFile( fileData.at( 1 ) ) )
@@ -297,7 +297,7 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
             QList<int> subjectID;
             for( int c = 0; c < nbColumns; c++ )
             {
-                QString currentSubject = fileData.at( 0 ).at( c );
+                QString currentSubject = fileData.first().at( c );
                 if( ( c == 0 || ( selectedSubjectList.contains( currentSubject ) && !subjectAdded.contains( currentSubject ) ) ) )
                 {
                     subjectID.append( c );
@@ -324,7 +324,7 @@ QMap< QPair< int, QString >, bool> Processing::GenerateMatlabInputFiles( QMap< Q
         matlabInputFiles.insert( currentPair, iterSelectedInputFile.value() );
 
         ++iterSelectedInputFile;
-        ++iterOutcomeSelected;
+        ++iterPropertySelected;
     }
 
     return matlabInputFiles;

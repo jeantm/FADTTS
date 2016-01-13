@@ -179,10 +179,10 @@ void EditInputDialog::UploadFileData()
     int nbrRows = 0;
     int nbrColumns = 0;
 
-    m_covariateFileSubjectColumnIDSpinBox->setMaximum( fileData.at( 0 ).count() ); /** Limite the column seleection to the number of covariates **/
+    m_covariateFileSubjectColumnIDSpinBox->setMaximum( fileData.first().count() ); /** Limite the column seleection to the number of covariates **/
 
     m_dataTableWidget->setRowCount( fileData.count() ); /** The number of StringLists gives the number of row **/
-    m_dataTableWidget->setColumnCount( fileData.at( 0 ).count() ); /** The number of String from intial StringList gives the number of column **/
+    m_dataTableWidget->setColumnCount( fileData.first().count() ); /** The number of String from intial StringList gives the number of column **/
 
     m_dataTableWidget->setUpdatesEnabled( false );
     foreach( QStringList row, fileData )

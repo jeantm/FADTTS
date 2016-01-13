@@ -4,6 +4,7 @@
 #include "Processing.h"
 
 #include <QDir>
+#include <QFileDialog>
 
 #include <QVTKWidget.h>
 //#include <cmath>
@@ -21,6 +22,9 @@
 #include <vtkWindowToImageFilter.h>
 #include <vtkPNGWriter.h>
 #include <vtkPen.h>
+#include <vtkChartLegend.h>
+#include <vtkRenderWindow.h>
+#include <vtkGL2PSExporter.h>
 
 
 class Plot : public QObject
@@ -33,7 +37,7 @@ public:
 
     void SetQVTKWidget( QVTKWidget *qvtkWidget );
 
-    void InitPlot( QString directory );
+    void InitPlot( QString directory, QString fibername );
 
     void ResetDataFile();
 
@@ -42,7 +46,7 @@ public:
 
     void SelectPlot( QString plotSelected );
 
-    void SelectOutcome( QString outcome );    
+    void SelectProperty( QString property );
 
     void SelectCovariate( QString covariateSelected );
 
@@ -60,58 +64,65 @@ public:
     void DisplayVTKPlot();
 
 
+    void UpdatePlotTitle( QString titleName, bool isBold, bool isItalic, double titleSize );
+
+    void UpdatePlotAxis( QString xName, QString yName, bool isBold, bool isItalic );
+
+    void UpdatePlotLegend( QString legendPosition, QString legendSelected, QString legendName, QString legendColor,
+                           double lineThickness, QString markerType, double markerThickness );
+
+
 public slots:
     void SavePlot();
 
     void AlphaValueChanged( const double& newAlpha );
 
+    void PlotSettingCheckState( const bool& plotSetting );
+
 
 signals:
-    void OutcomeUsed( const QStringList&  );
+    void PropertiesUsed( const QStringList& );
 
-    void CovariateUsed( const QMap< int, QString >&  );
+    void CovariatesUsed( const QMap< int, QString >& );
+
+    void SetEditTab( bool& );
 
 
 private:
     QVTKWidget *m_qvtkWidget;
 
-    Processing m_process;
-
     vtkSmartPointer<vtkContextView> m_view;
 
     vtkSmartPointer<vtkChartXY> m_chart;
 
-    vtkSmartPointer<vtkTable> m_table, m_tableSigBetas;
+    Processing m_process;
+
+//    vtkSmartPointer<vtkTable> m_table, m_tableSigBetas;
 
     QMap< int, vtkPlot* > m_line;
 
     QMap< QString, QList < QList < double > > > m_csvRawData, m_csvBeta,
     m_csvPostHocLpvalue, m_csvPostHocFDRLpvalue;
 
-    QList < QList < double > > m_csvOmnibusLpvalue, m_csvOmnibusFDRLpvalue;
+    QMap< int, QString > m_covariatesNoIntercept, m_allCovariates, m_binaryCovariates;
 
     QList < QStringList > m_csvCovariate;
 
-    QStringList m_outcomeUsed;
-
-    QMap< int, QString > m_covariateNoIntercept, m_allCovariate, m_binaryCovariate;
+    QList < QList < double > > m_csvOmnibusLpvalue, m_csvOmnibusFDRLpvalue, m_ordinate;
 
     QList< double > m_abscissa;
 
-    QList< QList < double > > m_ordinate;
-
     QStringList m_csvRawDataFile, m_csvBetaFile, m_csvOmnibusLpvalueFile, m_csvOmnibusFDRLpvalueFile,
-    m_csvPostHocLpvalueFile, m_csvPostHocFDRLpvalueFile;
+    m_csvPostHocLpvalueFile, m_csvPostHocFDRLpvalueFile, m_propertiesUsed;
 
-    QString m_matlabOutputDir, m_directory,
-    m_plotSelected, m_outcomeSelected, m_covariateSelected,
-    m_title, m_xName, m_yName;
+    QString m_matlabOutputDir, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
+    m_title, m_fibername, m_xName, m_yName;
 
     double m_yMin, m_yMax, m_yMinGiven, m_yMaxGiven, m_alpha;
 
     int m_indexColumn, m_nbrPlot, m_nbrPoint;
 
-    bool m_isCovariateBinary, m_yMinChecked, m_yMaxChecked;
+    bool m_isCovariateBinary, m_plotSetting, m_yMinChecked, m_yMaxChecked;
 
 
 
@@ -130,9 +141,7 @@ private:
 
     void SetBeta(QStringList files, QMap< QString, QList<QList<double> > > &data );
 
-    void SetOmnibusLpvalue( QStringList files );
-
-    void SetOmnibusFDRLpvalue( QStringList files );
+    void SetOmnibusLpvalue( QStringList files, QList < QList < double > > &OmnibusLpvaluesData );
 
     void SetPostHocFDRLpvalue( QStringList files, QMap< QString, QList < QList < double > > > &data );
 
@@ -148,7 +157,7 @@ private:
     void GetPostHocFDRLpvalueFiles();
 
 
-    void SetOutcomes();
+    void SetProperties();
 
     void SetCovariates();
 
@@ -184,41 +193,33 @@ private:
     bool LoadData();
 
 
-    void AddEntryRawData();
+    void AddEntryRawData( vtkSmartPointer<vtkTable> &table );
 
-    void AddEntryRawStats();
+    void AddEntryRawStats( vtkSmartPointer<vtkTable> &table );
 
-    void AddEntryCovariate( QMap< int, QString > covariates );
+    void AddEntryByProperties( vtkSmartPointer<vtkTable> &table, QMap< int, QString > covariates, int iShift );
 
-    void AddEntryOutcome();
+    void AddEntryByCovariates( vtkSmartPointer<vtkTable> &table );
 
-    void AddEntry();
+    void AddEntry( vtkSmartPointer<vtkTable> &table );
 
 
-    void SetData();
+    void SetData( vtkSmartPointer<vtkTable> &table );
 
 
     void InitLines();
 
-    void AddLineRawData();
+    void AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedByProperties, bool isOmnibus, int i, int incrementColor );
 
-    void AddLineRawStats();
+    void AddLineRawData( vtkSmartPointer<vtkTable> &table );
 
-    void AddLineRawBetas();
+    void AddLineRawStats( vtkSmartPointer<vtkTable> &table );
 
-    void AddLineOmnibusPvalue();
+    void AddLineBetas( vtkSmartPointer<vtkTable> table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus );
 
-    void AddLinePostHocPvalue();
+    void AddLineLPvalue( vtkSmartPointer<vtkTable> &table );
 
-    void AddLineOmnibusFDRSigBetaByProperty();
-
-    void AddLineOmnibusFDRSigBetaByCovariate();
-
-    void AddLinePostHocFDRSigBetaByProperty();
-
-    void AddLinePostHocFDRSigBetaByCovariate();
-
-    void AddLines();
+    void AddLines( vtkSmartPointer<vtkTable> &table );
 
 
     void SetDefaultTitle();
