@@ -81,9 +81,9 @@ private slots:
     void SaveCheckedSubjects();
 
 
-    void CheckAllSubjectsVisible();
+    void CheckAllVisibleSubjects();
 
-    void UnCheckAllSubjectsVisible();
+    void UnCheckAllVisibleSubjects();
 
     void SelectSubject( QListWidgetItem *item );
 
@@ -125,18 +125,36 @@ private slots:
 
 
     /************** Plotting  Tab **************/
-    void UpdatePropertiesGiven( const QStringList& propertiesGiven );
+    void SetPlotsAvailable( const QStringList &plotsAvailable );
 
-    void UpdateCovariateGiven( const QMap< int, QString >& covariateGiven );
+    void SetAllPropertiesUsed( const QStringList& propertiesGiven );
 
-    void HideShowEditTab( bool& );
+    void SetAllCovariatesUsed( QMap< int, QString > covariatesForDisplay );
+
+    void UpdateCovariatesAvailable( const QMap< int, QString >& covariateGiven );
+
+    void PropertiesForDisplay( QStringList propertiesForDisplay );
+
+
+    void UpdatePropertyPlotColor( const QString& property );
+
+    void UpdateCovariatePlotColor( const QString& covariate );
+
+    void EditCovariatesNames();
 
 
     void SelectPlot( const QString& plotSelected );
 
-    void SelectProperty( const QString& propertySelected );
+    void SelectPropertyToPlot( const QString& propertySelected );
 
-    void SelectCovariate( const QString& covariateSelected );
+    void SelectCovariateToPlot( const QString& covariateSelected );
+
+    void UpdateLineForDisplay( QListWidgetItem *item );
+
+    void CheckAllToDisplay();
+
+    void UncheckAllToDisplay();
+
 
     void OnYMinToggled( const bool& checkState );
 
@@ -146,13 +164,6 @@ private slots:
     void DisplayPlot();
 
     void ResetPlot();
-
-
-    void NewPlotTitle();
-
-    void NewPlotAxis();
-
-    void NewPlotLegend();
 
 
 private:
@@ -168,16 +179,22 @@ private:
     QPixmap m_koPixmap;
     QPixmap m_warningPixmap;
 
+    Qt::CaseSensitivity caseSensitivity;
+
+    Data m_data;
+    InfoDialog m_infoDialog;
     QSharedPointer<EditInputDialog> m_editInputDialog;
+    Processing m_processing;
+    MatlabScript m_matlabScript;
+    MatlabThread *m_matlabThread;
+    Plot *m_plot;
 
-
-    QProgressBar *m_progressBar;
-
-    QListWidget *m_matchedSubjectListWidget, *m_covariateListWidget, *m_unmatchedSubjectListWidget;
     QVTKWidget *m_qvtkWidget;
-    QPlainTextEdit *m_logWindow;
 
-    QLineEdit *m_subjectFileLineEdit;
+    QFile *m_logFile;
+    QTextStream* m_textStreamLog;
+    QPlainTextEdit *m_logWindow;
+    QProgressBar *m_progressBar;
 
     typedef QMap<QString, QLabel*> labelMapType;
     labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap, m_inputFileInformationLabelMap;
@@ -187,27 +204,28 @@ private:
     lineEditMapType m_inputTabInputFileLineEditMap;
     typedef QMap<QString, QPushButton*> pushButtonMapType;
     pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
-
-    Qt::CaseSensitivity caseSensitivity;
+    typedef QMap<QString, QComboBox*> comboBoxMapType;
+    comboBoxMapType m_propertiesEditionMap, m_covariatesEditionMap;
 
     QMap< int, QString > m_propertySelected;
 
-    Data m_data;
-    InfoDialog m_infoDialog;
-    Processing m_processing;
-    MatlabScript m_matlabScript;
-    MatlabThread *m_matlabThread;
-    Plot *m_plot;
+    QMap< QPair< int, QString >, QPair< bool, QString > > m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
 
-    QComboBox *m_propertyComboBox, *m_covariateComboBox;
+    QListWidget *m_covariateListWidget, *m_matchedSubjectListWidget, *m_unmatchedSubjectListWidget,
+    *m_plotListWidget;
 
-    QFile *m_logFile;
-    QTextStream* m_textStreamLog;
+    QComboBox *m_plotComboBox, *m_propertyComboBox, *m_covariateComboBox;
+
+    QLineEdit *m_subjectFileLineEdit;
+
+    QStringList m_plotRawDataStats, m_plotBetaByPorperties, m_plotBetaByCovariates;
 
     QString m_currentInputFileDir, m_currentSubjectFileDir,
-    m_currentMatlabExeDir, m_mvcmPath;
+    m_currentMatlabExeDir, m_mvcmPath, m_previousPlotSelected;
 
     int m_nbrSelectedSubjects;
+
+    bool m_areLinesForDisplayProperties;
 
 
     /********* Configuration & Events *********/
@@ -255,6 +273,10 @@ private:
     /*********** Subjects/Covariates Tab **********/
     void UpdateAvailableFileParamTab();
 
+
+    void SetCheckStateAllVisibleSubjects( Qt::CheckState checkState );
+
+
     void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectMap );
 
     void DisplaySubjectInformation();
@@ -287,14 +309,27 @@ private:
 
 
     /************** Plotting  Tab **************/
+    void SetPropertyEdition( const QStringList &propertiesAvailable );
+
+    void SetCovariatesEdition( QMap< int, QString > covariatesForDisplay );
+
+    void SetColorEditionComboBox( QComboBox* &comboBox );
+
+    void SetCheckStateLinesToDisplay( Qt::CheckState checkState );
+
+    void AddLinesForDisplay( bool isSelectionProperties );
+
+
     void HideShowPlotTab();
-
-
-    void PlotSelected( bool isPlotSelected, bool property, bool covariate, bool alpha );
 
     void ResetPlotTab();
 
-    void ResetEditTab();
+
+    void PlotSelected(bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable,
+                      bool lineSelectionAvailable, bool alpha, QString plotSelected );
+
+
+//    void SetCurrentlyDisplayed();
 };
 
 #endif // FADTTSWINDOW_H
