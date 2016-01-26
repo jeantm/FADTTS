@@ -125,8 +125,8 @@ void MatlabScript::SetInputFiles( QMap< QPair< int, QString >, bool > matlabInpu
         }
         else
         {
-            m_matlabScript.replace( "$inputMatlabCOMPInputFile$", filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );" );
-            m_matlabScript.replace( "$matlabCOMPInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
+            m_matlabScript.replace( "$inputMatlabSubMatrixInputFile$", filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );" );
+            m_matlabScript.replace( "$matlabSubMatrixInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
         }
         ++iterMatlabInputFile;
     }

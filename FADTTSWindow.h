@@ -16,7 +16,6 @@
 #include <QProgressBar>
 #include <QDebug>
 
-
 class FADTTSWindow : public FADTTSWindowConfig
 {
     friend class TestFADTTSWindow;
@@ -140,8 +139,6 @@ private slots:
 
     void UpdateCovariatePlotColor( const QString& covariate );
 
-    void EditCovariatesNames();
-
 
     void SelectPlot( const QString& plotSelected );
 
@@ -165,6 +162,10 @@ private slots:
 
     void ResetPlot();
 
+    void LoadPlotSettings();
+
+    void SavePlotSettings();
+
 
 private:
     static const QColor m_green;
@@ -172,6 +173,8 @@ private:
     static const QColor m_grey;
     static const QColor m_yellow;
     static const QColor m_lightBlack;
+
+    static const QString m_csvSeparator;
 
     static const int m_iconSize;
 
@@ -204,12 +207,14 @@ private:
     lineEditMapType m_inputTabInputFileLineEditMap;
     typedef QMap<QString, QPushButton*> pushButtonMapType;
     pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
-    typedef QMap<QString, QComboBox*> comboBoxMapType;
-    comboBoxMapType m_propertiesEditionMap, m_covariatesEditionMap;
+    typedef QMap< int, QPair< QString, QComboBox*> > comboBoxMapType;
+    comboBoxMapType m_propertiesColorsComboBoxMap, m_covariatesColorsComboBoxMap;
+    typedef QMap< int, QPair< QString, QLineEdit* > > covariateNameMap;
+    covariateNameMap m_covariatesNameLineEditMap;
+    typedef QMap< int, QPair< QString, QPair< bool, QString > > > displayMap;
+    displayMap m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
 
     QMap< int, QString > m_propertySelected;
-
-    QMap< QPair< int, QString >, QPair< bool, QString > > m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
 
     QListWidget *m_covariateListWidget, *m_matchedSubjectListWidget, *m_unmatchedSubjectListWidget,
     *m_plotListWidget;
@@ -218,14 +223,14 @@ private:
 
     QLineEdit *m_subjectFileLineEdit;
 
-    QStringList m_plotRawDataStats, m_plotBetaByPorperties, m_plotBetaByCovariates;
+    QStringList m_loadedSubjects ,m_plotRawDataStats, m_plotBetaByPorperties, m_plotBetaByCovariates;
 
     QString m_currentInputFileDir, m_currentSubjectFileDir,
     m_currentMatlabExeDir, m_mvcmPath, m_previousPlotSelected;
 
     int m_nbrSelectedSubjects;
 
-    bool m_areLinesForDisplayProperties;
+    bool m_areSubjectsLoaded, m_areLinesForDisplayProperties;
 
 
     /********* Configuration & Events *********/
@@ -313,11 +318,13 @@ private:
 
     void SetCovariatesEdition( QMap< int, QString > covariatesForDisplay );
 
-    void SetColorEditionComboBox( QComboBox* &comboBox );
+    void SetColorsComboBox( QComboBox* &comboBox );
 
     void SetCheckStateLinesToDisplay( Qt::CheckState checkState );
 
     void AddLinesForDisplay( bool isSelectionProperties );
+
+    void EditCovariatesNames();
 
 
     void HideShowPlotTab();
@@ -325,11 +332,9 @@ private:
     void ResetPlotTab();
 
 
-    void PlotSelected(bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable,
-                      bool lineSelectionAvailable, bool alpha, QString plotSelected );
+    void PlotSelected( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable,
+                       bool lineSelectionAvailable, QString plotSelected );
 
-
-//    void SetCurrentlyDisplayed();
 };
 
 #endif // FADTTSWINDOW_H

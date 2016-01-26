@@ -147,7 +147,7 @@ int Data::InitData()
     m_radialDiffusivityPrefix = "rd";
     m_meanDiffusivityPrefix = "md";
     m_fractionalAnisotropyPrefix = "fa";
-    m_covariatePrefix = "COMP";
+    m_covariatePrefix = "subMatrix";
 
     m_prefixList << m_axialDiffusivityPrefix << m_radialDiffusivityPrefix << m_meanDiffusivityPrefix
                  << m_fractionalAnisotropyPrefix << m_covariatePrefix;

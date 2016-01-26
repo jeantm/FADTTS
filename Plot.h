@@ -24,7 +24,6 @@
 #include <vtkPen.h>
 #include <vtkChartLegend.h>
 #include <vtkRenderWindow.h>
-#include <vtkGL2PSExporter.h>
 
 
 class Plot : public QObject
@@ -51,7 +50,7 @@ public:
     void SelectCovariate( QString covariateSelected );
 
 
-    void SetLinesToDisPlay( const QMap< QPair< int, QString >, QPair< bool, QString > > currentLinesForDisplay );
+    void SetLinesToDisPlay( const QMap< int, QPair< QString, QPair< bool, QString > > > currentLinesForDisplay );
 
     void SetMarkerType( QString markerType );
 
@@ -66,7 +65,13 @@ public:
 
     void SetDefaultAxis();
 
-    void DisplayVTKPlot();
+    void SetLegend( QString position );
+
+
+    bool DisplayVTKPlot();
+
+
+    void UpdateCovariatesNames( QMap< int, QString > newCovariatesNames );
 
 
 public slots:
@@ -103,22 +108,55 @@ private:
         return newColorMap;
     }
 
+//    static QMap< QString, int[3] > InitColorMap()
+//    {
+//        QMap< QString, int[3] > newColorMap;
+//        int red[3] = { 255 , 0 , 0 };
+//        int green[3] = { 0 , 128 , 0 };
+//        int blue[3] = { 0 , 0 , 255 };
+//        int purple[3] = { 128 , 0 , 128 };
+//        int yellow[3] = { 255 , 255 , 0 };
+//        int cyan[3] = { 0 , 255 , 255 };
+//        int magenta[3] = { 255 , 0 , 255 };
+//        int grey[3] = { 128 , 128 , 128 };
+//        int maroon[3] = { 128 , 0 , 0 };
+//        int lime[3] = { 0 , 255 , 0 };
+//        int teal[3] = { 0 , 128 , 128 };
+//        int navy[3] = { 255 , 0 , 0 };
+//        int black[3] = { 0 , 0 , 0 };
+//        newColorMap.insert( "Red", red );
+//        newColorMap.insert( "Green", green );
+//        newColorMap.insert( "Blue", blue );
+//        newColorMap.insert( "Purple", purple );
+//        newColorMap.insert( "Yellow", yellow );
+//        newColorMap.insert( "Cyan", cyan );
+//        newColorMap.insert( "Magenta", magenta );
+//        newColorMap.insert( "Grey", grey );
+//        newColorMap.insert( "Maroon", maroon );
+//        newColorMap.insert( "Lime", lime );
+//        newColorMap.insert( "Teal", teal );
+//        newColorMap.insert( "Navy", navy );
+//        newColorMap.insert( "Black", black );
+
+//        return newColorMap;
+//    }
+
+
     static const QMap< QString, QList < int > > m_allColors;
-
-    QVTKWidget *m_qvtkWidget;
-
-    vtkSmartPointer<vtkContextView> m_view;
-
-    vtkSmartPointer<vtkChartXY> m_chart;
 
     Processing m_process;
 
+    QVTKWidget *m_qvtkWidget;
+    vtkSmartPointer<vtkContextView> m_view;
+    vtkSmartPointer<vtkChartXY> m_chart;
+    vtkSmartPointer<vtkChartLegend> m_legend;
     QMap< int, vtkPlot* > m_line;
+
 
     QMap< QString, QList < QList < double > > > m_csvRawData, m_csvBeta,
     m_csvPostHocLpvalue, m_csvPostHocFDRLpvalue;
 
-    QMap< QPair< int, QString >, QPair< bool, QString > > m_linesToDisplay;
+    QMap< int, QPair< QString, QPair< bool, QString > > > m_linesToDisplay;
 
     QMap< int, QString > m_covariatesNoIntercept, m_allCovariates, m_binaryCovariates;
 
@@ -133,7 +171,7 @@ private:
     QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles,
     m_csvPostHocFDRLpvalueFiles, m_properties, m_lineNames;
 
-    QPair< double, bool > m_yMin, m_yMax;
+    QPair< bool, double > m_yMin, m_yMax;
 
     QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
     m_title, m_fibername, m_xName, m_yName;

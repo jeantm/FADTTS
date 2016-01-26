@@ -17,6 +17,7 @@ void Plot::SetQVTKWidget( QVTKWidget *qvtkWidget )
     m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
     m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
     m_chart = vtkSmartPointer<vtkChartXY>::New();
+    m_legend = vtkSmartPointer<vtkChartLegend>::New();
 }
 
 void Plot::InitPlot( QString directory, QString fibername )
@@ -24,6 +25,10 @@ void Plot::InitPlot( QString directory, QString fibername )
     m_directory = directory;
     m_matlabDirectory = directory + "/MatlabOutputs";
     m_fibername = fibername;
+
+    m_isBinaryCovariatesSend = false;
+    m_isAllCovariatesSend = false;
+    m_isCovariatesNoInterceptSend = false;
 
     GetRawDataFiles();
     GetBetaFiles();
@@ -61,8 +66,6 @@ void Plot::ResetDataFile()
 void Plot::ResetPlot()
 {
     m_chart->ClearPlots();
-    m_yMin.second = false;
-    m_yMax.second = false;
 }
 
 
@@ -114,11 +117,10 @@ void Plot::SelectCovariate( QString covariateSelected )
 }
 
 
-void Plot::SetLinesToDisPlay( const QMap< QPair< int, QString >, QPair< bool, QString > > currentLinesForDisplay )
+void Plot::SetLinesToDisPlay( const QMap< int, QPair< QString, QPair< bool, QString > > > currentLinesForDisplay )
 {
     m_linesToDisplay.clear();
     m_linesToDisplay = currentLinesForDisplay;
-    qDebug() << endl << endl << "m_linesToDisplay: " << m_linesToDisplay << endl << endl;
 }
 
 void Plot::SetMarkerType( QString markerType )
@@ -215,15 +217,16 @@ void Plot::SetAxis( QString xName, QString yName, bool isBold, bool isItalic,
     m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( isBold );
     m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( isItalic );
 
-    if( isYMinSet )
+    m_yMin.first = isYMinSet ? true : false;
+    if( m_yMin.first )
     {
-        m_yMin.first = yMin;
-        m_yMin.second = true;
+        m_yMin.second = yMin;
     }
-    if( isYMaxSet )
+
+    m_yMax.first = isYMaxSet ? true : false;
+    if( m_yMax.first )
     {
-        m_yMax.first = yMax;
-        m_yMax.second = true;
+        m_yMax.second = yMax;
     }
 }
 
@@ -236,9 +239,50 @@ void Plot::SetDefaultAxis()
     m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "" );
     m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( false );
     m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( false );
+
+    m_yMin.first = false;
+    m_yMax.first = false;
 }
 
-void Plot::DisplayVTKPlot()
+void Plot::SetLegend( QString position )
+{
+    vtkSmartPointer<vtkChartLegend> legend = m_chart->GetLegend();
+
+    int verticalPosition;
+    int horizontalPosition;
+    if( position.contains( "Top" ) )
+    {
+        verticalPosition = vtkChartLegend::TOP;
+    }
+    if( position.contains( "Middle" ) )
+    {
+        verticalPosition = vtkChartLegend::CENTER;
+    }
+    if( position.contains( "Bottom" ) )
+    {
+        verticalPosition = vtkChartLegend::BOTTOM;
+    }
+
+    if( position.contains( "Left" ) )
+    {
+        horizontalPosition = vtkChartLegend::LEFT;
+    }
+    if( position.contains( "Center" ) )
+    {
+        horizontalPosition = vtkChartLegend::CENTER;
+    }
+    if( position.contains( "Right" ) )
+    {
+        horizontalPosition = vtkChartLegend::RIGHT;
+    }
+    legend->SetVerticalAlignment( verticalPosition );
+    legend->SetHorizontalAlignment( horizontalPosition );
+
+    legend->SetInline( false );
+}
+
+
+bool Plot::DisplayVTKPlot()
 {
     // Resetting scene
     m_view->GetScene()->ClearItems();
@@ -251,30 +295,60 @@ void Plot::DisplayVTKPlot()
     if( dataAvailable )
     {
         m_nbrPlot = m_ordinate.size();
-        qDebug() << endl << "m_ordinate.size: " << m_ordinate.size() << " x " << m_ordinate.first().size();
-        qDebug() << "m_nbrPlot: " << m_nbrPlot;
-        qDebug() << "m_nbrPoint: " << m_nbrPoint;
-        qDebug() << "m_alpha: " << m_alpha;
 
         // Adding entries
-        qDebug() << endl << "Adding entries";
         vtkSmartPointer<vtkTable> table = vtkSmartPointer<vtkTable>::New();
         AddEntries( table );
 
         // Adding data
-        qDebug() << endl << "Adding data";
         SetData( table );
 
         // Adding lines
-        qDebug() << endl << "Adding lines";
         AddLines( table );
 
         // Setting chart properties
-        qDebug() << endl << "Setting chart properties";
         SetChartProperties();
     }
+
+    return dataAvailable;
 }
 
+
+void Plot::UpdateCovariatesNames( QMap< int, QString > newCovariateName )
+{
+    QMap< int, QString >::ConstIterator iterNewCovariatesNames = newCovariateName.begin();
+    while( iterNewCovariatesNames != newCovariateName.end() )
+    {
+        if( m_allCovariates.keys().contains( iterNewCovariatesNames.key() ) )
+        {
+            m_allCovariates[ iterNewCovariatesNames.key() ] = iterNewCovariatesNames.value();
+        }
+        if( m_covariatesNoIntercept.keys().contains( iterNewCovariatesNames.key() ) )
+        {
+            m_covariatesNoIntercept[ iterNewCovariatesNames.key() ] = iterNewCovariatesNames.value();
+        }
+        if( m_binaryCovariates.keys().contains( iterNewCovariatesNames.key() ) )
+        {
+            m_binaryCovariates[ iterNewCovariatesNames.key() ] = iterNewCovariatesNames.value();
+        }
+        ++iterNewCovariatesNames;
+    }
+
+    if( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" )
+    {
+        emit CovariatesAvailableForPlotting( m_binaryCovariates );
+    }
+    if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" || m_plotSelected == "Post-Hoc FDR Local pvalues" )
+    {
+        emit CovariatesAvailableForPlotting( m_allCovariates );
+    }
+    if( m_plotSelected == "Raw Betas by Covariates" || m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
+    {
+        emit CovariatesAvailableForPlotting( m_covariatesNoIntercept );
+    }
+}
 
 /***************************************************************/
 /************************ Public  slots ************************/
@@ -366,7 +440,7 @@ void Plot::SortFilesByProperties( QString directory, QStringList files, QMap< QS
         {
             index = "FA";
         }
-        if( path.contains( "_comp_", Qt::CaseInsensitive ) )
+        if( path.contains( "_subMatrix_", Qt::CaseInsensitive ) )
         {
             m_csvCovariate = m_process.GetDataFromFile( currentPath );
         }
@@ -564,7 +638,6 @@ void Plot::SetProperties()
     }
     m_properties = propertyTempo.values();
     emit AllPropertiesUsed( m_properties );
-    qDebug() << endl << "m_properties: " << m_properties;
 }
 
 void Plot::SetCovariates()
@@ -583,9 +656,6 @@ void Plot::SetCovariates()
         }
     }
     emit AllCovariatesUsed( m_allCovariates );
-    qDebug() << endl << "m_allCovariates: " << m_allCovariates;
-    qDebug() << "m_covariatesNoIntercept: " << m_covariatesNoIntercept;
-    qDebug() << "m_binaryCovariates: " << m_binaryCovariates;
 }
 
 void Plot::SetAbscissa()
@@ -662,18 +732,18 @@ void Plot::LoadLinesToDisplay( QList< QList < double > > &ordinate )
         m_linesToDisplay.remove( m_linesToDisplay.firstKey() );
         shift = 1;
     }
-    QMap< QPair< int, QString >, QPair< bool, QString > >::ConstIterator iterLineToDisplay = m_linesToDisplay.end();
+    QMap< int, QPair< QString, QPair< bool, QString > > >::ConstIterator iterLineToDisplay = m_linesToDisplay.end();
     while( iterLineToDisplay != m_linesToDisplay.begin() )
     {
         --iterLineToDisplay;
-        if( iterLineToDisplay.value().first )
+        if( iterLineToDisplay.value().second.first )
         {
-            m_lineNames.prepend( iterLineToDisplay.key().second );
-            m_lineColors.prepend( m_allColors.value( iterLineToDisplay.value().second ) );
+            m_lineNames.prepend( iterLineToDisplay.value().first );
+            m_lineColors.prepend( m_allColors.value( iterLineToDisplay.value().second.second ) );
         }
         else
         {
-            ordinate.removeAt( iterLineToDisplay.key().first - shift );
+            ordinate.removeAt( iterLineToDisplay.key() - shift );
         }
     }
 }
@@ -1118,18 +1188,18 @@ void Plot::AddLines( vtkSmartPointer<vtkTable> table )
 QList< double > Plot::GetyMinMax()
 {
     QList< double > yMinMax;
-    double yMin = m_yMin.second ? m_yMin.first : 1000;
-    double yMax = m_yMax.second ? m_yMax.first : -1000;
+    double yMin = m_yMin.first ? m_yMin.second : 1000;
+    double yMax = m_yMax.first ? m_yMax.second : -1000;
     foreach( QList < double > rowData, m_ordinate )
     {
         foreach( double data, rowData )
         {
-            if( !m_yMin.second && data < yMin && data != QString( "inf" ).toDouble() )
+            if( !m_yMin.first && data < yMin && data != QString( "inf" ).toDouble() )
             {
                 yMin = data;
             }
 
-            if( !m_yMax.second && data > yMax && data != QString( "inf" ).toDouble() )
+            if( !m_yMax.first && data > yMax && data != QString( "inf" ).toDouble() )
             {
                 yMax = data;
             }
@@ -1147,7 +1217,8 @@ void Plot::SetyMinMax()
     m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMinMax.first() );
     m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMinMax.at( 1 ) );
     m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMinMax.first(), yMinMax.at( 1 ) );
-    qDebug() << "yMin: " << yMinMax.first() << " | yMax: " << yMinMax.at( 1 );
+
+    qDebug() << endl << "Ordinate: " << m_chart->GetAxis( vtkAxis::LEFT )->NiceMinMax( yMinMax.first(), yMinMax.last() , yMinMax.last() - yMinMax.first(), 1.0 );
 }
 
 void Plot::SetChartProperties()
@@ -1155,11 +1226,64 @@ void Plot::SetChartProperties()
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( m_abscissa.first(), m_abscissa.last() );
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( m_abscissa.first() );
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( m_abscissa.last() );
+
+//    qDebug() << endl << "Abscissa: " << vtkAxis::NiceNumber( m_abscissa.last() - m_abscissa.first(), true );
+
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->SetTickLabelAlgorithm( vtkAxis::TICK_SIMPLE );
+
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->Update();
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->AutoScale();
+
+
+    qDebug() << endl << "Behavior: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetBehavior();
+    m_chart->GetAxis( vtkAxis::BOTTOM )->AutoScale();
+    m_chart->GetAxis( vtkAxis::BOTTOM )->Modified();
+
+
+
+//    qDebug() << m_chart->GetAxis( vtkAxis::BOTTOM )->NiceMinMax( m_abscissa.first(), m_abscissa.last(), m_abscissa.last() - m_abscissa.first(), 5.0 );
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->( m_abscissa.first(), m_abscissa.last(), m_abscissa.last() - m_abscissa.first(), 5.0 );
+
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->Tic
+//    m_chart->GetAxis( vtkAxis::BOTTOM )->Modified();
+
+
+
+//    qDebug() << m_chart->GetAxis( vtkAxis::BOTTOM )->CalculateNiceMinMax( m_abscissa.first(), m_abscissa.last() );
+
+
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 127, 127, 127, 255 );
 
     SetyMinMax();
     m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 127, 127, 127, 255 );
 
+
     m_chart->SetShowLegend( true );
-//    m_chart->GetLegend()->SetDragEnabled( true );
+
+
+//    m_chart->GetLegend()->GetChart();
+
+//    m_chart->GetLegend()->Storage;
+//    m_chart->GetLegend()->GetLabelProperties()->
+//    m_chart->ForceAxesToBoundsOn();
+//    m_chart->
+//    m_legend = m_chart->GetLegend();
+//    m_legend->Delete();
+//    m_legend->SetVerticalAlignment(  );
+
+
+
+////    m_legend = m_chart->GetLegend();
+////    m_legend->ClearItems();
+////    m_legend->RemoveAllObservers();
+
+//    m_chart->SetShowLegend( true );
+//    m_legend->SetChart( m_chart );
+//    m_legend->ClearItems();
+//    m_legend->AddItem(  )
+
+//    m_chart->AddItem( m_legend );
+
+
+
 }

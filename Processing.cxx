@@ -77,114 +77,91 @@ QStringList Processing::GetSubjectsFromInputFile( QList<QStringList> dataInInput
     return subjectList;
 }
 
-QStringList Processing::GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID )
+QStringList Processing::GetAllSubjectsList( QMap<QString, QStringList> allSubjects )
 {
     /** Create a subject list of reference.
      *  This list is either a file provided by the user or automatically generated
      *  with the selected input files' subjects **/
 
-    QStringList refSubjectList;
-    if( subjectFilePath.isEmpty() )
+    QStringList allSubjectsList;
+    QMap<QString, QStringList>::ConstIterator iter = allSubjects.begin();
+    while( iter != allSubjects.end() )
     {
-        refSubjectList = GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFiles, covariateFileSubjectColumnID );
+        allSubjectsList.append( iter.value() );
+        ++iter;
     }
-    else
-    {
-        QFile subjectFile( subjectFilePath );
-        subjectFile.open( QIODevice::ReadOnly );
-        QTextStream ts( &subjectFile );
-        while( !ts.atEnd() )
-        {
-            refSubjectList.append( ts.readLine() );
-        }
-        subjectFile.close();
-    }
-    refSubjectList.removeDuplicates();
+    allSubjectsList.removeDuplicates();
 
-    return refSubjectList;
+    return allSubjectsList;
 }
 
 QMap<QString, QStringList> Processing::GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap )
 {
-    QMap<QString, QStringList> selectedSubjectList;
+    QMap<QString, QStringList> allSubjectsFromSelectedInputFiles;
     QMap<QString, QCheckBox*>::ConstIterator iterCheckBoxMap = checkBoxMap.begin();
     QMap<QString, QStringList >::ConstIterator iterSubjectsList = subjectsMap.begin();
     while( iterCheckBoxMap != checkBoxMap.constEnd() )
     {
         if( iterCheckBoxMap.value()->isChecked() )
         {
-            ( selectedSubjectList[iterSubjectsList.key()] ).append( iterSubjectsList.value() );
+            ( allSubjectsFromSelectedInputFiles[iterSubjectsList.key()] ).append( iterSubjectsList.value() );
 
         }
         ++iterCheckBoxMap;
         ++iterSubjectsList;
     }
 
-    return selectedSubjectList;
+    return allSubjectsFromSelectedInputFiles;
 }
 
-QMap< QString, QMap<QString, bool> > Processing::SortSubjects( const QStringList refSubjects, const QMap<QString, QStringList> selectedSubjects )
+QMap< QString, QMap<QString, bool> > Processing::SortSubjects( const QStringList allSubjectsList, const QMap<QString, QStringList> allSubjects )
 {
-    QMap< QString, QMap<QString, bool> > checkedSubject;
-    QStringListIterator itRef( refSubjects );
-    while( itRef.hasNext() )
+    QMap< QString, QMap<QString, bool> > sortedSubjects;
+    foreach( QString subject, allSubjectsList )
     {
-        QString subjRef = QString( itRef.next() );
-
-        QMap<QString, QStringList >::ConstIterator iterSubjectList = selectedSubjects.begin();
-        while( iterSubjectList != selectedSubjects.constEnd() )
+        QMap<QString, QStringList >::ConstIterator iterSelectedSubjects = allSubjects.begin();
+        while( iterSelectedSubjects != allSubjects.constEnd() )
         {
-            if( iterSubjectList.value().contains( subjRef ) )
-            {
-                ( ( checkedSubject[subjRef] )[iterSubjectList.key()] ) = true;
-            }
-            else
-            {
-                ( ( checkedSubject[subjRef] )[iterSubjectList.key()] ) = false;
-            }
-            ++iterSubjectList;
+            ( ( sortedSubjects[subject] )[iterSelectedSubjects.key()] ) = iterSelectedSubjects.value().contains( subject ) ? true : false;
+            ++iterSelectedSubjects;
         }
     }
 
-    return checkedSubject;
+    return sortedSubjects;
 }
 
-void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubjects, QStringList& matchedSubjects,
+void Processing::AssignSortedSubject( const QMap< QString, QMap<QString, bool> > sortedSubjects, QStringList& matchedSubjects,
                                       QMap<QString, QStringList >& unMatchedSubjects )
 {
-    QMap< QString, QMap<QString, bool> >::ConstIterator iterCheckedSubject = checkedSubjects.begin();
-    while( iterCheckedSubject != checkedSubjects.constEnd() )
+    QMap< QString, QMap<QString, bool> >::ConstIterator iterSortedSubjects = sortedSubjects.begin();
+    while( iterSortedSubjects != sortedSubjects.end() )
     {
-        bool subInAll = true;
-        QMap<QString, bool>::ConstIterator it = iterCheckedSubject.value().begin();
-        while( it != iterCheckedSubject.value().constEnd() )
+        bool subjectInAll = true;
+        QMap<QString, bool>::ConstIterator it = iterSortedSubjects.value().begin();
+        while( it != iterSortedSubjects.value().end() )
         {
-            subInAll = subInAll && it.value();
+            subjectInAll = subjectInAll && it.value();
             ++it;
         }
 
-        if( subInAll )
+        if( subjectInAll )
         {
-            matchedSubjects.append( iterCheckedSubject.key() );
+            matchedSubjects.append( iterSortedSubjects.key() );
         }
         else
         {
-            QMap<QString, bool>::ConstIterator it = iterCheckedSubject.value().begin();
-            while( it != iterCheckedSubject.value().constEnd() )
+            QMap<QString, bool>::ConstIterator it = iterSortedSubjects.value().begin();
+            while( it != iterSortedSubjects.value().end() )
             {
-                if( !it.value() && !( unMatchedSubjects[iterCheckedSubject.key()] ).contains( "refList" ) )
-                {
-                    ( unMatchedSubjects[iterCheckedSubject.key()] ).append( QObject::tr( "refList" ) );
-                }
                 if( it.value() )
                 {
-                    ( unMatchedSubjects[iterCheckedSubject.key()] ).append( it.key() );
+                    ( unMatchedSubjects[iterSortedSubjects.key()] ).append( it.key() );
                 }
                 ++it;
-                unMatchedSubjects[iterCheckedSubject.key()].sort();
+                unMatchedSubjects[iterSortedSubjects.key()].sort();
             }
         }
-        ++iterCheckedSubject;
+        ++iterSortedSubjects;
     }
 }
 

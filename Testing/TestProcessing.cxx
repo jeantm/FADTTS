@@ -405,302 +405,308 @@ bool TestProcessing::Test_GetRefSubjectsFromSelectedInputFiles( QString inputADF
 
 bool TestProcessing::Test_GetRefSubjects( QString inputADFile, QString inputCovariateFile, QString subjectsFilePath )
 {
-    Processing processing;
+//    Processing processing;
 
-    QList<QStringList> dataInInputADFile = processing.GetDataFromFile( inputADFile );
-    QList<QStringList> dataInInputCovariateFile = processing.GetDataFromFile( inputCovariateFile );
+//    QList<QStringList> dataInInputADFile = processing.GetDataFromFile( inputADFile );
+//    QList<QStringList> dataInInputCovariateFile = processing.GetDataFromFile( inputCovariateFile );
 
-    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles;
-    QPair< int, QString > adFilePair;
-    adFilePair.first = 0;
-    adFilePair.second = inputADFile;
-    QPair< int, QString > compFilePair;
-    compFilePair.first = 4;
-    compFilePair.second = inputCovariateFile;
-    dataInSelectedInputFiles.insert( adFilePair, dataInInputADFile );
-    dataInSelectedInputFiles.insert( compFilePair, dataInInputCovariateFile );
-    QStringList expectedRefSubjects;
-    expectedRefSubjects << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                              "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
-
-
-    /************************************************/
-    /******************** Test 1 ********************/
-    /************************************************/
-    // With subjects file
-    QStringList refSubjectsTest1 = processing.GetRefSubjects( subjectsFilePath, dataInSelectedInputFiles, 3 );
-
-    bool refSubjectsMatchedTest1 = CompareQStringList( expectedRefSubjects, refSubjectsTest1 );
+//    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles;
+//    QPair< int, QString > adFilePair;
+//    adFilePair.first = 0;
+//    adFilePair.second = inputADFile;
+//    QPair< int, QString > compFilePair;
+//    compFilePair.first = 4;
+//    compFilePair.second = inputCovariateFile;
+//    dataInSelectedInputFiles.insert( adFilePair, dataInInputADFile );
+//    dataInSelectedInputFiles.insert( compFilePair, dataInInputCovariateFile );
+//    QStringList expectedRefSubjects;
+//    expectedRefSubjects << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                              "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
 
 
-    /************************************************/
-    /******************** Test 2 ********************/
-    /************************************************/
-    // Without subjects file
-    expectedRefSubjects << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                              "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad" << "randomSubject_COMP_3";
-    QStringList refSubjectsTest2 = processing.GetRefSubjects( "", dataInSelectedInputFiles, 3 );
+//    /************************************************/
+//    /******************** Test 1 ********************/
+//    /************************************************/
+//    // With subjects file
+//    QStringList refSubjectsTest1 = processing.GetRefSubjects( subjectsFilePath, dataInSelectedInputFiles, 3 );
 
-    bool refSubjectsMatchedTest2 = CompareQStringList( expectedRefSubjects, refSubjectsTest2 );
+//    bool refSubjectsMatchedTest1 = CompareQStringList( expectedRefSubjects, refSubjectsTest1 );
 
 
-    if( !refSubjectsMatchedTest1 || !refSubjectsMatchedTest2 )
-    {
-        std::cerr << std::endl << "Test_GetRefSubjects() FAILED:" << std::endl;
-        if( !refSubjectsMatchedTest1 )
-        {
-            std::cerr << "\t+ Incorrect reference subjects generated when subjects file provided" << std::endl;
-            DisplayErrorSubjects( expectedRefSubjects, refSubjectsTest1 );
-        }
-        if( !refSubjectsMatchedTest2 )
-        {
-            std::cerr << "\t+ Incorrect reference subjects generated when subjects file not provided" << std::endl;
-            DisplayErrorSubjects( expectedRefSubjects, refSubjectsTest2 );
-        }
-    }
-    else
-    {
-        std::cout << std::endl << "Test_GetRefSubjects() PASSED" << std::endl;
-    }
+//    /************************************************/
+//    /******************** Test 2 ********************/
+//    /************************************************/
+//    // Without subjects file
+//    expectedRefSubjects << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                              "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad" << "randomSubject_COMP_3";
+//    QStringList refSubjectsTest2 = processing.GetRefSubjects( "", dataInSelectedInputFiles, 3 );
 
-    return ( refSubjectsMatchedTest1 & refSubjectsMatchedTest2 );
+//    bool refSubjectsMatchedTest2 = CompareQStringList( expectedRefSubjects, refSubjectsTest2 );
+
+
+//    if( !refSubjectsMatchedTest1 || !refSubjectsMatchedTest2 )
+//    {
+//        std::cerr << std::endl << "Test_GetRefSubjects() FAILED:" << std::endl;
+//        if( !refSubjectsMatchedTest1 )
+//        {
+//            std::cerr << "\t+ Incorrect reference subjects generated when subjects file provided" << std::endl;
+//            DisplayErrorSubjects( expectedRefSubjects, refSubjectsTest1 );
+//        }
+//        if( !refSubjectsMatchedTest2 )
+//        {
+//            std::cerr << "\t+ Incorrect reference subjects generated when subjects file not provided" << std::endl;
+//            DisplayErrorSubjects( expectedRefSubjects, refSubjectsTest2 );
+//        }
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_GetRefSubjects() PASSED" << std::endl;
+//    }
+
+//    return ( refSubjectsMatchedTest1 & refSubjectsMatchedTest2 );
+    return false;
 }
 
 
 bool TestProcessing::Test_GetAllSubjectsFromSelectedInputFiles()
 {
-    Processing processing;
-    bool testResult = true;
+//    Processing processing;
+//    bool testResult = true;
 
-    QMap<QString, QCheckBox*> checkBoxMap;
-    QCheckBox *checkedBox = new QCheckBox();
-    checkedBox->setChecked( true );
-    QCheckBox *uncheckedBox = new QCheckBox();
-    uncheckedBox->setChecked( false );
-    checkBoxMap.insert( "ad", checkedBox );
-    checkBoxMap.insert( "rd", uncheckedBox );
-    checkBoxMap.insert( "md", uncheckedBox );
-    checkBoxMap.insert( "fa", uncheckedBox );
-    checkBoxMap.insert( "COMP", checkedBox );
-    QStringList subjectsADFile;
-    subjectsADFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
-    QStringList subjectsCovariateFile;
-    subjectsCovariateFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
-    QMap<QString, QStringList > allSubjects;
-    allSubjects.insert( "ad", subjectsADFile );
-    allSubjects.insert( "rd", QStringList() );
-    allSubjects.insert( "md", QStringList() );
-    allSubjects.insert( "fa", QStringList() );
-    allSubjects.insert( "COMP", subjectsCovariateFile );
-    QMap<QString, QStringList> selectedSubjects = processing.GetAllSubjectsFromSelectedInputFiles( checkBoxMap, allSubjects );
-    QMap<QString, QStringList> expectedSubjects;
-    expectedSubjects.insert( "ad", subjectsADFile );
-    expectedSubjects.insert( "COMP", subjectsCovariateFile );
+//    QMap<QString, QCheckBox*> checkBoxMap;
+//    QCheckBox *checkedBox = new QCheckBox();
+//    checkedBox->setChecked( true );
+//    QCheckBox *uncheckedBox = new QCheckBox();
+//    uncheckedBox->setChecked( false );
+//    checkBoxMap.insert( "ad", checkedBox );
+//    checkBoxMap.insert( "rd", uncheckedBox );
+//    checkBoxMap.insert( "md", uncheckedBox );
+//    checkBoxMap.insert( "fa", uncheckedBox );
+//    checkBoxMap.insert( "COMP", checkedBox );
+//    QStringList subjectsADFile;
+//    subjectsADFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
+//    QStringList subjectsCovariateFile;
+//    subjectsCovariateFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
+//    QMap<QString, QStringList > allSubjects;
+//    allSubjects.insert( "ad", subjectsADFile );
+//    allSubjects.insert( "rd", QStringList() );
+//    allSubjects.insert( "md", QStringList() );
+//    allSubjects.insert( "fa", QStringList() );
+//    allSubjects.insert( "COMP", subjectsCovariateFile );
+//    QMap<QString, QStringList> selectedSubjects = processing.GetAllSubjectsFromSelectedInputFiles( checkBoxMap, allSubjects );
+//    QMap<QString, QStringList> expectedSubjects;
+//    expectedSubjects.insert( "ad", subjectsADFile );
+//    expectedSubjects.insert( "COMP", subjectsCovariateFile );
 
-    QMap<QString, QStringList >::ConstIterator iterExpectedSubjects = expectedSubjects.begin();
-    QMap<QString, QStringList >::ConstIterator iterSelectedSubjects = selectedSubjects.begin();
-    while( iterExpectedSubjects != expectedSubjects.constEnd() )
-    {
-        if( iterExpectedSubjects.key() != iterSelectedSubjects.key() || !CompareQStringList( iterExpectedSubjects.value(), iterSelectedSubjects.value() ) )
-        {
-            testResult = false;
-        }
-        ++iterExpectedSubjects;
-        ++iterSelectedSubjects;
-    }
+//    QMap<QString, QStringList >::ConstIterator iterExpectedSubjects = expectedSubjects.begin();
+//    QMap<QString, QStringList >::ConstIterator iterSelectedSubjects = selectedSubjects.begin();
+//    while( iterExpectedSubjects != expectedSubjects.constEnd() )
+//    {
+//        if( iterExpectedSubjects.key() != iterSelectedSubjects.key() || !CompareQStringList( iterExpectedSubjects.value(), iterSelectedSubjects.value() ) )
+//        {
+//            testResult = false;
+//        }
+//        ++iterExpectedSubjects;
+//        ++iterSelectedSubjects;
+//    }
 
 
-    if( !testResult )
-    {
-        std::cerr << std::endl << "Test_GetAllSubjectsFromSelectedInputFiles() FAILED:" << std::endl;
-        std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
-        DisplayErrorAllSubjects( expectedSubjects, selectedSubjects );
-    }
-    else
-    {
-        std::cout << std::endl << "Test_GetAllSubjectsFromSelectedInputFiles() PASSED" << std::endl;
-    }
+//    if( !testResult )
+//    {
+//        std::cerr << std::endl << "Test_GetAllSubjectsFromSelectedInputFiles() FAILED:" << std::endl;
+//        std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
+//        DisplayErrorAllSubjects( expectedSubjects, selectedSubjects );
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_GetAllSubjectsFromSelectedInputFiles() PASSED" << std::endl;
+//    }
 
-    delete checkedBox;
-    return testResult;
+//    delete checkedBox;
+//    return testResult;
+    return false;
 }
 
 bool TestProcessing::Test_SortSubjects()
 {
-    Processing processing;
-    bool testResult = true;
+//    Processing processing;
+//    bool testResult = true;
 
-    QStringList refSubjectsInAll;
-    refSubjectsInAll << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                           "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                           "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                           "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed";
-    QStringList refSubjectsInNone;
-    refSubjectsInNone << "Stan" << "Kyle" << "Kenny" << "Cartman";
-    QStringList refSubjects = refSubjectsInAll;
-    refSubjects << refSubjectsInNone;
-    refSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
-    QMap< QString, QMap<QString, bool> > expectedSortedSubjects;
-    foreach (QString subj, refSubjectsInAll)
-    {
-        ( expectedSortedSubjects[subj] )["ad"] = true;
-        ( expectedSortedSubjects[subj] )["COMP"] = true;
-    }
-    foreach (QString subj, refSubjectsInNone)
-    {
-        ( expectedSortedSubjects[subj] )["ad"] = false;
-        ( expectedSortedSubjects[subj] )["COMP"] = false;
-    }
-    ( expectedSortedSubjects["randomSubject_ad"] )["ad"] = true;
-    ( expectedSortedSubjects["randomSubject_ad"] )["COMP"] = false;
-    ( expectedSortedSubjects["randomSubject_COMP_3"] )["ad"] = false;
-    ( expectedSortedSubjects["randomSubject_COMP_3"] )["COMP"] = true;
+//    QStringList refSubjectsInAll;
+//    refSubjectsInAll << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                           "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                           "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                           "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed";
+//    QStringList refSubjectsInNone;
+//    refSubjectsInNone << "Stan" << "Kyle" << "Kenny" << "Cartman";
+//    QStringList refSubjects = refSubjectsInAll;
+//    refSubjects << refSubjectsInNone;
+//    refSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
+//    QMap< QString, QMap<QString, bool> > expectedSortedSubjects;
+//    foreach (QString subj, refSubjectsInAll)
+//    {
+//        ( expectedSortedSubjects[subj] )["ad"] = true;
+//        ( expectedSortedSubjects[subj] )["COMP"] = true;
+//    }
+//    foreach (QString subj, refSubjectsInNone)
+//    {
+//        ( expectedSortedSubjects[subj] )["ad"] = false;
+//        ( expectedSortedSubjects[subj] )["COMP"] = false;
+//    }
+//    ( expectedSortedSubjects["randomSubject_ad"] )["ad"] = true;
+//    ( expectedSortedSubjects["randomSubject_ad"] )["COMP"] = false;
+//    ( expectedSortedSubjects["randomSubject_COMP_3"] )["ad"] = false;
+//    ( expectedSortedSubjects["randomSubject_COMP_3"] )["COMP"] = true;
 
-    QStringList subjectsADFile;
-    subjectsADFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                      "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
+//    QStringList subjectsADFile;
+//    subjectsADFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                      "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
 
-    QStringList subjectsCovariateFile;
-    subjectsCovariateFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                             "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
-    QMap<QString, QStringList> selectedSubjectss;
-    selectedSubjectss.insert( "ad", subjectsADFile );
-    selectedSubjectss.insert( "COMP", subjectsCovariateFile );
-    QMap< QString, QMap<QString, bool> > sortedSubjects = processing.SortSubjects( refSubjects, selectedSubjectss );
+//    QStringList subjectsCovariateFile;
+//    subjectsCovariateFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                             "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
+//    QMap<QString, QStringList> selectedSubjectss;
+//    selectedSubjectss.insert( "ad", subjectsADFile );
+//    selectedSubjectss.insert( "COMP", subjectsCovariateFile );
+//    QMap< QString, QMap<QString, bool> > sortedSubjects = processing.SortSubjects( refSubjects, selectedSubjectss );
 
-    QMap< QString, QMap<QString, bool> >::ConstIterator iterSubj = sortedSubjects.begin();
-    QMap< QString, QMap<QString, bool> >::ConstIterator iterExpectedSubj = expectedSortedSubjects.begin();
-    while( iterSubj != sortedSubjects.end() )
-    {
-        QMap<QString, bool>::ConstIterator iterFile = iterSubj.value().begin();
-        QMap<QString, bool>::ConstIterator iterExpectedFile = iterExpectedSubj.value().begin();
-        while( iterFile != iterSubj.value().end() )
-        {
-            if( ( iterSubj.key() != iterSubj.key() ) ||
-                    ( expectedSortedSubjects[iterSubj.key()] != sortedSubjects[iterSubj.key()] ) ||
-                    ( ( expectedSortedSubjects[iterSubj.key()] )[iterFile.key()] != ( sortedSubjects[iterSubj.key()] )[iterFile.key()] ) )
-            {
-                testResult = false;
-            }
-            ++iterFile;
-            ++iterExpectedFile;
-        }
-        ++iterSubj;
-        ++iterExpectedSubj;
-    }
+//    QMap< QString, QMap<QString, bool> >::ConstIterator iterSubj = sortedSubjects.begin();
+//    QMap< QString, QMap<QString, bool> >::ConstIterator iterExpectedSubj = expectedSortedSubjects.begin();
+//    while( iterSubj != sortedSubjects.end() )
+//    {
+//        QMap<QString, bool>::ConstIterator iterFile = iterSubj.value().begin();
+//        QMap<QString, bool>::ConstIterator iterExpectedFile = iterExpectedSubj.value().begin();
+//        while( iterFile != iterSubj.value().end() )
+//        {
+//            if( ( iterSubj.key() != iterSubj.key() ) ||
+//                    ( expectedSortedSubjects[iterSubj.key()] != sortedSubjects[iterSubj.key()] ) ||
+//                    ( ( expectedSortedSubjects[iterSubj.key()] )[iterFile.key()] != ( sortedSubjects[iterSubj.key()] )[iterFile.key()] ) )
+//            {
+//                testResult = false;
+//            }
+//            ++iterFile;
+//            ++iterExpectedFile;
+//        }
+//        ++iterSubj;
+//        ++iterExpectedSubj;
+//    }
 
 
-    if( !testResult )
-    {
-        std::cerr << std::endl << "Test_SortSubjects() FAILED:" << std::endl;
-        std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
-        DisplayErrorSortedSubjects( expectedSortedSubjects, sortedSubjects );
-    }
-    else
-    {
-        std::cout << std::endl << "Test_SortSubjects() PASSED" << std::endl;
-    }
+//    if( !testResult )
+//    {
+//        std::cerr << std::endl << "Test_SortSubjects() FAILED:" << std::endl;
+//        std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
+//        DisplayErrorSortedSubjects( expectedSortedSubjects, sortedSubjects );
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_SortSubjects() PASSED" << std::endl;
+//    }
 
-    return testResult;
+//    return testResult;
+
+    return false;
 }
 
 bool TestProcessing::Test_AssignSortedSubject()
 {
-    Processing processing;
+//    Processing processing;
 
-    QStringList refSubjectsInAll;
-    refSubjectsInAll << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                           "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                           "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                           "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed";
-    QStringList refSubjectsInNone;
-    refSubjectsInNone << "Stan" << "Kyle" << "Kenny" << "Cartman";
-    QStringList refSubjects = refSubjectsInAll;
-    refSubjects << refSubjectsInNone;
-    refSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
-    QMap< QString, QMap<QString, bool> > sortedSubjects;
-    foreach (QString subj, refSubjectsInAll)
-    {
-        ( sortedSubjects[subj] )["ad"] = true;
-        ( sortedSubjects[subj] )["COMP"] = true;
-    }
-    foreach (QString subj, refSubjectsInNone)
-    {
-        ( sortedSubjects[subj] )["ad"] = false;
-        ( sortedSubjects[subj] )["COMP"] = false;
-    }
-    ( sortedSubjects["randomSubject_ad"] )["ad"] = true;
-    ( sortedSubjects["randomSubject_ad"] )["COMP"] = false;
-    ( sortedSubjects["randomSubject_COMP_3"] )["ad"] = false;
-    ( sortedSubjects["randomSubject_COMP_3"] )["COMP"] = true;
+//    QStringList refSubjectsInAll;
+//    refSubjectsInAll << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                           "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
+//                           "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
+//                           "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed";
+//    QStringList refSubjectsInNone;
+//    refSubjectsInNone << "Stan" << "Kyle" << "Kenny" << "Cartman";
+//    QStringList refSubjects = refSubjectsInAll;
+//    refSubjects << refSubjectsInNone;
+//    refSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
+//    QMap< QString, QMap<QString, bool> > sortedSubjects;
+//    foreach (QString subj, refSubjectsInAll)
+//    {
+//        ( sortedSubjects[subj] )["ad"] = true;
+//        ( sortedSubjects[subj] )["COMP"] = true;
+//    }
+//    foreach (QString subj, refSubjectsInNone)
+//    {
+//        ( sortedSubjects[subj] )["ad"] = false;
+//        ( sortedSubjects[subj] )["COMP"] = false;
+//    }
+//    ( sortedSubjects["randomSubject_ad"] )["ad"] = true;
+//    ( sortedSubjects["randomSubject_ad"] )["COMP"] = false;
+//    ( sortedSubjects["randomSubject_COMP_3"] )["ad"] = false;
+//    ( sortedSubjects["randomSubject_COMP_3"] )["COMP"] = true;
 
-    QMap<QString, QStringList > expectedUnMatchedSubjects;
-    foreach (QString unMatchedSubj, refSubjectsInNone)
-    {
-        expectedUnMatchedSubjects.insert( unMatchedSubj, QStringList( "refList" ) );
-    }
-    QStringList slist1;
-    slist1 << "ad" << "refList";
-    QStringList slist2;
-    slist2 << "COMP" << "refList";
-    expectedUnMatchedSubjects.insert( "randomSubject_ad", slist1 );
-    expectedUnMatchedSubjects.insert( "randomSubject_COMP_3", slist2 );
+//    QMap<QString, QStringList > expectedUnMatchedSubjects;
+//    foreach (QString unMatchedSubj, refSubjectsInNone)
+//    {
+//        expectedUnMatchedSubjects.insert( unMatchedSubj, QStringList( "refList" ) );
+//    }
+//    QStringList slist1;
+//    slist1 << "ad" << "refList";
+//    QStringList slist2;
+//    slist2 << "COMP" << "refList";
+//    expectedUnMatchedSubjects.insert( "randomSubject_ad", slist1 );
+//    expectedUnMatchedSubjects.insert( "randomSubject_COMP_3", slist2 );
 
-    QStringList matchedSubjects;
-    QMap<QString, QStringList > unMatchedSubjects;
-    processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
+//    QStringList matchedSubjects;
+//    QMap<QString, QStringList > unMatchedSubjects;
+//    processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
 
-    bool testMatchedSubjects = CompareQStringList( matchedSubjects, refSubjectsInAll );
-
-
-    bool testUnMatchedSubjects = true;
-    QMap<QString, QStringList >::ConstIterator iterExpectedUnMatched = expectedUnMatchedSubjects.begin();
-    QMap<QString, QStringList >::ConstIterator iterUnMatched = unMatchedSubjects.begin();
-    while( iterUnMatched != unMatchedSubjects.end() )
-    {
-        testUnMatchedSubjects = testUnMatchedSubjects & ( iterUnMatched.key() == iterExpectedUnMatched.key() ) &
-                CompareQStringList( iterUnMatched.value(), iterExpectedUnMatched.value() );
-        ++iterUnMatched;
-        ++iterExpectedUnMatched;
-    }
+//    bool testMatchedSubjects = CompareQStringList( matchedSubjects, refSubjectsInAll );
 
 
-    if( !testMatchedSubjects || !testUnMatchedSubjects )
-    {
-        std::cerr << std::endl << "Test_AssignSortedSubject() FAILED:" << std::endl;
-        if( !testMatchedSubjects )
-        {
-            std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
-            DisplayErrorSubjects( refSubjectsInAll, matchedSubjects );
-        }
-        if( !testUnMatchedSubjects )
-        {
-            std::cerr << "\t+ UnMatched subjects not correctly assigned" << std::endl;
-            DisplayErrorUnMatchedSubjects( expectedUnMatchedSubjects, unMatchedSubjects );
-        }
-    }
-    else
-    {
-        std::cout << std::endl << "Test_AssignSortedSubject() PASSED" << std::endl;
-    }
+//    bool testUnMatchedSubjects = true;
+//    QMap<QString, QStringList >::ConstIterator iterExpectedUnMatched = expectedUnMatchedSubjects.begin();
+//    QMap<QString, QStringList >::ConstIterator iterUnMatched = unMatchedSubjects.begin();
+//    while( iterUnMatched != unMatchedSubjects.end() )
+//    {
+//        testUnMatchedSubjects = testUnMatchedSubjects & ( iterUnMatched.key() == iterExpectedUnMatched.key() ) &
+//                CompareQStringList( iterUnMatched.value(), iterExpectedUnMatched.value() );
+//        ++iterUnMatched;
+//        ++iterExpectedUnMatched;
+//    }
 
-    return ( testMatchedSubjects & testUnMatchedSubjects );
+
+//    if( !testMatchedSubjects || !testUnMatchedSubjects )
+//    {
+//        std::cerr << std::endl << "Test_AssignSortedSubject() FAILED:" << std::endl;
+//        if( !testMatchedSubjects )
+//        {
+//            std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
+//            DisplayErrorSubjects( refSubjectsInAll, matchedSubjects );
+//        }
+//        if( !testUnMatchedSubjects )
+//        {
+//            std::cerr << "\t+ UnMatched subjects not correctly assigned" << std::endl;
+//            DisplayErrorUnMatchedSubjects( expectedUnMatchedSubjects, unMatchedSubjects );
+//        }
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_AssignSortedSubject() PASSED" << std::endl;
+//    }
+
+//    return ( testMatchedSubjects & testUnMatchedSubjects );
+
+    return false;
 }
 
 

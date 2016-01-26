@@ -30,11 +30,11 @@ public:
 
     QStringList GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID );
 
-    QStringList GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
+    QStringList GetAllSubjectsList( QMap<QString, QStringList> allSubjects );
 
     QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap );
 
-    QMap< QString, QMap<QString, bool> > SortSubjects( const QStringList refSubjects, const QMap<QString, QStringList> selectedSubjects );
+    QMap< QString, QMap<QString, bool> > SortSubjects( const QStringList allSubjectsList, const QMap<QString, QStringList> allSubjects );
 
     void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubjects, QStringList& matchedSubjects,
                               QMap<QString, QStringList >& unMatchedSubjects );
