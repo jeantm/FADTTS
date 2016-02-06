@@ -14,7 +14,6 @@ class MatlabThread : public QThread
 public:
     explicit MatlabThread( QObject *parent = 0 );
 
-    void SetProcessing( Processing *processing );
 
     void SetMatlabScript( MatlabScript *matlabScript );
 
@@ -24,26 +23,26 @@ public:
 
     void SetLogFile( QFile *logFile );
 
+    void SetRunMatlab( bool runMatlab );
+
+    void SetRunMatlabOnKD( bool runMatlabOnKD );
+
+    void SetQueueKD( QString queueKD );
+
+    void SetAllocatedMemoryKD( int allocatedMemoryKD );
+
 
     void terminate();
 
 
-signals:
-
-public slots:
-
 private:
-    void run();
-
-
     void RedirectOutput();
 
     void RunScript();
 
 
-    QString m_outputDir, m_fiberName, m_matlabExe, m_matlabScriptPath;
+    void run();
 
-    Processing *m_processing;
 
     MatlabScript *m_matlabScript;
 
@@ -51,6 +50,11 @@ private:
 
     QProcess *m_process;
 
+    QString m_matlabExe, m_matlabScriptPath, m_queueKD;
+
+    int m_allocatedMemoryKD;
+
+    bool m_runMatlab, m_runMatlabOnKD;
 };
 
 #endif // MATLABTHREAD_H

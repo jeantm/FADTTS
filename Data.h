@@ -49,8 +49,6 @@ public:
     /***************************************/
     QString& SetOutputDir();
 
-    int& SetCovariateFileSubjectColumnID();
-
 
     QMap<int, QString>& SetCovariates();
 
@@ -68,16 +66,19 @@ public:
     int& SetNbrSubjects( QString prefID );
 
 
+    int& SetCovariateFileSubjectColumnID();
+
+
     /***************************************/
     /*********** Other Functions ***********/
     /***************************************/
     int InitData();
 
+
     void SetSubjects( QString prefID, QStringList subjects );
 
-    void AddCovariate( int colunmID , QString covariate );
-
     void AddInterceptToCovariates();
+
 
     void ClearFileInformation( QString prefID );
 
@@ -87,6 +88,8 @@ public:
 
 
 private:
+    enum diffusionProperties { AD, RD, MD, FA, SubMatrix };
+
     QMap<QString, QStringList> m_subjectMap;
 
     QMap<QString, QString> m_filenameMap;

@@ -9,63 +9,64 @@ TestMatlabScript::TestMatlabScript()
 /**********************************************************************/
 bool TestMatlabScript::Test_GenerateMatlabScript( QString outputDir, QString matlabInputADFile, QString matlabInputCOMPFile, QString expectedMatlabScript )
 {
-    MatlabScript mScript;
-    mScript.InitMatlabScript();
+//    MatlabScript mScript;
+//    mScript.InitMatlabScript();
 
-    QString fiberName = "TestFADTTS";
-    mScript.SetFiberName( fiberName );
+//    QString fiberName = "TestFADTTS";
+//    mScript.SetFiberName( fiberName );
 
-    QStringList selectedPrefixes;
-    selectedPrefixes.append( "ad" );
-    mScript.SetDiffusionProperties( selectedPrefixes );
+//    QStringList selectedPrefixes;
+//    selectedPrefixes.append( "ad" );
+//    mScript.SetDiffusionProperties( selectedPrefixes );
 
-    int nbrPermutations = 259;
-    mScript.SetNbrPermutation( nbrPermutations );
+//    int nbrPermutations = 259;
+//    mScript.SetNbrPermutation( nbrPermutations );
 
-    QMap<int,QString> selectedCovariates;
-    selectedCovariates.insert( -1, "Intercept" );
-    selectedCovariates.insert( 1, "COMP" );
-    selectedCovariates.insert( 2, "Gender" );
-    selectedCovariates.insert( 3, "GestAgeBirth" );
-    mScript.SetCovariates( selectedCovariates );
+//    QMap<int,QString> selectedCovariates;
+//    selectedCovariates.insert( -1, "Intercept" );
+//    selectedCovariates.insert( 1, "COMP" );
+//    selectedCovariates.insert( 2, "Gender" );
+//    selectedCovariates.insert( 3, "GestAgeBirth" );
+//    mScript.SetCovariates( selectedCovariates );
 
-    QMap< QPair< int, QString >, bool> matlabInputFiles;
-    QPair< int, QString > adFilePair;
-    adFilePair.first = 0;
-    adFilePair.second = matlabInputADFile;
-    QPair< int, QString > compFilePair;
-    compFilePair.first = 4;
-    compFilePair.second = matlabInputCOMPFile;
-    matlabInputFiles.insert( adFilePair, false );
-    matlabInputFiles.insert( compFilePair, true );
-    mScript.SetInputFiles( matlabInputFiles );
+//    QMap< QPair< int, QString >, bool> matlabInputFiles;
+//    QPair< int, QString > adFilePair;
+//    adFilePair.first = 0;
+//    adFilePair.second = matlabInputADFile;
+//    QPair< int, QString > compFilePair;
+//    compFilePair.first = 4;
+//    compFilePair.second = matlabInputCOMPFile;
+//    matlabInputFiles.insert( adFilePair, false );
+//    matlabInputFiles.insert( compFilePair, true );
+//    mScript.SetInputFiles( matlabInputFiles );
 
-    bool omnibus = true;
-    mScript.SetOmnibus( omnibus );
+//    bool omnibus = true;
+//    mScript.SetOmnibus( omnibus );
 
-    bool postHoc = true;
-    mScript.SetPostHoc( postHoc );
+//    bool postHoc = true;
+//    mScript.SetPostHoc( postHoc );
 
-    mScript.SetMatlabOutputDir( outputDir + "/MatlabOutputs" );
-    mScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + nbrPermutations + "perm.m" );
-    mScript.SetMVCMPath( "/NIRAL/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS/" );
+//    mScript.SetMatlabOutputDir( outputDir + "/MatlabOutputs" );
+//    mScript.SetMatlabScriptName( "/FADTTSAnalysis_MatlabScript_" + fiberName + "_" + nbrPermutations + "perm.m" );
+//    mScript.SetMVCMPath( "/NIRAL/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS/" );
 
-    QString matlabScript = mScript.GenerateMatlabFiles();
+//    QString matlabScript = mScript.GenerateMatlabFiles();
 
-    bool scriptMatched = CompareFile( matlabScript, expectedMatlabScript );
+//    bool scriptMatched = CompareFile( matlabScript, expectedMatlabScript );
 
 
-    if( !scriptMatched )
-    {
-        std::cerr << std::endl << "Test_GenerateMatlabScript() FAILED:" << std::endl;
-        std::cerr << "\t+ Matlab Script not generated correctly" << std::endl;
-    }
-    else
-    {
-        std::cout << std::endl << "Test_GenerateMatlabScript() PASSED" << std::endl;
-    }
+//    if( !scriptMatched )
+//    {
+//        std::cerr << std::endl << "Test_GenerateMatlabScript() FAILED:" << std::endl;
+//        std::cerr << "\t+ Matlab Script not generated correctly" << std::endl;
+//    }
+//    else
+//    {
+//        std::cout << std::endl << "Test_GenerateMatlabScript() PASSED" << std::endl;
+//    }
 
-    return scriptMatched;
+//    return scriptMatched;
+    return false;
 }
 
 

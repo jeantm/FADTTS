@@ -19,9 +19,7 @@ bool TestEditInputDialog::Test_UploadFileData( QString adInputFile )
 
     QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
     editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( ad );
-    editInputDialog->SetInputFile( adInputFile );
-    editInputDialog->UploadFileData();
+    editInputDialog->DisplayDataEdition( ad, adInputFile );
 
     QList<QStringList> expectedFileData = processing.GetDataFromFile( adInputFile );
 
@@ -55,9 +53,7 @@ bool TestEditInputDialog::Test_Delete( QString adInputFile )
 
     QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
     editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( ad );
-    editInputDialog->SetInputFile( adInputFile );
-    editInputDialog->UploadFileData();
+    editInputDialog->DisplayDataEdition( ad, adInputFile );
 
     QList<QStringList> expectedFileData = processing.GetDataFromFile( adInputFile );
 
@@ -67,7 +63,7 @@ bool TestEditInputDialog::Test_Delete( QString adInputFile )
     /**************** Test Delete Row ***************/
     /************************************************/
     editInputDialog->m_dataTableWidget->selectRow( IDRow );
-    editInputDialog->DeleteRows();
+    editInputDialog->OnDeleteRows();
     expectedFileData.removeAt( IDRow );
 
     bool testDeleteRow = TestQTableWidget( expectedFileData, editInputDialog );
@@ -77,7 +73,7 @@ bool TestEditInputDialog::Test_Delete( QString adInputFile )
     /************** Test Delete Column **************/
     /************************************************/
     editInputDialog->m_dataTableWidget->selectColumn( IDColumn );
-    editInputDialog->DeleteColumns();
+    editInputDialog->OnDeleteColumns();
     for( int i = 0; i < expectedFileData.size(); i++ )
     {
         expectedFileData[ i ].removeAt( IDColumn );

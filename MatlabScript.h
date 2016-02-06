@@ -45,6 +45,8 @@ public :
 
    void SetHeader();
 
+   void SetNbrCompThreads( bool isRunOnSystem , int nbrComp );
+
    void SetMVCMPath( QString mvcmPath );
 
    void SetFiberName( QString fiberName );
@@ -55,11 +57,15 @@ public :
 
    void SetCovariates( QMap<int, QString> selectedCovariates );
 
-   void SetInputFiles( QMap< QPair< int, QString >, bool> matlabInputFiles );
+   void SetInputFiles( QMap<int, QString> matlabInputFiles );
 
    void SetOmnibus( bool omnibus );
 
    void SetPostHoc( bool postHoc );
+
+   void SetConfidenceBandsThreshold( double confidenceBandsThreshold );
+
+   void SetPvalueThreshold( double pvalueThreshold );
 
 
    QString GenerateMatlabFiles();

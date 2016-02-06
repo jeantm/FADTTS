@@ -47,9 +47,14 @@ void MatlabScript::SetHeader()
     m_matlabScript.replace( "$time$", QTime::currentTime().toString( "hh:mm ap" ) );
 }
 
+void MatlabScript::SetNbrCompThreads( bool isRunOnSystem, int nbrComp )
+{
+    m_matlabScript.replace( "$nbrCompThreads$", isRunOnSystem ? "maxNumCompThreads( " + QString::number( nbrComp ) + " );" : "% Option ignored");
+}
+
 void MatlabScript::SetMVCMPath( QString mvcmPath )
 {
-    m_matlabScript.replace( "$addMVCMPath$", "addpath \'" + mvcmPath + "\';\n" );
+    m_matlabScript.replace( "$addMVCMPath$", mvcmPath );
 }
 
 void MatlabScript::SetFiberName( QString fiberName )
@@ -60,7 +65,6 @@ void MatlabScript::SetFiberName( QString fiberName )
 void MatlabScript::SetDiffusionProperties( QStringList selectedPrefixes )
 {
     QString inputDiffusionProperties;
-    QString inputAllProperties;
     QString diffusionProperties;
     diffusionProperties.append( "Dnames = cell( " + QString::number( selectedPrefixes.size() ) + ", 1 );\n" );
 
@@ -68,17 +72,14 @@ void MatlabScript::SetDiffusionProperties( QStringList selectedPrefixes )
     foreach ( QString prefID, selectedPrefixes )
     {
         inputDiffusionProperties.append( prefID.toUpper() + " = \'" + prefID.toUpper() + "\';\n" );
-        inputAllProperties.append( prefID.toUpper() );
 
         diffusionProperties.append( "Dnames{ " + QString::number( i ) + " } = " + prefID.toUpper() + ";\n" );
         i++;
     }
 
     m_matlabScript.replace( "$inputDiffusionProperties$", inputDiffusionProperties );
-    m_matlabScript.replace( "$inputAllProperties$", "allProperties = \'" + inputAllProperties + "\';" );
 
     m_matlabScript.replace( "$diffusionProperties$", diffusionProperties );
-    m_matlabScript.replace( "$allProperties$", "params{ 1 } = allProperties;" );
 }
 
 void MatlabScript::SetNbrPermutation( int nbrPermutation )
@@ -96,7 +97,7 @@ void MatlabScript::SetCovariates( QMap<int, QString> selectedCovariates )
     while( iterCovariate != selectedCovariates.constEnd() )
     {
         inputCovarariates.append( iterCovariate.value() + " = \'" + iterCovariate.value() + "\';\n" );
-        covariates.append( "Pnames{ " + QString::number( i ) + " } = " + iterCovariate.value() + ";\n" );
+        covariates.append( "Cnames{ " + QString::number( i ) + " } = " + iterCovariate.value() + ";\n" );
         ++iterCovariate;
         i++;
     }
@@ -104,18 +105,18 @@ void MatlabScript::SetCovariates( QMap<int, QString> selectedCovariates )
     m_matlabScript.replace( "$covariates$", covariates );
 }
 
-void MatlabScript::SetInputFiles( QMap< QPair< int, QString >, bool > matlabInputFiles )
+void MatlabScript::SetInputFiles( QMap< int, QString > matlabInputFiles )
 {
     QString inputDiffusionFiles;
     QString diffusionFiles;
     diffusionFiles.append("diffusionFiles = cell( " + QString::number( matlabInputFiles.size() - 1 ) + ", 1 );\n");
 
     int i = 1;
-    QMap< QPair< int, QString >, bool >::ConstIterator iterMatlabInputFile = matlabInputFiles.begin();
+    QMap< int, QString >::ConstIterator iterMatlabInputFile = matlabInputFiles.begin();
     while( iterMatlabInputFile != matlabInputFiles.constEnd() )
     {
-        QString filename = QFileInfo( QFile( iterMatlabInputFile.key().second ) ).fileName();
-        if( iterMatlabInputFile.value() == false )
+        QString filename = QFileInfo( QFile( iterMatlabInputFile.value() ) ).fileName();
+        if( !filename.contains( "_subMatrix_", Qt::CaseInsensitive ) )
         {
             inputDiffusionFiles.append( filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );\n" );
             diffusionFiles.append( "dataFiber" + QString::number( i ) + "All = dlmread( " + filename.split( "." ).first() +
@@ -125,8 +126,8 @@ void MatlabScript::SetInputFiles( QMap< QPair< int, QString >, bool > matlabInpu
         }
         else
         {
-            m_matlabScript.replace( "$inputMatlabCOMPInputFile$", filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );" );
-            m_matlabScript.replace( "$matlabCOMPInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
+            m_matlabScript.replace( "$inputMatlabSubMatrixInputFile$", filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );" );
+            m_matlabScript.replace( "$matlabSubMatrixInputFile$", "data2 = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
         }
         ++iterMatlabInputFile;
     }
@@ -144,12 +145,21 @@ void MatlabScript::SetPostHoc( bool postHoc )
     m_matlabScript.replace( "$inputPostHoc$", "postHoc = " + QString::number( postHoc ) + ";" );
 }
 
+void MatlabScript::SetConfidenceBandsThreshold( double confidenceBandsThreshold )
+{
+    m_matlabScript.replace( "$confidenceBandsThreshold$", "confidenceBandsThreshold = " + QString::number( confidenceBandsThreshold ) + ";" );
+}
+
+void MatlabScript::SetPvalueThreshold( double pvalueThreshold )
+{
+    m_matlabScript.replace( "$pvalueThreshold$", "pvalueThreshold = " + QString::number( pvalueThreshold ) + ";" );
+}
 
 void MatlabScript::GenerateMyFDR()
 {
     QResource resource( ":/MatlabFiles/Resources/MatlabFiles/myFDR.m" );
     QFile matlabFunctionResource( resource.absoluteFilePath() );
-    QFile matlabFunction( m_matlabOutputDir + "/myFRD.m" );
+    QFile matlabFunction( m_matlabOutputDir + "/myFDR.m" );
 
     if ( !matlabFunctionResource.open( QIODevice::ReadOnly | QIODevice::Text ) )
     {
@@ -173,8 +183,8 @@ void MatlabScript::GenerateMyFDR()
 
 QString MatlabScript::GenerateMatlabFiles()
 {
-    QDir().mkpath( m_matlabOutputDir );
-    QString matlabScriptPath = m_matlabOutputDir + m_matlabScriptName;
+    QDir().mkpath( m_matlabOutputDir + "/MatlabOutputs" );
+    QString matlabScriptPath = m_matlabOutputDir + "/" + m_matlabScriptName;
     QFile matlabScript( matlabScriptPath );
     if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )
     {

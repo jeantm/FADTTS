@@ -10,11 +10,6 @@ MatlabThread::MatlabThread(QObject *parent) :
 /*****************************************************/
 /***************** Public  Functions *****************/
 /*****************************************************/
-void MatlabThread::SetProcessing( Processing *processing )
-{
-    m_processing = processing;
-}
-
 void MatlabThread::SetMatlabScript( MatlabScript *matlabScript )
 {
     m_matlabScript = matlabScript;
@@ -35,6 +30,26 @@ void MatlabThread::SetLogFile( QFile *logFile )
     m_logFile = logFile;
 }
 
+void MatlabThread::SetRunMatlab( bool runMatlab )
+{
+    m_runMatlab = runMatlab;
+}
+
+void MatlabThread::SetRunMatlabOnKD( bool runMatlabOnKD )
+{
+    m_runMatlabOnKD = runMatlabOnKD;
+}
+
+void MatlabThread::SetQueueKD( QString queueKD )
+{
+    m_queueKD = queueKD;
+}
+
+void MatlabThread::SetAllocatedMemoryKD( int allocatedMemoryKD )
+{
+    m_allocatedMemoryKD = allocatedMemoryKD;
+}
+
 
 void MatlabThread::terminate()
 {
@@ -46,13 +61,6 @@ void MatlabThread::terminate()
 /*****************************************************/
 /***************** Private Functions *****************/
 /*****************************************************/
-void MatlabThread::run()
-{
-    QString matlabScriptPath = m_matlabScript->GenerateMatlabFiles();
-    SetMatlabScriptPath( matlabScriptPath );
-    RunScript();
-}
-
 void MatlabThread::RedirectOutput()
 {
     m_process = new QProcess();
@@ -65,12 +73,25 @@ void MatlabThread::RunScript()
     RedirectOutput();
 
     QStringList arguments;
-//    QString mScript = "run('" + m_matlabScript + "')";
-    QString mScript = "run('/work/jeantm/Project/FADTTS_Test/test.m')";
+    QString mScript = "run('" + m_matlabScriptPath + "')";
     std::cout << mScript.toStdString() << std::endl;
-    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" );
+    if( m_runMatlabOnKD )
+    {
+        arguments << ( QString( "bsub -q " + m_queueKD + "-M " + m_allocatedMemoryKD ) );
+    }
+    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" ) << "-logfile matlabLog.out";
 
-//    m_process->start( m_matlabExe, arguments );
-    m_process->start( "/opt/matlab/bin/matlab", arguments );
+    m_process->start( m_matlabExe, arguments );
     m_process->waitForFinished();
+}
+
+
+void MatlabThread::run()
+{
+    QString matlabScriptPath = m_matlabScript->GenerateMatlabFiles();
+    if( m_runMatlab )
+    {
+        SetMatlabScriptPath( matlabScriptPath );
+        RunScript();
+    }
 }

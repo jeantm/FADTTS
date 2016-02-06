@@ -28,9 +28,6 @@ public:
 
 
 private:
-    QLabel *m_adFileInfo_label, *m_rdFileInfo_label, *m_mdFileInfo_label,
-    *m_faFileInfo_label, *m_compFileInfo_label;
-
     typedef QMap<QString, QLabel*> labelMapType;
     labelMapType m_inputFileInformationLabelMap;
 

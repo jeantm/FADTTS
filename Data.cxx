@@ -147,7 +147,7 @@ int Data::InitData()
     m_radialDiffusivityPrefix = "rd";
     m_meanDiffusivityPrefix = "md";
     m_fractionalAnisotropyPrefix = "fa";
-    m_covariatePrefix = "COMP";
+    m_covariatePrefix = "subMatrix";
 
     m_prefixList << m_axialDiffusivityPrefix << m_radialDiffusivityPrefix << m_meanDiffusivityPrefix
                  << m_fractionalAnisotropyPrefix << m_covariatePrefix;
@@ -166,21 +166,18 @@ int Data::InitData()
     return m_prefixList.removeDuplicates();
 }
 
+
 void Data::SetSubjects(QString prefID, QStringList subjects )
 {
     m_subjectMap[ prefID ].append( subjects );
 }
 
-void Data::AddCovariate( int colunmID, QString covariate )
-{
-    m_covariateMap.insert( colunmID, covariate );
-}
-
 void Data::AddInterceptToCovariates()
 {
-    /** The key is -1 so the Intercept is not taken into account as an input covariate **/
+    /** Key set at -1 so the Intercept is not taken into account when processing covariates **/
     m_covariateMap.insert( -1, "Intercept" );
 }
+
 
 void Data::ClearFileInformation( QString prefID )
 {
@@ -189,17 +186,17 @@ void Data::ClearFileInformation( QString prefID )
     m_nbrRowsMap[ prefID ] = 0;
     m_nbrColumnsMap[ prefID ] = 0;
     m_nbrSubjectsMap[ prefID ] = 0;
-    ( m_subjectMap[ prefID ] ).clear();
+    ClearSubjects( prefID );
 
     if( prefID == m_covariatePrefix )
     {
-        m_covariateMap.clear();
+        ClearCovariates();
     }
 }
 
 void Data::ClearSubjects( QString prefID )
 {
-    ( m_subjectMap[ prefID ] ).clear();
+    m_subjectMap[ prefID ].clear();
 }
 
 void Data::ClearCovariates()

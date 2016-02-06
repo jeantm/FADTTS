@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1217</width>
-    <height>703</height>
+    <width>1056</width>
+    <height>699</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,9 +27,6 @@
     <property name="margin">
      <number>0</number>
     </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
@@ -39,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -64,58 +61,10 @@
            <string>Input Files</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
-           <property name="leftMargin">
+           <property name="margin">
             <number>0</number>
            </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="5" column="1" colspan="8">
-            <widget class="QLineEdit" name="para_inputTab_mdFile_lineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="10">
-            <widget class="QLabel" name="inputTab_iconADFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="11">
-            <widget class="QPushButton" name="inputTab_editCovariateFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="11">
+           <item row="3" column="6">
             <widget class="QPushButton" name="inputTab_editRDFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -128,72 +77,8 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="10">
-            <widget class="QLabel" name="inputTab_iconRDFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="11">
-            <widget class="QPushButton" name="inputTab_editADFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="10">
-            <widget class="QLabel" name="inputTab_iconFAFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="11">
-            <widget class="QPushButton" name="inputTab_editFAFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" colspan="8">
-            <widget class="QLineEdit" name="para_inputTab_adFile_lineEdit">
+           <item row="6" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_faFile_lineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -202,21 +87,8 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="11">
-            <widget class="QPushButton" name="inputTab_editMDFile_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="inputTab_addADFile_pushButton">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="inputTab_addMultipleInputFiles_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -230,45 +102,32 @@
               </size>
              </property>
              <property name="text">
-              <string>Specify AD Data File</string>
+              <string>Add Input Files</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QPushButton" name="inputTab_addFAFile_pushButton">
+           <item row="12" column="6">
+            <widget class="QPushButton" name="inputTab_close_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>201</width>
-               <height>0</height>
-              </size>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
              </property>
              <property name="text">
-              <string>Specify FA Data File</string>
+              <string>Close</string>
              </property>
-            </widget>
-           </item>
-           <item row="8" column="10">
-            <widget class="QLabel" name="inputTab_iconCovariateFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="autoDefault">
+              <bool>false</bool>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
+             <property name="default">
+              <bool>false</bool>
              </property>
-             <property name="text">
-              <string/>
+             <property name="flat">
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -297,8 +156,31 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QPushButton" name="inputTab_addMDFile_pushButton">
+           <item row="5" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_mdFile_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="6">
+            <widget class="QPushButton" name="inputTab_editADFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="inputTab_addFAFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -312,68 +194,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Specify MD Data File</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="1" colspan="8">
-            <widget class="QLineEdit" name="para_inputTab_faFile_lineEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="9">
-            <widget class="QLabel" name="inputTab_subjectColumnID_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="8">
-            <widget class="QLabel" name="inputTab_addMultipleInputFilesInfo_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;To add several files at the same time, click on 'Add Input Filesand select them. The files must start with ad_, rd_, md_, fa_ or COMP_. Select one file per prefix.&lt;br/&gt;If multiple files starting with the same prefix are selected, they will be ignored.&lt;/i&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="10">
-            <widget class="QLabel" name="inputTab_iconMDFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>20</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
+              <string>Specify FA Data File</string>
              </property>
             </widget>
            </item>
@@ -396,8 +217,8 @@
              </property>
             </widget>
            </item>
-           <item row="10" column="0" colspan="4">
-            <widget class="QLabel" name="inputTab_prefixMeaning_label">
+           <item row="0" column="1" colspan="3">
+            <widget class="QLabel" name="inputTab_addMultipleInputFilesInfo_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -405,143 +226,25 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;AD = Axial Diffusivity, RD = Radial Diffusivity, MD = Mean Diffusivity, FA = Fractional Anisotropy&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;To add several files at the same time, click on 'Add Input Files' and select them.&lt;br&gt;The files must either start with ad_, rd_, md_, fa_ or subMatrix_ or contain _ad_, _rd_, _md_, _fa_ or _subMatrix_.&lt;br/&gt;If several files with the same ID are selected, they will be ignored.&lt;/i&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
-           <item row="12" column="0" colspan="12">
-            <widget class="QWidget" name="inputTab_fileInfo_widget" native="true">
-             <layout class="QGridLayout" name="gridLayout_8">
-              <item row="1" column="5" rowspan="2">
-               <widget class="QLabel" name="inputTab_mdFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="4" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine_2">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="8" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine_4">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="9">
-               <widget class="QLabel" name="inputTab_covariateFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Covariates File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="9" rowspan="2">
-               <widget class="QLabel" name="inputTab_covariateFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="7" rowspan="2">
-               <widget class="QLabel" name="inputTab_faFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="inputTab_adFileInfoHeader_label">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Axial Diffusivity File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="7">
-               <widget class="QLabel" name="inputTab_faFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fractional Anisotropy File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3" rowspan="2">
-               <widget class="QLabel" name="inputTab_rdFileInfo_label">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" rowspan="2">
-               <widget class="QLabel" name="inputTab_adFileInfo_label">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="6" rowspan="3">
-               <widget class="Line" name="inputTab_verticalLine_3">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLabel" name="inputTab_rdFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Radial Diffusivity File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5">
-               <widget class="QLabel" name="inputTab_mdFileInfoHeader_label">
-                <property name="text">
-                 <string>&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mean Diffusivity File&lt;/span&gt;</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+           <item row="8" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_covariateFile_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="inputTab_addMultipleInputFiles_pushButton">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="inputTab_addADFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -555,11 +258,11 @@
               </size>
              </property>
              <property name="text">
-              <string>Add Input Files</string>
+              <string>Specify AD Data File</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1" colspan="8">
+           <item row="3" column="1" colspan="3">
             <widget class="QLineEdit" name="para_inputTab_rdFile_lineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -569,182 +272,18 @@
              </property>
             </widget>
            </item>
-           <item row="8" column="1" colspan="8">
-            <widget class="QLineEdit" name="para_inputTab_covariateFile_lineEdit">
+           <item row="1" column="1" colspan="3">
+            <widget class="QLineEdit" name="para_inputTab_adFile_lineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="text">
-              <string/>
-             </property>
             </widget>
            </item>
-           <item row="11" column="0" colspan="12">
-            <widget class="Line" name="inputTab_horizontalLine">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="13" column="11">
-            <widget class="QPushButton" name="inputTab_close_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>Close</string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-             <property name="default">
-              <bool>false</bool>
-             </property>
-             <property name="flat">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="subjectCovariateTab">
-       <attribute name="title">
-        <string>Subjects / Covariates</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="2" column="0" rowspan="6">
-         <widget class="QGroupBox" name="subjectCovariateTab_covariates_groupBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="title">
-           <string>Covariates</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_9">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="subjectCovariateTab_covariatesUncheckAll_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Uncheck All</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="subjectCovariateTab_covariatesCheckAll_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Check All</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" rowspan="3" colspan="2">
-            <widget class="QListWidget" name="para_subjectCovariateTab_covariates_listWidget">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <widget class="QLabel" name="subjectCovariateTab_covariatesInformation_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;Keep at least one covariate checked.&lt;br/&gt;&quot;Intercept&quot; should always be checked.&lt;/i&gt;&lt;/span&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="7" column="3">
-         <widget class="QGroupBox" name="subjectCovariateTab_subjectFile_groupBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="title">
-           <string>Subject List</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="0" colspan="5">
-            <widget class="QLabel" name="subjectCovariateTab_warningSubjectFile_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;If the subject list is either unspecified or invalid, reference subjects will be automatically generated from the selected data files.&lt;/i&gt;&lt;/span&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="subjectCovariateTab_iconLoadSubjectFile_label">
+           <item row="1" column="5">
+            <widget class="QLabel" name="inputTab_iconADFile_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -762,8 +301,27 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="4">
-            <widget class="QPushButton" name="subjectCovariateTab_resetSubjectFile_pushButton">
+           <item row="3" column="5">
+            <widget class="QLabel" name="inputTab_iconRDFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="6">
+            <widget class="QPushButton" name="inputTab_editFAFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -771,22 +329,31 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Reset</string>
+              <string>Edit</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QLineEdit" name="para_subjectCovariateTab_subjectFile_lineEdit">
+           <item row="5" column="5">
+            <widget class="QLabel" name="inputTab_iconMDFile_label">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QPushButton" name="subjectCovariateTab_loadSubjectFile_PushButton">
+           <item row="5" column="6">
+            <widget class="QPushButton" name="inputTab_editMDFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -794,18 +361,487 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Load List</string>
+              <string>Edit</string>
              </property>
+            </widget>
+           </item>
+           <item row="8" column="6">
+            <widget class="QPushButton" name="inputTab_editCovariateFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0" colspan="3">
+            <widget class="QLabel" name="inputTab_prefixMeaning_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;AD = Axial Diffusivity, RD = Radial Diffusivity, MD = Mean Diffusivity, FA = Fractional Anisotropy&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="4">
+            <widget class="QLabel" name="inputTab_subjectColumnID_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="5">
+            <widget class="QLabel" name="inputTab_iconCovariateFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="inputTab_addMDFile_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>201</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Specify MD Data File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="5">
+            <widget class="QLabel" name="inputTab_iconFAFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>20</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0" colspan="7">
+            <widget class="QWidget" name="inputTab_fileInfo_widget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_8">
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <item row="7" column="1" rowspan="2">
+               <widget class="QLabel" name="inputTab_mdFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLabel" name="inputTab_covariateFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Covariates File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="inputTab_rdFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Radial Diffusivity File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="1">
+               <spacer name="inputTab_verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="10" column="1" rowspan="4">
+               <widget class="QLabel" name="inputTab_faFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1" rowspan="2">
+               <widget class="QLabel" name="inputTab_adFileInfo_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="inputTab_adFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Axial Diffusivity File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2" rowspan="15">
+               <widget class="Line" name="inputTab_line">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3" rowspan="13">
+               <widget class="QLabel" name="inputTab_covariateFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QLabel" name="inputTab_mdFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Mean Diffusivity File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QLabel" name="inputTab_faFileInfoHeader_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Fractional Anisotropy File&lt;/span&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" rowspan="2">
+               <widget class="QLabel" name="inputTab_rdFileInfo_label">
+                <property name="text">
+                 <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="Line" name="subjectCovariateTab_horizontalLine">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="subjectCovariateTab">
+       <attribute name="title">
+        <string>Subjects / Covariates</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="2" rowspan="6">
+         <widget class="QGroupBox" name="subjectCovariateTab_matchSubjects_groupBox">
+          <property name="title">
+           <string>Subjects</string>
           </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="subjectCovariateTab_checkAllVisible_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Check All Visible</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="4">
+            <layout class="QGridLayout" name="subjectCovariateTab_subjectDisplay_gridLayout">
+             <item row="0" column="0" colspan="3">
+              <widget class="QLabel" name="subjectCovariateTab_matchedSubjectsInformation_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" rowspan="10" colspan="3">
+              <widget class="QListWidget" name="subjectCovariateTab_matchedSubjectsInformation_listWidget">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="baseSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="11" column="0" colspan="3">
+              <widget class="QPushButton" name="subjectCovariateTab_saveCheckedSubjects_pushButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Save Checked Subjects as ...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3" rowspan="10" colspan="3">
+              <widget class="QListWidget" name="subjectCovariateTab_unmatchedSubjectsInformation_listWidget">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3" colspan="3">
+              <widget class="QLabel" name="subjectCovariateTab_unmatchedSubjectsInformation_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="2" column="0" colspan="4">
+            <widget class="QWidget" name="widget" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_20">
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item row="4" column="8">
+               <widget class="QCheckBox" name="subjectCovariateTab_caseSensitive_checkBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Case Sensitive</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1" colspan="2">
+               <widget class="QLineEdit" name="subjectCovariateTab_search_lineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="subjectCovariateTab_search_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Search: </string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="5">
+               <widget class="QLabel" name="subjectCovariateTab_nbrFound_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>110</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="margin">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="subjectCovariateTab_checkedSubjectsInformation_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>27</width>
+               <height>27</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="subjectCovariateTab_unCheckAllVisible_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Uncheck All Visible</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item row="0" column="0" colspan="2">
@@ -817,13 +853,10 @@
            </sizepolicy>
           </property>
           <property name="title">
-           <string>Inputs avaliable</string>
+           <string>Inputs Avaliable</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item row="6" column="0">
@@ -959,36 +992,42 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="2" rowspan="8">
-         <widget class="Line" name="subjectCovariateTab_verticalLine">
+        <item row="6" column="2">
+         <widget class="QGroupBox" name="subjectCovariateTab_subjectFile_groupBox">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3" rowspan="7">
-         <widget class="QGroupBox" name="subjectCovariateTab_matchSubjects_groupBox">
           <property name="title">
-           <string>Subjects</string>
+           <string>Subject List</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <property name="leftMargin">
+          <layout class="QGridLayout" name="gridLayout">
+           <property name="margin">
             <number>0</number>
            </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="subjectCovariateTab_checkAllVisible_pushButton">
+           <item row="2" column="0" colspan="5">
+            <widget class="QLabel" name="subjectCovariateTab_warningSubjectFile_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;If the subject list is either unspecified or invalid, a reference list will be automatically generated with the subjects of the selected data files.&lt;/i&gt;&lt;/span&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="scaledContents">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" rowspan="2" colspan="2">
+            <widget class="QPushButton" name="subjectCovariateTab_loadSubjectFile_PushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -996,179 +1035,32 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Check All Visible</string>
+              <string>Load List</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="4">
-            <layout class="QGridLayout" name="subjectCovariateTab_subjectDisplay_gridLayout">
-             <item row="0" column="3" colspan="3">
-              <widget class="QLabel" name="subjectCovariateTab_unmatchedSubjectsInformation_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3" rowspan="10" colspan="3">
-              <widget class="QListWidget" name="subjectCovariateTab_unmatchedSubjectsInformation_listWidget">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="11" column="0" colspan="3">
-              <widget class="QPushButton" name="subjectCovariateTab_saveCheckedSubjects_pushButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Save Checked Subjects as ...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0" rowspan="10" colspan="3">
-              <widget class="QListWidget" name="subjectCovariateTab_matchedSubjectsInformation_listWidget">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="baseSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0" colspan="3">
-              <widget class="QLabel" name="subjectCovariateTab_matchedSubjectsInformation_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="2" column="0" colspan="4">
-            <widget class="QWidget" name="widget" native="true">
+           <item row="0" column="2" rowspan="2">
+            <widget class="QLineEdit" name="para_subjectCovariateTab_subjectFile_lineEdit">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <layout class="QGridLayout" name="gridLayout_20">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <item row="4" column="8">
-               <widget class="QCheckBox" name="subjectCovariateTab_caseSensitive_checkBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Case Sensitive</string>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1" colspan="2">
-               <widget class="QLineEdit" name="subjectCovariateTab_search_lineEdit">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="subjectCovariateTab_search_label">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Search: </string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="5">
-               <widget class="QLabel" name="subjectCovariateTab_nbrFound_label">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>110</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="margin">
-                 <number>1</number>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </widget>
            </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="subjectCovariateTab_checkedSubjectsInformation_label">
+           <item row="0" column="3" rowspan="2">
+            <widget class="QLabel" name="subjectCovariateTab_iconLoadSubjectFile_label">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="minimumSize">
               <size>
-               <width>27</width>
-               <height>27</height>
+               <width>20</width>
+               <height>0</height>
               </size>
              </property>
              <property name="text">
@@ -1176,8 +1068,8 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="subjectCovariateTab_unCheckAllVisible_pushButton">
+           <item row="0" column="4" rowspan="2">
+            <widget class="QPushButton" name="subjectCovariateTab_resetSubjectFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1185,7 +1077,89 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Uncheck All Visible</string>
+              <string>Reset</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QGroupBox" name="subjectCovariateTab_covariates_groupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>Covariates</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <item row="6" column="0" colspan="2">
+            <widget class="QLabel" name="subjectCovariateTab_covariatesInformation_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;Keep at least one covariate checked.&lt;br/&gt;&quot;Intercept&quot; should always be checked.&lt;/i&gt;&lt;/span&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="subjectCovariateTab_covariatesUncheckAll_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Uncheck All</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="subjectCovariateTab_covariatesCheckAll_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Check All</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" rowspan="5" colspan="2">
+            <widget class="QListWidget" name="para_subjectCovariateTab_covariates_listWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -1199,7 +1173,29 @@
         <string>Execution</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_17">
-        <item row="0" column="0" colspan="5">
+        <item row="0" column="2" rowspan="7">
+         <widget class="QGroupBox" name="executionTab_executable_groupBox">
+          <property name="title">
+           <string>Execution Log</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="executionTab_clearLog_pushButton">
+             <property name="text">
+              <string>Clear Log</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPlainTextEdit" name="executionTab_log_plainTextEdit"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="executionTab_settings_groupBox">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1211,71 +1207,70 @@
            <string>Settings</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
-           <property name="leftMargin">
+           <property name="margin">
             <number>0</number>
            </property>
-           <property name="topMargin">
-            <number>5</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>6</number>
-           </property>
-           <item row="0" column="1" colspan="5">
-            <widget class="QLineEdit" name="para_executionTab_fiberName_lineEdit">
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="para_executionTab_nbrPermutations_spinBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="minimum">
+              <number>10</number>
+             </property>
+             <property name="maximum">
+              <number>90000</number>
+             </property>
+             <property name="singleStep">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
             </widget>
            </item>
-           <item row="0" column="6">
-            <widget class="QLabel" name="executionTab_fiberNameInfo_label">
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="para_executionTab_confidenceBandsThreshold_doubleSpinBox">
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="executionTab_confidenceBandsThreshold_label">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Only use alphanumeric characters and '_' separator&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Confidence Bands Threshold</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="executionTab_nbrPermutations_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>nbr Permutations</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="executionTab_fiberName_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Fiber Name / Output Prefix&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0" colspan="8">
+           <item row="5" column="0" colspan="2">
             <widget class="QCheckBox" name="para_executionTab_postHoc_checkBox">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1288,10 +1283,101 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="0" colspan="8">
+           <item row="1" column="0">
+            <widget class="QLabel" name="executionTab_nbrPermutations_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>nbr Permutations</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="2">
+            <widget class="QLineEdit" name="para_executionTab_fiberName_lineEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLabel" name="executionTab_fiberNameInfo_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Use alphanumeric characters and '_' separator only&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2" colspan="2">
+            <widget class="QLabel" name="executionTab_nbrPermutationsInfo_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;100 when testing, 1000 otherwise.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="executionTab_fiberName_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Fiber Name / Output Prefix&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="executionTab_pvalueThreshold_label">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>P-value Threshold</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QDoubleSpinBox" name="para_executionTab_pvalueThreshold_doubleSpinBox">
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
             <widget class="QCheckBox" name="para_executionTab_omnibus_checkBox">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1304,134 +1390,35 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QSpinBox" name="para_executionTab_nbrPermutations_spinBox">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximum">
-              <number>999999</number>
-             </property>
-             <property name="value">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2" colspan="7">
-            <widget class="QLabel" name="executionTab_nbrPermutationsInfo_label">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;100 when testing, 1000 otherwise.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
-        <item row="0" column="5" rowspan="8">
-         <widget class="QGroupBox" name="executionTab_executable_groupBox">
-          <property name="title">
-           <string>Execution log</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_13">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="QPlainTextEdit" name="executionTab_log_plainTextEdit"/>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="executionTab_clearLog_pushButton">
-             <property name="text">
-              <string>Clear Log</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="5">
-         <widget class="Line" name="executionTab_horizontalLine">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" rowspan="6" colspan="5">
+        <item row="1" column="0" rowspan="6" colspan="2">
          <widget class="QGroupBox" name="executionTab_outputs_groupBox">
           <property name="title">
            <string>Outputs</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_12">
-           <property name="leftMargin">
+          <layout class="QGridLayout" name="gridLayout_18">
+           <property name="margin">
             <number>0</number>
            </property>
-           <property name="topMargin">
-            <number>9</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="3" column="5">
-            <spacer name="executionTab_verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="5">
-            <widget class="QLineEdit" name="para_executionTab_outputDir_lineEdit"/>
-           </item>
-           <item row="1" column="6">
-            <widget class="QLabel" name="executionTab_iconMatlab_label">
+           <item row="0" column="0" colspan="2">
+            <widget class="QPushButton" name="executionTab_outputDir_pushButton">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>27</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="text">
-              <string/>
+              <string>Specify Output Directory</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="6">
-            <widget class="QLabel" name="executionTab_iconMVCM_label">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
+           <item row="0" column="2">
+            <widget class="QLineEdit" name="para_executionTab_outputDir_lineEdit"/>
            </item>
-           <item row="0" column="6">
+           <item row="0" column="3">
             <widget class="QLabel" name="executionTab_iconOutputDir_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1450,7 +1437,20 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="5">
+           <item row="1" column="0" colspan="2">
+            <widget class="QPushButton" name="executionTab_mvcm_pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Specify MVCM Directory </string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
             <widget class="QLineEdit" name="soft_executionTab_mvcm_lineEdit">
              <property name="enabled">
               <bool>true</bool>
@@ -1475,20 +1475,14 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="5">
-            <widget class="QLineEdit" name="soft_executionTab_matlab_lineEdit">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="acceptDrops">
-              <bool>true</bool>
-             </property>
-             <property name="frame">
-              <bool>true</bool>
+           <item row="1" column="3">
+            <widget class="QLabel" name="executionTab_iconMVCM_label">
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QPushButton" name="executionTab_run_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1501,46 +1495,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="5">
-            <widget class="QPushButton" name="executionTab_matlab_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Specify Matlab Executable</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="5">
-            <widget class="QPushButton" name="executionTab_outputDir_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Specify Output Directory</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="5">
-            <widget class="QPushButton" name="executionTab_mvcm_pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Specify MVCM Directory </string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1" colspan="3">
+           <item row="5" column="1">
             <widget class="QPushButton" name="executionTab_stop_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1553,10 +1508,232 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="4" colspan="3">
+           <item row="3" column="0" colspan="4">
+            <layout class="QGridLayout" name="gridLayout_12">
+             <item row="3" column="2" colspan="2">
+              <widget class="QLabel" name="executionTab_killDevilAllocatedMemory_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Allocated Memoy</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3" colspan="3">
+              <widget class="QComboBox" name="soft_executionTab_killDevilQueue_comboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Hour (60 mins)</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Day  (24 hrs)</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Week  (7 days)</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="soft_executionTab_runMatlabSystem_radioButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>On the system</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="executionTab_nbrCompThreads_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>nbr Computational Threads</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="soft_executionTab_nbrCompThreads_spinBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1" colspan="7">
+              <widget class="QLineEdit" name="soft_executionTab_runMatlab_lineEdit">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="acceptDrops">
+                <bool>true</bool>
+               </property>
+               <property name="frame">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="8">
+              <widget class="QLabel" name="executionTab_iconMatlab_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>27</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="executionTab_runMatlab_pushButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Specify Matlab Executable</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="4">
+              <widget class="QSpinBox" name="soft_executionTab_killDevilAllocatedMemory_spinBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimum">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <number>12</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2" colspan="6">
+              <widget class="QRadioButton" name="soft_executionTab_runMatlabKD_radioButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>On KillDevil ( UNC users only )</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="executionTab_killDevilQueue_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Queue</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="5">
+              <widget class="QLabel" name="executionTab_killDevilAllocatedMemoryInfo_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;(MB)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="5" column="2" colspan="2">
             <widget class="QProgressBar" name="executionTab_progressBar">
              <property name="value">
               <number>24</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="4">
+            <spacer name="executionTab_verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="0" colspan="3">
+            <widget class="QCheckBox" name="para_executionTab_runMatlab_checkBox">
+             <property name="text">
+              <string>Run matlab after file generation</string>
              </property>
             </widget>
            </item>
@@ -1575,14 +1752,14 @@
        <attribute name="title">
         <string>Plotting</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QGridLayout" name="gridLayout_22">
         <property name="margin">
          <number>0</number>
         </property>
-        <item>
-         <widget class="QVTKWidget" name="plottingTab_plot_qvtkWidget" native="true"/>
-        </item>
-        <item>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="1">
          <widget class="QTabWidget" name="plottingTab_tabWidget">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
@@ -1598,74 +1775,62 @@
             <string>Load/Set Data</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_11">
-            <item row="1" column="0">
-             <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFibername_label">
-              <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Current fibername&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="5">
+            <item row="4" column="0" colspan="2">
              <widget class="QLabel" name="plottingTab_loadSetDataTab_loadSetData_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Specify fibername and output directory.&lt;br&gt;To change fiber, modify fibername and output directory in the Execution tab.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Specify valid fiber name and output directory in the Execution tab.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="0" colspan="5">
+            <item row="1" column="0" colspan="2">
+             <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFibernameSet_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>N/A</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
              <widget class="QLabel" name="plottingTab_loadSetDataTab_currentOutputDirectorySet_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;N/A&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>N/A</string>
               </property>
              </widget>
             </item>
-            <item row="14" column="0" colspan="5">
-             <layout class="QHBoxLayout" name="plottingTab_loadSetDataTab_horizontalLayout">
-              <item>
-               <widget class="QPushButton" name="plottingTab_loadSetDataTab_displayPlot_pushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Display Plot</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="plottingTab_loadSetDataTab_resetPlot_pushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Reset Plot</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="plottingTab_loadSetDataTab_savePlot_pushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Save Plot</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFibername_label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Current fiber name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
             </item>
-            <item row="3" column="0">
+            <item row="2" column="0" colspan="2">
              <widget class="QLabel" name="plottingTab_loadSetDataTab_currentOutputDirectory_label">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1675,30 +1840,10 @@
               </property>
              </widget>
             </item>
-            <item row="13" column="0" colspan="5">
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="0" colspan="5">
-             <widget class="QLabel" name="plottingTab_loadSetDataTab_currentFibernameSet_label">
-              <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;N/A&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0" rowspan="3" colspan="5">
+            <item row="5" column="0" colspan="2">
              <widget class="QGroupBox" name="plottingTab_loadSetDataTab_load_groupBox">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1710,7 +1855,211 @@
                <bool>false</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_21">
-               <item row="0" column="0">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item row="1" column="0" rowspan="2">
+                <widget class="QLabel" name="plottingTab_loadSetDataTab_propertySelection_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Properties&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1" colspan="2">
+                <widget class="QComboBox" name="plottingTab_loadSetDataTab_covariateSelection_comboBox"/>
+               </item>
+               <item row="6" column="0" colspan="4" alignment="Qt::AlignLeft">
+                <widget class="QWidget" name="plottingTab_loadSetDataTab_linesToDisplay_widget" native="true">
+                 <layout class="QGridLayout" name="gridLayout_14">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="plottingTab_loadSetDataTab_linesToDisplay_label">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Select lines to display&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="margin">
+                     <number>0</number>
+                    </property>
+                    <property name="indent">
+                     <number>-1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QPushButton" name="plottingTab_loadSetDataTab_checkAllLinesToDisplay_pushButton">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Check All</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QListWidget" name="plottingTab_loadSetDataTab_linesToDisplay_listWidget">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>81</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>108</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="plottingTab_loadSetDataTab_uncheckAllLinesToDisplay_pushButton">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Uncheck All</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="8" column="0" rowspan="2" colspan="4">
+                <layout class="QGridLayout" name="gridLayout_legendBinaryCovariate">
+                 <property name="verticalSpacing">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="plottingTab_loadSetDataTab_legendBinaryCovariate0Name_label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="plottingTab_loadSetDataTab_legendBinaryCovariate1Name_label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="plottingTab_loadSetDataTab_legendBinaryCovariate0Color_label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>27</width>
+                     <height>3</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>27</width>
+                     <height>3</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="plottingTab_loadSetDataTab_legendBinaryCovariate1Color_label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>27</width>
+                     <height>3</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>27</width>
+                     <height>3</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="0" rowspan="2">
+                <widget class="QLabel" name="plottingTab_loadSetDataTab_covariateSelection_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Covariates&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="plottingTab_loadSetDataTab_propertySelection_comboBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="4">
                 <widget class="QComboBox" name="plottingTab_loadSetDataTab_plotSelection_comboBox">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1718,309 +2067,33 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>Raw Data</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Raw Stats</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Omnibus</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Post-Hoc</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
-               <item row="3" column="1" rowspan="2" colspan="2">
-                <widget class="QWidget" name="plottingTab_loadSetDataTab_covariatesSelection_widget" native="true">
-                 <property name="minimumSize">
+               <item row="7" column="0" colspan="4">
+                <spacer name="plottingTab_verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
                   <size>
-                   <width>0</width>
-                   <height>22</height>
+                   <width>340</width>
+                   <height>16</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_3">
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QRadioButton" name="plottingTab_loadSetDataTab_intercept_radioButton">
-                    <property name="text">
-                     <string>Intercept</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="1" rowspan="2" colspan="2">
-                <widget class="QWidget" name="plottingTab_loadSetDataTab_outcomeSelection_widget" native="true">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QRadioButton" name="plottingTab_loadSetDataTab_adOutcome_radioButton">
-                    <property name="text">
-                     <string>AD</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="plottingTab_loadSetDataTab_rdOutcome_radioButton">
-                    <property name="text">
-                     <string>RD</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="plottingTab_loadSetDataTab_mdOutcome_radioButton">
-                    <property name="text">
-                     <string>MD</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="plottingTab_loadSetDataTab_faOutcome_radioButton">
-                    <property name="text">
-                     <string>FA</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="plottingTab_loadSetDataTab_outcome_radioButton">
-                 <property name="text">
-                  <string>By outcome</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QRadioButton" name="plottingTab_loadSetDataTab_covariates_radioButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>By covariates</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-              <zorder>plottingTab_loadSetDataTab_plotSelection_comboBox</zorder>
-              <zorder>plottingTab_loadSetDataTab_outcome_radioButton</zorder>
-              <zorder>plottingTab_loadSetDataTab_outcomeSelection_widget</zorder>
-              <zorder>plottingTab_loadSetDataTab_covariates_radioButton</zorder>
-              <zorder>plottingTab_loadSetDataTab_covariatesSelection_widget</zorder>
-             </widget>
-            </item>
-            <item row="10" column="0" rowspan="3" colspan="5">
-             <widget class="QGroupBox" name="plottingTab_loadSetDataTab_set_groupBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Set</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <item row="3" column="1" colspan="5">
-                <widget class="QLineEdit" name="plottingTab_loadSetDataTab_yName_lineEdit"/>
-               </item>
-               <item row="4" column="0">
-                <widget class="QCheckBox" name="plottingTab_loadSetDataTab_yRange_checkBox">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Set y Range</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                 <property name="tristate">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="2">
-                <widget class="QDoubleSpinBox" name="plottingTab_loadSetDataTab_yRangeMin_doubleSpinBox">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <double>-5.000000000000000</double>
-                 </property>
-                 <property name="maximum">
-                  <double>1.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>-0.500000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="3">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_yRangeMax_label">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>max</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_yName_label">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Set y Name</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_yRangeMin_label">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>min</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_xName_label">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Set x Name</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1" colspan="5">
-                <widget class="QLineEdit" name="plottingTab_loadSetDataTab_xName_lineEdit"/>
-               </item>
-               <item row="5" column="0" colspan="6">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_yRangeInfo_label">
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;&lt;i&gt;If not specified, the ordinate range will be determined with min and max&lt;br&gt;found during plotting.&lt;/i&gt;&lt;/span&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0" rowspan="2">
-                <widget class="QLabel" name="plottingTab_loadSetDataTab_title_label">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Set Title</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" rowspan="2" colspan="5">
-                <widget class="QLineEdit" name="plottingTab_loadSetDataTab_title_lineEdit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="4" colspan="2">
-                <widget class="QDoubleSpinBox" name="plottingTab_loadSetDataTab_yRangeMax_doubleSpinBox">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <double>-1.000000000000000</double>
-                 </property>
-                 <property name="maximum">
-                  <double>5.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.010000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>0.500000000000000</double>
-                 </property>
-                </widget>
+                </spacer>
                </item>
               </layout>
              </widget>
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="plottingTab_titleLegendTab">
+          <widget class="QWidget" name="plottingTab_titleAxisLegendTab">
            <attribute name="title">
-            <string>Title/Legend</string>
+            <string>Title/Axis/Legend</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QGroupBox" name="groupBox_2">
+             <widget class="QGroupBox" name="plottingTab_titleAxisLegendTab_title_groupBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2030,90 +2103,18 @@
               <property name="title">
                <string>Title</string>
               </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_15">
-               <property name="rightMargin">
+               <property name="margin">
                 <number>0</number>
                </property>
-               <item row="4" column="0" colspan="3">
-                <widget class="QPushButton" name="pushButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Apply modification(s)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QCheckBox" name="checkBox_7">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>bold</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="3">
-                <widget class="QCheckBox" name="checkBox_9">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>underline</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QCheckBox" name="checkBox_8">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>italic</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QCheckBox" name="checkBox_5">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Font</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QCheckBox" name="checkBox_6">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Size</string>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+                <widget class="QDoubleSpinBox" name="plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2124,47 +2125,21 @@
                   <number>1</number>
                  </property>
                  <property name="minimum">
-                  <double>2.000000000000000</double>
+                  <double>0.500000000000000</double>
                  </property>
                  <property name="maximum">
                   <double>20.000000000000000</double>
                  </property>
                  <property name="singleStep">
-                  <double>0.500000000000000</double>
+                  <double>1.000000000000000</double>
                  </property>
                  <property name="value">
-                  <double>7.000000000000000</double>
+                  <double>12.000000000000000</double>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="QCheckBox" name="checkBox_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Position</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="checkBox_4">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Title</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" colspan="4">
-                <widget class="QLineEdit" name="plottingTab_dataFile_lineEdit_2">
+               <item row="1" column="0" colspan="5">
+                <widget class="QLineEdit" name="plottingTab_titleAxisLegendTab_titleName_lineEdit">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -2173,58 +2148,236 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1" colspan="2">
-                <widget class="QComboBox" name="comboBox_2">
-                 <item>
-                  <property name="text">
-                   <string>Up Left</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Up Centre</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Up Right</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Buttom Left</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Buttom Center</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Buttom Right</string>
-                  </property>
-                 </item>
+               <item row="1" column="5">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_titleBold_checkBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Bold</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="plottingTab_titleAxisLegendTab_titleSize_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="6">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_titleItalic_checkBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Italic</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox">
+                 <property name="text">
+                  <string>Use customized title</string>
+                 </property>
                 </widget>
                </item>
               </layout>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QGroupBox" name="plottingTab_titleAxisLegendTab_axis_groupBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
+              <property name="title">
+               <string>Axis</string>
               </property>
-             </spacer>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_19">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item row="7" column="2" colspan="2">
+                <widget class="QDoubleSpinBox" name="plottingTab_titleAxisLegendTab_yMax_doubleSpinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-1.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.000100000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="3">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_axisItalic_checkBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Italic</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="2" colspan="2">
+                <widget class="QDoubleSpinBox" name="plottingTab_titleAxisLegendTab_yMin_doubleSpinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-100.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.000100000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>-0.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" colspan="2">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_yMax_checkBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Set yMax</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" colspan="2">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_yMin_checkBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Set yMin</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="plottingTab_titleAxisLegendTab_yName_label">
+                 <property name="text">
+                  <string>y Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0" colspan="9">
+                <widget class="QLabel" name="plottingTab_titleAxisLegendTab_yRangeInfo_label">
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;If not specified, yMin and yMax will be automatically set.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="8">
+                <widget class="QLineEdit" name="plottingTab_titleAxisLegendTab_xName_lineEdit"/>
+               </item>
+               <item row="3" column="1" colspan="8">
+                <widget class="QLineEdit" name="plottingTab_titleAxisLegendTab_yName_lineEdit"/>
+               </item>
+               <item row="1" column="0" colspan="4">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox">
+                 <property name="text">
+                  <string>Use customized axis</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1" colspan="2">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_axisBold_checkBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Bold</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="plottingTab_titleAxisLegendTab_xName_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>x Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="2">
+                <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_gridOn_checkBox">
+                 <property name="text">
+                  <string>Grid On</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="groupBox_3">
+             <widget class="QGroupBox" name="plottingTab_titleAxisLegendTab_legend_groupBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -2234,286 +2387,21 @@
               <property name="title">
                <string>Legend</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_16">
-               <property name="rightMargin">
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_25">
+               <property name="margin">
                 <number>0</number>
                </property>
-               <item row="1" column="0">
-                <widget class="QCheckBox" name="checkBox_3">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Size</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QCheckBox" name="checkBox_11">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Name</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="decimals">
-                  <number>1</number>
-                 </property>
-                 <property name="minimum">
-                  <double>2.000000000000000</double>
-                 </property>
-                 <property name="maximum">
-                  <double>20.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.500000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>7.000000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QCheckBox" name="checkBox_17">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Marker Thickness</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QCheckBox" name="checkBox_12">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Color</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_12">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Choose legend</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <double>0.500000000000000</double>
-                 </property>
-                 <property name="maximum">
-                  <double>5.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.500000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>1.000000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="checkBox_10">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Position</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="QCheckBox" name="checkBox_18">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Marker Type</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimum">
-                  <double>0.500000000000000</double>
-                 </property>
-                 <property name="maximum">
-                  <double>5.000000000000000</double>
-                 </property>
-                 <property name="singleStep">
-                  <double>0.500000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>1.000000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QCheckBox" name="checkBox_14">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Line Thickness</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="11" column="0" rowspan="2" colspan="2">
-                <widget class="QPushButton" name="pushButton_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Apply modification(s)</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1" colspan="3">
-                <widget class="QLineEdit" name="lineEdit_5"/>
-               </item>
-               <item row="2" column="1" colspan="3">
-                <widget class="QComboBox" name="comboBox_3"/>
-               </item>
-               <item row="4" column="1" colspan="2">
-                <widget class="QComboBox" name="comboBox_5">
+               <item row="0" column="1">
+                <widget class="QComboBox" name="plottingTab_titleAxisLegendTab_legendPosition_comboBox">
                  <item>
                   <property name="text">
-                   <string>Red</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Blue</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Green</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Yellow</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="5" column="1" colspan="2">
-                <widget class="QComboBox" name="comboBox_10">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>Point</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Cercle</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Square</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Diamand</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Cross</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="0" column="1" colspan="2">
-                <widget class="QComboBox" name="comboBox_4">
-                 <item>
-                  <property name="text">
-                   <string>Up Left</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Up Center</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Up Right</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Middle Left</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Middle Center</string>
+                   <string>Top Right</string>
                   </property>
                  </item>
                  <item>
@@ -2523,26 +2411,67 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Buttom Left</string>
+                   <string>Bottom Right</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Buttom Center</string>
+                   <string>Top Left</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Buttom Right</string>
+                   <string>Middle Left</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Bottom Left</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Top Center</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Bottom Center</string>
                   </property>
                  </item>
                 </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="plottingTab_titleAxisLegendTab_legendPosition_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Position</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <spacer name="plottingTab_titleAxisLegendTab_legend_horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_5">
+             <spacer name="plottingTab_titleAxisLegendTab_verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -2556,12 +2485,315 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="plottingTab_editTab">
+          <widget class="QWidget" name="plottingTab_editionTab">
            <attribute name="title">
-            <string>Edit Selection</string>
+            <string>Edition</string>
            </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QGroupBox" name="plottingTab_editionTab_pvalueThreshold_groupBox">
+              <property name="title">
+               <string>P-value Threshold</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QDoubleSpinBox" name="plottingTab_editionTab_pvalueThreshold_doubleSpinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.050000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="plottingTab_editionTab_pvalueThreshold_horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="plottingTab_editionTab_line_groupBox">
+              <property name="title">
+               <string>Line</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="plottingTab_editionTab_lineWidth_label">
+                 <property name="text">
+                  <string>Line Width</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="plottingTab_editionTab_lineWidth_doubleSpinBox">
+                 <property name="minimum">
+                  <double>0.250000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>5.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.250000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>1.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="plottingTab_editionTab_lineWidth_horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>184</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="plottingTab_editionTab_groupBox">
+              <property name="title">
+               <string>Marker</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_16">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="plottingTab_editionTab_markerType_comboBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Circle</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Cross</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Diamond</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Plus</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Square</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="plottingTab_editionTab_markerType_label">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Marker Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <spacer name="plottingTab_editionTab_marker_horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="plottingTab_editionTab_markerSize_label">
+                 <property name="text">
+                  <string>Marker Size</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="plottingTab_editionTab_markerSize_doubleSpinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimum">
+                  <double>4.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>20.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>8.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="plottingTab_editionTab_propertiesEdition_groupBox">
+              <property name="title">
+               <string>Properties Edition</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_PropertiesColors">
+               <property name="margin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="plottingTab_editionTab_covariatesEdition_groupBox">
+              <property name="title">
+               <string>Covariates Edition</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_CovariatesEdition">
+               <property name="margin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="plottingTab_editionTab_verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
          </widget>
+        </item>
+        <item row="0" column="0" rowspan="4">
+         <widget class="QVTKWidget" name="plottingTab_plot_qvtkWidget" native="true"/>
+        </item>
+        <item row="2" column="1">
+         <layout class="QGridLayout" name="plottingTab_plot_gridLayout">
+          <property name="bottomMargin">
+           <number>1</number>
+          </property>
+          <item row="3" column="1">
+           <widget class="QPushButton" name="plottingTab_loadPlotSettings_pushButton">
+            <property name="text">
+             <string>Load Plot Settings</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="2">
+           <widget class="QPushButton" name="plottingTab_displayPlot_pushButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Display Plot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="Line" name="plottingTab_loadSavePlotSettings_line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QPushButton" name="plottingTab_savePlotSettings_pushButton">
+            <property name="text">
+             <string>Save Plot Settings as ...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="plottingTab_resetPlot_pushButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Reset Plot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="plottingTab_savePlot_pushButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Save Plot as ...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -2577,8 +2809,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1217</width>
-     <height>25</height>
+     <width>1056</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -2600,11 +2832,7 @@
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="sizeGripEnabled">
-    <bool>true</bool>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Param_Settings">
    <property name="text">
     <string>Load Param Settings</string>
@@ -2654,11 +2882,21 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>inputTab_addMultipleInputFiles_pushButton</tabstop>
   <tabstop>inputTab_addADFile_pushButton</tabstop>
+  <tabstop>para_inputTab_adFile_lineEdit</tabstop>
+  <tabstop>inputTab_editADFile_pushButton</tabstop>
   <tabstop>inputTab_addRDFile_pushButton</tabstop>
   <tabstop>para_inputTab_rdFile_lineEdit</tabstop>
+  <tabstop>inputTab_editRDFile_pushButton</tabstop>
   <tabstop>inputTab_addMDFile_pushButton</tabstop>
   <tabstop>para_inputTab_mdFile_lineEdit</tabstop>
+  <tabstop>inputTab_editMDFile_pushButton</tabstop>
   <tabstop>inputTab_addFAFile_pushButton</tabstop>
+  <tabstop>para_inputTab_faFile_lineEdit</tabstop>
+  <tabstop>inputTab_editFAFile_pushButton</tabstop>
+  <tabstop>inputTab_addCovariateFile_pushButton</tabstop>
+  <tabstop>para_inputTab_covariateFile_lineEdit</tabstop>
+  <tabstop>inputTab_editCovariateFile_pushButton</tabstop>
+  <tabstop>inputTab_close_pushButton</tabstop>
   <tabstop>para_subjectCovariateTab_adFile_checkBox</tabstop>
   <tabstop>para_subjectCovariateTab_rdFile_checkBox</tabstop>
   <tabstop>para_subjectCovariateTab_mdFile_checkBox</tabstop>
@@ -2667,13 +2905,54 @@
   <tabstop>subjectCovariateTab_covariatesCheckAll_pushButton</tabstop>
   <tabstop>subjectCovariateTab_covariatesUncheckAll_pushButton</tabstop>
   <tabstop>para_subjectCovariateTab_covariates_listWidget</tabstop>
+  <tabstop>subjectCovariateTab_checkAllVisible_pushButton</tabstop>
+  <tabstop>subjectCovariateTab_unCheckAllVisible_pushButton</tabstop>
+  <tabstop>subjectCovariateTab_matchedSubjectsInformation_listWidget</tabstop>
+  <tabstop>subjectCovariateTab_unmatchedSubjectsInformation_listWidget</tabstop>
+  <tabstop>subjectCovariateTab_saveCheckedSubjects_pushButton</tabstop>
+  <tabstop>subjectCovariateTab_search_lineEdit</tabstop>
+  <tabstop>subjectCovariateTab_caseSensitive_checkBox</tabstop>
+  <tabstop>subjectCovariateTab_loadSubjectFile_PushButton</tabstop>
+  <tabstop>para_subjectCovariateTab_subjectFile_lineEdit</tabstop>
+  <tabstop>subjectCovariateTab_resetSubjectFile_pushButton</tabstop>
+  <tabstop>para_executionTab_fiberName_lineEdit</tabstop>
+  <tabstop>para_executionTab_nbrPermutations_spinBox</tabstop>
+  <tabstop>para_executionTab_omnibus_checkBox</tabstop>
+  <tabstop>para_executionTab_postHoc_checkBox</tabstop>
   <tabstop>executionTab_outputDir_pushButton</tabstop>
   <tabstop>para_executionTab_outputDir_lineEdit</tabstop>
-  <tabstop>executionTab_matlab_pushButton</tabstop>
-  <tabstop>soft_executionTab_matlab_lineEdit</tabstop>
   <tabstop>executionTab_mvcm_pushButton</tabstop>
   <tabstop>soft_executionTab_mvcm_lineEdit</tabstop>
+  <tabstop>para_executionTab_runMatlab_checkBox</tabstop>
+  <tabstop>executionTab_run_pushButton</tabstop>
   <tabstop>executionTab_log_plainTextEdit</tabstop>
+  <tabstop>executionTab_clearLog_pushButton</tabstop>
+  <tabstop>plottingTab_tabWidget</tabstop>
+  <tabstop>plottingTab_displayPlot_pushButton</tabstop>
+  <tabstop>plottingTab_resetPlot_pushButton</tabstop>
+  <tabstop>plottingTab_savePlot_pushButton</tabstop>
+  <tabstop>plottingTab_loadPlotSettings_pushButton</tabstop>
+  <tabstop>plottingTab_savePlotSettings_pushButton</tabstop>
+  <tabstop>plottingTab_loadSetDataTab_plotSelection_comboBox</tabstop>
+  <tabstop>plottingTab_loadSetDataTab_linesToDisplay_listWidget</tabstop>
+  <tabstop>plottingTab_loadSetDataTab_checkAllLinesToDisplay_pushButton</tabstop>
+  <tabstop>plottingTab_loadSetDataTab_uncheckAllLinesToDisplay_pushButton</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_titleName_lineEdit</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_titleBold_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_titleItalic_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_xName_lineEdit</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_yName_lineEdit</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_axisBold_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_axisItalic_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_yMin_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_yMin_doubleSpinBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_yMax_checkBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_yMax_doubleSpinBox</tabstop>
+  <tabstop>plottingTab_titleAxisLegendTab_legendPosition_comboBox</tabstop>
+  <tabstop>plottingTab_editionTab_pvalueThreshold_doubleSpinBox</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -2684,8 +2963,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>885</x>
-     <y>507</y>
+     <x>110</x>
+     <y>92</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>

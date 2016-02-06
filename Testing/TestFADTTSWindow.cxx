@@ -542,7 +542,7 @@ bool TestFADTTSWindow::Test_UpdateInputFileInformation( QString inputADFile, QSt
     int COMPFileNbrColumnsExpected = COMPFileData.at( 0 ).count() - 1;
     int COMPFileNbrSubjectsExpected = COMPFileData.count() - 1;
 
-    QMap<int, QString> covariates = processing.GetCovariatesFromFileData( COMPFileData, 1 );
+    QMap<int, QString> covariates = processing.GetCovariatesFromData( COMPFileData, 1 );
     covariates.insert( -1, "Intercept" );
     fadttsWindow->UpdateInputFileInformation( "COMP" );
 

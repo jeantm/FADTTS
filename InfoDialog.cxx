@@ -45,17 +45,17 @@ QString InfoDialog::GetInputFileInformation( const QString prefID )
         int nbColumns = m_data->GetNbrColumns( prefID );
 
         fileInformation.clear();
-        fileInformation.append( tr( qPrintable( "<b>Filename</b> " + fileName + "<br>" ) ) );
-        fileInformation.append( tr( qPrintable( "<b>Number of test subjects</b>  " + QString::number( m_data->GetNbrSubjects( prefID ) ) + "<br>" ) ) );
-        fileInformation.append( tr( qPrintable( "<b>Data matrix</b>  " + QString::number( nbRows ) + "x" + QString::number( nbColumns )  + "<br>" ) ) );
+        fileInformation.append( tr( qPrintable( "Filename: <i>" + fileName + "</i><br>" ) ) );
+        fileInformation.append( tr( qPrintable( "Number of test subjects: <i>" + QString::number( m_data->GetNbrSubjects( prefID ) ) + "</i><br>" ) ) );
+        fileInformation.append( tr( qPrintable( "Data matrix: <i>" + QString::number( nbRows ) + "x" + QString::number( nbColumns )  + "</i><br>" ) ) );
         if( prefID == m_data->GetCovariatePrefix() )
         {
-            fileInformation.append( tr( qPrintable( "<b>Number of covariates</b>  " + QString::number( m_data->GetCovariates().size()-1 ) ) ) );
+            fileInformation.append( tr( qPrintable( "Number of covariates: <i>" + QString::number( m_data->GetCovariates().size()-1 )  + "</i>" ) ) );
             for( int c = 0; c < m_data->GetCovariates().size(); ++c )
             {
                 if( c != m_data->GetCovariateFileSubjectColumnID() )
                 {
-                    fileInformation.append( tr( qPrintable( "<br>-  " + m_data->GetCovariates().value( c ) ) ) );
+                    fileInformation.append( tr( qPrintable( "<br>- <i>" + m_data->GetCovariates().value( c ) + "</i>" ) ) );
                 }
             }
         }

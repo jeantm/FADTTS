@@ -36,7 +36,6 @@ FADTTSter.cxx
 FADTTSWindowConfig.cxx
 FADTTSWindow.cxx
 EditInputDialog.cxx
-InfoDialog.cxx
 Data.cxx
 Processing.cxx
 MatlabScript.cxx
@@ -48,7 +47,6 @@ set(FADTTS_moc
 FADTTSWindowConfig.h
 FADTTSWindow.h
 EditInputDialog.h
-InfoDialog.h
 Processing.h
 MatlabThread.h
 Plot.h
