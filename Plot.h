@@ -34,57 +34,61 @@ class Plot : public QObject
     Q_OBJECT
 
 public:
+    friend class TestPlot; /** For unit tests **/
+
+
     explicit Plot( QObject *parent = 0 );
 
 
-    void SetQVTKWidget( QVTKWidget *qvtkWidget );
+    void SetQVTKWidget( QSharedPointer<QVTKWidget> qvtkWidget ); // Tested
 
-    bool InitPlot( QString directory, QString fibername );
+    bool InitPlot( QString directory, QString fibername ); /// Not directly tested
 
-    void ResetPlotData();
+    void ResetPlotData(); /// Not tested
 
-    void ClearPlot();
-
-
-    void SelectPlot( QString plotSelected );
-
-    void SelectProperty( QString property );
-
-    void SelectCovariate( QString covariateSelected );
+    void ClearPlot(); /// Not tested
 
 
-    void SetLinesToDisPlay( const QMap< int, QPair< QString, QPair< bool, QString > > > currentLinesForDisplay );\
+    void SetSelectedPlot( QString plotSelected ); // Tested
 
-    void UpdateCovariatesNames( QMap< int, QString > newCovariatesNames );
+    void SetSelectedProperty( QString propertySelected ); /// Not tested
 
+    void SetSelectedCovariate( QString covariateSelected ); /// Not tested
 
-    void SetTitle( QString title, bool isBold, bool isItalic, double fontSize );
-
-    void SetDefaultTitle();
-
-    void SetGrid( bool gridOn );
-
-    void SetAxis( QString xName, QString yName, bool isBold, bool isItalic,
-                  bool isYMinSet, double yMin, bool isYMaxSet, double yMax );
-
-    void SetDefaultAxis();
-
-    void SetLegend( QString position );
-
-    void SetPvalueThreshold( double pvalueThreshold );
-
-    void SetLineWidth( double lineWidth );
-
-    void SetMarkerType( QString markerType );
-
-    void SetMarkerSize( double markerSize );
+    void SetSelectionToDisPlay( const QMap< int, QPair< QString, QPair< bool, QString > > > currentSelectionToDisplay ); /// Not tested
 
 
-    bool DisplayVTKPlot();
+    void SetTitle( QString title, bool isBold, bool isItalic, double fontSize ); // Tested
+
+    void SetDefaultTitle(); // Tested
+
+    void SetGrid( bool gridOn ); /// Not tested
+
+    void SetAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
+
+    void SetDefaultAxis(); // Tested
+
+    void SetLegend( QString position ); // Tested
+
+
+    void SetPvalueThreshold( double pvalueThreshold ); /// Not tested
+
+    void SetLineWidth( double lineWidth ); /// Not tested
+
+    void SetMarkerType( QString markerType ); // Tested
+
+    void SetMarkerSize( double markerSize ); /// Not tested
+
+
+    void UpdateCovariatesNames( QMap< int, QString > newCovariatesNames ); // Tested
+
+
+    bool DisplayVTKPlot(); /// Not directly tested
 
 
 public slots:
     void OnSavePlot();
+
 
 signals:
     void PlotsUsed( const QStringList& );
@@ -129,7 +133,7 @@ private:
 
     Processing m_processing;
 
-    QVTKWidget *m_qvtkWidget;
+    QSharedPointer<QVTKWidget> m_qvtkWidget;
     vtkSmartPointer<vtkContextView> m_view;
     vtkSmartPointer<vtkChartXY> m_chart;
     QMap< int, vtkPlot* > m_line;
@@ -137,13 +141,13 @@ private:
 
     QMap< QString, QList < QList < double > > > m_dataRawData, m_dataBeta, m_dataConfidenceBands, m_dataPostHocFDRLpvalue;
 
-    QMap< int, QPair< QString, QPair< bool, QString > > > m_linesToDisplay;
+    QMap< int, QPair< QString, QPair< bool, QString > > > m_selectionToDisplay;
 
     QMap< int, QString > m_covariatesNoIntercept, m_allCovariates, m_binaryCovariates, m_properties;
 
     QList< QList< int > > m_lineColors;
 
-    QList < QStringList > m_dataCovariate;
+    QList < QStringList > m_dataSubMatrix;
 
     QList < QList < double > > m_dataOmnibusLpvalue, m_dataOmnibusFDRLpvalue, m_ordinate;
 
@@ -152,7 +156,7 @@ private:
     QPair< bool, double > m_yMin, m_yMax;
 
     QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles,
-    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects;
+    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed;
 
     QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
     m_fibername;
@@ -161,122 +165,121 @@ private:
 
     int m_nbrPlot, m_nbrPoint, m_markerType;
 
-    bool m_isBinaryCovariatesSend, m_isAllCovariatesSend, m_isCovariatesNoInterceptSend, m_gridOn;
+    bool m_isBinaryCovariatesSent, m_isAllCovariatesSent, m_isCovariatesNoInterceptSent, m_gridOn;
 
 
-    void SortFilesByProperties( QString directory, QStringList files, QMap< QString, QList < QList < double > > > &data );
+    QList < double > QStringListToDouble( QStringList rowData ); // Tested
 
-    void TransposeData( QList < QList < double > > &data, int firstRow, int firstColumn );
+    QList < QList < double > > DataToDouble( QList < QStringList > data ); // Tested
 
-    void TransposeDataInQMap( QMap< QString, QList<QList<double> > > &data, int firstRow, int firstColumn );
+    void SortFilesByProperties( QString directory, QStringList files, QMap< QString, QList < QList < double > > > &data ); // Tested
 
-    QList < double > QStringListToDouble( QStringList rowData );
+    void TransposeData( QList < QList < double > > &data, int firstRow, int firstColumn ); // Tested
 
-    QList < QList < double > > DataToDouble( QList < QStringList > data );
-
-
-    void SetRawData();
-
-    void SetBeta();
-
-    void SetOmnibusLpvalue( QStringList OmnibusLpvalueFiles, QList < QList < double > > &OmnibusLpvaluesData );
-
-    void SetConfidenceBands();
-
-    void SetPostHocFDRLpvalue();
+    void TransposeDataInQMap( QMap< QString, QList<QList<double> > > &data, int firstRow, int firstColumn ); // Tested
 
 
-    bool GetRawDataFiles();
+    void SetRawData(); // Tested
 
-    void GetBetaFiles();
+    void SetBeta(); // Tested
 
-    void GetOmnibusLpvalueFiles();
+    void SetOmnibusLpvalue( QStringList omnibusLpvalueFiles, QList < QList < double > > &omnibusLpvaluesData ); // Tested
 
-    void GetOmnibusFDRLpvalueFiles();
+    void SetConfidenceBands(); // Tested
 
-    void GetConfidenceBandsFiles();
-
-    void GetPostHocFDRLpvalueFiles();
+    void SetPostHocFDRLpvalue(); // Tested
 
 
-    void SetPlots();
+    bool GetRawDataFiles(); // Tested
 
-    void SetProperties();
+    void GetBetaFiles(); // Tested
 
-    void SetCovariates();
+    void GetOmnibusLpvalueFiles(); // Tested
 
-    void SetAbscissa();
+    void GetOmnibusFDRLpvalueFiles(); // Tested
 
+    void GetConfidenceBandsFiles(); // Tested
 
-    void ResetLoadData();
-
-
-    void SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin );
-
-    void GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean, QList < double > &tempStdDv );
-
-    void ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean, QList < double > &tempBinUp, QList < double > &tempBinDown );
-
-    void LoadLinesToDisplay( QList< QList < double > > &ordinate );
-
-    QList< QList < double > > Tolog10( QList< QList < double > > data );
+    void GetPostHocFDRLpvalueFiles(); // Tested
 
 
-    QList< QList < double > > LoadRawData();
+    void SetPlots(); // Tested
 
-    QList< QList < double > > LoadRawStats();
+    void SetProperties(); // Tested
 
-    QList< QList < double > > LoadBetas();
+    void SetSubjects(); // Tested
 
-    QList< QList < double > > LoadBetaByCovariate();
+    void SetCovariates(); // Tested
 
-    QList< QList < double > > LoadOmnibusLpvalues( QList<QList<double> > omnibusLpvalues );
-
-    QList< QList < double > > LoadConfidenceBand();
-
-    QList< QList < double > > LoadPostHocFDRLpvalues();
-
-    bool LoadData();
+    void SetAbscissa(); // Tested
 
 
-    void AddEntriesRawData( vtkSmartPointer<vtkTable> &table );
+    void SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin ); // Tested
 
-    void AddEntriesRawStats( vtkSmartPointer<vtkTable> &table );
+    void GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean, QList < double > &tempStdDv ); // Tested
 
-    void AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable> &table );
+    void ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean, QList < double > &tempBinUp, QList < double > &tempBinDown ); // Tested
 
-    void AddEntriesCovariatesBands( vtkSmartPointer<vtkTable> &table );
+    void UpdateOrdinate( QList< QList < double > > &ordinate ); // Tested
 
-    void AddEntries( vtkSmartPointer<vtkTable> &table );
-
-
-    void SetData( vtkSmartPointer<vtkTable> &table );
+    QList< QList < double > > ToLog10( QList< QList < double > > data ); // Tested
 
 
-    void InitLines();
+    QList< QList < double > > LoadRawData(); // Tested
 
-    void AddSignificantLevel( vtkSmartPointer<vtkTable> table, double significantLevel );
+    QList< QList < double > > LoadRawStats(); // Tested
 
-    void AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedByProperties, bool isOmnibus, int i );
+    QList< QList < double > > LoadBetas(); // Tested
 
-    void AddLineRawData( vtkSmartPointer<vtkTable> table );
+    QList< QList < double > > LoadBetaByCovariate(); // Tested
 
-    void AddLineRawStats( vtkSmartPointer<vtkTable> table );
+    QList< QList < double > > LoadOmnibusLpvalues( QList<QList<double> > omnibusLpvalues ); // Tested
 
-    void AddLineBetas( vtkSmartPointer<vtkTable> table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus );
+    QList< QList < double > > LoadConfidenceBand(); // Tested
 
-    void AddLineLPvalue( vtkSmartPointer<vtkTable> table );
+    QList< QList < double > > LoadPostHocFDRLpvalues(); // Tested
 
-    void AddLineLConfidenceBands( vtkSmartPointer<vtkTable> table );
-
-    void AddLines( vtkSmartPointer<vtkTable> table );
+    bool LoadData(); /// Not directly tested
 
 
-    QList<double> GetyMinMax();
+    void AddEntriesRawData( vtkSmartPointer<vtkTable> &table ); // Tested
 
-    void SetyMinMax();
+    void AddEntriesRawStats( vtkSmartPointer<vtkTable> &table ); // Tested
 
-    void SetChartProperties();
+    void AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable> &table ); // Tested
+
+    void AddEntriesCovariatesBands( vtkSmartPointer<vtkTable> &table ); // Tested
+
+    void AddEntries( vtkSmartPointer<vtkTable> &table ); /// Not directly tested
+
+
+    void SetData( vtkSmartPointer<vtkTable> &table ); // Tested
+
+
+    void InitLines(); // Tested
+
+    void AddSignificantLevel( double significantLevel ); // Tested
+
+    void AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedByProperties, bool isOmnibus, int i ); /** /!\ WRITE TEST /!\ **/
+
+    void AddLineRawData( vtkSmartPointer<vtkTable> table ); /// Not tested
+
+    void AddLineRawStats( vtkSmartPointer<vtkTable> table ); /// Not tested
+
+    void AddLineBetas( vtkSmartPointer<vtkTable> table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus ); /// Not tested
+
+    void AddLineLPvalue( vtkSmartPointer<vtkTable> table ); /// Not tested
+
+    void AddLineLConfidenceBands( vtkSmartPointer<vtkTable> table ); /// Not tested
+
+    void AddLines( vtkSmartPointer<vtkTable> table ); /// Not directly tested
+
+
+    QList<double> GetyMinMax(); // Tested
+
+    void SetyMinMax(); /** /!\ WRITE TEST /!\ **/
+
+    void SetChartProperties(); /// Not tested
 };
 
 #endif // PLOT_H

@@ -9,19 +9,10 @@ MatlabScript::MatlabScript()
 /***************************************************************/
 /********************** Public functions ***********************/
 /***************************************************************/
-void MatlabScript::SetMatlabOutputDir( QString matlabOutputDir )
+void MatlabScript::InitMatlabScript( QString matlabOutputDir, QString matlabScriptName )
 {
     m_matlabOutputDir = matlabOutputDir;
-}
-
-void MatlabScript::SetMatlabScriptName( QString matlabScriptName )
-{
     m_matlabScriptName = matlabScriptName;
-}
-
-
-void MatlabScript::InitMatlabScript()
-{
     m_matlabScript.clear();
 //    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRef.m" );
     QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRefWithPlots.m" );
@@ -40,12 +31,14 @@ void MatlabScript::InitMatlabScript()
     }
 }
 
+
 void MatlabScript::SetHeader()
 {
     m_matlabScript.replace( "$version$", QString( FADTTS_VERSION ).prepend( "V" ) );
     m_matlabScript.replace( "$date$", QDate::currentDate().toString( "MM/dd/yyyy" ) );
     m_matlabScript.replace( "$time$", QTime::currentTime().toString( "hh:mm ap" ) );
 }
+
 
 void MatlabScript::SetNbrCompThreads( bool isRunOnSystem, int nbrComp )
 {
@@ -56,6 +49,7 @@ void MatlabScript::SetMVCMPath( QString mvcmPath )
 {
     m_matlabScript.replace( "$addMVCMPath$", mvcmPath );
 }
+
 
 void MatlabScript::SetFiberName( QString fiberName )
 {
@@ -80,29 +74,6 @@ void MatlabScript::SetDiffusionProperties( QStringList selectedPrefixes )
     m_matlabScript.replace( "$inputDiffusionProperties$", inputDiffusionProperties );
 
     m_matlabScript.replace( "$diffusionProperties$", diffusionProperties );
-}
-
-void MatlabScript::SetNbrPermutation( int nbrPermutation )
-{
-    m_matlabScript.replace( "$inputNbrPermutations$", "nbrPermutations = " + QString::number( nbrPermutation ) + ";" );
-}
-
-void MatlabScript::SetCovariates( QMap<int, QString> selectedCovariates )
-{
-    m_matlabScript.replace( "$inputNbrCovariates$", "nbrCovariates = " + QString::number( selectedCovariates.count() ) + ";" );
-    QString inputCovarariates;
-    QString covariates;
-    int i = 1;
-    QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
-    while( iterCovariate != selectedCovariates.constEnd() )
-    {
-        inputCovarariates.append( iterCovariate.value() + " = \'" + iterCovariate.value() + "\';\n" );
-        covariates.append( "Cnames{ " + QString::number( i ) + " } = " + iterCovariate.value() + ";\n" );
-        ++iterCovariate;
-        i++;
-    }
-    m_matlabScript.replace( "$inputCovariates$", inputCovarariates );
-    m_matlabScript.replace( "$covariates$", covariates );
 }
 
 void MatlabScript::SetInputFiles( QMap< int, QString > matlabInputFiles )
@@ -135,6 +106,30 @@ void MatlabScript::SetInputFiles( QMap< int, QString > matlabInputFiles )
     m_matlabScript.replace( "$diffusionFiles$", diffusionFiles );
 }
 
+void MatlabScript::SetCovariates( QMap<int, QString> selectedCovariates )
+{
+    m_matlabScript.replace( "$inputNbrCovariates$", "nbrCovariates = " + QString::number( selectedCovariates.count() ) + ";" );
+    QString inputCovarariates;
+    QString covariates;
+    int i = 1;
+    QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.begin();
+    while( iterCovariate != selectedCovariates.constEnd() )
+    {
+        inputCovarariates.append( iterCovariate.value() + " = \'" + iterCovariate.value() + "\';\n" );
+        covariates.append( "Cnames{ " + QString::number( i ) + " } = " + iterCovariate.value() + ";\n" );
+        ++iterCovariate;
+        i++;
+    }
+    m_matlabScript.replace( "$inputCovariates$", inputCovarariates );
+    m_matlabScript.replace( "$covariates$", covariates );
+}
+
+
+void MatlabScript::SetNbrPermutation( int nbrPermutation )
+{
+    m_matlabScript.replace( "$inputNbrPermutations$", "nbrPermutations = " + QString::number( nbrPermutation ) + ";" );
+}
+
 void MatlabScript::SetOmnibus( bool omnibus )
 {
     m_matlabScript.replace( "$inputOmnibus$", "omnibus = " + QString::number( omnibus ) + ";" );
@@ -155,6 +150,30 @@ void MatlabScript::SetPvalueThreshold( double pvalueThreshold )
     m_matlabScript.replace( "$pvalueThreshold$", "pvalueThreshold = " + QString::number( pvalueThreshold ) + ";" );
 }
 
+
+QString MatlabScript::GenerateMatlabFiles()
+{
+    QDir().mkpath( m_matlabOutputDir + "/MatlabOutputs" );
+    QString matlabScriptPath = m_matlabOutputDir + "/" + m_matlabScriptName;
+    QFile matlabScript( matlabScriptPath );
+    if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )
+    {
+        QTextStream ts( &matlabScript );
+        ts << m_matlabScript;
+        matlabScript.flush();
+        matlabScript.close();
+    }
+
+    GenerateMyFDR();
+
+    return matlabScriptPath;
+}
+
+
+
+/***************************************************************/
+/********************** Private functions **********************/
+/***************************************************************/
 void MatlabScript::GenerateMyFDR()
 {
     QResource resource( ":/MatlabFiles/Resources/MatlabFiles/myFDR.m" );
@@ -179,22 +198,4 @@ void MatlabScript::GenerateMyFDR()
             matlabFunctionResource.close();
         }
     }
-}
-
-QString MatlabScript::GenerateMatlabFiles()
-{
-    QDir().mkpath( m_matlabOutputDir + "/MatlabOutputs" );
-    QString matlabScriptPath = m_matlabOutputDir + "/" + m_matlabScriptName;
-    QFile matlabScript( matlabScriptPath );
-    if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )
-    {
-        QTextStream ts( &matlabScript );
-        ts << m_matlabScript;
-        matlabScript.flush();
-        matlabScript.close();
-    }
-
-    GenerateMyFDR();
-
-    return matlabScriptPath;
 }

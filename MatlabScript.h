@@ -36,28 +36,28 @@ class MatlabScript
 public :
    MatlabScript();
 
-   void SetMatlabOutputDir( QString matlabOutputDir );
 
-   void SetMatlabScriptName( QString matlabScriptName );
+   void InitMatlabScript( QString matlabOutputDir, QString matlabScriptName );
 
-
-   void InitMatlabScript();
 
    void SetHeader();
+
 
    void SetNbrCompThreads( bool isRunOnSystem , int nbrComp );
 
    void SetMVCMPath( QString mvcmPath );
 
+
    void SetFiberName( QString fiberName );
 
    void SetDiffusionProperties( QStringList selectedPrefixes );
 
-   void SetNbrPermutation( int nbrPermutation );
+   void SetInputFiles( QMap<int, QString> matlabInputFiles );
 
    void SetCovariates( QMap<int, QString> selectedCovariates );
 
-   void SetInputFiles( QMap<int, QString> matlabInputFiles );
+
+   void SetNbrPermutation( int nbrPermutation );
 
    void SetOmnibus( bool omnibus );
 

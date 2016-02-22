@@ -36,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -132,7 +132,7 @@
             </widget>
            </item>
            <item row="8" column="0">
-            <widget class="QPushButton" name="inputTab_addCovariateFile_pushButton">
+            <widget class="QPushButton" name="inputTab_addSubMatrixFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -152,7 +152,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Specify Covariates Data File</string>
+              <string>Specify SUBMATRIX Data File</string>
              </property>
             </widget>
            </item>
@@ -231,7 +231,7 @@
             </widget>
            </item>
            <item row="8" column="1" colspan="3">
-            <widget class="QLineEdit" name="para_inputTab_covariateFile_lineEdit">
+            <widget class="QLineEdit" name="para_inputTab_subMatrixFile_lineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -366,7 +366,7 @@
             </widget>
            </item>
            <item row="8" column="6">
-            <widget class="QPushButton" name="inputTab_editCovariateFile_pushButton">
+            <widget class="QPushButton" name="inputTab_editSubMatrixFile_pushButton">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -411,7 +411,7 @@
             </widget>
            </item>
            <item row="8" column="5">
-            <widget class="QLabel" name="inputTab_iconCovariateFile_label">
+            <widget class="QLabel" name="inputTab_iconSubMatrixFile_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -490,7 +490,7 @@
                </widget>
               </item>
               <item row="0" column="3">
-               <widget class="QLabel" name="inputTab_covariateFileInfoHeader_label">
+               <widget class="QLabel" name="inputTab_subMatrixFileInfoHeader_label">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -498,7 +498,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;Covariates File&lt;/span&gt;</string>
+                 <string>&lt;span style=&quot; font-weight:600;&quot;&gt;SubMatrix File&lt;/span&gt;</string>
                 </property>
                </widget>
               </item>
@@ -575,7 +575,7 @@
                </widget>
               </item>
               <item row="1" column="3" rowspan="13">
-               <widget class="QLabel" name="inputTab_covariateFileInfo_label">
+               <widget class="QLabel" name="inputTab_subMatrixFileInfo_label">
                 <property name="text">
                  <string>&lt;i&gt;No File Information.&lt;br&gt;Please select a correct data file&lt;/i&gt;</string>
                 </property>
@@ -860,7 +860,7 @@
             <number>0</number>
            </property>
            <item row="6" column="0">
-            <widget class="QCheckBox" name="para_subjectCovariateTab_covariateFile_checkBox">
+            <widget class="QCheckBox" name="para_subjectCovariateTab_subMatrixFile_checkBox">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -868,7 +868,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Covariates</string>
+              <string>SubMatrix</string>
              </property>
             </widget>
            </item>
@@ -925,7 +925,7 @@
             </widget>
            </item>
            <item row="6" column="2">
-            <widget class="QLabel" name="subjectCovariateTab_covariateFileInfo_label">
+            <widget class="QLabel" name="subjectCovariateTab_subMatrixFileInfo_label">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -1276,7 +1276,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Post Hoc / Test Independently</string>
+              <string>Post-Hoc / Test Independently</string>
              </property>
              <property name="checked">
               <bool>true</bool>
@@ -1315,7 +1315,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Use alphanumeric characters and '_' separator only&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Only use alphanumeric characters and '_' separator&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -2893,15 +2893,15 @@
   <tabstop>inputTab_addFAFile_pushButton</tabstop>
   <tabstop>para_inputTab_faFile_lineEdit</tabstop>
   <tabstop>inputTab_editFAFile_pushButton</tabstop>
-  <tabstop>inputTab_addCovariateFile_pushButton</tabstop>
-  <tabstop>para_inputTab_covariateFile_lineEdit</tabstop>
-  <tabstop>inputTab_editCovariateFile_pushButton</tabstop>
+  <tabstop>inputTab_addSubMatrixFile_pushButton</tabstop>
+  <tabstop>para_inputTab_subMatrixFile_lineEdit</tabstop>
+  <tabstop>inputTab_editSubMatrixFile_pushButton</tabstop>
   <tabstop>inputTab_close_pushButton</tabstop>
   <tabstop>para_subjectCovariateTab_adFile_checkBox</tabstop>
   <tabstop>para_subjectCovariateTab_rdFile_checkBox</tabstop>
   <tabstop>para_subjectCovariateTab_mdFile_checkBox</tabstop>
   <tabstop>para_subjectCovariateTab_faFile_checkBox</tabstop>
-  <tabstop>para_subjectCovariateTab_covariateFile_checkBox</tabstop>
+  <tabstop>para_subjectCovariateTab_subMatrixFile_checkBox</tabstop>
   <tabstop>subjectCovariateTab_covariatesCheckAll_pushButton</tabstop>
   <tabstop>subjectCovariateTab_covariatesUncheckAll_pushButton</tabstop>
   <tabstop>para_subjectCovariateTab_covariates_listWidget</tabstop>

@@ -1,9 +1,13 @@
 #ifndef TESTEDITINPUTDIALOG_H
 #define TESTEDITINPUTDIALOG_H
 
+#include "EditInputDialog.h"
+
+#include <QCryptographicHash>
+#include <QSet>
+
 #include <iostream>
 
-#include "EditInputDialog.h"
 
 class TestEditInputDialog
 {
@@ -13,11 +17,18 @@ public:
     /**********************************************************************/
     /*************************** Test Functions ***************************/
     /**********************************************************************/
-    bool Test_UploadFileData( QString adInputFile ); // Done
+    bool Test_SetCurrentDir();
 
-    bool Test_Delete( QString adInputFile ); // Done
+    bool Test_CovariateColumnID();
 
-    bool Test_RefreshFileInfo( QString adInputFile, QString inputCOMPFile ); // Done
+
+    bool Test_OnDelete( QString adFilePath );
+
+
+    bool Test_LoadDisplayData( QString adFilePath, QString subMatrixFilePath );
+
+
+    bool Test_OnSaveFile( QString outputDir, QString adFilePath, QString newADFile );
 
 
 private:
@@ -26,7 +37,10 @@ private:
     /**********************************************************************/
     bool TestQTableWidget( QList<QStringList> expectedData, QSharedPointer<EditInputDialog> editInputDialog );
 
-    void DisplayErrorFileInfoDisplayed( QString infoExpected, QString infoDisplayed );
+
+    QByteArray GetHashFile( QString filePath );
+
+    bool CompareFile( QString filePath1, QString filePath2 );
 };
 
 #endif // TESTEDITINPUTDIALOG_H

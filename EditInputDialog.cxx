@@ -25,17 +25,9 @@ void EditInputDialog::SetData( Data *newData )
     m_data = newData;
 }
 
-void EditInputDialog::DisplayDataEdition( const QString &newLineEditPrefixID, const QString &newInputFile )
+QString& EditInputDialog::SetCurrentInputDir()
 {
-    m_lineEditPrefix = newLineEditPrefixID;
-    m_inputFile = newInputFile;
-
-    LoadData();
-}
-
-void EditInputDialog::SetCurrentInputDir( const QString &newCurrentInputDir )
-{
-    m_currentInputDir = newCurrentInputDir;
+    return m_currentDir;
 }
 
 void EditInputDialog::ResetCovariateColumnID()
@@ -43,6 +35,14 @@ void EditInputDialog::ResetCovariateColumnID()
     m_covariateColumnIDSpinBox->setValue( 1 );
     /** Row and Column ID start at 1 for data display only.
      *  Otherwise they start at 0 (data modification, ...). **/
+}
+
+
+void EditInputDialog::DisplayDataEdition( const int &newDiffusionPropertyIndex )
+{
+    m_diffusionPropertyIndex = newDiffusionPropertyIndex;
+
+    LoadData();
 }
 
 
@@ -110,11 +110,11 @@ void EditInputDialog::OnCovariateColumnIDChanged( int columnID )
 
 bool EditInputDialog::OnSaveFile()
 {
-    QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_lineEditPrefix.toUpper() + " file as ..." ) ),
-                                                     m_currentInputDir + "/new" + m_lineEditPrefix.toUpper() + "File.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
-    if( !filePath.isEmpty() )
+    QString newFilePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + " file as ..." ) ),
+                                                     m_currentDir + "/new" + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + "File.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
+    if( !newFilePath.isEmpty() )
     {
-        QFile exportedCSV( filePath );
+        QFile exportedCSV( newFilePath );
         exportedCSV.open( QIODevice::WriteOnly );
         QTextStream ts( &exportedCSV );
         QStringList data;
@@ -131,8 +131,7 @@ bool EditInputDialog::OnSaveFile()
         exportedCSV.flush();
         exportedCSV.close();
 
-        m_inputFile = filePath;
-        emit UpdateInputFile( m_inputFile, m_lineEditPrefix ); /** Update file path in mainWindow LineEdit **/
+        emit UpdateInputFile( m_diffusionPropertyIndex, newFilePath ); /** Update file path in mainWindow LineEdit **/
 
         m_columnDeleted = false;
         m_rowDeleted = false;
@@ -169,7 +168,7 @@ void EditInputDialog::InitEditInputDialog()
 
 void EditInputDialog::LoadData()
 {
-    QList<QStringList> fileData = m_data->GetFileData( m_lineEditPrefix );
+    QList<QStringList> fileData = m_data->GetFileData( m_diffusionPropertyIndex );
     int nbrRows = 0;
     int nbrColumns = 0;
 
@@ -198,7 +197,7 @@ void EditInputDialog::LoadData()
     }
     m_dataTableWidget->setUpdatesEnabled( true );
 
-    if( m_lineEditPrefix == m_data->GetCovariatePrefix() )
+    if( m_diffusionPropertyIndex == m_data->GetSubMatrixIndex() )
     {
         m_ui->EditInputDialog_subjectColumn_label->show();
         m_ui->EditInputDialog_subjectColumnID_spinBox->show();

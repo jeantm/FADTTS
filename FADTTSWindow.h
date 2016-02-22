@@ -5,7 +5,6 @@
 #include "EditInputDialog.h"
 #include "Data.h"
 #include "Processing.h"
-#include "MatlabScript.h"
 #include "MatlabThread.h"
 #include "Plot.h"
 
@@ -17,19 +16,18 @@
 
 class FADTTSWindow : public FADTTSWindowConfig
 {
-    friend class TestFADTTSWindow;
+//    friend class TestFADTTSWindow;
 
     Q_OBJECT
 
 public:
-    /********* Configuration & Events *********/
     FADTTSWindow();
 
     ~FADTTSWindow();
 
 
 private slots:
-    /********* Configuration & Events *********/
+    /********** Configuration & Events **********/
     void OnLoadParaSettings();
 
     void OnSaveParaSettings();
@@ -44,23 +42,23 @@ private slots:
     void closeEvent( QCloseEvent *event );
 
 
-    /*************** Input Tab ***************/
+    /**************** Input  Tab ****************/
     void OnAddInputFiles();
 
 
-    void OnAddInputFile( const QString& prefID );
+    void OnAddInputFile( const int& diffusionPropertyID );
 
-    void OnSettingInputFile( const QString& prefID );
+    void OnSettingInputFile( const int& diffusionPropertyID );
 
-    void OnEditInputFile( const QString& prefID );
+    void OnEditInputFile( const int& diffusionPropertyID );
 
 
-    void OnUpdatingInputFile( const QString& newFilePath, const QString& prefID );
+    void OnUpdatingInputFile( const int &diffusionPropertyIndex, const QString& newFilePath );
 
     void OnUpdatingCovariateColumnID( const int& newCovariateColumnID );
 
 
-    /*********** Subjects/Covariates Tab ***********/
+    /********* Subjects/Covariates Tab *********/
     void OnCovariateFileToggled();
 
     void OnCovariateClicked( QListWidgetItem *item );
@@ -93,8 +91,8 @@ private slots:
     void OnSettingList( const QString& filePath );
 
 
-    /****************** Execution Tab ******************/
-    void OnSettingFiberName();
+    /************** Execution Tab **************/
+    void OnSettingFiberName( const QString& fibername );
 
     void OnBrowsingOutputDir();
 
@@ -112,6 +110,10 @@ private slots:
     void OnRunMatlabToggled( const bool& choice );
 
     void OnRunOnKillDevil( const bool& choice );
+
+    void OnKillDevilQueueSelection( const QString& queue );
+
+    void OnKillDevilAllocatedMemoryChanged( const int& allocatedMemory );
 
 
     void OnRun();
@@ -185,79 +187,87 @@ private:
     QPixmap m_koPixmap;
     QPixmap m_warningPixmap;
 
-    Qt::CaseSensitivity caseSensitivity;
+    typedef QMap<int, QPushButton*> pushButtonMapType;
+    typedef QMap<int, QLineEdit*> lineEditMapType;
+    typedef QMap<int, QCheckBox*> checkBoxMapType;
+    typedef QMap<int, QLabel*> labelMapType;
+    typedef QMap< int, QPair< QString, QPair< bool, QString > > > displayMapType;
+    typedef QMap< int, QPair< QString, QLabel* > > nameLabelMapType;
+    typedef QMap< int, QPair< QString, QComboBox*> > comboBoxMapType;
+    typedef QMap< int, QPair< QString, QLineEdit* > > covariateNameLineEditMapType;
 
 
     Data m_data;
 
-    QSharedPointer<EditInputDialog> m_editInputDialog;
-
     Processing m_processing;
 
-    MatlabScript m_matlabScript;
 
+    /**************** Input Tab ****************/
+    QSharedPointer<EditInputDialog> m_editInputDialog;
+
+    pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
+    lineEditMapType m_inputTabInputFileLineEditMap;
+    labelMapType m_inputTabIconLabelMap, m_inputFileInformationLabelMap;
+
+    QString m_currentInputFileDir;
+
+
+    /********* Subjects/Covariates Tab *********/
+    Qt::CaseSensitivity caseSensitivity;
+
+    QListWidget *m_covariateListWidget, *m_matchedSubjectListWidget, *m_unmatchedSubjectListWidget;
+
+    checkBoxMapType m_paramTabFileCheckBoxMap;
+    labelMapType m_paramTabFileDataSizeLabelMap;
+
+    QMap<int, QString> m_selectedCovariates;
+
+    QLineEdit *m_subjectFileLineEdit;
+    QStringList m_loadedSubjects;
+    QString m_currentSubjectFileDir;
+    int m_nbrSelectedSubjects;
+    bool m_areSubjectsLoaded;
+
+
+    /************** Execution Tab **************/
     MatlabThread *m_matlabThread;
 
-    Plot *m_plot;
-
-
-    QVTKWidget *m_qvtkWidget;
-
-
-    QFile *m_logFile;
-
-    QTextStream* m_textStreamLog;
-
     QPlainTextEdit *m_logWindow;
+    QTextStream* m_textStreamLog;
+    QFile *m_logFile;
 
     QProgressBar *m_progressBar;
 
+    QMap< int, QString > m_propertySelected, m_selectedFiles;
 
-    typedef QMap<QString, QLabel*> labelMapType;
-    labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap, m_inputFileInformationLabelMap;
+    QString m_fibername, m_currentMatlabExeDir, m_mvcmPath;
 
-    typedef QMap<QString, QCheckBox*> checkBoxMapType;
-    checkBoxMapType m_paramTabFileCheckBoxMap;
+    bool m_isMatlabExeFound;
 
-    typedef QMap<QString, QLineEdit*> lineEditMapType;
-    lineEditMapType m_inputTabInputFileLineEditMap;
 
-    typedef QMap<QString, QPushButton*> pushButtonMapType;
-    pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
+    /************** Plotting  Tab **************/
+    QSharedPointer<QVTKWidget> m_qvtkWidget;
 
-    typedef QMap< int, QPair< QString, QLabel* > > NameLabelMap;
-    NameLabelMap m_propertiesNameLabelMap, m_covariatesNameLabelMap;
+    Plot *m_plot;
 
-    typedef QMap< int, QPair< QString, QComboBox*> > comboBoxMapType;
+    QListWidget *m_plotListWidget;
+
+    displayMapType m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
+
+    nameLabelMapType m_propertiesNameLabelMap, m_covariatesNameLabelMap;
     comboBoxMapType m_propertiesColorsComboBoxMap, m_covariatesColorsComboBoxMap;
-
-    typedef QMap< int, QPair< QString, QLineEdit* > > covariateNameLineEditMap;
-    covariateNameLineEditMap m_covariatesNameLineEditMap;
-
-    typedef QMap< int, QPair< QString, QPair< bool, QString > > > displayMap;
-    displayMap m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
-
-
-    QMap< int, QString > m_propertySelected;
-
-    QListWidget *m_covariateListWidget, *m_matchedSubjectListWidget, *m_unmatchedSubjectListWidget,
-    *m_plotListWidget;
+    covariateNameLineEditMapType m_covariatesNameLineEditMap;
 
     QComboBox *m_plotComboBox, *m_propertyComboBox, *m_covariateComboBox;
 
-    QLineEdit *m_subjectFileLineEdit;
+    QString m_previousPlotSelected;
 
-    QStringList m_loadedSubjects;
-
-    QString m_currentInputFileDir, m_currentSubjectFileDir,
-    m_currentMatlabExeDir, m_mvcmPath, m_previousPlotSelected;
-
-    int m_nbrSelectedSubjects;
-
-    bool m_areSubjectsLoaded, m_areLinesForDisplayProperties, m_isMatlabExeFound;
+    bool m_areLinesForDisplayProperties;
 
 
-    /********* Configuration & Events *********/
+
+
+    /********** Configuration & Events **********/
     void InitFADTTSWindow();
 
     void InitMenuBar();
@@ -285,18 +295,18 @@ private:
     void DisplayIcon( QLabel *label , const QPixmap icon );
 
 
-    /*************** Input Tab ***************/
+    /**************** Input Tab ****************/
     void UpdateLineEditsAfterAddingMultipleFiles( const QStringList fileList );
 
 
-    void UpdateInputFileInformation( const QString prefID );
+    void UpdateInputFileInformation( const int diffusionPropertyID );
 
-    void DisplayInputLineEditIcon( const QString prefID , const QPixmap icon );
+    void DisplayInputLineEditIcon( const int diffusionPropertyID, const QPixmap icon );
 
-    void LaunchEditInputDialog( QString prefID );
+    void LaunchEditInputDialog( const int diffusionPropertyID );
 
 
-    QString GetInputFileInformation( const QString prefID );
+    QString GetInputFileInformation( const int diffusionPropertyID );
 
     void DisplayFileInformation();
 
@@ -304,14 +314,21 @@ private:
     void SetInfoCovariateFileSubjectColumnID();
 
 
-    /*********** Subjects/Covariates Tab **********/
-    void UpdateAvailableFileParamTab();
+    /********* Subjects/Covariates Tab *********/
+    void UpdateAvailableDiffusionProperties();
+
+    QMap< int, bool > GetDiffusionPropertiesCheckState( QMap< int, QCheckBox* > checkBoxMap );
+
+
+    void SetCheckStateAllCovariates( Qt::CheckState checkState );
+
+    void SetSelectedCovariates();
 
 
     void SetCheckStateAllVisibleSubjects( Qt::CheckState checkState );
 
 
-    void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectMap );
+    void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QList<int> > unMatchedSubjectMap );
 
     void DisplaySubjectInformation();
 
@@ -321,22 +338,18 @@ private:
     int SearchSubjects( QListWidget *list );
 
 
-    /*************** Execution Tab ****************/
-    QStringList GetSelectedPrefixes();
-
-    QMap< int, QString > GetSelectedInputFiles();
-
-    QMap<int, QString> GetSelectedCovariates();
+    /************** Execution Tab **************/
+    void SetSelectedInputFiles();
 
 
     QStringList GenerateSelectedSubjectFile( QString outputDir );
 
 
-    bool IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates );
+    bool IsRunFADTTSOK();
 
-    void SetMatlabThread( QString fiberName, QMap<int, QString> selectedCovariates );
+    void SetMatlabScript();
 
-    void SetLogDisplay( QString outputDir, QString fiberName, QMap<int, QString> matlabInputFiles,
+    void SetLogDisplay( QString outputDir, QMap<int, QString> matlabInputFiles,
                         QMap<int, QString> selectedCovariates );
 
 
@@ -371,7 +384,6 @@ private:
                          bool lineSelectionAvailable );
 
     void PropertiesForDisplay( QStringList propertiesForDisplay );
-
 };
 
 #endif // FADTTSWINDOW_H

@@ -5,93 +5,152 @@ Data::Data()
 }
 
 
-/***************************************/
+void Data::InitData()
+{
+    foreach( int diffusionPropertyIndex, GetDiffusionPropertiesIndices() )
+    {
+        m_filenameMap[ diffusionPropertyIndex ];
+        m_fileDataMap[ diffusionPropertyIndex ];
+        m_nbrRowsMap[ diffusionPropertyIndex ];
+        m_nbrColumnsMap[ diffusionPropertyIndex ];
+        m_subjectMap[ diffusionPropertyIndex ];
+        m_nbrSubjectsMap[ diffusionPropertyIndex ];
+    }
+
+    m_covariateColumnID = 0;
+}
+
+
+
 /*************** Getters ***************/
-/***************************************/
-QString Data::GetOutputDir() const
+QList<int> Data::GetDiffusionPropertiesIndices() const
 {
-    return m_outputDir;
+    QList<int> diffusionPropertiesIndices = QList<int>() << AD << RD << MD << FA << SubMatrix;
+    return diffusionPropertiesIndices;
 }
 
-QStringList Data::GetPrefixList() const
+int Data::GetAxialDiffusivityIndex() const
 {
-    return m_prefixList;
+    return AD;
 }
 
-QString Data::GetAxialDiffusivityPrefix() const
+int Data::GetRadialDiffusivityIndex() const
 {
-    return m_axialDiffusivityPrefix;
+    return RD;
 }
 
-QString Data::GetRadialDiffusivityPrefix() const
+int Data::GetMeanDiffusivityIndex() const
 {
-    return m_radialDiffusivityPrefix;
+    return MD;
 }
 
-QString Data::GetMeanDiffusivityPrefix() const
+int Data::GetFractionalAnisotropyIndex() const
 {
-    return m_meanDiffusivityPrefix;
+    return FA;
 }
 
-QString Data::GetFractionalAnisotropyPrefix() const
+int Data::GetSubMatrixIndex() const
 {
-    return m_fractionalAnisotropyPrefix;
+    return SubMatrix;
 }
 
-QString Data::GetCovariatePrefix() const
+QString Data::GetDiffusionPropertyName( int diffusionPropertyIndex ) const
 {
-    return m_covariatePrefix;
+    switch( diffusionPropertyIndex )
+    {
+    case AD:
+        return "ad";
+    case RD:
+        return "rd";
+    case MD:
+        return "md";
+    case FA:
+        return "fa";
+    case SubMatrix:
+        return "subMatrix";
+    default:
+        return "No valid diffussion property";
+    }
 }
 
-int Data::GetCovariateFileSubjectColumnID() const
+
+QString Data::GetFilename( int diffusionPropertyIndex ) const
 {
-    return m_covariateFileSubjectColumnID;
+    return m_filenameMap[ diffusionPropertyIndex ];
 }
 
+QList<QStringList> Data::GetFileData( int diffusionPropertyIndex ) const
+{
+    return m_fileDataMap[ diffusionPropertyIndex ];
+}
 
-QMap<QString, QStringList> Data::GetSubjects() const
+int Data::GetNbrRows( int diffusionPropertyIndex ) const
+{
+    return m_nbrRowsMap[ diffusionPropertyIndex ];
+}
+
+int Data::GetNbrColumns( int diffusionPropertyIndex ) const
+{
+    return m_nbrColumnsMap[ diffusionPropertyIndex ];
+}
+
+QMap<int, QStringList> Data::GetSubjects() const
 {
     return m_subjectMap;
 }
+
+int Data::GetNbrSubjects( int diffusionPropertyIndex ) const
+{
+    return m_nbrSubjectsMap[ diffusionPropertyIndex ];
+}
+
 
 QMap<int, QString> Data::GetCovariates() const
 {
     return m_covariateMap;
 }
 
-
-QString Data::GetFilename( QString prefID ) const
+int Data::GetCovariateColumnID() const
 {
-    return m_filenameMap[ prefID ];
+    return m_covariateColumnID;
 }
 
-QList<QStringList> Data::GetFileData( QString prefID ) const
-{
-    return m_fileDataMap[ prefID ];
-}
-
-int Data::GetNbrRows( QString prefID ) const
-{
-    return m_nbrRowsMap[ prefID ];
-}
-
-int Data::GetNbrColumns( QString prefID ) const
-{
-    return m_nbrColumnsMap[ prefID ];
-}
-
-int Data::GetNbrSubjects( QString prefID ) const
-{
-    return m_nbrSubjectsMap[ prefID ];
-}
-
-
-/***************************************/
-/*************** Setters ***************/
-/***************************************/
-QString& Data::SetOutputDir()
+QString Data::GetOutputDir() const
 {
     return m_outputDir;
+}
+
+
+
+/*************** Setters ***************/
+QString& Data::SetFilename( int diffusionPropertyIndex )
+{
+    return m_filenameMap[ diffusionPropertyIndex ];
+}
+
+QList<QStringList>& Data::SetFileData( int diffusionPropertyIndex )
+{
+    return m_fileDataMap[ diffusionPropertyIndex ];
+}
+
+int& Data::SetNbrRows( int diffusionPropertyIndex )
+{
+    return m_nbrRowsMap[ diffusionPropertyIndex ];
+}
+
+int& Data::SetNbrColumns( int diffusionPropertyIndex )
+{
+    return m_nbrColumnsMap[ diffusionPropertyIndex ];
+}
+
+QStringList& Data::SetSubjects( int diffusionPropertyIndex )
+{
+    return m_subjectMap[ diffusionPropertyIndex ];
+}
+
+int& Data::SetNbrSubjects( int diffusionPropertyIndex )
+{
+    return m_nbrSubjectsMap[ diffusionPropertyIndex ];
 }
 
 
@@ -100,106 +159,47 @@ QMap<int, QString>& Data::SetCovariates()
     return m_covariateMap;
 }
 
-
-QString& Data::SetFilename( QString prefID )
+int& Data::SetCovariateColumnID()
 {
-    return m_filenameMap[ prefID ];
+    return m_covariateColumnID;
 }
 
-QList<QStringList>& Data::SetFileData( QString prefID )
+QString& Data::SetOutputDir()
 {
-    return m_fileDataMap[ prefID ];
-}
-
-QStringList& Data::SetSubjects( QString prefID )
-{
-    return m_subjectMap[ prefID ];
-}
-
-int& Data::SetNbrRows( QString prefID )
-{
-    return m_nbrRowsMap[ prefID ];
-}
-
-int& Data::SetNbrColumns( QString prefID )
-{
-    return m_nbrColumnsMap[ prefID ];
-}
-
-int& Data::SetNbrSubjects( QString prefID )
-{
-    return m_nbrSubjectsMap[ prefID ];
+    return m_outputDir;
 }
 
 
-int& Data::SetCovariateFileSubjectColumnID()
+
+void Data::ClearFileInformation( int diffusionPropertyIndex )
 {
-    return m_covariateFileSubjectColumnID;
-}
+    m_filenameMap[ diffusionPropertyIndex ].clear();
+    m_fileDataMap[ diffusionPropertyIndex ].clear();
+    m_nbrRowsMap[ diffusionPropertyIndex ] = 0;
+    m_nbrColumnsMap[ diffusionPropertyIndex ] = 0;
+    m_subjectMap[ diffusionPropertyIndex ].clear();
+    m_nbrSubjectsMap[ diffusionPropertyIndex ] = 0;
 
 
-/***************************************/
-/*********** Other Functions ***********/
-/***************************************/
-int Data::InitData()
-{
-    m_axialDiffusivityPrefix = "ad";
-    m_radialDiffusivityPrefix = "rd";
-    m_meanDiffusivityPrefix = "md";
-    m_fractionalAnisotropyPrefix = "fa";
-    m_covariatePrefix = "subMatrix";
-
-    m_prefixList << m_axialDiffusivityPrefix << m_radialDiffusivityPrefix << m_meanDiffusivityPrefix
-                 << m_fractionalAnisotropyPrefix << m_covariatePrefix;
-
-    foreach( QString prefID, m_prefixList )
-    {
-        m_filenameMap[ prefID ];
-        m_nbrRowsMap[ prefID ];
-        m_nbrColumnsMap[ prefID ];
-        m_nbrSubjectsMap[ prefID ];
-        ( m_subjectMap[ prefID ] );
-    }
-
-    m_covariateFileSubjectColumnID = 0;
-
-    return m_prefixList.removeDuplicates();
-}
-
-
-void Data::SetSubjects(QString prefID, QStringList subjects )
-{
-    m_subjectMap[ prefID ].append( subjects );
-}
-
-void Data::AddInterceptToCovariates()
-{
-    /** Key set at -1 so the Intercept is not taken into account when processing covariates **/
-    m_covariateMap.insert( -1, "Intercept" );
-}
-
-
-void Data::ClearFileInformation( QString prefID )
-{
-    m_filenameMap[ prefID ].clear();
-    m_fileDataMap[ prefID ].clear();
-    m_nbrRowsMap[ prefID ] = 0;
-    m_nbrColumnsMap[ prefID ] = 0;
-    m_nbrSubjectsMap[ prefID ] = 0;
-    ClearSubjects( prefID );
-
-    if( prefID == m_covariatePrefix )
+    if( diffusionPropertyIndex == SubMatrix )
     {
         ClearCovariates();
     }
 }
 
-void Data::ClearSubjects( QString prefID )
+void Data::ClearSubjects( int diffusionPropertyIndex )
 {
-    m_subjectMap[ prefID ].clear();
+    m_subjectMap[ diffusionPropertyIndex ].clear();
 }
 
 void Data::ClearCovariates()
 {
     m_covariateMap.clear();
+}
+
+
+void Data::AddInterceptToCovariates()
+{
+    /** Key set at -1 so the Intercept is not taken into account when processing covariates **/
+    m_covariateMap.insert( -1, "Intercept" );
 }

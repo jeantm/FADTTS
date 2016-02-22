@@ -20,7 +20,7 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() );
     m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() );
     m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() );
-    m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() );
+    m_para_m->setpara_inputTab_subMatrixFile_lineEdit( para_inputTab_subMatrixFile_lineEdit->text() );
 
 
     /*2nd tab: Subjects/Covariates*/
@@ -28,7 +28,7 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     m_para_m->setpara_subjectCovariateTab_rdFile_checkBox( para_subjectCovariateTab_rdFile_checkBox->checkState() );
     m_para_m->setpara_subjectCovariateTab_mdFile_checkBox( para_subjectCovariateTab_mdFile_checkBox->checkState() );
     m_para_m->setpara_subjectCovariateTab_faFile_checkBox( para_subjectCovariateTab_faFile_checkBox->checkState() );
-    m_para_m->setpara_subjectCovariateTab_covariateFile_checkBox( para_subjectCovariateTab_covariateFile_checkBox->checkState() );
+    m_para_m->setpara_subjectCovariateTab_subMatrixFile_checkBox( para_subjectCovariateTab_subMatrixFile_checkBox->checkState() );
 
     std::map<std::pair<unsigned long,QString>,bool> itemList;
     itemList.clear();
@@ -81,7 +81,7 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_para_m->setpara_inputTab_rdFile_lineEdit( para_inputTab_rdFile_lineEdit->text() );
         m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() );
         m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() );
-        m_para_m->setpara_inputTab_covariateFile_lineEdit( para_inputTab_covariateFile_lineEdit->text() );
+        m_para_m->setpara_inputTab_subMatrixFile_lineEdit( para_inputTab_subMatrixFile_lineEdit->text() );
 
 
         /*2nd tab: Subjects/Covariates*/
@@ -89,7 +89,7 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_para_m->setpara_subjectCovariateTab_rdFile_checkBox( para_subjectCovariateTab_rdFile_checkBox->checkState() );
         m_para_m->setpara_subjectCovariateTab_mdFile_checkBox( para_subjectCovariateTab_mdFile_checkBox->checkState() );
         m_para_m->setpara_subjectCovariateTab_faFile_checkBox( para_subjectCovariateTab_faFile_checkBox->checkState() );
-        m_para_m->setpara_subjectCovariateTab_covariateFile_checkBox( para_subjectCovariateTab_covariateFile_checkBox->checkState() );
+        m_para_m->setpara_subjectCovariateTab_subMatrixFile_checkBox( para_subjectCovariateTab_subMatrixFile_checkBox->checkState() );
 
         std::map<std::pair<unsigned long,QString>,bool> itemList;
         itemList.clear();
@@ -148,7 +148,7 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     para_inputTab_rdFile_lineEdit->setText( m_para_m->getpara_inputTab_rdFile_lineEdit() );
     para_inputTab_mdFile_lineEdit->setText( m_para_m->getpara_inputTab_mdFile_lineEdit() );
     para_inputTab_faFile_lineEdit->setText( m_para_m->getpara_inputTab_faFile_lineEdit() );
-    para_inputTab_covariateFile_lineEdit->setText( m_para_m->getpara_inputTab_covariateFile_lineEdit() );
+    para_inputTab_subMatrixFile_lineEdit->setText( m_para_m->getpara_inputTab_subMatrixFile_lineEdit() );
 
 
     /*2nd tab: Subjects/Covariates*/
@@ -156,10 +156,10 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     para_subjectCovariateTab_rdFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_rdFile_checkBox() );
     para_subjectCovariateTab_mdFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_mdFile_checkBox() );
     para_subjectCovariateTab_faFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_faFile_checkBox() );
-    para_subjectCovariateTab_covariateFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_covariateFile_checkBox() );
+    para_subjectCovariateTab_subMatrixFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_subMatrixFile_checkBox() );
 
     std::map<std::pair<unsigned long,QString>,bool> itemList;
-    if( !m_para_m->getpara_inputTab_covariateFile_lineEdit().isEmpty() )
+    if( !m_para_m->getpara_inputTab_subMatrixFile_lineEdit().isEmpty() )
     {
         itemList = m_para_m->getpara_subjectCovariateTab_covariates_listWidget();
     }
@@ -212,7 +212,7 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         para_inputTab_rdFile_lineEdit->setText( m_para_m->getpara_inputTab_rdFile_lineEdit() );
         para_inputTab_mdFile_lineEdit->setText( m_para_m->getpara_inputTab_mdFile_lineEdit() );
         para_inputTab_faFile_lineEdit->setText( m_para_m->getpara_inputTab_faFile_lineEdit() );
-        para_inputTab_covariateFile_lineEdit->setText( m_para_m->getpara_inputTab_covariateFile_lineEdit() );
+        para_inputTab_subMatrixFile_lineEdit->setText( m_para_m->getpara_inputTab_subMatrixFile_lineEdit() );
 
 
         /*2nd tab: Subjects/Covariates*/
@@ -220,7 +220,7 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         para_subjectCovariateTab_rdFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_rdFile_checkBox() );
         para_subjectCovariateTab_mdFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_mdFile_checkBox() );
         para_subjectCovariateTab_faFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_faFile_checkBox() );
-        para_subjectCovariateTab_covariateFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_covariateFile_checkBox() );
+        para_subjectCovariateTab_subMatrixFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_subMatrixFile_checkBox() );
 
         std::map<std::pair<unsigned long,QString>,bool> itemList = m_para_m->getpara_subjectCovariateTab_covariates_listWidget();
         para_subjectCovariateTab_covariates_listWidget->clear();

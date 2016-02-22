@@ -20,7 +20,7 @@ class EditInputDialog;
 class EditInputDialog : public QDialog
 {
     friend class TestEditInputDialog; /** For unit tests **/
-    friend class TestFADTTSWindow; /** For unit tests **/
+//    friend class TestFADTTSWindow; /** For unit tests **/
 
     Q_OBJECT
 
@@ -31,29 +31,30 @@ public:
 
     void SetData( Data *newData );
 
-    void DisplayDataEdition( const QString &newLineEditPrefixID, const QString &newInputFile );
+    QString& SetCurrentInputDir(); // Tested
 
-    void SetCurrentInputDir( const QString &newCurrentInputDir );
+    void ResetCovariateColumnID(); // Tested
 
-    void ResetCovariateColumnID();
+
+    void DisplayDataEdition( const int &newDiffusionPropertyIndex ); // Tested
 
 
 signals:
-    void UpdateInputFile( const QString&, const QString&  );
+    void UpdateInputFile( const int&, const QString&  );
 
     void UpdateCovariateColumnID( const int& );
 
 
 private slots:
-    void OnDeleteRows();
+    void OnDeleteRows(); // Tested
 
-    void OnDeleteColumns();
-
-
-    void OnCovariateColumnIDChanged( int columnID );
+    void OnDeleteColumns(); // Tested
 
 
-    bool OnSaveFile();
+    void OnCovariateColumnIDChanged( int columnID ); // Tested
+
+
+    bool OnSaveFile(); // Tested
 
 
 private:
@@ -67,18 +68,18 @@ private:
 
     Data *m_data;
 
-    QString m_lineEditPrefix, m_inputFile, m_currentInputDir;
+    QString m_currentDir;
 
-    int m_covariateColumnID;
+    int m_diffusionPropertyIndex, m_covariateColumnID;
 
     bool m_rowDeleted, m_columnDeleted;
 
 
     void InitEditInputDialog();
 
-    void LoadData();
+    void LoadData(); // Tested
 
-    void ResetTableWidget();
+    void ResetTableWidget(); // Tested
 
 
     void closeEvent( QCloseEvent *event );

@@ -7,806 +7,657 @@ TestProcessing::TestProcessing()
 /**********************************************************************/
 /*************************** Tests ************************************/
 /**********************************************************************/
-bool TestProcessing::Test_IsMatrixDimensionOK( QString inputADFile )
+bool TestProcessing::Test_GetDataFromFile( QString file_N_Path, QString file_R_Path, QString file_RN_Path )
 {
     Processing processing;
+    QStringList dataReference_row = QStringList() << "a" << "b" << "c" << "d" << "e" << "f";
+    QList<QStringList> dataReference = QList<QStringList>() << dataReference_row << dataReference_row <<
+                                                               dataReference_row << dataReference_row;
 
-    QList<QStringList> ADFileData = processing.GetDataFromFile( inputADFile );
+
+    bool testGetDataFromFile_N = processing.GetDataFromFile( file_N_Path ) == dataReference;
+    bool testGetDataFromfile_R_Path = processing.GetDataFromFile( file_R_Path ) == dataReference;
+    bool testGetDataFromFile_RN = processing.GetDataFromFile( file_RN_Path ) == dataReference;
+
+
+    bool testGetDataFromFile_Passed = testGetDataFromFile_N && testGetDataFromfile_R_Path && testGetDataFromFile_RN;
+    if( !testGetDataFromFile_Passed )
+    {
+        std::cerr << "/!\\ Test_GetDataFromFile() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GetDataFromFile( QString filePath )" << std::endl;
+        if( !testGetDataFromFile_N )
+        {
+            std::cerr << "\t+ Not reading line feed character '\\n' (Used as a new line character in Unix/Mac OS X)" << std::endl;
+        }
+        if( !testGetDataFromfile_R_Path )
+        {
+            std::cerr << "\t+ Not reading carriage return character '\\r' (Used as a new line character in Mac OS before X)" << std::endl;
+        }
+        if( !testGetDataFromFile_RN )
+        {
+            std::cerr << "\t+ Not reading carriage return line feed character '\\r\\n' (Used as a new line character in Windows)" << std::endl;
+        }
+        std::cerr << "/!\\ WARNING /!\\" << std::endl;
+        std::cerr << "/!\\ WARNING /!\\ As many functions from many classes heavly rely on GetDataFromFile( QString filePath ),\n" << std::endl;
+        std::cerr << "/!\\ WARNING /!\\ tests from every classes may not be accurate as long as Test_GetDataFromFile() remains failed" << std::endl;
+        std::cerr << "/!\\ WARNING /!\\" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_GetDataFromFile() PASSED" << std::endl;
+    }
+
+    return testGetDataFromFile_Passed;
+}
+
+
+bool TestProcessing::Test_IsMatrixDimensionOK( QString adFilePath )
+{
+    Processing processing;
     QList<QStringList> randomData;
-    QStringList randomDataRow1;
-    randomDataRow1 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
-    QStringList randomDataRow2;
-    randomDataRow2 << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
-    randomData.insert( 0, randomDataRow1 );
-    randomData.insert( 0, randomDataRow2 );
+    QStringList randomDataRow1 = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "123" << "0"
+                                               << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
+    QStringList randomDataRow2 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
+    randomData.append( QList<QStringList>() << randomDataRow1 << randomDataRow2 );
 
-    bool testMatrixDimensionOK = processing.IsMatrixDimensionOK( ADFileData );
+
+    bool testMatrixDimensionOK = processing.IsMatrixDimensionOK( processing.GetDataFromFile( adFilePath ) );
     bool testMatrixDimensionKO = !processing.IsMatrixDimensionOK( randomData );
 
 
-    if( !testMatrixDimensionOK || !testMatrixDimensionKO )
+    bool testIsMatrixDimensionOK_Passed = testMatrixDimensionOK && testMatrixDimensionKO;
+    if( !testIsMatrixDimensionOK_Passed )
     {
-        std::cerr << std::endl << "Test_IsMatrixDimensionOK() FAILED:" << std::endl;
+        std::cerr << "/!\\ Test_IsMatrixDimensionOK() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with IsMatrixDimensionOK( const QList<QStringList> data )" << std::endl;
         if( !testMatrixDimensionOK )
         {
-            std::cerr << "\t+ File Data is not detected as square matrix when it should" << std::endl;
+            std::cerr << "\t+ Data do not have the same number of columns for each row when it should" << std::endl;
         }
         if( !testMatrixDimensionKO )
         {
-            std::cerr << "\t+ File Data is detected as square matrix when it should not" << std::endl;
+            std::cerr << "\t+ Data have the same number of columns for each row when it should not" << std::endl;
         }
     }
     else
     {
-        std::cout << std::endl << "Test_IsMatrixDimensionOK() PASSED" << std::endl;
+        std::cerr << "Test_IsMatrixDimensionOK() PASSED" << std::endl;
     }
 
-    return ( testMatrixDimensionOK & testMatrixDimensionKO );
+    return ( testIsMatrixDimensionOK_Passed );
 }
 
-bool TestProcessing::Test_IsCovariateFile()
+bool TestProcessing::Test_IsSubMatrix()
 {
     Processing processing;
-    bool testIsNotCovariate;
-    bool testIsCovariate = true;
+    bool testFileIsSubMatrix = true;
+    QStringList notSubMatrixFile = QStringList() << "-48.0514" << "0.0314882" << "0.0913085" << "0.073043" << "0.13709" << "0.121289"
+                                                 << "0.0957538" << "0.0314882" << "0.0913085" << "0.073043" << "0.13709" << "0.121289" << "0.0957538";
+    QStringList subMatrixFile_0 = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
+    QStringList subMatrixFile_1 = QStringList() << "123" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
+    QStringList subMatrixFile_2 = QStringList() << "123" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
+    QStringList subMatrixFile_3 = QStringList() << "123" << "0" << "276" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "61" << "19" << "0" << "0" << "0" << "632795";
+    QStringList subMatrixFile_4 = QStringList() << "123" << "0" << "276" << "61" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "19" << "0" << "0" << "0" << "632795";
+    QStringList subMatrixFile_5 = QStringList() << "123" << "0" << "276" << "61" << "19" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "0" << "0" << "632795";
+    QStringList subMatrixFile_6 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "0" << "632795";
+    QStringList subMatrixFile_7 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "632795";
+    QStringList subMatrixFile_8 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "632795";
+    QStringList subMatrixFile_9 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed";
 
-    QStringList isNotCovariate;
-    isNotCovariate << "-48.0514" << "0.0314882" << "0.0913085" << "0.073043" << "0.13709" << "0.121289" << "0.0957538" << "0.0314882" << "0.0913085" << "0.073043" << "0.13709" << "0.121289" << "0.0957538";
-    testIsNotCovariate = !processing.IsCovariateFile( isNotCovariate );
 
-    QStringList isCovariate_0, isCovariate_1, isCovariate_2, isCovariate_3, isCovariate_4, isCovariate_5, isCovariate_6, isCovariate_7, isCovariate_8, isCovariate_9;
-    isCovariate_0 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
-    isCovariate_1 << "123" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
-    isCovariate_2 << "123" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
-    isCovariate_3 << "123" << "0" << "276" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "61" << "19" << "0" << "0" << "0" << "632795";
-    isCovariate_4 << "123" << "0" << "276" << "61" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "19" << "0" << "0" << "0" << "632795";
-    isCovariate_5 << "123" << "0" << "276" << "61" << "19" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "0" << "0" << "632795";
-    isCovariate_6 << "123" << "0" << "276" << "61" << "19" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "0" << "632795";
-    isCovariate_7 << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "0" << "632795";
-    isCovariate_8 << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "632795";
-    isCovariate_9 << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed";
+    bool testFileIsNotSubMatrix = !processing.IsSubMatrix( notSubMatrixFile );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_0 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_1 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_2 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_3 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_4 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_5 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_6 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_7 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_8 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_9 );
 
-    QList<QStringList> isCovariate;
-    isCovariate << isCovariate_0 << isCovariate_1 << isCovariate_2 << isCovariate_3 << isCovariate_4 << isCovariate_5 << isCovariate_6 << isCovariate_7 << isCovariate_8 << isCovariate_9;
-    foreach( QStringList isNC, isCovariate )
+
+    bool testIsSubMatrix_Passed = testFileIsNotSubMatrix && testFileIsSubMatrix;
+    if( !testIsSubMatrix_Passed )
     {
-        testIsCovariate = testIsCovariate & processing.IsCovariateFile( isNC );
-    }
-
-
-    if( !testIsNotCovariate || !testIsCovariate )
-    {
-        std::cerr << std::endl << "Test_IsCovariateFile() FAILED:" << std::endl;
-        if( !testIsNotCovariate )
+        std::cerr << "/!\\ Test_IsSubMatrix() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with IsSubMatrix( const QStringList dataSecondRow )" << std::endl;
+        if( !testFileIsNotSubMatrix )
         {
-            std::cerr << "\t+ Covariate file is detected when it should not" << std::endl;
+            std::cerr << "\t+ SubMatrix file is detected when it should not be" << std::endl;
         }
-        if( !testIsCovariate )
+        if( !testFileIsSubMatrix )
         {
-            std::cerr << "\t+ Covariate file is not detected when it should" << std::endl;
+            std::cerr << "\t+ SubMatrix file is not detected when it should be" << std::endl;
         }
     }
     else
     {
-        std::cout << std::endl << "Test_IsCovariateFile() PASSED" << std::endl;
+        std::cerr << "Test_IsSubMatrix() PASSED" << std::endl;
     }
 
-    return ( testIsNotCovariate & testIsCovariate );
-}
-
-bool TestProcessing::Test_GetSelectedSubjects( QString selectedSubjectsFileTest )
-{
-//    Processing processing;
-
-//    QStringList selectedSubjects = processing.GetSelectedSubjects( selectedSubjectsFileTest );
-//    QStringList expectedselectedSubjects;
-//    expectedselectedSubjects << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                                   "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
-
-//    bool selectedSubjectsMatched = CompareQStringList( selectedSubjects, expectedselectedSubjects );
-
-
-//    if( !selectedSubjectsMatched )
-//    {
-//        std::cerr << std::endl << "Test_GetSelectedSubjects() FAILED:" << std::endl;
-//        std::cerr << "\t+ Incorrect selected subjects from file" << std::endl;
-//        DisplayErrorSubjects( expectedselectedSubjects, selectedSubjects );
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_GetSelectedSubjects() PASSED" << std::endl;
-//    }
-
-//    return selectedSubjectsMatched;
-    return false;
-}
-
-bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2,
-                                                    QString matlabInputADFile, QString matlabInputCovariateFile, QString selectedSubjectsFileTest )
-{
-//    Processing processing;
-//    int i = 0;
-//    bool ADFilesMatched = true;
-//    bool CovariateFileMatchedTest1 = true;
-//    bool CovariateFileMatchedTest2 = true;
-
-//    QMap< QPair< int, QString >, bool > expectedOutput;
-//    QPair< int, QString > adMatlabFilePair;
-//    adMatlabFilePair.first = 0;
-//    adMatlabFilePair.second = matlabInputADFile;
-//    QPair< int, QString > compMatlabFilePair;
-//    compMatlabFilePair.first = 4;
-//    compMatlabFilePair.second = matlabInputCovariateFile;
-//    expectedOutput.insert( adMatlabFilePair, false );
-//    expectedOutput.insert( compMatlabFilePair, true );
-//    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput1 = expectedOutput.begin();
-//    QMap< QPair< int, QString >, bool >::ConstIterator iterExpectedOutput2 = expectedOutput.begin();
-
-//    /************************************************/
-//    /******************** Test 1 ********************/
-//    /************************************************/
-//    // AD, RA, MD and FA file
-//    // Covariates file: subjects on 1st column
-//    QMap< QPair< int, QString >, bool > selectedInputFilesTest1;
-//    QPair< int, QString > adFilePair;
-//    adFilePair.first = 0;
-//    adFilePair.second = inputADFile;
-//    QPair< int, QString > compFilePairTest1;
-//    compFilePairTest1.first = 4;
-//    compFilePairTest1.second = inputCovariateFileTest1;
-//    selectedInputFilesTest1.insert( adFilePair, false );
-//    selectedInputFilesTest1.insert( compFilePairTest1, true );
-//    int subjectCovariatesColumnIdTest1 = 0;
-//    QMap<int, QString> selectedCovariatesTest1;
-//    selectedCovariatesTest1.insert( -1, "Intercept" );
-//    selectedCovariatesTest1.insert( 1, "COMP" );
-//    selectedCovariatesTest1.insert( 2, "Gender" );
-//    selectedCovariatesTest1.insert( 3, "GestAgeBirth" );
-//    QString fiberNameTest1 = "Test1";
-
-//    QMap< QPair< int, QString >, bool > matlabInputFilesTest1 =
-//            processing.GenerateMatlabInputFiles( selectedInputFilesTest1, selectedSubjectsFileTest,
-//                                                 subjectCovariatesColumnIdTest1, selectedCovariatesTest1,
-//                                                 outputDir, fiberNameTest1 );
-
-//    QMap< QPair< int, QString >, bool >::ConstIterator iterTest1 = matlabInputFilesTest1.begin();
-//    while( iterTest1 != matlabInputFilesTest1.end() )
-//    {
-//        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 == 0 ) )
-//        {
-//            ADFilesMatched = false;
-//        }
-//        if( !CompareFile( iterExpectedOutput1.key().second, iterTest1.key().second ) && ( i%2 != 0 ) )
-//        {
-//            CovariateFileMatchedTest1 = false;
-//        }
-//        ++iterExpectedOutput1;
-//        ++iterTest1;
-//        i++;
-//    }
-
-
-//    /************************************************/
-//    /******************** Test 2 ********************/
-//    /************************************************/
-//    // Covariates file: subjects not on 1st column
-//    QMap< QPair< int, QString >, bool > selectedInputFilesTest2;
-//    QPair< int, QString > compFilePairTest2;
-//    compFilePairTest2.first = 4;
-//    compFilePairTest2.second = inputCovariateFileTest2;
-//    selectedInputFilesTest2.insert( adFilePair, false );
-//    selectedInputFilesTest2.insert( compFilePairTest2, true );
-//    int subjectCovariatesColumnIdTest2 = 3;
-//    QMap<int, QString> selectedCovariatesTest2;
-//    selectedCovariatesTest2.insert( -1, "Intercept" );
-//    selectedCovariatesTest2.insert( 0, "COMP" );
-//    selectedCovariatesTest2.insert( 1, "Gender" );
-//    selectedCovariatesTest2.insert( 2, "GestAgeBirth" );
-//    QString fiberNameTest2 = "Test2";
-
-//    QMap< QPair< int, QString >, bool > matlabInputFilesTest2 =
-//            processing.GenerateMatlabInputFiles( selectedInputFilesTest2, selectedSubjectsFileTest,
-//                                                 subjectCovariatesColumnIdTest2, selectedCovariatesTest2,
-//                                                 outputDir, fiberNameTest2 );
-
-//    QMap< QPair< int, QString >, bool >::ConstIterator iterTest2 = matlabInputFilesTest2.begin();
-//    while( iterTest2 != matlabInputFilesTest2.end() )
-//    {
-//        if( !CompareFile( iterExpectedOutput2.key().second, iterTest2.key().second ) && ( i%2 != 0 ) )
-//        {
-//            CovariateFileMatchedTest2 = false;
-//        }
-//        ++iterExpectedOutput2;
-//        ++iterTest2;
-//        i++;
-//    }
-
-
-//    if( !ADFilesMatched || !CovariateFileMatchedTest1 || !CovariateFileMatchedTest2 )
-//    {
-//        std::cerr << std::endl << "Test_GenerateMatlabInputFiles() FAILED:" << std::endl;
-//        if( !ADFilesMatched )
-//        {
-//            std::cerr << "\t+ Matlab Script for AD, RD, MD or FA file not generated correctly" << std::endl;
-//        }
-//        if( !CovariateFileMatchedTest1 )
-//        {
-//            std::cerr << "\t+ Matlab Script for covariates file not generated correctly when subjects on 1st column" << std::endl;
-//        }
-//        if( !CovariateFileMatchedTest2 )
-//        {
-//            std::cerr << "\t+ Matlab Script for covariates file not generated correctly when subjects not on 1st column" << std::endl;
-//        }
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_GenerateMatlabInputFiles() PASSED" << std::endl;
-//    }
-
-//    return ( ADFilesMatched & CovariateFileMatchedTest1 & CovariateFileMatchedTest2 );
-    return false;
+    return ( testIsSubMatrix_Passed );
 }
 
 
-
-bool TestProcessing::Test_GetSubjectsFromInputFile( QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2 )
+bool TestProcessing::Test_GetSubjectsFromFile( QString subjectFilePath )
 {
     Processing processing;
-
-    /************************************************/
-    /******************** Test 1 ********************/
-    /************************************************/
-    // AD, RA, MD and FA file
-    QList<QStringList> dataInInputADFile = processing.GetDataFromFile( inputADFile );
-    QStringList subjectsTest1 = processing.GetSubjectsFromData( dataInInputADFile, 2 );
-    QStringList expectedSubjectsTest1;
-    expectedSubjectsTest1 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
-
-    bool correctSubjectsTest1 = CompareQStringList( subjectsTest1, expectedSubjectsTest1 );
+    QStringList subjectsExpected = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" <<  "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
+    QStringList subjectsDisplayed = processing.GetSubjectsFromFileList( subjectFilePath );
 
 
-    /************************************************/
-    /******************** Test 2 ********************/
-    /************************************************/
-    // Covariates file: subjects on 1st column
-    QList<QStringList> dataInInputCovariateFileTest1 = processing.GetDataFromFile( inputCovariateFileTest1 );
-    QStringList subjectsTest2 = processing.GetSubjectsFromData( dataInInputCovariateFileTest1, 0 );
-    QStringList expectedSubjectsTest2;
-    expectedSubjectsTest2 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_0";
-
-    bool correctSubjectsTest2 = CompareQStringList( subjectsTest2, expectedSubjectsTest2 );
-
-
-    /************************************************/
-    /******************** Test 3 ********************/
-    /************************************************/
-    // Covariates file: subjects not on 1st column
-    QList<QStringList> dataInInputCovariateFileTest2 = processing.GetDataFromFile( inputCovariateFileTest2 );
-    QStringList subjectsTest3 = processing.GetSubjectsFromData( dataInInputCovariateFileTest2, 3 );
-    QStringList expectedSubjectsTest3;
-    expectedSubjectsTest3 << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-                                "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
-
-    bool correctSubjectsTest3 = CompareQStringList( subjectsTest3, expectedSubjectsTest3 );
-
-
-    if( !correctSubjectsTest1 || !correctSubjectsTest2 || !correctSubjectsTest3 )
+    bool testGetSubjectsFromFile_Passed = subjectsExpected == subjectsDisplayed;
+    if( !testGetSubjectsFromFile_Passed )
     {
-        std::cerr << std::endl << "Test_GetSubjectsFromInputFile() FAILED:" << std::endl;
-        if( !correctSubjectsTest1 )
+        std::cerr << "/!\\ Test_GetSubjectsFromFile() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GetSubjectsFromFile( QString filePath )" << std::endl;
+        DisplayError_GetSubjects( subjectsExpected, subjectsDisplayed );
+    }
+    else
+    {
+        std::cerr << "Test_GetSubjectsFromFile() PASSED" << std::endl;
+    }
+
+    return ( testGetSubjectsFromFile_Passed );
+}
+
+bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath )
+{
+    Processing processing;
+    // AD, RA, MD or FA file
+    QList<QStringList> adData = processing.GetDataFromFile( adFilePath );
+    QStringList adSubjects = processing.GetSubjectsFromData( adData, 2 );
+    QStringList expectedADSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                   << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                   << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                   << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                   << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed"
+                                                   << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                   << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
+    expectedADSubjects.sort();
+
+    // SubMatrix file: subjects on 1st column
+    QList<QStringList> subMatrix0Data = processing.GetDataFromFile( subMatrix0FilePath );
+    QStringList subMatrix0Subjects = processing.GetSubjectsFromData( subMatrix0Data, 0 );
+    QStringList expectedSubMatrix0Subjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_0";
+    expectedSubMatrix0Subjects.sort();
+
+    // SubMatrix file: subjects not on 1st column
+    QList<QStringList> subMatrix3Data = processing.GetDataFromFile( subMatrix3FilePath );
+    QStringList subMatrix3Subjects = processing.GetSubjectsFromData( subMatrix3Data, 3 );
+    QStringList expectedSubMatrix3Subjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                           << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
+    expectedSubMatrix3Subjects.sort();
+
+
+    bool testADSubjects = adSubjects == expectedADSubjects;
+    bool testSubMatrix0Subjects = subMatrix0Subjects == expectedSubMatrix0Subjects;
+    bool testSubMatrix3Subjects = subMatrix3Subjects == expectedSubMatrix3Subjects;
+
+
+    bool testGetSubjectsFromData_Passed = testADSubjects && testSubMatrix0Subjects && testSubMatrix3Subjects;
+    if( !testGetSubjectsFromData_Passed )
+    {
+        std::cerr << "/!\\ Test_GetSubjectsFromData() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GetSubjectsFromData( QList<QStringList> data, int covariateColumnID )" << std::endl;
+        if( !testADSubjects )
         {
             std::cerr << "\t+ Incorrect subjects generated from AD, RD, MD or FA file" << std::endl;
-            DisplayErrorSubjects( expectedSubjectsTest1, subjectsTest1 );
+            DisplayError_GetSubjects( expectedADSubjects, adSubjects );
         }
-        if( !correctSubjectsTest2 )
+        if( !testSubMatrix0Subjects )
         {
-            std::cerr << "\t+ Incorrect subjects generated from covariates file when subjects on 1st column" << std::endl;
-            DisplayErrorSubjects( expectedSubjectsTest2, subjectsTest2 );
+            std::cerr << "\t+ Incorrect subjects generated from subMatrix file when subjects on 1st column" << std::endl;
+            DisplayError_GetSubjects( expectedSubMatrix0Subjects, subMatrix0Subjects );
         }
-        if( !correctSubjectsTest3 )
+        if( !testSubMatrix3Subjects )
         {
-            std::cerr << "\t+ Incorrect subjects generated from covariates file when subjects not on 1st column" << std::endl;
-            DisplayErrorSubjects( expectedSubjectsTest3, subjectsTest3 );
+            std::cerr << "\t+ Incorrect subjects generated from subMatrix file when subjects not on 1st column" << std::endl;
+            DisplayError_GetSubjects( expectedSubMatrix3Subjects, subMatrix3Subjects );
         }
     }
     else
     {
-        std::cout << std::endl << "Test_GetSubjectsFromInputFile() PASSED" << std::endl;
+        std::cerr << "Test_GetSubjectsFromData() PASSED" << std::endl;
     }
 
-    return ( correctSubjectsTest1 & correctSubjectsTest2 & correctSubjectsTest3 );
-}
-
-bool TestProcessing::Test_GetRefSubjectsFromSelectedInputFiles( QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2 )
-{
-//    Processing processing;
-
-//    QStringList expectedRefSubjectsTest;
-//    expectedRefSubjectsTest << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                                  "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                                  "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                                  "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
-
-//    QList<QStringList> dataInInputADFile = processing.GetDataFromFile( inputADFile );
-//    QList<QStringList> dataInInputCovariateFileTest1 = processing.GetDataFromFile( inputCovariateFileTest1 );
-//    QList<QStringList> dataInInputCovariateFileTest2 = processing.GetDataFromFile( inputCovariateFileTest2 );
-
-//    /************************************************/
-//    /******************** Test 1 ********************/
-//    /************************************************/
-//    expectedRefSubjectsTest << "randomSubject_COMP_0";
-//    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFilesTest1;
-//    QPair< int, QString > adFilePair;
-//    adFilePair.first = 0;
-//    adFilePair.second = inputADFile;
-//    QPair< int, QString > compFilePairTest1;
-//    compFilePairTest1.first = 4;
-//    compFilePairTest1.second = inputCovariateFileTest1;
-//    dataInSelectedInputFilesTest1.insert( adFilePair, dataInInputADFile );
-//    dataInSelectedInputFilesTest1.insert( compFilePairTest1, dataInInputCovariateFileTest1 );
-//    QStringList refSubjectsTest1 = processing.GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFilesTest1, 0 );
-
-//    bool refListMatchedTest1 = CompareQStringList( refSubjectsTest1, expectedRefSubjectsTest );
-
-
-//    /************************************************/
-//    /******************** Test 2 ********************/
-//    /************************************************/
-//    expectedRefSubjectsTest.removeLast();
-//    expectedRefSubjectsTest << "randomSubject_COMP_3";
-//    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFilesTest2;
-//    QPair< int, QString > compFilePairTest2;
-//    compFilePairTest2.first = 4;
-//    compFilePairTest2.second = inputCovariateFileTest1;
-//    dataInSelectedInputFilesTest2.insert( adFilePair, dataInInputADFile );
-//    dataInSelectedInputFilesTest2.insert( compFilePairTest2, dataInInputCovariateFileTest2 );
-//    QStringList refSubjectsTest2 = processing.GetRefSubjectsFromSelectedInputFiles( dataInSelectedInputFilesTest2, 3 );
-
-//    bool refListMatchedTest2 = CompareQStringList( refSubjectsTest2, expectedRefSubjectsTest );
-
-
-//    if( !refListMatchedTest1 || !refListMatchedTest2 )
-//    {
-//        std::cerr << std::endl << "Test_GetRefSubjectsFromSelectedInputFiles() FAILED:" << std::endl;
-//        if( !refListMatchedTest1 )
-//        {
-//            std::cerr << "\t+ Incorrect reference subjects generated from AD, RD, MD, FA and Covariate file when subjects are on 1st column" << std::endl;
-//            DisplayErrorSubjects( expectedRefSubjectsTest, refSubjectsTest1 );
-//        }
-//        if( !refListMatchedTest2 )
-//        {
-//            std::cerr << "\t+ Incorrect reference subjects generated from AD, RD, MD, FA and Covariate file when subjects are not on 1st column" << std::endl;
-//            DisplayErrorSubjects( expectedRefSubjectsTest, refSubjectsTest2 );
-//        }
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_GetRefSubjectsFromSelectedInputFiles() PASSED" << std::endl;
-//    }
-
-//    return ( refListMatchedTest1 & refListMatchedTest2 );
-    return false;
-}
-
-bool TestProcessing::Test_GetRefSubjects( QString inputADFile, QString inputCovariateFile, QString subjectsFilePath )
-{
-//    Processing processing;
-
-//    QList<QStringList> dataInInputADFile = processing.GetDataFromFile( inputADFile );
-//    QList<QStringList> dataInInputCovariateFile = processing.GetDataFromFile( inputCovariateFile );
-
-//    QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles;
-//    QPair< int, QString > adFilePair;
-//    adFilePair.first = 0;
-//    adFilePair.second = inputADFile;
-//    QPair< int, QString > compFilePair;
-//    compFilePair.first = 4;
-//    compFilePair.second = inputCovariateFile;
-//    dataInSelectedInputFiles.insert( adFilePair, dataInInputADFile );
-//    dataInSelectedInputFiles.insert( compFilePair, dataInInputCovariateFile );
-//    QStringList expectedRefSubjects;
-//    expectedRefSubjects << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                              "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
-
-
-//    /************************************************/
-//    /******************** Test 1 ********************/
-//    /************************************************/
-//    // With subjects file
-//    QStringList refSubjectsTest1 = processing.GetRefSubjects( subjectsFilePath, dataInSelectedInputFiles, 3 );
-
-//    bool refSubjectsMatchedTest1 = CompareQStringList( expectedRefSubjects, refSubjectsTest1 );
-
-
-//    /************************************************/
-//    /******************** Test 2 ********************/
-//    /************************************************/
-//    // Without subjects file
-//    expectedRefSubjects << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                              "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad" << "randomSubject_COMP_3";
-//    QStringList refSubjectsTest2 = processing.GetRefSubjects( "", dataInSelectedInputFiles, 3 );
-
-//    bool refSubjectsMatchedTest2 = CompareQStringList( expectedRefSubjects, refSubjectsTest2 );
-
-
-//    if( !refSubjectsMatchedTest1 || !refSubjectsMatchedTest2 )
-//    {
-//        std::cerr << std::endl << "Test_GetRefSubjects() FAILED:" << std::endl;
-//        if( !refSubjectsMatchedTest1 )
-//        {
-//            std::cerr << "\t+ Incorrect reference subjects generated when subjects file provided" << std::endl;
-//            DisplayErrorSubjects( expectedRefSubjects, refSubjectsTest1 );
-//        }
-//        if( !refSubjectsMatchedTest2 )
-//        {
-//            std::cerr << "\t+ Incorrect reference subjects generated when subjects file not provided" << std::endl;
-//            DisplayErrorSubjects( expectedRefSubjects, refSubjectsTest2 );
-//        }
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_GetRefSubjects() PASSED" << std::endl;
-//    }
-
-//    return ( refSubjectsMatchedTest1 & refSubjectsMatchedTest2 );
-    return false;
+    return ( testGetSubjectsFromData_Passed );
 }
 
 
-bool TestProcessing::Test_GetAllSubjectsFromSelectedInputFiles()
+bool TestProcessing::Test_GetAllSubjects( QString adFilePath, QString subMatrix0FilePath )
 {
-//    Processing processing;
-//    bool testResult = true;
-
-//    QMap<QString, QCheckBox*> checkBoxMap;
-//    QCheckBox *checkedBox = new QCheckBox();
-//    checkedBox->setChecked( true );
-//    QCheckBox *uncheckedBox = new QCheckBox();
-//    uncheckedBox->setChecked( false );
-//    checkBoxMap.insert( "ad", checkedBox );
-//    checkBoxMap.insert( "rd", uncheckedBox );
-//    checkBoxMap.insert( "md", uncheckedBox );
-//    checkBoxMap.insert( "fa", uncheckedBox );
-//    checkBoxMap.insert( "COMP", checkedBox );
-//    QStringList subjectsADFile;
-//    subjectsADFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
-//    QStringList subjectsCovariateFile;
-//    subjectsCovariateFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
-//    QMap<QString, QStringList > allSubjects;
-//    allSubjects.insert( "ad", subjectsADFile );
-//    allSubjects.insert( "rd", QStringList() );
-//    allSubjects.insert( "md", QStringList() );
-//    allSubjects.insert( "fa", QStringList() );
-//    allSubjects.insert( "COMP", subjectsCovariateFile );
-//    QMap<QString, QStringList> selectedSubjects = processing.GetAllSubjectsFromSelectedInputFiles( checkBoxMap, allSubjects );
-//    QMap<QString, QStringList> expectedSubjects;
-//    expectedSubjects.insert( "ad", subjectsADFile );
-//    expectedSubjects.insert( "COMP", subjectsCovariateFile );
-
-//    QMap<QString, QStringList >::ConstIterator iterExpectedSubjects = expectedSubjects.begin();
-//    QMap<QString, QStringList >::ConstIterator iterSelectedSubjects = selectedSubjects.begin();
-//    while( iterExpectedSubjects != expectedSubjects.constEnd() )
-//    {
-//        if( iterExpectedSubjects.key() != iterSelectedSubjects.key() || !CompareQStringList( iterExpectedSubjects.value(), iterSelectedSubjects.value() ) )
-//        {
-//            testResult = false;
-//        }
-//        ++iterExpectedSubjects;
-//        ++iterSelectedSubjects;
-//    }
+    Processing processing;
+    QMap<int, QStringList> subjectsMap;
+    subjectsMap.insert( -1, QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" );
+    subjectsMap.insert( 0, processing.GetSubjectsFromData( processing.GetDataFromFile( adFilePath ), 4 ) );
+    subjectsMap.insert( 1, QStringList() );
+    subjectsMap.insert( 2, QStringList() );
+    subjectsMap.insert( 3, QStringList() );
+    subjectsMap.insert( 4, processing.GetSubjectsFromData( processing.GetDataFromFile( subMatrix0FilePath ), 0 ) );
+    QStringList extractedSubjectList = processing.GetAllSubjects( subjectsMap ) ;
+    QStringList expectedSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                 << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad" << "randomSubject_COMP_0"
+                                                 << "Stan" << "Kyle" << "Kenny" << "Cartman";
+    expectedSubjects.removeDuplicates();
+    expectedSubjects.sort();
 
 
-//    if( !testResult )
-//    {
-//        std::cerr << std::endl << "Test_GetAllSubjectsFromSelectedInputFiles() FAILED:" << std::endl;
-//        std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
-//        DisplayErrorAllSubjects( expectedSubjects, selectedSubjects );
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_GetAllSubjectsFromSelectedInputFiles() PASSED" << std::endl;
-//    }
+    bool testGetAllSubjects_Passed = extractedSubjectList == expectedSubjects;
+    if( !testGetAllSubjects_Passed )
+    {
+        std::cerr << "/!\\ Test_GetAllSubjects() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GetAllSubjects( QMap<int, QStringList> subjectsMap )" << std::endl;
+        std::cerr << "\t+ Wrong list of subjects extracted:" << std::endl;
+        DisplayError_GetSubjects( expectedSubjects, extractedSubjectList );
+    }
+    else
+    {
+        std::cerr << "Test_GetAllSubjects() PASSED" << std::endl;
+    }
 
-//    delete checkedBox;
-//    return testResult;
-    return false;
+    return ( testGetAllSubjects_Passed );
+}
+
+bool TestProcessing::Test_GetSubjectsFromSelectedFiles()
+{
+    Processing processing;
+    QMap< int, bool > diffusionPropertiesCheckState;
+    diffusionPropertiesCheckState.insert( -1, true );
+    diffusionPropertiesCheckState.insert( 0, false );
+    diffusionPropertiesCheckState.insert( 1, false );
+    diffusionPropertiesCheckState.insert( 2, false );
+    diffusionPropertiesCheckState.insert( 3, false );
+    diffusionPropertiesCheckState.insert( 4, true );
+    QStringList loadedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman";
+    loadedSubjects.removeDuplicates();
+    loadedSubjects.sort();
+    QStringList adSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
+    adSubjects.removeDuplicates();
+    adSubjects.sort();
+    QStringList subMatrixSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
+    subMatrixSubjects.removeDuplicates();
+    subMatrixSubjects.sort();
+    QMap< int, QStringList > allSubjects;
+    allSubjects.insert( -1, loadedSubjects );
+    allSubjects.insert( 0, adSubjects );
+    allSubjects.insert( 1, QStringList() );
+    allSubjects.insert( 2, QStringList() );
+    allSubjects.insert( 3, QStringList() );
+    allSubjects.insert( 4, subMatrixSubjects );
+
+    QMap< int, QStringList> selectedSubjects = processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, allSubjects );
+    QMap< int, QStringList> expectedSubjects;
+    expectedSubjects.insert( -1, loadedSubjects );
+    expectedSubjects.insert( 4, subMatrixSubjects );
+
+
+    bool testGetSubjectsFromSelectedFiles_Passed = selectedSubjects == expectedSubjects;
+    if( !testGetSubjectsFromSelectedFiles_Passed )
+    {
+        std::cerr << "/!\\ Test_GetSubjectsFromSelectedFiles() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GetSubjectsFromSelectedFiles( const QMap<int, bool> diffusionPropertiesCheckState,"
+                     " const QMap<int, QStringList > subjectsMap )" << std::endl;
+        std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
+        std::cerr << "\tDiffusion property / Index: ad<->0, rd<->1, md<->2, fa<->3, subMatrix<->4" << std::endl;
+        DisplayError_GetSubjectsFromSelectedFiles( expectedSubjects, selectedSubjects );
+    }
+    else
+    {
+        std::cerr << "Test_GetSubjectsFromSelectedFiles() PASSED" << std::endl;
+    }
+
+    return testGetSubjectsFromSelectedFiles_Passed;
 }
 
 bool TestProcessing::Test_SortSubjects()
 {
-//    Processing processing;
-//    bool testResult = true;
-
-//    QStringList refSubjectsInAll;
-//    refSubjectsInAll << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                           "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                           "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                           "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed";
-//    QStringList refSubjectsInNone;
-//    refSubjectsInNone << "Stan" << "Kyle" << "Kenny" << "Cartman";
-//    QStringList refSubjects = refSubjectsInAll;
-//    refSubjects << refSubjectsInNone;
-//    refSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
-//    QMap< QString, QMap<QString, bool> > expectedSortedSubjects;
-//    foreach (QString subj, refSubjectsInAll)
-//    {
-//        ( expectedSortedSubjects[subj] )["ad"] = true;
-//        ( expectedSortedSubjects[subj] )["COMP"] = true;
-//    }
-//    foreach (QString subj, refSubjectsInNone)
-//    {
-//        ( expectedSortedSubjects[subj] )["ad"] = false;
-//        ( expectedSortedSubjects[subj] )["COMP"] = false;
-//    }
-//    ( expectedSortedSubjects["randomSubject_ad"] )["ad"] = true;
-//    ( expectedSortedSubjects["randomSubject_ad"] )["COMP"] = false;
-//    ( expectedSortedSubjects["randomSubject_COMP_3"] )["ad"] = false;
-//    ( expectedSortedSubjects["randomSubject_COMP_3"] )["COMP"] = true;
-
-//    QStringList subjectsADFile;
-//    subjectsADFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                      "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
-
-//    QStringList subjectsCovariateFile;
-//    subjectsCovariateFile << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                             "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
-//    QMap<QString, QStringList> selectedSubjectss;
-//    selectedSubjectss.insert( "ad", subjectsADFile );
-//    selectedSubjectss.insert( "COMP", subjectsCovariateFile );
-//    QMap< QString, QMap<QString, bool> > sortedSubjects = processing.SortSubjects( refSubjects, selectedSubjectss );
-
-//    QMap< QString, QMap<QString, bool> >::ConstIterator iterSubj = sortedSubjects.begin();
-//    QMap< QString, QMap<QString, bool> >::ConstIterator iterExpectedSubj = expectedSortedSubjects.begin();
-//    while( iterSubj != sortedSubjects.end() )
-//    {
-//        QMap<QString, bool>::ConstIterator iterFile = iterSubj.value().begin();
-//        QMap<QString, bool>::ConstIterator iterExpectedFile = iterExpectedSubj.value().begin();
-//        while( iterFile != iterSubj.value().end() )
-//        {
-//            if( ( iterSubj.key() != iterSubj.key() ) ||
-//                    ( expectedSortedSubjects[iterSubj.key()] != sortedSubjects[iterSubj.key()] ) ||
-//                    ( ( expectedSortedSubjects[iterSubj.key()] )[iterFile.key()] != ( sortedSubjects[iterSubj.key()] )[iterFile.key()] ) )
-//            {
-//                testResult = false;
-//            }
-//            ++iterFile;
-//            ++iterExpectedFile;
-//        }
-//        ++iterSubj;
-//        ++iterExpectedSubj;
-//    }
+    Processing processing;
+    QStringList loadedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman";
+    loadedSubjects.sort();
+    QStringList subjectsInAll = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                              << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                              << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                              << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << loadedSubjects;
+    subjectsInAll.sort();
+    QStringList allSubjects = QStringList() << subjectsInAll << loadedSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
+    allSubjects.sort();
+    QStringList adSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
+    adSubjects.sort();
+    QStringList subMatrixSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
+    subMatrixSubjects.sort();
+    QMap< int, QStringList > selectedSubjects;
+    selectedSubjects.insert( -1, loadedSubjects );
+    selectedSubjects.insert( 0, adSubjects );
+    selectedSubjects.insert( 4, subMatrixSubjects );
+    QMap< QString, QMap< int, bool > > expectedSortedSubjects;
+    foreach( QString subj, allSubjects )
+    {
+        ( expectedSortedSubjects[subj] )[-1] = loadedSubjects.contains( subj ) ? true : false;
+        ( expectedSortedSubjects[subj] )[0] = adSubjects.contains( subj ) ? true : false;
+        ( expectedSortedSubjects[subj] )[4] = subMatrixSubjects.contains( subj ) ? true : false;
+    }
+    QMap< QString, QMap<int, bool> > sortedSubjects = processing.SortSubjects( allSubjects, selectedSubjects );
 
 
-//    if( !testResult )
-//    {
-//        std::cerr << std::endl << "Test_SortSubjects() FAILED:" << std::endl;
-//        std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
-//        DisplayErrorSortedSubjects( expectedSortedSubjects, sortedSubjects );
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_SortSubjects() PASSED" << std::endl;
-//    }
+    bool testSortSubjects_Passed = sortedSubjects == expectedSortedSubjects;
+    if( !testSortSubjects_Passed )
+    {
+        std::cerr << "/!\\ Test_SortSubjects() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with SortSubjects( const QStringList subjects, const QMap<int, QStringList> subjectsMap )" << std::endl;
+        std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
+        std::cerr << "\tDiffusion property / Index: ad<->0, rd<->1, md<->2, fa<->3, subMatrix<->4" << std::endl;
+        DisplayError_SortedSubjects( expectedSortedSubjects, sortedSubjects );
+    }
+    else
+    {
+        std::cerr << "Test_SortSubjects() PASSED" << std::endl;
+    }
 
-//    return testResult;
-
-    return false;
+    return testSortSubjects_Passed;
 }
 
 bool TestProcessing::Test_AssignSortedSubject()
 {
-//    Processing processing;
-
-//    QStringList refSubjectsInAll;
-//    refSubjectsInAll << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                           "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" <<
-//                           "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed" <<
-//                           "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed";
-//    QStringList refSubjectsInNone;
-//    refSubjectsInNone << "Stan" << "Kyle" << "Kenny" << "Cartman";
-//    QStringList refSubjects = refSubjectsInAll;
-//    refSubjects << refSubjectsInNone;
-//    refSubjects << "randomSubject_ad" << "randomSubject_COMP_3";
-//    QMap< QString, QMap<QString, bool> > sortedSubjects;
-//    foreach (QString subj, refSubjectsInAll)
-//    {
-//        ( sortedSubjects[subj] )["ad"] = true;
-//        ( sortedSubjects[subj] )["COMP"] = true;
-//    }
-//    foreach (QString subj, refSubjectsInNone)
-//    {
-//        ( sortedSubjects[subj] )["ad"] = false;
-//        ( sortedSubjects[subj] )["COMP"] = false;
-//    }
-//    ( sortedSubjects["randomSubject_ad"] )["ad"] = true;
-//    ( sortedSubjects["randomSubject_ad"] )["COMP"] = false;
-//    ( sortedSubjects["randomSubject_COMP_3"] )["ad"] = false;
-//    ( sortedSubjects["randomSubject_COMP_3"] )["COMP"] = true;
-
-//    QMap<QString, QStringList > expectedUnMatchedSubjects;
-//    foreach (QString unMatchedSubj, refSubjectsInNone)
-//    {
-//        expectedUnMatchedSubjects.insert( unMatchedSubj, QStringList( "refList" ) );
-//    }
-//    QStringList slist1;
-//    slist1 << "ad" << "refList";
-//    QStringList slist2;
-//    slist2 << "COMP" << "refList";
-//    expectedUnMatchedSubjects.insert( "randomSubject_ad", slist1 );
-//    expectedUnMatchedSubjects.insert( "randomSubject_COMP_3", slist2 );
-
-//    QStringList matchedSubjects;
-//    QMap<QString, QStringList > unMatchedSubjects;
-//    processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
-
-//    bool testMatchedSubjects = CompareQStringList( matchedSubjects, refSubjectsInAll );
-
-
-//    bool testUnMatchedSubjects = true;
-//    QMap<QString, QStringList >::ConstIterator iterExpectedUnMatched = expectedUnMatchedSubjects.begin();
-//    QMap<QString, QStringList >::ConstIterator iterUnMatched = unMatchedSubjects.begin();
-//    while( iterUnMatched != unMatchedSubjects.end() )
-//    {
-//        testUnMatchedSubjects = testUnMatchedSubjects & ( iterUnMatched.key() == iterExpectedUnMatched.key() ) &
-//                CompareQStringList( iterUnMatched.value(), iterExpectedUnMatched.value() );
-//        ++iterUnMatched;
-//        ++iterExpectedUnMatched;
-//    }
-
-
-//    if( !testMatchedSubjects || !testUnMatchedSubjects )
-//    {
-//        std::cerr << std::endl << "Test_AssignSortedSubject() FAILED:" << std::endl;
-//        if( !testMatchedSubjects )
-//        {
-//            std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
-//            DisplayErrorSubjects( refSubjectsInAll, matchedSubjects );
-//        }
-//        if( !testUnMatchedSubjects )
-//        {
-//            std::cerr << "\t+ UnMatched subjects not correctly assigned" << std::endl;
-//            DisplayErrorUnMatchedSubjects( expectedUnMatchedSubjects, unMatchedSubjects );
-//        }
-//    }
-//    else
-//    {
-//        std::cout << std::endl << "Test_AssignSortedSubject() PASSED" << std::endl;
-//    }
-
-//    return ( testMatchedSubjects & testUnMatchedSubjects );
-
-    return false;
-}
-
-
-bool TestProcessing::Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString inputCovariateFileTest2 )
-{
     Processing processing;
+    QStringList loadedSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                               << "Stan" << "Kyle" << "Kenny" << "Cartman";
+    loadedSubjects.removeDuplicates();
+    loadedSubjects.sort();
+    QStringList allSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                            << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                            << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                            << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad" << "randomSubject_COMP_3" << loadedSubjects;
+    allSubjects.removeDuplicates();
+    allSubjects.sort();
+    QStringList adSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                           << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_ad";
+    adSubjects.removeDuplicates();
+    adSubjects.sort();
+    QStringList subMatrixSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+                                                  << "neo-0087-1_dwi_35_all_QCed_VC_DTI_embed" << "randomSubject_COMP_3";
+    subMatrixSubjects.removeDuplicates();
+    subMatrixSubjects.sort();
+    QMap< int, QStringList > selectedSubjects;
+    selectedSubjects.insert( -1, loadedSubjects );
+    selectedSubjects.insert( 0, adSubjects );
+    selectedSubjects.insert( 4, subMatrixSubjects );
+    QMap< QString, QMap<int, bool> > sortedSubjects = processing.SortSubjects( allSubjects, selectedSubjects );
+    QMap<QString, QList<int> > expectedUnMatchedSubjects;
+    QStringList expectedMatchedSubjects;
+    QStringList matchedSubjects;
+    QMap<QString, QList<int> > unMatchedSubjects;
 
-    QMap<int, QString> covariatesExpectedTest1;
-    covariatesExpectedTest1.insert( 1, "COMP" );
-    covariatesExpectedTest1.insert( 2, "Gender" );
-    covariatesExpectedTest1.insert( 3, "GestAgeBirth" );
-    QMap<int, QString> covariatesExpectedTest2;
-    covariatesExpectedTest2.insert( 0, "COMP" );
-    covariatesExpectedTest2.insert( 1, "Gender" );
-    covariatesExpectedTest2.insert( 2, "GestAgeBirth" );
-    QMap<int, QString> covariatesTest1 = processing.GetCovariatesFromData( processing.GetDataFromFile( inputCovariateFileTest1 ), 0 );
-    QMap<int, QString> covariatesTest2 = processing.GetCovariatesFromData( processing.GetDataFromFile( inputCovariateFileTest2 ), 3 );
 
-    bool resultTest1 = covariatesTest1 == covariatesExpectedTest1;
-    bool resultTest2 = covariatesTest2 == covariatesExpectedTest2;
-
-
-    if( !resultTest1 || !resultTest2 )
+    foreach( QString subject, allSubjects )
     {
-        std::cerr << std::endl << "Test_GetCovariatesFromFileData() FAILED:" << std::endl;
-        if( !resultTest1 )
+        if( !loadedSubjects.contains( subject ) || !adSubjects.contains( subject ) || !subMatrixSubjects.contains( subject ) )
         {
-            std::cerr << "\t+ Covariates retrieve from " << QFileInfo( QFile( inputCovariateFileTest1 ) ).fileName().toStdString() << " are not the ones expected" <<std::endl;
-            DisplayErrorCovariates( covariatesExpectedTest1, covariatesTest1 );
+            QList<int> indices;
+            if( loadedSubjects.contains( subject ) )
+            {
+                indices.append( -1 );
+            }
+            if( adSubjects.contains( subject ) )
+            {
+                indices.append( 0 );
+            }
+            if( subMatrixSubjects.contains( subject ) )
+            {
+                indices.append( 4 );
+            }
+            expectedUnMatchedSubjects.insert( subject, indices );
         }
-        if( !resultTest2 )
+        if( loadedSubjects.contains( subject ) && adSubjects.contains( subject ) && subMatrixSubjects.contains( subject ) )
         {
-            std::cerr << "\t+ Covariates retrieve from " << QFileInfo( QFile( inputCovariateFileTest2 ) ).fileName().toStdString() << " are not the ones expected" <<std::endl;
-            DisplayErrorCovariates( covariatesExpectedTest2, covariatesTest2 );
+            expectedMatchedSubjects.append( subject );
+        }
+    }
+
+    processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
+
+
+    bool testMatchedSubjects = matchedSubjects == expectedMatchedSubjects;
+    bool testUnMatchedSubjects = unMatchedSubjects == expectedUnMatchedSubjects;
+
+
+    bool testAssignSortedSubject_Passed = testMatchedSubjects && testUnMatchedSubjects;
+    if( !testAssignSortedSubject_Passed )
+    {
+        std::cerr << "/!\\ Test_AssignSortedSubject() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with AssignSortedSubject( const QMap< QString, QMap<int, bool> > sortedSubjects,"
+                     " QStringList& matchedSubjects, QMap<QString, QList<int> >& unMatchedSubjects )" << std::endl;
+        if( !testMatchedSubjects )
+        {
+            std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
+            DisplayError_GetSubjects( expectedMatchedSubjects, matchedSubjects );
+        }
+        if( !testUnMatchedSubjects )
+        {
+            std::cerr << "\tDiffusion property / Index: loaded subjects<->-1, ad<->0, rd<->1, md<->2, fa<->3, subMatrix<->4" << std::endl;
+            std::cerr << "\t+ UnMatched subjects not correctly assigned" << std::endl;
+            DisplayError_UnMatchedSubjects( expectedUnMatchedSubjects, unMatchedSubjects );
         }
     }
     else
     {
-        std::cout << std::endl << "Test_GetCovariatesFromFileData() PASSED" << std::endl;
+        std::cerr << "Test_AssignSortedSubject() PASSED" << std::endl;
     }
 
-    return ( resultTest1 & resultTest2 );
+    return ( testAssignSortedSubject_Passed );
 }
+
+
+bool TestProcessing::Test_GetCovariatesFromFileData( QString subMatrix0FilePath, QString subMatrix3FilePath )
+{
+    Processing processing;
+
+    QMap<int, QString> covariatesExpected0;
+    covariatesExpected0.insert( 1, "COMP" );
+    covariatesExpected0.insert( 2, "Gender" );
+    covariatesExpected0.insert( 3, "GestAgeBirth" );
+    QMap<int, QString> covariatesExpected3;
+    covariatesExpected3.insert( 0, "COMP" );
+    covariatesExpected3.insert( 1, "Gender" );
+    covariatesExpected3.insert( 2, "GestAgeBirth" );
+    QMap<int, QString> covariates0 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix0FilePath ), 0 );
+    QMap<int, QString> covariates3 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix3FilePath ), 3 );
+
+
+    bool resultTest1 = covariates0 == covariatesExpected0;
+    bool resultTest2 = covariates3 == covariatesExpected3;
+
+
+    bool testGetCovariatesFromFileData_Passed = resultTest1 && resultTest2;
+    if( !testGetCovariatesFromFileData_Passed )
+    {
+        std::cerr << "/!\\ Test_GetCovariatesFromFileData() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GetCovariatesFromData( QList<QStringList> data, int covariateColumnID )" << std::endl;
+        if( !resultTest1 )
+        {
+            std::cerr << "\t+ Covariates retrieved when subjects are in the 1st row are not the ones expected" <<std::endl;
+            DisplayError_GetCovariates( covariatesExpected0, covariates0 );
+        }
+        if( !resultTest2 )
+        {
+            std::cerr << "\t+ Covariates retrieved when subjects are not in the 1st row are not the ones expected" <<std::endl;
+            DisplayError_GetCovariates( covariatesExpected3, covariates3 );
+        }
+    }
+    else
+    {
+        std::cerr << "Test_GetCovariatesFromFileData() PASSED" << std::endl;
+    }
+
+    return ( testGetCovariatesFromFileData_Passed );
+}
+
+
+bool TestProcessing::Test_GenerateMatlabInputFiles( QString outputDir, QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath,
+                                                    QString adMatlabFilePath, QString subMatrix0MatlabFilePath, QString subjectsFilePath )
+{
+    Processing processing;
+    bool adFilesMatched = true;
+    bool subMatrix0FileFilesMatched = true;
+    bool subMatrix3FileFilesMatched = true;
+    int i = 0;
+    QStringList subjects = processing.GetSubjectsFromFileList( subjectsFilePath );
+    QMap< int, QString > expectedOutput;
+    expectedOutput.insert( 0, adMatlabFilePath );
+    expectedOutput.insert( 4, subMatrix0MatlabFilePath );
+    QMap< int, QString >::ConstIterator iterExpectedOutputTest1 = expectedOutput.cbegin();
+    QMap< int, QString >::ConstIterator iterExpectedOutputTest2 = expectedOutput.cbegin();
+
+    /************************************************/
+    /******************** Test 1 ********************/
+    /************************************************/
+    // SubMatrix file: subjects on 1st column
+    QString fiberNameTest1 = "GenerateMatlabInputsTest1";
+    QMap< int, QString > filesTest1;
+    filesTest1.insert( 0, adFilePath );
+    filesTest1.insert( 4, subMatrix0FilePath );
+    QMap< int, QString > propertiesTest1;
+    propertiesTest1.insert( 0, "ad" );
+    propertiesTest1.insert( 4, "subMatrix" );
+    QMap<int, QString> covariatesTest1;
+    covariatesTest1.insert( -1, "Intercept" );
+    covariatesTest1.insert( 1, "Gender" );
+    covariatesTest1.insert( 2, "DaysSinceBirth" );
+    covariatesTest1.insert( 3, "Scanner" );
+    int covariatesColumnIdTest1 = 0;
+
+    QMap< int, QString > matlabInputFilesTest1 = processing.GenerateMatlabInputs( outputDir, fiberNameTest1, filesTest1, propertiesTest1,
+                                                                                  covariatesTest1, covariatesColumnIdTest1, subjects );
+
+    /************************************************/
+    /******************** Test 2 ********************/
+    /************************************************/
+    // SubMatrix file: subjects not on 1st column
+    QString fiberNameTest2 = "GenerateMatlabInputsTest2";
+    QMap< int, QString > filesTest2;
+    filesTest2.insert( 0, adFilePath );
+    filesTest2.insert( 4, subMatrix3FilePath );
+    QMap< int, QString > propertiesTest2;
+    propertiesTest2.insert( 0, "ad" );
+    propertiesTest2.insert( 4, "subMatrix" );
+    QMap<int, QString> covariatesTest2;
+    covariatesTest2.insert( -1, "Intercept" );
+    covariatesTest2.insert( 0, "subMatrix" );
+    covariatesTest2.insert( 1, "Gender" );
+    covariatesTest2.insert( 2, "GestAgeBirth" );
+    int covariatesColumnIdTest2 = 3;
+
+    QMap< int, QString > matlabInputFilesTest2 = processing.GenerateMatlabInputs( outputDir, fiberNameTest2, filesTest2, propertiesTest2,
+                                                                                  covariatesTest2, covariatesColumnIdTest2, subjects );
+
+
+    QMap< int, QString >::ConstIterator iterMatlabInputTest1 = matlabInputFilesTest1.cbegin();
+    while( iterMatlabInputTest1 != matlabInputFilesTest1.cend() )
+    {
+        if( !CompareFile( iterExpectedOutputTest1.value(), iterMatlabInputTest1.value() ) ||
+                ( iterExpectedOutputTest1.key() != iterMatlabInputTest1.key() ) )
+        {
+            adFilesMatched = false;
+        }
+        if( !CompareFile( iterExpectedOutputTest1.value(), iterMatlabInputTest1.value() ) && ( i%2 != 0 ) )
+        {
+            subMatrix0FileFilesMatched = false;
+        }
+        ++iterExpectedOutputTest1;
+        ++iterMatlabInputTest1;
+        i++;
+    }
+
+    QMap< int, QString >::ConstIterator iterMatlabInputTest2 = matlabInputFilesTest2.cbegin();
+    while( iterMatlabInputTest2 != matlabInputFilesTest2.cend() )
+    {
+        if( !CompareFile( iterExpectedOutputTest2.value(), iterMatlabInputTest2.value() ) ||
+                ( iterExpectedOutputTest2.key() != iterMatlabInputTest2.key() ) )
+        {
+            subMatrix3FileFilesMatched = false;
+        }
+        ++iterExpectedOutputTest2;
+        ++iterMatlabInputTest2;
+        i++;
+    }
+
+
+    bool testGenerateMatlabInputs_Passed = adFilesMatched && subMatrix0FileFilesMatched && subMatrix3FileFilesMatched;
+    if( !testGenerateMatlabInputs_Passed )
+    {
+        std::cerr << "/!\\ Test_GenerateMatlabInputs() FAILED /!\\" << std::endl;
+        std::cerr << "\t+ pb with GenerateMatlabInputs( QString outputDir, QString fiberName,"
+                     " QMap<int, QString> inputs, QMap< int, QString > properties,"
+                     " QMap<int, QString> covariates, int covariateColumnID, QStringList subjects);" << std::endl;
+        if( !adFilesMatched )
+        {
+            std::cerr << "\t+ Matlab input for AD, RD, MD or FA file not generated correctly" << std::endl;
+        }
+        if( !subMatrix0FileFilesMatched )
+        {
+            std::cerr << "\t+ Matlab input for subMatrix file not generated correctly when subjects on 1st column" << std::endl;
+        }
+        if( !subMatrix3FileFilesMatched )
+        {
+            std::cerr << "\t+ Matlab input for subMatrix file not generated correctly when subjects not on 1st column" << std::endl;
+        }
+    }
+    else
+    {
+        std::cerr << "Test_GenerateMatlabInputs() PASSED" << std::endl;
+    }
+
+    return ( testGenerateMatlabInputs_Passed );
+}
+
 
 
 /**********************************************************************/
 /********************** Functions Used For Testing ********************/
 /**********************************************************************/
-bool TestProcessing::CompareFile( QString fileName1, QString fileName2 )
-{
-    QByteArray sig1 = GetHashFile( fileName1 );
-    QByteArray sig2 = GetHashFile( fileName2 );
-
-    if( sig1 == sig2 )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-QByteArray TestProcessing::GetHashFile( QString filename )
-{
-    QCryptographicHash hash( QCryptographicHash::Sha1 );
-    QFile file( filename );
-
-    if( file.open( QIODevice::ReadOnly ) )
-    {
-        hash.addData( file.readAll() );
-        file.close();
-    }
-    else
-    {
-        std::cerr << "Cannot open file: " << filename.toStdString() << std::endl;
-    }
-
-    return hash.result().toHex();
-}
-
-bool TestProcessing::CompareQStringList( QStringList qStringList1, QStringList qStringList2 )
-{
-    QSet<QString> diff1 = qStringList1.toSet().subtract(qStringList2.toSet());
-    QSet<QString> diff2 = qStringList2.toSet().subtract(qStringList1.toSet());
-
-    if( ( diff1.size() == 0 ) && ( diff2.size() == 0 ) )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
-void TestProcessing::DisplayErrorSubjects( QStringList subjectsExpected, QStringList subjectsDisplayed )
+void TestProcessing::DisplayError_GetSubjects( QStringList subjectsExpected, QStringList subjectsDisplayed )
 {
     std::cerr << "\t   - subjects expected" << std::endl;
     for( int i = 0; i < subjectsExpected.size(); i++ )
@@ -820,13 +671,13 @@ void TestProcessing::DisplayErrorSubjects( QStringList subjectsExpected, QString
     }
 }
 
-void TestProcessing::DisplayErrorAllSubjects( QMap<QString, QStringList> expectedSubjects, QMap<QString, QStringList> selectedSubjects )
+void TestProcessing::DisplayError_GetSubjectsFromSelectedFiles( QMap<int, QStringList> expectedSubjects, QMap<int, QStringList> selectedSubjects )
 {
-    QMap<QString, QStringList>::ConstIterator iterExpectedSubjects = expectedSubjects.begin();
+    QMap<int, QStringList>::ConstIterator iterExpectedSubjects = expectedSubjects.cbegin();
     std::cerr << "\t   - subjects expected" << std::endl;
-    while( iterExpectedSubjects != expectedSubjects.end() )
+    while( iterExpectedSubjects != expectedSubjects.cend() )
     {
-        std::cerr << "\t\t  " << iterExpectedSubjects.key().toStdString() << std::endl;
+        std::cerr << "\t\t  Index: " << iterExpectedSubjects.key() << std::endl;
         foreach( QString subject, iterExpectedSubjects.value() )
         {
             std::cerr << "\t\t\t\"" << subject.toStdString() << "\"" << std::endl;
@@ -834,11 +685,11 @@ void TestProcessing::DisplayErrorAllSubjects( QMap<QString, QStringList> expecte
         ++iterExpectedSubjects;
     }
 
-    QMap<QString, QStringList>::ConstIterator iterSubjects = selectedSubjects.begin();
+    QMap<int, QStringList>::ConstIterator iterSubjects = selectedSubjects.cbegin();
     std::cerr << "\t   - subjects retrieved" << std::endl;
-    while( iterSubjects != selectedSubjects.end() )
+    while( iterSubjects != selectedSubjects.cend() )
     {
-        std::cerr << "\t\t  " << iterSubjects.key().toStdString() << std::endl;
+        std::cerr << "\t\t  Index: " << iterSubjects.key() << std::endl;
         foreach( QString subject, iterSubjects.value() )
         {
             std::cerr << "\t\t\t\"" << subject.toStdString() << "\"" << std::endl;
@@ -847,32 +698,32 @@ void TestProcessing::DisplayErrorAllSubjects( QMap<QString, QStringList> expecte
     }
 }
 
-void TestProcessing::DisplayErrorSortedSubjects( QMap< QString, QMap<QString, bool> > expectedSortedSubjects, QMap< QString, QMap<QString, bool> > sortedSubjects )
+void TestProcessing::DisplayError_SortedSubjects( QMap< QString, QMap<int, bool> > expectedSortedSubjects, QMap< QString, QMap<int, bool> > sortedSubjects )
 {
-    QMap< QString, QMap<QString, bool> >::ConstIterator iterExpectedSortedSubjects = expectedSortedSubjects.begin();
+    QMap< QString, QMap<int, bool> >::ConstIterator iterExpectedSortedSubjects = expectedSortedSubjects.cbegin();
     std::cerr << "\t   - sorted subjects expected" << std::endl;
-    while( iterExpectedSortedSubjects != expectedSortedSubjects.end() )
+    while( iterExpectedSortedSubjects != expectedSortedSubjects.cend() )
     {
         std::cerr << "\t\t  \"" << iterExpectedSortedSubjects.key().toStdString() << "\" --> ";
-        QMap<QString, bool>::ConstIterator iterExpectedFile = iterExpectedSortedSubjects.value().begin();
-        while( iterExpectedFile != iterExpectedSortedSubjects.value().end() )
+        QMap<int, bool>::ConstIterator iterExpectedFile = iterExpectedSortedSubjects.value().cbegin();
+        while( iterExpectedFile != iterExpectedSortedSubjects.value().cend() )
         {
-            std::cerr << " " << iterExpectedFile.key().toStdString() << "[" << iterExpectedFile.value() << "]";
+            std::cerr << " Index: " << iterExpectedFile.key() << " [" << ( iterExpectedFile.value() == 1 ? "True" : "False" ) << "]";
             ++iterExpectedFile;
         }
         std::cerr << std::endl;
         ++iterExpectedSortedSubjects;
     }
 
-    QMap< QString, QMap<QString, bool> >::ConstIterator iterSortedSubjects = sortedSubjects.begin();
+    QMap< QString, QMap<int, bool> >::ConstIterator iterSortedSubjects = sortedSubjects.cbegin();
     std::cerr << "\t   - sorted subjects displayed" << std::endl;
-    while( iterSortedSubjects != sortedSubjects.end() )
+    while( iterSortedSubjects != sortedSubjects.cend() )
     {
         std::cerr << "\t\t  \"" << iterSortedSubjects.key().toStdString() << "\" --> ";
-        QMap<QString, bool>::ConstIterator iterFile = iterSortedSubjects.value().begin();
-        while( iterFile != iterSortedSubjects.value().end() )
+        QMap<int, bool>::ConstIterator iterFile = iterSortedSubjects.value().cbegin();
+        while( iterFile != iterSortedSubjects.value().cend() )
         {
-            std::cerr << " " << iterFile.key().toStdString() << "[" << iterFile.value() << "]";
+            std::cerr << " Index: " << iterFile.key() << " [" << ( iterFile.value() == 1 ? "True" : "False" ) << "]";
             ++iterFile;
         }
         std::cerr << std::endl;
@@ -880,49 +731,83 @@ void TestProcessing::DisplayErrorSortedSubjects( QMap< QString, QMap<QString, bo
     }
 }
 
-void TestProcessing::DisplayErrorUnMatchedSubjects( QMap<QString, QStringList > unMatchedSubjectsExpected, QMap<QString, QStringList > unMatchedSubjectsDisplayed )
+void TestProcessing::DisplayError_UnMatchedSubjects( QMap<QString, QList<int> > unMatchedSubjectsExpected, QMap<QString, QList<int> > unMatchedSubjectsDisplayed )
 {
-    QMap<QString, QStringList >::ConstIterator iterExpectedUnMatched = unMatchedSubjectsExpected.begin();
+    QMap<QString, QList<int> >::ConstIterator iterExpectedUnMatched = unMatchedSubjectsExpected.cbegin();
     std::cerr << "\t   - unMatched subjects expected" << std::endl;
-    while( iterExpectedUnMatched != unMatchedSubjectsExpected.end() )
+    while( iterExpectedUnMatched != unMatchedSubjectsExpected.cend() )
     {
         std::cerr << "\t\t  \"" << iterExpectedUnMatched.key().toStdString() << "\" --> ";
-        foreach( QString str, iterExpectedUnMatched.value() )
+        foreach( int index, iterExpectedUnMatched.value() )
         {
-            std::cerr << str.toStdString() << " ";
+            std::cerr << index << " ";
         }
         std::cerr << std::endl;
         ++iterExpectedUnMatched;
     }
 
-    QMap<QString, QStringList >::ConstIterator iterUnMatched = unMatchedSubjectsDisplayed.begin();
+    QMap<QString, QList<int> >::ConstIterator iterUnMatched = unMatchedSubjectsDisplayed.cbegin();
     std::cerr << "\t   - unMatched subjects displayed" << std::endl;
-    while( iterUnMatched != unMatchedSubjectsDisplayed.end() )
+    while( iterUnMatched != unMatchedSubjectsDisplayed.cend() )
     {
         std::cerr << "\t\t  \"" << iterUnMatched.key().toStdString() << "\" --> ";
-        foreach( QString str, iterUnMatched.value() )
+        foreach( int index, iterUnMatched.value() )
         {
-            std::cerr << str.toStdString() << " ";
+            std::cerr << index << " ";
         }
         std::cerr << std::endl;
         ++iterUnMatched;
     }
 }
 
-void TestProcessing::DisplayErrorCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed )
+void TestProcessing::DisplayError_GetCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed )
 {
     std::cerr << "\t   - covariates expected" << std::endl;
-    QMap<int, QString>::ConstIterator iterCovariatesExpected = covariatesExpected.begin();
-    while( iterCovariatesExpected != covariatesExpected.end() )
+    QMap<int, QString>::ConstIterator iterCovariatesExpected = covariatesExpected.cbegin();
+    while( iterCovariatesExpected != covariatesExpected.cend() )
     {
         std::cerr << "\t\t  \"" << iterCovariatesExpected.value().toStdString() << "\" on column " << iterCovariatesExpected.key() << std::endl;
         ++iterCovariatesExpected;
     }
     std::cerr << "\t   - covariates displayed" << std::endl;
-    QMap<int, QString>::ConstIterator iterCovariatesDisplayed = covariatesDisplayed.begin();
-    while( iterCovariatesDisplayed != covariatesDisplayed.end() )
+    QMap<int, QString>::ConstIterator iterCovariatesDisplayed = covariatesDisplayed.cbegin();
+    while( iterCovariatesDisplayed != covariatesDisplayed.cend() )
     {
         std::cerr << "\t\t  \"" << iterCovariatesDisplayed.value().toStdString() << "\" on column " << iterCovariatesDisplayed.key() << std::endl;
         ++iterCovariatesDisplayed;
+    }
+}
+
+
+QByteArray TestProcessing::GetHashFile( QString filePath )
+{
+    QCryptographicHash hash( QCryptographicHash::Sha1 );
+    QFile file( filePath );
+
+    if( file.open( QIODevice::ReadOnly ) )
+    {
+        hash.addData( file.readAll() );
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Cannot open file: " << filePath.toStdString() << std::endl;
+    }
+
+    return hash.result().toHex();
+}
+
+bool TestProcessing::CompareFile( QString filePath1, QString filePath2 )
+{
+    QByteArray sig1 = GetHashFile( filePath1 );
+    QByteArray sig2 = GetHashFile( filePath2 );
+
+    if( sig1 == sig2 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }

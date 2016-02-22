@@ -38,7 +38,6 @@ FADTTSWindow.cxx
 EditInputDialog.cxx
 Data.cxx
 Processing.cxx
-MatlabScript.cxx
 MatlabThread.cxx
 Plot.cxx
 )

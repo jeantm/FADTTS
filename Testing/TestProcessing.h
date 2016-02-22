@@ -1,12 +1,13 @@
 #ifndef TESTPROCESSING_H
 #define TESTPROCESSING_H
 
+#include "Processing.h"
+
 #include <QCryptographicHash>
 #include <QSet>
 
 #include <iostream>
 
-#include "Processing.h"
 
 class TestProcessing
 {
@@ -16,53 +17,53 @@ public:
     /**********************************************************************/
     /*************************** Test Functions ***************************/
     /**********************************************************************/
-    bool Test_IsMatrixDimensionOK( QString inputADFile ); // Done
-
-    bool Test_IsCovariateFile(); // Done
-
-    bool Test_GetSelectedSubjects( QString selectedSubjectsFileTest ); // Done
-
-    bool Test_GenerateMatlabInputFiles( QString outputDir, QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2,
-                                        QString matlabInputADFile, QString matlabInputCovariateFile, QString selectedSubjectsFileTest );  // Done
+    bool Test_GetDataFromFile( QString file_N_Path, QString file_R_Path, QString file_RN_Path );
 
 
+    bool Test_IsMatrixDimensionOK( QString adFilePath );
 
-    bool Test_GetSubjectsFromInputFile( QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2 );  // Done
-
-    bool Test_GetRefSubjectsFromSelectedInputFiles( QString inputADFile, QString inputCovariateFileTest1, QString inputCovariateFileTest2 ); // Done
-
-    bool Test_GetRefSubjects( QString inputADFile, QString inputCovariateFile, QString subjectsFilePath ); // Done
+    bool Test_IsSubMatrix();
 
 
-    bool Test_GetAllSubjectsFromSelectedInputFiles(); // Done
+    bool Test_GetSubjectsFromFile( QString subjectFilePath );
 
-    bool Test_SortSubjects(); // Done
+    bool Test_GetSubjectsFromData( QString adFilePath, QString subMatrixFilePath0, QString subMatrixFilePath3 );
 
-    bool Test_AssignSortedSubject(); // Done
 
-    bool Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString inputCovariateFileTest2 ); // Done
+    bool Test_GetAllSubjects( QString adFilePath, QString subMatrixFilePath0 );
+
+    bool Test_GetSubjectsFromSelectedFiles();
+
+    bool Test_SortSubjects();
+
+    bool Test_AssignSortedSubject();
+
+
+    bool Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString subMatrixFilePath3 );
+
+
+    bool Test_GenerateMatlabInputFiles( QString outputDir, QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath,
+                                        QString adMatlabFilePath, QString subMatrix0MatlabFilePath, QString subjectsFilePath );
 
 
 private:
     /**********************************************************************/
     /********************** Functions Used For Testing ********************/
     /**********************************************************************/
-    QByteArray GetHashFile( QString filename );
+    void DisplayError_GetSubjects( QStringList subjectsExpected, QStringList subjectsDisplayed );
 
-    bool CompareFile( QString fileName1, QString fileName2 );
+    void DisplayError_GetSubjectsFromSelectedFiles( QMap<int, QStringList> expectedSubjects, QMap<int, QStringList> selectedSubjects );
 
-    bool CompareQStringList( QStringList qStringList1, QStringList qStringList2 );
+    void DisplayError_SortedSubjects( QMap< QString, QMap<int, bool> > expectedSortedSubjects, QMap< QString, QMap<int, bool> > sortedSubjects );
+
+    void DisplayError_UnMatchedSubjects( QMap<QString, QList<int> > unMatchedSubjectsExpected, QMap<QString, QList<int> > unMatchedSubjectsDisplayed );
+
+    void DisplayError_GetCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed );
 
 
-    void DisplayErrorSubjects( QStringList subjectsExpected, QStringList subjectsDisplayed );
+    QByteArray GetHashFile( QString filePath );
 
-    void DisplayErrorAllSubjects( QMap<QString, QStringList> expectedSubjects, QMap<QString, QStringList> selectedSubjects );
-
-    void DisplayErrorSortedSubjects( QMap< QString, QMap<QString, bool> > expectedSortedSubjects, QMap< QString, QMap<QString, bool> > sortedSubjects );
-
-    void DisplayErrorUnMatchedSubjects( QMap<QString, QStringList > unMatchedSubjectsExpected, QMap<QString, QStringList > unMatchedSubjectsDisplayed );
-
-    void DisplayErrorCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed );
+    bool CompareFile( QString filePath1, QString filePath2 );
 };
 
 #endif // TESTPROCESSING_H
