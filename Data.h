@@ -6,6 +6,8 @@
 
 class Data
 {
+    friend class TestFADTTSWindow; /** For unit tests **/
+
 public:
     explicit Data();
 
@@ -45,7 +47,7 @@ public:
 
     QMap<int, QString> GetCovariates() const; // Tested
 
-    int GetCovariateColumnID() const; // Tested
+    int GetSubjectColumnID() const; // Tested
 
     QString GetOutputDir() const; // Tested
 
@@ -67,17 +69,17 @@ public:
 
     QMap<int, QString>& SetCovariates(); // Tested
 
-    int& SetCovariateColumnID(); // Tested
+    int& SetSubjectColumnID(); // Tested
 
     QString& SetOutputDir(); // Tested
 
 
 
-    void ClearFileInformation( int diffusionPropertyIndexID ); // Tested
+    void ClearData( int diffusionPropertyIndexID ); // Tested
 
-    void ClearSubjects( int diffusionPropertyIndexID );
+    void ClearSubjects( int diffusionPropertyIndexID ); // Tested
 
-    void ClearCovariates();
+    void ClearCovariates(); // Tested
 
 
     void AddInterceptToCovariates(); // Tested
@@ -96,7 +98,7 @@ private:
 
     QString m_outputDir;
 
-    int m_covariateColumnID;
+    int m_subjectColumnID;
 };
 
 #endif // DATA_H

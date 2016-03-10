@@ -59,6 +59,9 @@ private:
     QByteArray GetHashFile( QString filePath );
 
     bool CompareFile( QString filePath1, QString filePath2 );
+
+
+    void DisplayError( QString expectedString, QString setString );
 };
 
 #endif // TESTMATLABTHREAD_H

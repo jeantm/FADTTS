@@ -6,6 +6,7 @@
  * argv[1] = adFilePath
  * argv[2] = subMatrix0FilePath
  * argv[3] = adFilePathMofied
+ *
  * argv[4] = tempDir
  */
 
@@ -17,14 +18,8 @@ int main( int argc, char *argv[] )
     int nbrTests = 0;
     int nbrTestsPassed = 0;
 
-    std::cerr << std::endl << std::endl << nbrTests + 1 << "- ";
-    if( testEditInputDialog.Test_SetCurrentDir() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testEditInputDialog.Test_CovariateColumnID() )
+    std::cerr << std::endl << std::endl << std::endl << nbrTests + 1 << "- ";
+    if( testEditInputDialog.Test_SubjectColumnID() )
     {
         nbrTestsPassed++;
     }
@@ -45,20 +40,24 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testEditInputDialog.Test_OnSaveFile( argv[4], argv[1], argv[3] ) )
+    if( testEditInputDialog.Test_OnSaveFile( argv[1], argv[3], argv[4] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
 
+
+
     app->exit();
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "                   Tests Summary                " << std::endl;
-    std::cout << "************************************************" << std::endl;
-    std::cout << "* " << 100*nbrTestsPassed/nbrTests << "% tests passed, " << ( nbrTests - nbrTestsPassed ) << " test(s) failed out of " << nbrTests << " *" << std::endl;
-    std::cout << "************************************************";
-    std::cout << std::endl << std::endl << std::endl << std::endl;
+    std::cerr << std::endl << std::endl << std::endl << std::endl << std::endl;
+    std::cerr << "                   Tests Summary                " << std::endl;
+    std::cerr << "************************************************" << std::endl;
+    std::cerr << "* " << 100*nbrTestsPassed/nbrTests << "% tests passed, " <<
+                 ( nbrTests - nbrTestsPassed ) << " test(s) failed out of " <<
+                 nbrTests << " *" << std::endl;
+    std::cerr << "************************************************";
+    std::cerr << std::endl << std::endl << std::endl;
 
     if( nbrTestsPassed == nbrTests )
     {

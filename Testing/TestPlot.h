@@ -41,28 +41,28 @@ public:
                                     QString rdTransposePostHocFDRLpvalueFilePath, QString faTransposePostHocFDRLpvalueFilePath, QString dataDir );
 
 
-    bool Test_GetRawDataFiles( QString dataDir );
+    bool Test_GetRawDataFiles( QString dataDir, QString tempoDir );
 
-    bool Test_GetBetaFiles( QString dataDir );
+    bool Test_GetBetaFiles( QString dataDir, QString tempoDir );
 
-    bool Test_GetOmnibusLpvalueFiles( QString dataDir );
+    bool Test_GetOmnibusLpvalueFiles( QString dataDir, QString tempoDir );
 
-    bool Test_GetOmnibusFDRLpvalueFiles( QString dataDir );
+    bool Test_GetOmnibusFDRLpvalueFiles( QString dataDir, QString tempoDir );
 
-    bool Test_GetConfidenceBandsFiles( QString dataDir );
+    bool Test_GetConfidenceBandsFiles( QString dataDir, QString tempoDir );
 
-    bool Test_GetPostHocFDRLpvalueFiles( QString dataDir );
+    bool Test_GetPostHocFDRLpvalueFiles( QString dataDir, QString tempoDir );
 
 
-    bool Test_SetPlots( QString dataDir );
+    bool Test_SetPlots( QString dataDir, QString tempoDir );
 
-    bool Test_SetProperties( QString dataDir );
+    bool Test_SetProperties( QString dataDir, QString tempoDir );
 
-    bool Test_SetSubjects( QString dataDir );
+    bool Test_SetSubjects( QString dataDir, QString tempoDir );
 
-    bool Test_SetCovariates( QString dataDir );
+    bool Test_SetCovariates( QString dataDir, QString tempoDir );
 
-    bool Test_SetAbscissa( QString dataDir );
+    bool Test_SetAbscissa( QString dataDir, QString tempoDir );
 
 
     bool Test_SetSelectedPlot( QString dataDir );
@@ -82,7 +82,7 @@ public:
     bool Test_SetMarkerType();
 
 
-    bool Test_UpdateCovariatesNames( QString dataDir );
+    bool Test_UpdateCovariatesNames( QString dataDir , QString tempoDir );
 
 
     bool Test_SeparateBinary( QString faFilePath, QString dataDir );
@@ -96,17 +96,17 @@ public:
     bool Test_Tolog10();
 
 
-    bool Test_LoadRawData( QString dataDir );
+    bool Test_LoadRawData( QString dataDir , QString tempoDir );
 
     bool Test_LoadRawStats( QString dataDir );
 
-    bool Test_LoadBetas( QString dataDir );
+    bool Test_LoadBetas( QString dataDir, QString tempoDir );
 
     bool Test_LoadBetaByCovariate( QString dataDir );
 
     bool Test_LoadOmnibusLpvalues( QString dataDir );
 
-    bool Test_LoadConfidenceBand( QString dataDir );
+    bool Test_LoadConfidenceBand( QString dataDir, QString tempoDir );
 
     bool Test_LoadPostHocFDRLpvalues( QString dataDir );
 
@@ -142,22 +142,7 @@ private:
     /**********************************************************************/
     /********************** Functions Used For Testing ********************/
     /**********************************************************************/
-    void DisplayError_FileList( QStringList fileListExpected, QStringList fileListDisplayed );
-
-    void DisplayError_SubjectList( QStringList subjectListExpected, QStringList subjectListDisplayed );
-
-    void DisplayError_PlotList( QStringList plotListExpected, QStringList plotListDisplayed );
-
-    void DisplayError_LineNameList( QStringList lineNameListExpected, QStringList lineNameListDisplayed );
-
-    void DisplayError_EntryList( QStringList entryListExpected, QStringList entryListDisplayed );
-
     void DisplayError_QStringList( QStringList qStringListExpected, QStringList qStringListDisplayed, QString type );
-
-
-    void DisplayError_Properties( QMap<int, QString> propertiesExpected, QMap<int, QString> propertiesDisplayed );
-
-    void DisplayError_Covariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed );
 
     void DisplayError_QMapIntQString( QMap<int, QString> qMapExpected, QMap<int, QString> qMapDisplayed, QString type );
 

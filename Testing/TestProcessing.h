@@ -3,6 +3,7 @@
 
 #include "Processing.h"
 
+#include <QDir>
 #include <QCryptographicHash>
 #include <QSet>
 
@@ -42,8 +43,8 @@ public:
     bool Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString subMatrixFilePath3 );
 
 
-    bool Test_GenerateMatlabInputFiles( QString outputDir, QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath,
-                                        QString adMatlabFilePath, QString subMatrix0MatlabFilePath, QString subjectsFilePath );
+    bool Test_GenerateMatlabInputFiles( QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath, QString adMatlabFilePath,
+                                        QString subMatrix0MatlabFilePath, QString subjectsFilePath, QString outputDir );
 
 
 private:

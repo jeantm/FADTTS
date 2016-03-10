@@ -80,7 +80,7 @@ void MatlabThread::SetDiffusionProperties( QStringList selectedPrefixes )
     m_matlabScript.replace( "$listDiffusionProperties$", listDiffusionProperties );
 }
 
-void MatlabThread::SetInputFiles( QMap< int, QString > csvInputFiles )
+void MatlabThread::SetInputFiles( const QMap< int, QString >& csvInputFiles )
 {
     QString diffusionFiles;
     QString diffusionData;
@@ -110,7 +110,7 @@ void MatlabThread::SetInputFiles( QMap< int, QString > csvInputFiles )
     m_matlabScript.replace( "$diffusionData$", diffusionData );
 }
 
-void MatlabThread::SetCovariates( QMap<int, QString> selectedCovariates )
+void MatlabThread::SetCovariates( const QMap<int, QString> &selectedCovariates )
 {
     m_matlabScript.replace( "$nbrCovariates$", "nbrCovariates = " + QString::number( selectedCovariates.count() ) + ";" );
     QString covariates;
@@ -277,7 +277,6 @@ void MatlabThread::run()
     if( m_runMatlab )
     {
         RedirectOutput();
-
         RunScript();
     }
 }

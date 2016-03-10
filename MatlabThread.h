@@ -54,9 +54,9 @@ public:
 
     void SetDiffusionProperties( QStringList selectedPrefixes ); // Tested
 
-    void SetInputFiles( QMap<int, QString> csvInputFiles ); // Tested
+    void SetInputFiles( const QMap< int, QString >& csvInputFiles ); // Tested
 
-    void SetCovariates( QMap<int, QString> selectedCovariates ); // Tested
+    void SetCovariates( const QMap<int, QString>& selectedCovariates ); // Tested
 
 
     void SetNbrPermutation( int nbrPermutation ); // Tested
@@ -71,20 +71,20 @@ public:
 
 
     /*************** Thread ***************/
-    void SetLogFile( QFile *logFile );
+    void SetLogFile( QFile *logFile ); // Tested
 
-    QString& SetMatlabExe();
+    QString& SetMatlabExe(); // Tested
 
-    bool& SetRunMatlab();
+    bool& SetRunMatlab(); // Tested
 
-    bool& SetRunMatlabOnKD();
+    bool& SetRunMatlabOnKD(); // Tested
 
-    QString& SetQueueKD();
+    QString& SetQueueKD(); /// Not tested
 
-    int& SetAllocatedMemoryKD();
+    int& SetAllocatedMemoryKD(); /// Not tested
 
 
-    void terminate();
+    void terminate(); /// Not tested
 
 
 private:
@@ -109,12 +109,12 @@ private:
 
 
     /*************** Thread ***************/
-    void RedirectOutput();
+    void RedirectOutput(); /// Not tested
 
-    void RunScript();
+    void RunScript(); /// Not tested
 
 
-    void run();
+    void run(); /// Not tested
 };
 
 #endif // MATLABTHREAD_H

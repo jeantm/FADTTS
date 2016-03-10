@@ -121,23 +121,6 @@ void FADTTSWindow::closeEvent(QCloseEvent *event)
 
 
 /*********************** Private function **********************/
-void FADTTSWindow::InitFADTTSWindow()
-{
-    m_data.InitData();
-
-    /** Initialization of the menu bar and all FADTTSter tabs **/
-    InitMenuBar();
-    InitInputTab();
-    InitSubjectCovariateTab();
-    InitExecutionTab();
-    InitPlottingTab();
-
-    /**  **/
-    OnCovariateFileToggled();
-
-    UpdateAvailableDiffusionProperties();
-}
-
 void FADTTSWindow::InitMenuBar()
 {
     /** Load parameters (para_) from a .xml file into the GUI interface **/
@@ -222,12 +205,12 @@ void FADTTSWindow::InitInputTab()
 
     /** Signal/Slot connection to receive updates from m_editInputDialog **/
     connect( m_editInputDialog.data(), SIGNAL( UpdateInputFile( const int&, const QString& ) ), this, SLOT( OnUpdatingInputFile( const int&, const QString& ) ) );
-    connect( m_editInputDialog.data(), SIGNAL( UpdateCovariateColumnID( const int& ) ), this, SLOT( OnUpdatingCovariateColumnID( int ) ) );
+    connect( m_editInputDialog.data(), SIGNAL( UpdateSubjectColumnID( const int& ) ), this, SLOT( OnUpdatingSubjectColumnID( int ) ) );
 }
 
 void FADTTSWindow::InitSubjectCovariateTab()
 {
-    caseSensitivity = Qt::CaseInsensitive;
+    m_caseSensitivity = Qt::CaseInsensitive;
 
     m_areSubjectsLoaded = false;
 
@@ -267,9 +250,9 @@ void FADTTSWindow::InitSubjectCovariateTab()
     m_paramTabFileDataSizeLabelMap.insert( m_data.GetSubMatrixIndex(), this->subjectCovariateTab_subMatrixFileInfo_label );
 
 
-    connect( this->subjectCovariateTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadList() ) );
-    connect( this->subjectCovariateTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetList() ) );
-    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingList( const QString&  ) ) );
+    connect( this->subjectCovariateTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
+    connect( this->subjectCovariateTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
+    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingSubjectList( const QString&  ) ) );
     connect( this->subjectCovariateTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
 
     connect( this->subjectCovariateTab_checkAllVisible_pushButton, SIGNAL( clicked() ), this, SLOT( OnCheckAllVisibleSubjects() ) );
@@ -332,9 +315,7 @@ void FADTTSWindow::InitExecutionTab()
 
 void FADTTSWindow::InitPlottingTab()
 {
-
     m_qvtkWidget = QSharedPointer<QVTKWidget>( this->plottingTab_plot_qvtkWidget );
-//    m_qvtkWidget = this->plottingTab_plot_qvtkWidget;
 
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget );
@@ -382,17 +363,24 @@ void FADTTSWindow::InitPlottingTab()
     SetPlotTab();
 }
 
-
-void FADTTSWindow::UpdateEditInputDialogCurrentDir( const QString newfilePath )
+void FADTTSWindow::InitFADTTSWindow()
 {
-    QDir dir = UpdateCurrentDir( newfilePath, m_currentInputFileDir );
-    if( dir.exists() )
-    {
-        m_editInputDialog->SetCurrentInputDir() = dir.absolutePath();
-    }
+    m_data.InitData();
+
+    /** Initialization of the menu bar and all FADTTSter tabs **/
+    InitMenuBar();
+    InitInputTab();
+    InitSubjectCovariateTab();
+    InitExecutionTab();
+    InitPlottingTab();
+
+    OnCovariateFileToggled();
+
+    InitAvailableDiffusionProperties();
 }
 
-QDir FADTTSWindow::UpdateCurrentDir( const QString newfilePath, QString& currentDir )
+
+QDir FADTTSWindow::UpdateCurrentDir( QString newfilePath, QString& currentDir )
 {
     QDir dir = QFileInfo( QFile( newfilePath ) ).absolutePath();
     if( dir.exists() )
@@ -403,27 +391,30 @@ QDir FADTTSWindow::UpdateCurrentDir( const QString newfilePath, QString& current
     return dir;
 }
 
-void FADTTSWindow::SetDir( QDir& dir, QString filePath, QString currentDir )
+QDir FADTTSWindow::SetDir( QString filePath, QString currentDir )
 {
-    dir = ( !filePath.isEmpty() && QDir( QFileInfo( QFile( filePath ) ).absolutePath() ).exists() ) ?
+    return ( !filePath.isEmpty() && QDir( QFileInfo( QFile( filePath ) ).absolutePath() ).exists() ) ?
                 QFileInfo( QFile( filePath ) ).absolutePath() :
                 currentDir;
 }
 
 
-void FADTTSWindow::WarningPopUp( const QString warningMessage )
+void FADTTSWindow::WarningPopUp( QString warningMessage )
 {
     QMessageBox::warning( this, tr( "WARNING" ), tr( qPrintable( warningMessage ) ), QMessageBox::Ok );
 }
 
-void FADTTSWindow::CriticalPopUp( const QString criticalMessage )
+void FADTTSWindow::CriticalPopUp( QString criticalMessage )
 {
     QMessageBox::critical( this, tr( "CRITICAL ERROR" ), tr( qPrintable( criticalMessage ) ), QMessageBox::Ok );
 }
 
-void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap icon )
+void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap& icon )
 {
-    label->setPixmap( icon.scaled( QSize( m_iconSize, m_iconSize ), Qt::IgnoreAspectRatio ) );
+    if( !icon.isNull() )
+    {
+        label->setPixmap( icon.scaled( QSize( m_iconSize, m_iconSize ), Qt::IgnoreAspectRatio ) );
+    }
 }
 
 
@@ -432,6 +423,57 @@ void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap icon )
 /***************************************************************/
 
 /***********************  Private slots  ***********************/
+void FADTTSWindow::OnSettingInputFile( const int &diffusionPropertyIndex )
+{
+    QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ];
+    QString filePath = lineEdit->text();
+    QFile file( filePath );
+
+    if( filePath.isEmpty() )
+    {
+        m_inputTabIconLabelMap[ diffusionPropertyIndex ]->clear();
+        m_data.ClearData( diffusionPropertyIndex );
+    }
+    else
+    {
+        if( !file.open( QIODevice::ReadOnly ) )
+        {
+            DisplayInputLineEditIcon( diffusionPropertyIndex, m_koPixmap );
+            m_data.ClearData( diffusionPropertyIndex );
+        }
+        else
+        {
+            file.close();
+            QList<QStringList> fileData = m_processing.GetDataFromFile( filePath );
+            if( m_processing.IsMatrixDimensionOK( fileData ) )
+            {
+                DisplayInputLineEditIcon( diffusionPropertyIndex, m_okPixmap );
+                m_data.SetFilename( diffusionPropertyIndex ) = filePath;
+                m_data.SetFileData( diffusionPropertyIndex ) = fileData;
+            }
+            else
+            {
+                DisplayInputLineEditIcon( diffusionPropertyIndex, m_koPixmap );
+                m_data.ClearData( diffusionPropertyIndex );
+
+                QString criticalMessage = m_data.GetDiffusionPropertyName( diffusionPropertyIndex ).toUpper()
+                        + " data file corrupted:<br><i>" + m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->text()
+                        + "</i><br>For each row, the number of columns is not constant.<br>Check the data file provided.";
+                CriticalPopUp( criticalMessage );
+            }
+
+            UpdateCurrentDir( filePath, m_currentInputFileDir );
+        }
+    }
+    UpdateInputFileInformation( diffusionPropertyIndex );
+
+    if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
+    {
+        m_editInputDialog->ResetSubjectColumnID(); /** By default Subjects are on the 1st column. **/
+        SetInfoSubjectColumnID();
+    }
+}
+
 void FADTTSWindow::OnAddInputFiles()
 {
     QString dir = m_currentInputFileDir;
@@ -447,67 +489,12 @@ void FADTTSWindow::OnAddInputFile( const int &diffusionPropertyIndex )
 {
     QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ];
     QString filePath = lineEdit->text();
-    QDir dir;
-    SetDir( dir, filePath, m_currentInputFileDir );
+    QDir dir = SetDir( filePath, m_currentInputFileDir );
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + m_data.GetDiffusionPropertyName( diffusionPropertyIndex ).toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !file.isEmpty() )
     {
         lineEdit->setText( file );
     }
-}
-
-void FADTTSWindow::OnSettingInputFile( const int &diffusionPropertyIndex )
-{
-    QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ];
-    QString filePath = lineEdit->text();
-    QFile file( filePath );
-
-    if( filePath.isEmpty() )
-    {
-        m_inputTabIconLabelMap[ diffusionPropertyIndex ]->clear();
-        m_data.ClearFileInformation( diffusionPropertyIndex );
-    }
-    else
-    {
-        UpdateEditInputDialogCurrentDir( filePath );
-
-        if( !file.open( QIODevice::ReadOnly ) )
-        {
-            DisplayInputLineEditIcon( diffusionPropertyIndex, m_koPixmap );
-            m_data.ClearFileInformation( diffusionPropertyIndex );
-        }
-        else
-        {
-            file.close();
-            QList<QStringList> fileData = m_processing.GetDataFromFile( filePath );
-            if( m_processing.IsMatrixDimensionOK( fileData ) )
-            {
-                DisplayInputLineEditIcon( diffusionPropertyIndex, m_okPixmap );
-                m_data.SetFilename( diffusionPropertyIndex ) = filePath;
-                m_data.SetFileData( diffusionPropertyIndex ) = fileData;
-            }
-            else
-            {
-                DisplayInputLineEditIcon( diffusionPropertyIndex, m_koPixmap );
-
-                QString criticalMessage = m_data.GetDiffusionPropertyName( diffusionPropertyIndex ).toUpper() + " data file corrupted:<br><i>" + m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->text() + "</i><br>"
-                        "For each row, the number of columns is not constant.<br>"
-                        "We advise that you to check your data file.";
-                CriticalPopUp( criticalMessage );
-
-                m_data.ClearFileInformation( diffusionPropertyIndex );
-            }
-        }
-    }
-    UpdateInputFileInformation( diffusionPropertyIndex );
-
-    if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
-    {
-        m_editInputDialog->ResetCovariateColumnID(); /** By default Subjects are on the 1st column. **/
-        SetInfoCovariateFileSubjectColumnID();
-    }
-
-    OnInputToggled();
 }
 
 void FADTTSWindow::OnEditInputFile( const int &diffusionPropertyIndex )
@@ -532,21 +519,98 @@ void FADTTSWindow::OnUpdatingInputFile( const int &diffusionPropertyIndex, const
     m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->setText( newFilePath );
 }
 
-void FADTTSWindow::OnUpdatingCovariateColumnID( const int&  newCovariateColumnID )
+void FADTTSWindow::OnUpdatingSubjectColumnID( const int& newSubjectColumnID )
 {
     /** Subjects are not on the 1st column anymore. **/
-    m_data.SetCovariateColumnID() = newCovariateColumnID;
+    m_data.SetSubjectColumnID() = newSubjectColumnID;
     UpdateInputFileInformation( m_data.GetSubMatrixIndex() );
-    SetInfoCovariateFileSubjectColumnID();
+    SetInfoSubjectColumnID();
 
-    OnInputToggled();
+    UpdateSubjectList();
 }
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fileList )
+QString FADTTSWindow::GetInputFileInformation( int diffusionPropertyIndex ) const
 {
-    /** This function only works with filename that start with ad_, rd_, md_, fa_ and SubMatrix_.
+    QString fileInformation;
+    const QString filename = m_data.GetFilename( diffusionPropertyIndex );
+    QString fileName =  QFileInfo( QFile( filename ) ).fileName();
+    if( !fileName.isEmpty() )
+    {
+        fileInformation.append( tr( qPrintable( "Filename: <i>" + fileName + "</i><br>" ) ) );
+        fileInformation.append( tr( qPrintable( "Number of subjects: <i>" + QString::number( m_data.GetNbrSubjects( diffusionPropertyIndex ) ) + "</i><br>" ) ) );
+        fileInformation.append( tr( qPrintable( "Data matrix: <i>" + QString::number(  m_data.GetNbrRows( diffusionPropertyIndex ) ) + "x" + QString::number( m_data.GetNbrColumns( diffusionPropertyIndex ) )  + "</i><br>" ) ) );
+        if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
+        {
+            fileInformation.append( tr( qPrintable( "Number of covariates: <i>" + QString::number( m_data.GetCovariates().size()-1 )  + "</i>" ) ) );
+            for( int c = 0; c < m_data.GetCovariates().size(); ++c )
+            {
+                if( c != m_data.GetSubjectColumnID() )
+                {
+                    fileInformation.append( tr( qPrintable( "<br>- <i>" + m_data.GetCovariates().value( c ) + "</i>" ) ) );
+                }
+            }
+        }
+    }
+    else
+    {
+        fileInformation.append( tr ( "<i>No File Information.<br>Please select a correct data file</i>" ) );
+    }
+
+    return fileInformation;
+}
+
+void FADTTSWindow::DisplayFileInformation()
+{
+    foreach( int diffusionPropertyIndex, m_data.GetDiffusionPropertiesIndices() )
+    {
+        m_inputFileInformationLabelMap.value( diffusionPropertyIndex )->
+                setText( tr( qPrintable( GetInputFileInformation( diffusionPropertyIndex ) ) ) );
+    }
+}
+
+void FADTTSWindow::DisplayInputLineEditIcon( int diffusionPropertyIndex, const QPixmap& icon )
+{
+    DisplayIcon( m_inputTabIconLabelMap[ diffusionPropertyIndex ], icon );
+}
+
+void FADTTSWindow::UpdateInputFileInformation( int diffusionPropertyIndex )
+{
+    QList<QStringList> fileData = m_data.GetFileData( diffusionPropertyIndex );
+
+    if( !fileData.isEmpty() )
+    {
+        m_data.SetNbrRows( diffusionPropertyIndex ) = fileData.count();
+        m_data.SetNbrColumns( diffusionPropertyIndex ) = fileData.first().count();
+
+        m_data.ClearSubjects( diffusionPropertyIndex );
+        QStringList subjects = m_processing.GetSubjectsFromData( fileData, m_data.GetSubjectColumnID() );
+        m_data.SetSubjects( diffusionPropertyIndex ) = subjects;
+        m_data.SetNbrSubjects( diffusionPropertyIndex ) = subjects.count();
+
+        if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
+        {
+            m_data.ClearCovariates();
+            m_data.SetCovariates() = m_processing.GetCovariatesFromData( fileData, m_data.GetSubjectColumnID() );
+            /** Intercept representes everything that has not been classified in one of the previous
+             *  covariates. It is important to add it as 1st element of m_covariatesList **/
+            m_data.AddInterceptToCovariates();
+        }
+    }
+
+    if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
+    {
+        OnCovariateFileToggled();
+    }
+
+    UpdateAvailableDiffusionProperties( diffusionPropertyIndex );
+    DisplayFileInformation();
+}
+
+void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList& fileList )
+{
+    /** This function only works with filename that start with ad_, rd_, md_, fa_ and subMatrix_.
      *  If a prefix is detected more than once, the reated files will be ignored. **/
     QMap<int, QStringList > fileMap;
     foreach ( int diffusionPropertyIndex, m_data.GetDiffusionPropertiesIndices() )
@@ -567,7 +631,7 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
         m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->clear();
     }
 
-    QMap<int, QStringList>::ConstIterator iter = fileMap.begin();
+    QMap<int, QStringList>::ConstIterator iter = fileMap.cbegin();
     while( iter != fileMap.constEnd() )
     {
         int diffusionPropertyIndex = iter.key();
@@ -578,111 +642,20 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList fi
 }
 
 
-void FADTTSWindow::UpdateInputFileInformation( const int diffusionPropertyIndex )
+void FADTTSWindow::SetInfoSubjectColumnID()
 {
-    QString filePath = m_data.GetFilename( diffusionPropertyIndex );
-
-    if( !filePath.isEmpty() )
-    {
-        QList<QStringList> fileData = m_data.GetFileData( diffusionPropertyIndex );
-        int nbrRows = fileData.count();
-        int nbrColumns = fileData.first().count();
-
-        m_data.ClearSubjects( diffusionPropertyIndex );
-        QStringList subjects = m_processing.GetSubjectsFromData( fileData, m_data.GetCovariateColumnID() );
-        m_data.SetSubjects( diffusionPropertyIndex ) = subjects;
-
-        if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
-        {
-            m_data.SetNbrRows( diffusionPropertyIndex ) = nbrRows-1;
-            m_data.SetNbrColumns( diffusionPropertyIndex ) = nbrColumns-1;
-            m_data.SetNbrSubjects( diffusionPropertyIndex ) = subjects.count();
-
-            m_data.ClearCovariates();
-            m_data.SetCovariates() = m_processing.GetCovariatesFromData( fileData, m_data.GetCovariateColumnID() );
-            /** Intercept representes everything that has not been classified in one of the previous
-             *  covariates. It is important to add it as 1st element of m_covariatesList **/
-            m_data.AddInterceptToCovariates();
-        }
-        else
-        {
-            m_data.SetNbrRows( diffusionPropertyIndex ) = nbrRows-1;
-            m_data.SetNbrColumns( diffusionPropertyIndex ) = nbrColumns;
-            m_data.SetNbrSubjects( diffusionPropertyIndex ) = subjects.count();
-        }
-    }
-
-    if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
-    {
-        OnCovariateFileToggled();
-    }
-
-    UpdateAvailableDiffusionProperties();
-    DisplayFileInformation();
+    this->inputTab_subjectColumnID_label->setText( !m_data.GetFileData( m_data.GetSubMatrixIndex() ).isEmpty() ?
+                                                       tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
+                                                                       QString::number( m_data.GetSubjectColumnID() + 1 ) + "</span></i></b>" ) ) :
+                                                       "" );
 }
 
-void FADTTSWindow::DisplayInputLineEditIcon( const int diffusionPropertyIndex, const QPixmap icon )
-{
-    DisplayIcon( m_inputTabIconLabelMap[ diffusionPropertyIndex ], icon );
-}
-
-void  FADTTSWindow::LaunchEditInputDialog( const int diffusionPropertyIndex )
+void  FADTTSWindow::LaunchEditInputDialog( int diffusionPropertyIndex )
 {
     m_editInputDialog->setModal( true );
     m_editInputDialog->setWindowTitle( tr( qPrintable( "Edit " + m_data.GetDiffusionPropertyName( diffusionPropertyIndex).toUpper() + " File" ) ) );
     m_editInputDialog->DisplayDataEdition( diffusionPropertyIndex );
     m_editInputDialog->exec();
-}
-
-
-void FADTTSWindow::SetInfoCovariateFileSubjectColumnID()
-{
-    this->inputTab_subjectColumnID_label->setText( !m_data.GetFileData( m_data.GetSubMatrixIndex() ).isEmpty() ?
-                                                       tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
-                                                                       QString::number( m_data.GetCovariateColumnID() + 1 ) + "</i></b></span>") ) :
-                                                       "" );
-}
-
-
-QString FADTTSWindow::GetInputFileInformation( const int diffusionPropertyIndex )
-{
-    QString fileInformation;
-    fileInformation.append( tr ( "<i>No File Information.<br>Please select a correct data file</i>" ) );
-
-    const QString filename = m_data.GetFilename( diffusionPropertyIndex );
-    QString fileName =  QFileInfo( QFile( filename ) ).fileName();
-    if( !fileName.isEmpty() )
-    {
-        int nbRows = m_data.GetNbrRows( diffusionPropertyIndex );
-        int nbColumns = m_data.GetNbrColumns( diffusionPropertyIndex );
-
-        fileInformation.clear();
-        fileInformation.append( tr( qPrintable( "Filename: <i>" + fileName + "</i><br>" ) ) );
-        fileInformation.append( tr( qPrintable( "Number of test subjects: <i>" + QString::number( m_data.GetNbrSubjects( diffusionPropertyIndex ) ) + "</i><br>" ) ) );
-        fileInformation.append( tr( qPrintable( "Data matrix: <i>" + QString::number( nbRows ) + "x" + QString::number( nbColumns )  + "</i><br>" ) ) );
-        if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
-        {
-            fileInformation.append( tr( qPrintable( "Number of covariates: <i>" + QString::number( m_data.GetCovariates().size()-1 )  + "</i>" ) ) );
-            for( int c = 0; c < m_data.GetCovariates().size(); ++c )
-            {
-                if( c != m_data.GetCovariateColumnID() )
-                {
-                    fileInformation.append( tr( qPrintable( "<br>- <i>" + m_data.GetCovariates().value( c ) + "</i>" ) ) );
-                }
-            }
-        }
-    }
-
-    return fileInformation;
-}
-
-void FADTTSWindow::DisplayFileInformation()
-{
-    foreach( int diffusionPropertyIndex, m_data.GetDiffusionPropertiesIndices() )
-    {
-        m_inputFileInformationLabelMap.value( diffusionPropertyIndex )->
-                setText( tr( qPrintable( GetInputFileInformation( diffusionPropertyIndex ) ) ) );
-    }
 }
 
 
@@ -693,13 +666,13 @@ void FADTTSWindow::DisplayFileInformation()
 /***********************  Private slots  ************************/
 void FADTTSWindow::OnCovariateFileToggled()
 {
-    QMap<int, QString> covariateMap = m_data.GetCovariates();
+    QMap<int, QString> covariate = m_data.GetCovariates();
     m_covariateListWidget->clear();
 
-    if( !( covariateMap.isEmpty() ) && this->para_subjectCovariateTab_subMatrixFile_checkBox->isChecked() )
+    if( !( covariate.isEmpty() ) && this->para_subjectCovariateTab_subMatrixFile_checkBox->isChecked() )
     {
-        QMap<int, QString>::ConstIterator iterCovariate = covariateMap.begin();
-        while( iterCovariate != covariateMap.end() )
+        QMap<int, QString>::ConstIterator iterCovariate = covariate.cbegin();
+        while( iterCovariate != covariate.cend() )
         {
             QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), m_covariateListWidget );
             covariateItem->setCheckState( Qt::Checked );
@@ -756,64 +729,45 @@ void FADTTSWindow::OnUnCheckAllCovariates()
 }
 
 
-void FADTTSWindow::OnLoadList()
+void FADTTSWindow::OnSearch()
 {
-    QLineEdit *lineEdit = m_subjectFileLineEdit;
-    QString filePath = lineEdit->text();
-    QDir dir;
-    SetDir( dir, filePath, m_currentSubjectFileDir );
-
-    QString file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
-    if( !file.isEmpty() )
-    {
-        lineEdit->setText( file );
-    }
+    int nbrSubjectFind = SearchSubjects( m_matchedSubjectListWidget ) + SearchSubjects( m_unmatchedSubjectListWidget );
+    this->subjectCovariateTab_nbrFound_label->
+            setText( !this->subjectCovariateTab_search_lineEdit->text().isEmpty() ? "found " + QString::number( nbrSubjectFind ) : "" );
 }
 
-void FADTTSWindow::OnResetList()
+void FADTTSWindow::OnInputToggled()
 {
-    m_subjectFileLineEdit->clear();
+    SetSelectedInputFiles();
+    UpdateSubjectList();
 }
 
-void FADTTSWindow::OnSettingList( const QString& filePath )
+void FADTTSWindow::OnSetCaseSensitivityToggled( const bool& checked )
 {
-    QFile subjectFile( filePath );
-    QLabel *label = this->subjectCovariateTab_iconLoadSubjectFile_label;
-    m_loadedSubjects.clear();
+    m_caseSensitivity = checked ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    OnSearch();
+}
 
-    if( filePath.isEmpty() )
+
+void FADTTSWindow::OnSubjectClicked( QListWidgetItem *item )
+{
+    if( item->flags() == Qt::ItemIsEnabled )
     {
-        label->clear();
+        item->setCheckState( item->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked );
+        item->setBackgroundColor( item->checkState() == Qt::Checked ? m_green : m_grey );
     }
-    else
-    {
-        if( subjectFile.open( QIODevice::ReadOnly ) )
-        {
-            QTextStream ts( &subjectFile );
-            while( !ts.atEnd() )
-            {
-                m_loadedSubjects.append( ts.readLine() );
-            }
-            subjectFile.close();
 
-            if( m_loadedSubjects.size() == 1 )
-            {
-                //                m_loadedSubjects.clear();
-                m_loadedSubjects = m_loadedSubjects.first().split( "\r" );
-            }
-            m_loadedSubjects.removeAll( "" );
+    DisplayNbrSubjectSelected();
+}
 
-            DisplayIcon( label, m_okPixmap );
-        }
-        else
-        {
-            DisplayIcon( label, m_koPixmap );
-        }
-        UpdateCurrentDir( filePath, m_currentSubjectFileDir );
-    }
-    m_areSubjectsLoaded = m_loadedSubjects.isEmpty() ? false : true;
+void FADTTSWindow::OnCheckAllVisibleSubjects()
+{
+    SetCheckStateAllVisibleSubjects( Qt::Checked );
+}
 
-    OnInputToggled();
+void FADTTSWindow::OnUnCheckAllVisibleSubjects()
+{
+    SetCheckStateAllVisibleSubjects( Qt::Unchecked );
 }
 
 void FADTTSWindow::OnSaveCheckedSubjects()
@@ -840,125 +794,103 @@ void FADTTSWindow::OnSaveCheckedSubjects()
         if( previousFilePath == filePath )
         {
             /** If filePath does not change, an update is needed to display the right subject list **/
-            OnInputToggled();
+            UpdateSubjectList();
         }
     }
 }
 
 
-void FADTTSWindow::OnCheckAllVisibleSubjects()
+void FADTTSWindow::OnLoadSubjectList()
 {
-    SetCheckStateAllVisibleSubjects( Qt::Checked );
-}
-
-void FADTTSWindow::OnUnCheckAllVisibleSubjects()
-{
-    SetCheckStateAllVisibleSubjects( Qt::Unchecked );
-}
-
-void FADTTSWindow::OnSubjectClicked( QListWidgetItem *item )
-{
-    if( item->flags() == Qt::ItemIsEnabled )
+    QLineEdit *lineEdit = m_subjectFileLineEdit;
+    QString filePath = lineEdit->text();
+    QDir dir = SetDir( filePath, m_currentSubjectFileDir );
+    QString file = QFileDialog::getOpenFileName( this, tr( "Choose SubjectList File" ), dir.absolutePath(), tr( ".txt ( *.txt ) ;; .*( * )" ) );
+    if( !file.isEmpty() )
     {
-        item->setCheckState( item->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked );
-        item->setBackgroundColor( item->checkState() == Qt::Checked ? m_green : m_grey );
+        lineEdit->setText( file );
     }
-
-    DisplayNbrSubjectSelected();
 }
 
-
-void FADTTSWindow::OnInputToggled()
+void FADTTSWindow::OnResetSubjectList()
 {
-    QMap< int, bool > diffusionPropertiesCheckState = GetDiffusionPropertiesCheckState( m_paramTabFileCheckBoxMap );
-    QMap<int, QStringList> allSubjects = m_processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, m_data.GetSubjects() );
-    if( m_areSubjectsLoaded )
+    m_subjectFileLineEdit->clear();
+}
+
+void FADTTSWindow::OnSettingSubjectList( const QString& filePath )
+{
+    QLabel *label = this->subjectCovariateTab_iconLoadSubjectFile_label;
+    m_loadedSubjects.clear();
+
+    if( filePath.isEmpty() )
     {
-        allSubjects.insert( -1, m_loadedSubjects );
+        label->clear();
     }
-
-    QStringList allSubjectsList = m_processing.GetAllSubjects( allSubjects );
-    if( m_areSubjectsLoaded )
+    else
     {
-        allSubjectsList.append( m_loadedSubjects );
-        allSubjectsList.removeDuplicates();
+        m_loadedSubjects = m_processing.GetSubjectsFromFileList( filePath );
+        DisplayIcon( label, m_loadedSubjects.isEmpty() ? m_koPixmap : m_okPixmap );
+        UpdateCurrentDir( filePath, m_currentSubjectFileDir );
     }
+    m_areSubjectsLoaded = m_loadedSubjects.isEmpty() ? false : true;
 
-    QMap< QString, QMap<int, bool> > sortedSubjects = m_processing.SortSubjects( allSubjectsList, allSubjects );
-
-    QStringList matchedSubjects;
-    QMap<QString, QList<int> > unMatchedSubjects;
-    m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
-
-    DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
-
-    OnSearch();
-}
-
-void FADTTSWindow::OnSearch()
-{
-    int nbrSubjectFind = SearchSubjects( m_matchedSubjectListWidget ) + SearchSubjects( m_unmatchedSubjectListWidget );
-    this->subjectCovariateTab_nbrFound_label->setText( !this->subjectCovariateTab_search_lineEdit->text().isEmpty() ?
-                                                           "found " + QString::number( nbrSubjectFind ) :
-                                                           "" );
-}
-
-void FADTTSWindow::OnSetCaseSensitivityToggled( const bool& checked )
-{
-    caseSensitivity = checked ? Qt::CaseSensitive : Qt::CaseInsensitive;
-    OnSearch();
+    UpdateSubjectList();
 }
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::UpdateAvailableDiffusionProperties()
+void FADTTSWindow::SetSelectedInputFiles()
 {
-    labelMapType::ConstIterator iterLabel = m_paramTabFileDataSizeLabelMap.begin();
-    checkBoxMapType::ConstIterator iterCheckBox = m_paramTabFileCheckBoxMap.begin();
-    while( iterLabel != m_paramTabFileDataSizeLabelMap.constEnd() )
+    m_propertySelected.clear();
+    m_selectedFiles.clear();
+    foreach ( int diffusionPropertyIndex, m_data.GetDiffusionPropertiesIndices() )
     {
-        int nbrRows = m_data.GetNbrRows( iterCheckBox.key() );
-        int nbrColumns = m_data.GetNbrColumns( iterCheckBox.key() );
-        bool isDefine = !( ( nbrRows == 0 ) | ( nbrColumns == 0 ) );
-        QString text = isDefine ? tr( qPrintable( QString::number( nbrRows ) + " x " + QString::number( nbrColumns ) ) ) :
-                                  tr( "N/A" );
-        iterLabel.value()->setEnabled( isDefine );
-        iterLabel.value()->setText( text );
-        iterCheckBox.value()->setEnabled( isDefine );
-        iterCheckBox.value()->setChecked( isDefine );
-        ++iterLabel;
-        ++iterCheckBox;
+        if( m_paramTabFileCheckBoxMap[ diffusionPropertyIndex ]->isChecked() && !m_data.GetFilename( diffusionPropertyIndex ).isEmpty() )
+        {
+            m_propertySelected.insert( diffusionPropertyIndex, m_data.GetDiffusionPropertyName( diffusionPropertyIndex ) );
+            m_selectedFiles.insert( diffusionPropertyIndex, m_data.GetFilename( diffusionPropertyIndex ) );
+        }
     }
-
-    SetSelectedInputFiles();
 }
 
-QMap< int, bool > FADTTSWindow::GetDiffusionPropertiesCheckState( QMap< int, QCheckBox* > checkBoxMap )
+void FADTTSWindow::UpdateAvailableDiffusionProperties( int diffusionPropertyID )
 {
-    QMap< int, bool > DiffusionPropertyCheckStatus;
+    QLabel *currentLabel = m_paramTabFileDataSizeLabelMap.value( diffusionPropertyID );
+    QCheckBox *currentCheckBox = m_paramTabFileCheckBoxMap.value( diffusionPropertyID );
+    int nbrRows = m_data.GetNbrRows( diffusionPropertyID );
+    int nbrColumns = m_data.GetNbrColumns( diffusionPropertyID );
 
-    QMap<int, QCheckBox*>::ConstIterator iterCheckBoxMap = checkBoxMap.cbegin();
-    while( iterCheckBoxMap != checkBoxMap.cend() )
+    bool isDefine = !( ( nbrRows == 0 ) | ( nbrColumns == 0 ) );
+    QString text = isDefine ? tr( qPrintable( QString::number( nbrRows ) + " x " + QString::number( nbrColumns ) ) ) :
+                              tr( "N/A" );
+    currentLabel->setEnabled( isDefine );
+    currentLabel->setText( text );
+    currentCheckBox->setEnabled( isDefine );
+    currentCheckBox->setChecked( isDefine );
+}
+
+void FADTTSWindow::InitAvailableDiffusionProperties()
+{
+    foreach( int index, m_data.GetDiffusionPropertiesIndices() )
     {
-        DiffusionPropertyCheckStatus.insert( iterCheckBoxMap.key(), iterCheckBoxMap.value()->isChecked() );
+        UpdateAvailableDiffusionProperties( index );
+    }
+}
+
+QMap< int, bool > FADTTSWindow::GetDiffusionPropertiesCheckState()
+{
+    QMap< int, bool > diffusionPropertyCheckStatus;
+
+    QMap<int, QCheckBox*>::ConstIterator iterCheckBoxMap = m_paramTabFileCheckBoxMap.cbegin();
+    while( iterCheckBoxMap != m_paramTabFileCheckBoxMap.cend() )
+    {
+        diffusionPropertyCheckStatus.insert( iterCheckBoxMap.key(), iterCheckBoxMap.value()->isChecked() );
         ++iterCheckBoxMap;
     }
 
-    return DiffusionPropertyCheckStatus;
+    return diffusionPropertyCheckStatus;
 }
 
-
-void FADTTSWindow::SetCheckStateAllCovariates( Qt::CheckState checkState )
-{
-    for( int i = 0; i < m_covariateListWidget->count(); i++ )
-    {
-        QListWidgetItem *currentItem = m_covariateListWidget->item( i );
-        currentItem->setCheckState( ( checkState == Qt::Unchecked ) && ( currentItem->text() == "Intercept" )
-                                    ? Qt::Checked : checkState );
-    }
-
-    SetSelectedCovariates();
-}
 
 void FADTTSWindow::SetSelectedCovariates()
 {
@@ -980,78 +912,24 @@ void FADTTSWindow::SetSelectedCovariates()
     }
 }
 
-
-void FADTTSWindow::SetCheckStateAllVisibleSubjects( Qt::CheckState checkState )
+void FADTTSWindow::SetCheckStateAllCovariates( Qt::CheckState checkState )
 {
-    for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
+    for( int i = 0; i < m_covariateListWidget->count(); i++ )
     {
-        QListWidgetItem* current = m_matchedSubjectListWidget->item( i );
-        if( !current->isHidden() && current->flags() == Qt::ItemIsEnabled )
-        {
-            current->setCheckState( checkState );
-            current->setBackgroundColor( checkState ? m_green : m_grey );
-        }
+        QListWidgetItem *currentItem = m_covariateListWidget->item( i );
+        currentItem->setCheckState( ( checkState == Qt::Unchecked ) && ( currentItem->text() == "Intercept" )
+                                    ? Qt::Checked : checkState );
     }
 
-    DisplayNbrSubjectSelected();
+    SetSelectedCovariates();
 }
 
-
-void FADTTSWindow::DisplaySortedSubjects( const QStringList matchedSubjects, const QMap<QString, QList<int> > unMatchedSubjectMap )
-{
-    m_matchedSubjectListWidget->clear();
-    m_matchedSubjectListWidget->setUpdatesEnabled( false );
-    m_matchedSubjectListWidget->setSelectionMode( QAbstractItemView::NoSelection );
-
-    foreach( QString subject, matchedSubjects )
-    {
-        QListWidgetItem *item = new QListWidgetItem( subject, m_matchedSubjectListWidget );
-        item->setCheckState( Qt::Checked );
-        item->setBackgroundColor( m_green );
-        item->setFlags( Qt::ItemIsEnabled );
-        m_matchedSubjectListWidget->addItem( item );
-    }
-    m_matchedSubjectListWidget->setUpdatesEnabled( true );
-
-
-    m_unmatchedSubjectListWidget->clear();
-    m_unmatchedSubjectListWidget->setUpdatesEnabled( false );
-    m_unmatchedSubjectListWidget->setSelectionMode( QAbstractItemView::NoSelection );
-    QMap<QString, QList<int> >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.begin();
-    while( iterUnmatchedSubjects != unMatchedSubjectMap.constEnd() )
-    {
-        QStringList sortedText;
-        foreach( int index, iterUnmatchedSubjects.value() )
-        {
-            if( index == -1 )
-            {
-                sortedText.append( "Loaded Subjects" );
-            }
-            else
-            {
-                sortedText.append( m_data.GetDiffusionPropertyName( index ) );
-            }
-        }
-        sortedText.sort();
-        QString text = tr( qPrintable( iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " ) ) );
-        QListWidgetItem *item = new QListWidgetItem( text, m_unmatchedSubjectListWidget );
-        item->setBackgroundColor( m_red );
-        item->setTextColor( m_lightBlack );
-        m_unmatchedSubjectListWidget->addItem( item );
-        ++iterUnmatchedSubjects;
-    }
-    m_unmatchedSubjectListWidget->setUpdatesEnabled( true );
-
-    DisplaySubjectInformation();
-    DisplayNbrSubjectSelected();
-}
 
 void FADTTSWindow::DisplaySubjectInformation()
 {
     this->subjectCovariateTab_matchedSubjectsInformation_label->clear();
     this->subjectCovariateTab_unmatchedSubjectsInformation_label->clear();
     QString textMatchedSubjectsInformation;
-    QString textUnmatchedSubjectsInformation;
     int nbrMatchedSubjects = m_matchedSubjectListWidget->count();
     int nbrUnmatchedSubjects = m_unmatchedSubjectListWidget->count();
     int nbrTotalSubjects = nbrMatchedSubjects + nbrUnmatchedSubjects;
@@ -1060,23 +938,20 @@ void FADTTSWindow::DisplaySubjectInformation()
         if( ( nbrMatchedSubjects == 0 ) && ( nbrUnmatchedSubjects != 0 ) )
         {
             textMatchedSubjectsInformation = tr( qPrintable( "WARNING No matched! " + QString::number( nbrMatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) ) );
-            textUnmatchedSubjectsInformation = tr( qPrintable( QString::number( nbrUnmatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) + " unmatched" ) );
         }
         else
         {
             if( ( nbrMatchedSubjects != 0 ) && ( nbrUnmatchedSubjects == 0 ) )
             {
                 textMatchedSubjectsInformation = tr( qPrintable( "All subjects matched " + QString::number( nbrMatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) ) );
-                textUnmatchedSubjectsInformation = tr( qPrintable( QString::number( nbrUnmatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) + " unmatched" ) );
             }
             else
             {
                 textMatchedSubjectsInformation = tr( qPrintable( QString::number( nbrMatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) + " matched" ) );
-                textUnmatchedSubjectsInformation = tr( qPrintable( QString::number( nbrUnmatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) + " unmatched" ) );
             }
         }
         this->subjectCovariateTab_matchedSubjectsInformation_label->setText( textMatchedSubjectsInformation );
-        this->subjectCovariateTab_unmatchedSubjectsInformation_label->setText( textUnmatchedSubjectsInformation );
+        this->subjectCovariateTab_unmatchedSubjectsInformation_label->setText( tr( qPrintable( QString::number( nbrUnmatchedSubjects ) + "/" + QString::number( nbrTotalSubjects ) + " unmatched" ) ) );
     }
     else
     {
@@ -1106,6 +981,94 @@ void FADTTSWindow::DisplayNbrSubjectSelected()
     }
 }
 
+void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, const QMap<QString, QList<int> >& unMatchedSubjectMap )
+{
+    m_matchedSubjectListWidget->clear();
+    m_matchedSubjectListWidget->setUpdatesEnabled( false );
+    m_matchedSubjectListWidget->setSelectionMode( QAbstractItemView::NoSelection );
+    foreach( QString subject, matchedSubjects )
+    {
+        QListWidgetItem *item = new QListWidgetItem( subject, m_matchedSubjectListWidget );
+        item->setCheckState( Qt::Checked );
+        item->setBackgroundColor( m_green );
+        item->setFlags( Qt::ItemIsEnabled );
+        m_matchedSubjectListWidget->addItem( item );
+    }
+    m_matchedSubjectListWidget->setUpdatesEnabled( true );
+
+    m_unmatchedSubjectListWidget->clear();
+    m_unmatchedSubjectListWidget->setUpdatesEnabled( false );
+    m_unmatchedSubjectListWidget->setSelectionMode( QAbstractItemView::NoSelection );
+    QMap<QString, QList<int> >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.cbegin();
+    while( iterUnmatchedSubjects != unMatchedSubjectMap.constEnd() )
+    {
+        QStringList sortedText;
+        foreach( int index, iterUnmatchedSubjects.value() )
+        {
+            if( index == -1 )
+            {
+                sortedText.append( "loaded subjects" );
+            }
+            else
+            {
+                sortedText.append( m_data.GetDiffusionPropertyName( index ) );
+            }
+        }
+
+        QString text = tr( qPrintable( iterUnmatchedSubjects.key() + " --> " + sortedText.join( ", " ) ) );
+        QListWidgetItem *item = new QListWidgetItem( text, m_unmatchedSubjectListWidget );
+        item->setBackgroundColor( m_red );
+        item->setTextColor( m_lightBlack );
+        m_unmatchedSubjectListWidget->addItem( item );
+        ++iterUnmatchedSubjects;
+    }
+    m_unmatchedSubjectListWidget->setUpdatesEnabled( true );
+
+    DisplaySubjectInformation();
+    DisplayNbrSubjectSelected();
+}
+
+void FADTTSWindow::UpdateSubjectList()
+{
+    QMap< int, bool > diffusionPropertiesCheckState = GetDiffusionPropertiesCheckState();
+    QMap<int, QStringList> allSubjects = m_processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, m_data.GetSubjects() );
+    if( m_areSubjectsLoaded )
+    {
+        allSubjects.insert( -1, m_loadedSubjects );
+    }
+
+    QStringList allSubjectsList = m_processing.GetAllSubjects( allSubjects );
+    if( m_areSubjectsLoaded )
+    {
+        allSubjectsList.append( m_loadedSubjects );
+        allSubjectsList.removeDuplicates();
+    }
+
+    QMap< QString, QMap<int, bool> > sortedSubjects = m_processing.SortSubjects( allSubjectsList, allSubjects );
+
+    QStringList matchedSubjects;
+    QMap<QString, QList<int> > unMatchedSubjects;
+    m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
+
+    DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
+
+    OnSearch();
+}
+
+void FADTTSWindow::SetCheckStateAllVisibleSubjects( Qt::CheckState checkState )
+{
+    for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
+    {
+        QListWidgetItem* current = m_matchedSubjectListWidget->item( i );
+        if( !current->isHidden() && current->flags() == Qt::ItemIsEnabled )
+        {
+            current->setCheckState( checkState );
+            current->setBackgroundColor( checkState ? m_green : m_grey );
+        }
+    }
+
+    DisplayNbrSubjectSelected();
+}
 
 int FADTTSWindow::SearchSubjects( QListWidget *list )
 {
@@ -1121,7 +1084,7 @@ int FADTTSWindow::SearchSubjects( QListWidget *list )
             search.append( "*" );
             QRegExp regExp( search );
             regExp.setPatternSyntax( QRegExp::Wildcard );
-            regExp.setCaseSensitivity( caseSensitivity );
+            regExp.setCaseSensitivity( m_caseSensitivity );
             for( int i = 0; i < list->count(); i++ )
             {
                 QListWidgetItem* current = list->item( i );
@@ -1184,7 +1147,7 @@ void FADTTSWindow::OnBrowsingOutputDir()
     }
 }
 
-void FADTTSWindow::OnSettingOutputDir( const QString&  path )
+void FADTTSWindow::OnSettingOutputDir( const QString& path )
 {
     QLabel *label = this->executionTab_iconOutputDir_label;
     if( !path.isEmpty() )
@@ -1283,7 +1246,6 @@ void FADTTSWindow::OnSettingMVCMPath( const QString& path )
         {
             m_mvcmPath = path;
         }
-
     }
     else
     {
@@ -1341,7 +1303,7 @@ void FADTTSWindow::OnRun()
 {
     SyncUiToModelStructure();
 
-    if( IsRunFADTTSOK() )
+    if( IsFADTTSReadyToBeRun() )
     {
         this->executionTab_run_pushButton->setEnabled( false );
         this->executionTab_stop_pushButton->setEnabled( true );
@@ -1368,9 +1330,9 @@ void FADTTSWindow::OnStop()
             break;
         case QMessageBox::Yes:
         {
-            *m_textStreamLog << "Warning! Thread terminated by user before script completed matlab script." << endl;
+            *m_textStreamLog << "Warning! Thread terminated by user before completed matlab script." << endl;
             m_matlabThread->terminate();
-            m_logWindow->insertPlainText( "Warning! Thread terminated by user before script completed matlab script.\n");
+            m_logWindow->insertPlainText( "Warning! Thread terminated by user before completed matlab script.\n");
             break;
         }
         default:
@@ -1415,21 +1377,6 @@ void FADTTSWindow::OnMatlabThreadFinished()
 
 
 /*********************** Private function ***********************/
-void FADTTSWindow::SetSelectedInputFiles()
-{
-    m_propertySelected.clear();
-    m_selectedFiles.clear();
-    foreach ( int diffusionPropertyIndex, m_data.GetDiffusionPropertiesIndices() )
-    {
-        if( m_paramTabFileCheckBoxMap[ diffusionPropertyIndex ]->isChecked() && !m_data.GetFilename( diffusionPropertyIndex ).isEmpty() )
-        {
-            m_propertySelected.insert( diffusionPropertyIndex, m_data.GetDiffusionPropertyName( diffusionPropertyIndex ) );
-            m_selectedFiles.insert( diffusionPropertyIndex, m_data.GetFilename( diffusionPropertyIndex ) );
-        }
-    }
-}
-
-
 QStringList FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
 {
     QStringList subjects;
@@ -1455,7 +1402,7 @@ QStringList FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
 }
 
 
-bool FADTTSWindow::IsRunFADTTSOK()
+bool FADTTSWindow::IsFADTTSReadyToBeRun()
 {
     bool atLeastOneDiffusionPropertyEnabled = ( m_paramTabFileCheckBoxMap.value( m_data.GetAxialDiffusivityIndex() )->isEnabled() ||
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetRadialDiffusivityIndex() )->isEnabled() ||
@@ -1542,34 +1489,7 @@ bool FADTTSWindow::IsRunFADTTSOK()
     }
 }
 
-void FADTTSWindow::SetMatlabScript()
-{
-    QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + m_fibername;
-    QDir().mkpath( outputDir );
-
-    QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( outputDir,m_fibername, m_selectedFiles, m_propertySelected, m_selectedCovariates,
-                                                                               m_data.GetCovariateColumnID(), GenerateSelectedSubjectFile( outputDir ) );
-
-    m_matlabThread->InitMatlabScript( outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( this->para_executionTab_nbrPermutations_spinBox->value() ) + "perm.m" );
-    m_matlabThread->SetHeader();
-    m_matlabThread->SetNbrCompThreads( ( this->soft_executionTab_runMatlabSystem_radioButton->isChecked() && this->para_executionTab_runMatlab_checkBox->isChecked() ),
-                                      this->soft_executionTab_nbrCompThreads_spinBox->value() );
-    m_matlabThread->SetMVCMPath( this->soft_executionTab_mvcm_lineEdit->text() );
-    m_matlabThread->SetFiberName( m_fibername );
-    m_matlabThread->SetDiffusionProperties( m_propertySelected.values() );
-    m_matlabThread->SetNbrPermutation( this->para_executionTab_nbrPermutations_spinBox->value() );
-    m_matlabThread->SetCovariates( m_selectedCovariates );
-    m_matlabThread->SetInputFiles( matlabInputFiles );
-    m_matlabThread->SetOmnibus( this->para_executionTab_omnibus_checkBox->isChecked() );
-    m_matlabThread->SetPostHoc( this->para_executionTab_postHoc_checkBox->isChecked() );
-    m_matlabThread->SetConfidenceBandsThreshold( this->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() );
-    m_matlabThread->SetPvalueThreshold( this->para_executionTab_pvalueThreshold_doubleSpinBox->value() );
-
-    SetLogDisplay( outputDir, matlabInputFiles, m_selectedCovariates );
-}
-
-void FADTTSWindow::SetLogDisplay( QString outputDir, QMap< int, QString > matlabInputFiles,
-                                  QMap<int, QString> selectedCovariates )
+void FADTTSWindow::SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap<int, QString>& selectedCovariates )
 {
     m_logWindow->clear();
 
@@ -1594,8 +1514,8 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QMap< int, QString > matlab
     *m_textStreamLog << "/**********************       Inputs       **********************/" << endl;
     *m_textStreamLog << "- fiber name: " << m_fibername << endl;
     *m_textStreamLog << "- input files: ";
-    QMap< int, QString >::ConstIterator iterMatlabInputFiles = matlabInputFiles.begin();
-    while( iterMatlabInputFiles != matlabInputFiles.end() )
+    QMap< int, QString >::ConstIterator iterMatlabInputFiles = matlabInputFiles.cbegin();
+    while( iterMatlabInputFiles != matlabInputFiles.cend() )
     {
         *m_textStreamLog << QFileInfo( QFile( iterMatlabInputFiles.value() ) ).fileName() << ", ";
         ++iterMatlabInputFiles;
@@ -1603,8 +1523,8 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QMap< int, QString > matlab
     *m_textStreamLog << endl;
     *m_textStreamLog << "- nbr covariates: " << QString::number( selectedCovariates.size() ) << endl;
     *m_textStreamLog << "- covariates: ";
-    QMap<int, QString>::ConstIterator iterCovariates = selectedCovariates.begin();
-    while( iterCovariates != selectedCovariates.end() )
+    QMap<int, QString>::ConstIterator iterCovariates = selectedCovariates.cbegin();
+    while( iterCovariates != selectedCovariates.cend() )
     {
         *m_textStreamLog << iterCovariates.value() << ", ";
         ++iterCovariates;
@@ -1647,12 +1567,39 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, QMap< int, QString > matlab
     m_logFile->flush();
 }
 
+void FADTTSWindow::SetMatlabScript()
+{
+    QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + m_fibername;
+    QDir().mkpath( outputDir );
+
+    QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( outputDir,m_fibername, m_selectedFiles, m_propertySelected, m_selectedCovariates,
+                                                                               m_data.GetSubjectColumnID(), GenerateSelectedSubjectFile( outputDir ) );
+
+    m_matlabThread->InitMatlabScript( outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( this->para_executionTab_nbrPermutations_spinBox->value() ) + "perm.m" );
+    m_matlabThread->SetHeader();
+    m_matlabThread->SetNbrCompThreads( ( this->soft_executionTab_runMatlabSystem_radioButton->isChecked() && this->para_executionTab_runMatlab_checkBox->isChecked() ),
+                                       this->soft_executionTab_nbrCompThreads_spinBox->value() );
+    m_matlabThread->SetMVCMPath( this->soft_executionTab_mvcm_lineEdit->text() );
+    m_matlabThread->SetFiberName( m_fibername );
+    m_matlabThread->SetDiffusionProperties( m_propertySelected.values() );
+    m_matlabThread->SetNbrPermutation( this->para_executionTab_nbrPermutations_spinBox->value() );
+    m_matlabThread->SetCovariates( m_selectedCovariates );
+    m_matlabThread->SetInputFiles( matlabInputFiles );
+    m_matlabThread->SetOmnibus( this->para_executionTab_omnibus_checkBox->isChecked() );
+    m_matlabThread->SetPostHoc( this->para_executionTab_postHoc_checkBox->isChecked() );
+    m_matlabThread->SetConfidenceBandsThreshold( this->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() );
+    m_matlabThread->SetPvalueThreshold( this->para_executionTab_pvalueThreshold_doubleSpinBox->value() );
+
+    SetLogDisplay( outputDir, matlabInputFiles, m_selectedCovariates );
+}
+
+
 /****************************************************************/
 /************************ Plotting  tab *************************/
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
-void FADTTSWindow::OnSettingPlotsUsed( const QStringList &plotsAvailable )
+void FADTTSWindow::OnSettingPlotsUsed( const QStringList& plotsAvailable )
 {
     m_plotComboBox->clear();
     if( !plotsAvailable.isEmpty() )
@@ -1662,48 +1609,49 @@ void FADTTSWindow::OnSettingPlotsUsed( const QStringList &plotsAvailable )
     }
 }
 
-void FADTTSWindow::OnSettingAllPropertiesUsed( const QMap< int, QString > &propertiesAvailable )
+void FADTTSWindow::OnSettingAllPropertiesUsed( const QMap< int, QString >& allPropertiesUsed )
 {
-    SetPropertyEdition( propertiesAvailable.values() );
+    if( allPropertiesUsed.isEmpty() || allPropertiesUsed != m_previousPropertiesUsed )
+    {
+        SetPropertyEdition( allPropertiesUsed.values() );
 
-    QString currentProperty = m_propertyComboBox->currentText();
-    m_propertyComboBox->clear();
-    m_propertyComboBox->addItem( "" );
-    m_propertyComboBox->addItems( propertiesAvailable.values() );
-    m_propertyComboBox->setCurrentText( currentProperty );
+        QString currentProperty = m_propertyComboBox->currentText();
+        m_propertyComboBox->clear();
+        m_propertyComboBox->addItem( "" );
+        m_propertyComboBox->addItems( allPropertiesUsed.values() );
+        m_propertyComboBox->setCurrentText( currentProperty );
 
-    PropertiesForDisplay( propertiesAvailable.values() );
+        SetPropertiesForDisplay( allPropertiesUsed.values() );
+
+        m_previousPropertiesUsed = allPropertiesUsed;
+    }
+
 }
 
-void FADTTSWindow::OnSettingAllCovariatesUsed( QMap< int, QString > covariatesForDisplay )
+void FADTTSWindow::OnSettingAllCovariatesUsed( const QMap< int, QString >& allCovariatesUsed )
 {
-    m_covariatesForDisplay.clear();
-    SetCovariatesEdition( covariatesForDisplay );
-
-    QMap< int, QString >::ConstIterator iterCovariateForDisplay = covariatesForDisplay.begin();
-    while( iterCovariateForDisplay != covariatesForDisplay.end() )
+    if( allCovariatesUsed.isEmpty() || allCovariatesUsed != m_previousCovariatesUsed )
     {
-        QPair< bool, QString > currentPairSelectedColor;
-        currentPairSelectedColor.first = true;
-        currentPairSelectedColor.second = m_covariatesColorsComboBoxMap.value( iterCovariateForDisplay.key() ).second->currentText();
+        SetCovariateEdition( allCovariatesUsed );
+        SetCovariatesForDisplay( allCovariatesUsed );
 
-        QPair< QString, QPair< bool, QString > > currentPair;
-        currentPair.first = iterCovariateForDisplay.value();
-        currentPair.second = currentPairSelectedColor;
+        m_previousCovariatesUsed = allCovariatesUsed;
+    }
 
-        m_covariatesForDisplay.insert( iterCovariateForDisplay.key(), currentPair );
-        ++iterCovariateForDisplay;
+    if( allCovariatesUsed == m_previousCovariatesUsed )
+    {
+        EditCovariatesNames();
     }
 }
 
 
-void FADTTSWindow::OnUpdatingCovariatesAvailable( const QMap< int, QString > &covariateAvailable )
+void FADTTSWindow::OnUpdatingCovariatesAvailable( const QMap< int, QString >& covariateAvailable )
 {
     QString currentCovariate = m_covariateComboBox->currentText();
     m_covariateComboBox->clear();
     m_covariateComboBox->addItem( "" );
-    QMap<int, QString>::ConstIterator iterCovariateAvailable = covariateAvailable.begin();
-    while( iterCovariateAvailable != covariateAvailable.end() )
+    QMap<int, QString>::ConstIterator iterCovariateAvailable = covariateAvailable.cbegin();
+    while( iterCovariateAvailable != covariateAvailable.cend() )
     {
         m_covariateComboBox->addItem( iterCovariateAvailable.value() );
         ++iterCovariateAvailable;
@@ -1921,7 +1869,7 @@ void FADTTSWindow::OnLoadPlotSettings()
         plotSettings = m_processing.GetDataFromFile( filename );
     }
 
-    int nbrFixedSettings = 18;
+    int nbrFixedSettings = 19;
     if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
     {
         int index = 0;
@@ -1969,17 +1917,17 @@ void FADTTSWindow::OnLoadPlotSettings()
         this->plottingTab_editionTab_markerSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
         index++;
 
-        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.begin();
-        while( iterPropertyColor != m_propertiesColorsComboBoxMap.end() )
+        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
+        while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
         {
             iterPropertyColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
             index++;
             ++iterPropertyColor;
         }
 
-        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.begin();
-        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.begin();
-        while( iterCovariateColor != m_covariatesColorsComboBoxMap.end() )
+        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
+        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
+        while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
         {
             iterCovariateColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
             index++;
@@ -2027,16 +1975,16 @@ void FADTTSWindow::OnSavePlotSettings()
         ts << ( QStringList() << "markerType" << this->plottingTab_editionTab_markerType_comboBox->currentText() ).join( m_csvSeparator ) << endl;
         ts << ( QStringList() << "markerSize" << QString::number( this->plottingTab_editionTab_markerSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
 
-        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.begin();
-        while( iterPropertyColor != m_propertiesColorsComboBoxMap.end() )
+        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
+        while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
         {
             ts << ( QStringList() << ( iterPropertyColor.value().first  + "_color" ) << iterPropertyColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
             ++iterPropertyColor;
         }
 
-        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.begin();
-        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.begin();
-        while( iterCovariateColor != m_covariatesColorsComboBoxMap.end() )
+        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
+        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
+        while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
         {
             ts << ( QStringList() << ( iterCovariateColor.value().first + "_color" ) << iterCovariateColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
             ts << ( QStringList() << ( iterCovariateColor.value().first + "_newName" ) << iterCovariateName.value().second->text() ).join( m_csvSeparator ) << endl;
@@ -2054,29 +2002,28 @@ void FADTTSWindow::OnSavePlotSettings()
 void FADTTSWindow::SetColorsComboBox( QComboBox* &comboBox )
 {
     QStringList colors;
-    colors.append( QStringList() << "Red" << "Lime" << "Blue" <<
-                   "Yellow" << "Cyan" << "Magenta" <<
-                   "Olive" << "Teal" << "Purple" <<
-                   "Rosy Brown" << "Dark Sea Green" << "Corn Flower Blue" <<
-                   "Maroon" << "Green" << "Navy" <<
-                   "Orange" << "Mint" << "Pink" <<
-                   "Brown" << "Black" );
+    colors.append( QStringList() << "Red" << "Lime" << "Blue"
+                   << "Yellow" << "Cyan" << "Magenta"
+                   << "Olive" << "Teal" << "Purple"
+                   << "Rosy Brown" << "Dark Sea Green" << "Corn Flower Blue"
+                   << "Maroon" << "Green" << "Navy"
+                   << "Orange" << "Mint" << "Pink"
+                   << "Brown" << "Black" );
     comboBox->addItems( colors );
 }
 
 void FADTTSWindow::ResetPropertyEdition()
 {
-
-    nameLabelMapType::ConstIterator iterPropertiesColorsLabel = m_propertiesNameLabelMap.begin();
-    while( iterPropertiesColorsLabel != m_propertiesNameLabelMap.end() )
+    nameLabelMapType::ConstIterator iterPropertiesColorsLabel = m_propertiesNameLabelMap.cbegin();
+    while( iterPropertiesColorsLabel != m_propertiesNameLabelMap.cend() )
     {
         delete iterPropertiesColorsLabel.value().second;
         ++iterPropertiesColorsLabel;
     }
     m_propertiesNameLabelMap.clear();
 
-    comboBoxMapType::ConstIterator iterPropertiesColorsComboBoxMap = m_propertiesColorsComboBoxMap.begin();
-    while( iterPropertiesColorsComboBoxMap != m_propertiesColorsComboBoxMap.end() )
+    comboBoxMapType::ConstIterator iterPropertiesColorsComboBoxMap = m_propertiesColorsComboBoxMap.cbegin();
+    while( iterPropertiesColorsComboBoxMap != m_propertiesColorsComboBoxMap.cend() )
     {
         delete iterPropertiesColorsComboBoxMap.value().second;
         ++iterPropertiesColorsComboBoxMap;
@@ -2084,34 +2031,7 @@ void FADTTSWindow::ResetPropertyEdition()
     m_propertiesColorsComboBoxMap.clear();
 }
 
-void FADTTSWindow::ResetCovariateEdition()
-{
-    nameLabelMapType::ConstIterator iterCovariatesColorsLabel = m_covariatesNameLabelMap.begin();
-    while( iterCovariatesColorsLabel != m_covariatesNameLabelMap.end() )
-    {
-        delete iterCovariatesColorsLabel.value().second;
-        ++iterCovariatesColorsLabel;
-    }
-    m_covariatesNameLabelMap.clear();
-
-    comboBoxMapType::ConstIterator iterCoveriatesColorsComboBoxMap = m_covariatesColorsComboBoxMap.begin();
-    while( iterCoveriatesColorsComboBoxMap != m_covariatesColorsComboBoxMap.end() )
-    {
-        delete iterCoveriatesColorsComboBoxMap.value().second;
-        ++iterCoveriatesColorsComboBoxMap;
-    }
-    m_covariatesColorsComboBoxMap.clear();
-
-    covariateNameLineEditMapType::ConstIterator iterCoveriatesColorsLineEdit = m_covariatesNameLineEditMap.begin();
-    while( iterCoveriatesColorsLineEdit != m_covariatesNameLineEditMap.end() )
-    {
-        delete iterCoveriatesColorsLineEdit.value().second;
-        ++iterCoveriatesColorsLineEdit;
-    }
-    m_covariatesNameLineEditMap.clear();
-}
-
-void FADTTSWindow::SetPropertyEdition( const QStringList &propertiesAvailable )
+void FADTTSWindow::SetPropertyEdition( const QStringList& propertiesAvailable )
 {
     ResetPropertyEdition();
 
@@ -2143,8 +2063,8 @@ void FADTTSWindow::SetPropertyEdition( const QStringList &propertiesAvailable )
 
     QSignalMapper *signalMapperUpdatePropertyPlotColor = new QSignalMapper( this );
     connect( signalMapperUpdatePropertyPlotColor, SIGNAL( mapped( const QString& ) ), this, SLOT( OnUpdatingPropertyPlotColor( const QString& ) ) );
-    comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.begin();
-    while( iterPropertyColor != m_propertiesColorsComboBoxMap.end() )
+    comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
+    while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
     {
         connect( iterPropertyColor.value().second, SIGNAL( currentIndexChanged( const QString& ) ), signalMapperUpdatePropertyPlotColor,SLOT(map() ) );
         signalMapperUpdatePropertyPlotColor->setMapping( iterPropertyColor.value().second, iterPropertyColor.value().first );
@@ -2152,12 +2072,58 @@ void FADTTSWindow::SetPropertyEdition( const QStringList &propertiesAvailable )
     }
 }
 
-void FADTTSWindow::SetCovariatesEdition( QMap< int, QString > covariatesForDisplay )
+void FADTTSWindow::SetPropertiesForDisplay( const QStringList& propertiesForDisplay )
+{
+    m_propertiesForDisplay.clear();
+    int i = 0;
+    foreach( QString property, propertiesForDisplay )
+    {
+        QPair< bool, QString > currentPairSelectedColor;
+        currentPairSelectedColor.first = true;
+        currentPairSelectedColor.second = m_propertiesColorsComboBoxMap.value( i ).second->currentText();
+
+        QPair< QString, QPair< bool, QString > > currentPair;
+        currentPair.first = property;
+        currentPair.second = currentPairSelectedColor;
+
+        m_propertiesForDisplay.insert( i, currentPair );
+        i++;
+    }
+}
+
+void FADTTSWindow::ResetCovariateEdition()
+{
+    nameLabelMapType::ConstIterator iterCovariatesColorsLabel = m_covariatesNameLabelMap.cbegin();
+    while( iterCovariatesColorsLabel != m_covariatesNameLabelMap.cend() )
+    {
+        delete iterCovariatesColorsLabel.value().second;
+        ++iterCovariatesColorsLabel;
+    }
+    m_covariatesNameLabelMap.clear();
+
+    comboBoxMapType::ConstIterator iterCoveriatesColorsComboBoxMap = m_covariatesColorsComboBoxMap.cbegin();
+    while( iterCoveriatesColorsComboBoxMap != m_covariatesColorsComboBoxMap.cend() )
+    {
+        delete iterCoveriatesColorsComboBoxMap.value().second;
+        ++iterCoveriatesColorsComboBoxMap;
+    }
+    m_covariatesColorsComboBoxMap.clear();
+
+    covariateNameLineEditMapType::ConstIterator iterCoveriatesColorsLineEdit = m_covariatesNameLineEditMap.cbegin();
+    while( iterCoveriatesColorsLineEdit != m_covariatesNameLineEditMap.cend() )
+    {
+        delete iterCoveriatesColorsLineEdit.value().second;
+        ++iterCoveriatesColorsLineEdit;
+    }
+    m_covariatesNameLineEditMap.clear();
+}
+
+void FADTTSWindow::SetCovariateEdition( const QMap<int, QString>& allCovariatesUsed )
 {
     ResetCovariateEdition();
 
-    QMap< int, QString >::ConstIterator iterCovariateForDisplay = covariatesForDisplay.begin();
-    while( iterCovariateForDisplay != covariatesForDisplay.end() )
+    QMap< int, QString >::ConstIterator iterCovariateForDisplay = allCovariatesUsed.cbegin();
+    while( iterCovariateForDisplay != allCovariatesUsed.cend() )
     {
         QLabel *newLabel = new QLabel( iterCovariateForDisplay.value() );
         newLabel->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Preferred );
@@ -2192,8 +2158,8 @@ void FADTTSWindow::SetCovariatesEdition( QMap< int, QString > covariatesForDispl
 
     QSignalMapper *signalMapperUpdateCovariatePlotColor = new QSignalMapper( this );
     connect( signalMapperUpdateCovariatePlotColor, SIGNAL( mapped( const QString& ) ), this, SLOT( OnUpdatingCovariatePlotColor( const QString& ) ) );
-    comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.begin();
-    while( iterCovariateColor != m_covariatesColorsComboBoxMap.end() )
+    comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
+    while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
     {
         connect( iterCovariateColor.value().second, SIGNAL( currentIndexChanged( const QString& ) ), signalMapperUpdateCovariatePlotColor,SLOT(map() ) );
         signalMapperUpdateCovariatePlotColor->setMapping( iterCovariateColor.value().second, iterCovariateColor.value().first );
@@ -2201,6 +2167,59 @@ void FADTTSWindow::SetCovariatesEdition( QMap< int, QString > covariatesForDispl
     }
 }
 
+void FADTTSWindow::SetCovariatesForDisplay( const QMap< int, QString >& covariatesForDisplay )
+{
+    m_covariatesForDisplay.clear();
+    QMap< int, QString >::ConstIterator iterCovariateForDisplay = covariatesForDisplay.cbegin();
+    while( iterCovariateForDisplay != covariatesForDisplay.cend() )
+    {
+        QPair< bool, QString > currentPairSelectedColor;
+        currentPairSelectedColor.first = true;
+        currentPairSelectedColor.second = m_covariatesColorsComboBoxMap.value( iterCovariateForDisplay.key() ).second->currentText();
+
+        QPair< QString, QPair< bool, QString > > currentPair;
+        currentPair.first = iterCovariateForDisplay.value();
+        currentPair.second = currentPairSelectedColor;
+
+        m_covariatesForDisplay.insert( iterCovariateForDisplay.key(), currentPair );
+        ++iterCovariateForDisplay;
+    }
+}
+
+
+void FADTTSWindow::SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable, bool lineSelectionAvailable )
+{
+    this->plottingTab_displayPlot_pushButton->setEnabled( isPlotSelected );
+
+    m_propertyComboBox->setEnabled( propertySelectionAvailable );
+    this->plottingTab_loadSetDataTab_propertySelection_label->setEnabled( propertySelectionAvailable );
+
+    m_covariateComboBox->setEnabled( covariateSelectionAvailable );
+    this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariateSelectionAvailable );
+
+    this->plottingTab_loadSetDataTab_linesToDisplay_widget->setHidden( !lineSelectionAvailable );
+}
+
+void FADTTSWindow::AddLinesForDisplay( bool isSelectionProperties )
+{
+    m_plotListWidget->clear();
+    m_areLinesForDisplayProperties = isSelectionProperties;
+    m_currentLinesForDisplay = m_areLinesForDisplayProperties ? m_propertiesForDisplay : m_covariatesForDisplay;
+    displayMapType::ConstIterator iterLinesForDisplay = m_currentLinesForDisplay.cbegin();
+    while( iterLinesForDisplay != m_currentLinesForDisplay.cend() )
+    {
+        QListWidgetItem *covariateItem = new QListWidgetItem( iterLinesForDisplay.value().first, m_plotListWidget );
+        covariateItem->setCheckState( iterLinesForDisplay.value().second.first ? Qt::Checked : Qt::Unchecked );
+        covariateItem->setFlags( Qt::ItemIsEnabled );
+        m_covariateListWidget->addItem( covariateItem );
+        ++iterLinesForDisplay;
+    }
+    if( m_plotComboBox->currentText() == "Omnibus Local pvalues" ||
+            m_plotComboBox->currentText() == "Omnibus FDR Local pvalues" )
+    {
+        m_plotListWidget->item( 0 )->setHidden( true );
+    }
+}
 
 void FADTTSWindow::SetCheckStateLinesToDisplay( Qt::CheckState checkState )
 {
@@ -2225,63 +2244,26 @@ void FADTTSWindow::SetCheckStateLinesToDisplay( Qt::CheckState checkState )
     }
 }
 
-void FADTTSWindow::AddLinesForDisplay( bool isSelectionProperties )
-{
-    m_plotListWidget->clear();
-    m_areLinesForDisplayProperties = isSelectionProperties;
-    m_currentLinesForDisplay = m_areLinesForDisplayProperties ? m_propertiesForDisplay : m_covariatesForDisplay;
-    displayMapType::ConstIterator iterLinesForDisplay = m_currentLinesForDisplay.begin();
-    while( iterLinesForDisplay != m_currentLinesForDisplay.end() )
-    {
-        QListWidgetItem *covariateItem = new QListWidgetItem( iterLinesForDisplay.value().first, m_plotListWidget );
-        covariateItem->setCheckState( iterLinesForDisplay.value().second.first ? Qt::Checked : Qt::Unchecked );
-        covariateItem->setFlags( Qt::ItemIsEnabled );
-        m_covariateListWidget->addItem( covariateItem );
-        ++iterLinesForDisplay;
-    }
-    if( m_plotComboBox->currentText() == "Omnibus Local pvalues" ||
-            m_plotComboBox->currentText() == "Omnibus FDR Local pvalues" )
-    {
-        m_plotListWidget->item( 0 )->setHidden( true );
-    }
-}
-
 void FADTTSWindow::EditCovariatesNames()
 {
-    covariateNameLineEditMapType::ConstIterator iterCovariatesName = m_covariatesNameLineEditMap.begin();
-    displayMapType::ConstIterator iterCovariatesForDisplay = m_covariatesForDisplay.begin();
+    covariateNameLineEditMapType::ConstIterator iterCovariatesName = m_covariatesNameLineEditMap.cbegin();
+    displayMapType::ConstIterator iterCovariatesForDisplay = m_covariatesForDisplay.cbegin();
     QMap< int, QString > newCovariatesNames;
     int currentIndex = m_covariateComboBox->currentIndex();
-    while( iterCovariatesName != m_covariatesNameLineEditMap.end() )
+
+    int i = 0;
+    while( iterCovariatesName != m_covariatesNameLineEditMap.cend() )
     {
-        QString newCovariateName = iterCovariatesName.value().second->text().isEmpty() ?
-                    iterCovariatesName.value().first : iterCovariatesName.value().second->text();
+        QString newCovariateName = iterCovariatesName.value().second->text().isEmpty() ? iterCovariatesName.value().first : iterCovariatesName.value().second->text();
         m_covariatesForDisplay[ iterCovariatesName.key() ].first = newCovariateName;
         newCovariatesNames.insert( iterCovariatesName.key(), newCovariateName );
         ++iterCovariatesName;
         ++iterCovariatesForDisplay;
     }
-
     m_plot->UpdateCovariatesNames( newCovariatesNames );
     m_covariateComboBox->setCurrentIndex( currentIndex );
 
-    m_currentLinesForDisplay = m_areLinesForDisplayProperties ? m_propertiesForDisplay : m_covariatesForDisplay;
     AddLinesForDisplay( m_areLinesForDisplayProperties );
-}
-
-
-void FADTTSWindow::SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable,
-                                   bool lineSelectionAvailable )
-{
-    this->plottingTab_loadSetDataTab_linesToDisplay_widget->setHidden( !lineSelectionAvailable );
-
-    m_propertyComboBox->setEnabled( propertySelectionAvailable );
-    this->plottingTab_loadSetDataTab_propertySelection_label->setEnabled( propertySelectionAvailable );
-
-    m_covariateComboBox->setEnabled( covariateSelectionAvailable );
-    this->plottingTab_loadSetDataTab_covariateSelection_label->setEnabled( covariateSelectionAvailable );
-
-    this->plottingTab_displayPlot_pushButton->setEnabled( isPlotSelected );
 }
 
 
@@ -2290,13 +2272,12 @@ void FADTTSWindow::SetPlotTab()
     QString fibername = this->para_executionTab_fiberName_lineEdit->text();
     QString outputDirectory = this->para_executionTab_outputDir_lineEdit->text();
 
-    QString matlabOutputDir = QDir( QString( outputDirectory + "/FADTTSter_" + fibername ) ).exists() ?
-                QString( outputDirectory + "/FADTTSter_" + fibername ) : "";
+    QString matlabOutputDir = QDir( QString( outputDirectory + "/FADTTSter_" + fibername ) ).exists() ? QString( outputDirectory + "/FADTTSter_" + fibername ) : "";
     bool isMatlabOutputDirDefine = !matlabOutputDir.isEmpty();
 
     m_plot->ClearPlot();
     m_plot->ResetPlotData();
-    bool isPlottingEnabled;
+    bool isPlottingEnabled = false;
     if( isMatlabOutputDirDefine )
     {
         isPlottingEnabled = m_plot->InitPlot( matlabOutputDir, fibername );
@@ -2320,14 +2301,6 @@ void FADTTSWindow::SetPlotTab()
     SetPlotOptions( false, false, false, false );
 }
 
-void FADTTSWindow::HideLegendBinaryCovariate( bool hideLegend )
-{
-    this->plottingTab_loadSetDataTab_legendBinaryCovariate0Color_label->setHidden( hideLegend );
-    this->plottingTab_loadSetDataTab_legendBinaryCovariate0Name_label->setHidden( hideLegend );
-    this->plottingTab_loadSetDataTab_legendBinaryCovariate1Color_label->setHidden( hideLegend );
-    this->plottingTab_loadSetDataTab_legendBinaryCovariate1Name_label->setHidden( hideLegend );
-}
-
 void FADTTSWindow::ResetPlotTab()
 {
     this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
@@ -2346,21 +2319,10 @@ void FADTTSWindow::ResetPlotTab()
 }
 
 
-void FADTTSWindow::PropertiesForDisplay( QStringList propertiesForDisplay )
+void FADTTSWindow::HideLegendBinaryCovariate( bool hideLegend )
 {
-    m_propertiesForDisplay.clear();
-    int i = 0;
-    foreach( QString property, propertiesForDisplay )
-    {
-        QPair< bool, QString > currentPairSelectedColor;
-        currentPairSelectedColor.first = true;
-        currentPairSelectedColor.second = m_propertiesColorsComboBoxMap.value( i ).second->currentText();
-
-        QPair< QString, QPair< bool, QString > > currentPair;
-        currentPair.first = property;
-        currentPair.second = currentPairSelectedColor;
-
-        m_propertiesForDisplay.insert( i, currentPair );
-        i++;
-    }
+    this->plottingTab_loadSetDataTab_legendBinaryCovariate0Color_label->setHidden( hideLegend );
+    this->plottingTab_loadSetDataTab_legendBinaryCovariate0Name_label->setHidden( hideLegend );
+    this->plottingTab_loadSetDataTab_legendBinaryCovariate1Color_label->setHidden( hideLegend );
+    this->plottingTab_loadSetDataTab_legendBinaryCovariate1Name_label->setHidden( hideLegend );
 }

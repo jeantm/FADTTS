@@ -1,6 +1,6 @@
 #include "EditInputDialog.h"
 #include "ui_EditInputDialog.h"
-
+#include <QDebug>
 const QString EditInputDialog::m_csvSeparator = QLocale().groupSeparator();
 
 EditInputDialog::EditInputDialog( QWidget *parent ) :
@@ -25,20 +25,15 @@ void EditInputDialog::SetData( Data *newData )
     m_data = newData;
 }
 
-QString& EditInputDialog::SetCurrentInputDir()
+void EditInputDialog::ResetSubjectColumnID()
 {
-    return m_currentDir;
-}
-
-void EditInputDialog::ResetCovariateColumnID()
-{
-    m_covariateColumnIDSpinBox->setValue( 1 );
+    m_subjectColumnIDSpinBox->setValue( 1 );
     /** Row and Column ID start at 1 for data display only.
      *  Otherwise they start at 0 (data modification, ...). **/
 }
 
 
-void EditInputDialog::DisplayDataEdition( const int &newDiffusionPropertyIndex )
+void EditInputDialog::DisplayDataEdition( int newDiffusionPropertyIndex )
 {
     m_diffusionPropertyIndex = newDiffusionPropertyIndex;
 
@@ -98,12 +93,12 @@ void EditInputDialog::OnDeleteColumns()
 }
 
 
-void EditInputDialog::OnCovariateColumnIDChanged( int columnID )
+void EditInputDialog::OnSubjectColumnIDChanged( int columnID )
 {
     /** Allow the user to change the position of the subjects in the data file.
      *  This position is transmited to the main window for further data processing **/
-    m_covariateColumnID = columnID-1;
-    emit UpdateCovariateColumnID( m_covariateColumnID );
+    m_subjectColumnID = columnID-1;
+    emit UpdateSubjectColumnID( m_subjectColumnID );
 
 }
 
@@ -111,7 +106,8 @@ void EditInputDialog::OnCovariateColumnIDChanged( int columnID )
 bool EditInputDialog::OnSaveFile()
 {
     QString newFilePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + " file as ..." ) ),
-                                                     m_currentDir + "/new" + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + "File.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
+                                                        QFileInfo( QFile( m_data->GetFilename( m_diffusionPropertyIndex ) ) ).absolutePath()
+                                                        + "/new" + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + "File.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !newFilePath.isEmpty() )
     {
         QFile exportedCSV( newFilePath );
@@ -153,16 +149,16 @@ void EditInputDialog::InitEditInputDialog()
     m_dataTableWidget = m_ui->EditInputDialog_data_tableWidget;
     m_dataTableWidget->setEditTriggers( QAbstractItemView::NoEditTriggers ); /** User unable to do any data modification in the tableWidget - except delete **/
 
-    m_covariateColumnIDSpinBox = new QSpinBox;
-    m_covariateColumnIDSpinBox = m_ui->EditInputDialog_subjectColumnID_spinBox;
+    m_subjectColumnIDSpinBox = new QSpinBox;
+    m_subjectColumnIDSpinBox = m_ui->EditInputDialog_subjectColumnID_spinBox;
 
     m_rowDeleted = false;
     m_columnDeleted = false;
-    m_covariateColumnID = 0;
+    m_subjectColumnID = 0;
 
     connect( m_ui->EditInputDialog_deleteRows_pushButton, SIGNAL( clicked() ), SLOT( OnDeleteRows() ) );
     connect( m_ui->EditInputDialog_deleteColumns_pushButton, SIGNAL( clicked() ), SLOT( OnDeleteColumns() ) );
-    connect( m_covariateColumnIDSpinBox, SIGNAL( valueChanged( int ) ), SLOT( OnCovariateColumnIDChanged( int ) ) );
+    connect( m_subjectColumnIDSpinBox, SIGNAL( valueChanged( int ) ), SLOT( OnSubjectColumnIDChanged( int ) ) );
     connect( m_ui->EditInputDialog_saveFile_pushButton, SIGNAL( clicked() ), SLOT( OnSaveFile() ) );
 }
 
@@ -172,7 +168,7 @@ void EditInputDialog::LoadData()
     int nbrRows = 0;
     int nbrColumns = 0;
 
-    m_covariateColumnIDSpinBox->setMaximum( fileData.first().count() ); /** Limite the column selection to the number of covariates **/
+    m_subjectColumnIDSpinBox->setMaximum( fileData.first().count() ); /** Limite the column selection to the number of covariates **/
 
     m_dataTableWidget->setRowCount( fileData.count() ); /** The number of StringLists gives the number of row **/
     m_dataTableWidget->setColumnCount( fileData.first().count() ); /** The number of Strings from initial StringList gives the number of column **/
@@ -244,7 +240,7 @@ void EditInputDialog::closeEvent( QCloseEvent *event )
             break;
         case QMessageBox::Discard:
             ResetTableWidget();
-            ResetCovariateColumnID();
+            ResetSubjectColumnID();
             event->accept();
             break;
         case QMessageBox::Cancel:

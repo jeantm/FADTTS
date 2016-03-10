@@ -24,13 +24,13 @@ bool TestPlot::Test_SetQVTKWidget()
 
     if( !testSetQVTKWidget_Passed )
     {
-        std::cerr << "/!\\ Test_SetQVTKWidget() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )" << std::endl;
-        std::cerr << "\t+ m_qvtkWidget not initialized correctly" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetQVTKWidget() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )" << std::endl;
+//        std::cerr << "\t  m_qvtkWidget not initialized correctly" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetQVTKWidget() PASSED" << std::endl;
+        std::cerr << "Test_SetQVTKWidget() PASSED";
     }
 
     return testSetQVTKWidget_Passed;
@@ -48,13 +48,13 @@ bool TestPlot::Test_QStringListToDouble()
     bool testQStringListToDouble_Passed = doubleList == plot.QStringListToDouble( stringList );
     if( !testQStringListToDouble_Passed )
     {
-        std::cerr << "/!\\ Test_QStringListToDouble() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with QStringListToDouble( QStringList rowData )" << std::endl;
-        std::cerr << "\t+ convertion from QStringList to QList < double > failed" << std::endl;
+        std::cerr << "/!\\/!\\ Test_QStringListToDouble() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with QStringListToDouble( QStringList rowData )" << std::endl;
+//        std::cerr << "\t  convertion from QStringList to QList < double > failed" << std::endl;
     }
     else
     {
-        std::cerr << "Test_QStringListToDouble() PASSED" << std::endl;
+        std::cerr << "Test_QStringListToDouble() PASSED";
     }
 
     return testQStringListToDouble_Passed;
@@ -74,13 +74,13 @@ bool TestPlot::Test_DataToDouble()
     bool testDataToDouble_Passed = doubleData == plot.DataToDouble( stringData );
     if( !testDataToDouble_Passed )
     {
-        std::cerr << "/!\\ Test_DataToDouble() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with DataToDouble( QList < QStringList > data )" << std::endl;
-        std::cerr << "\t+ convertion from QList < QStringList > to QList < QList < double > > failed" << std::endl;
+        std::cerr << "/!\\/!\\ Test_DataToDouble() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with DataToDouble( QList < QStringList > data )" << std::endl;
+//        std::cerr << "\t  convertion from QList < QStringList > to QList < QList < double > > failed" << std::endl;
     }
     else
     {
-        std::cerr << "Test_DataToDouble() PASSED" << std::endl;
+        std::cerr << "Test_DataToDouble() PASSED";
     }
 
     return testDataToDouble_Passed;
@@ -139,29 +139,29 @@ bool TestPlot::Test_SortFilesByProperties( QString rdRawData, QString faRawData,
     bool testSortFilesByProperties_Passed = testWrongFiles && testFilesNoSubMatrix && testFilesSubMatrix && testSubMatrix;
     if( !testSortFilesByProperties_Passed )
     {
-        std::cerr << "/!\\ Test_SortFilesByProperties() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SortFilesByProperties( QString directory, QStringList files,"
-                     " QMap< QString, QList<QList<double> > > &data )" << std::endl;
-        if( !testWrongFiles )
-        {
-            std::cerr << "\t+ no data should be sorted and extracted" << std::endl;
-        }
-        if( !testFilesNoSubMatrix )
-        {
-            std::cerr << "\t+ data not sorted and extracted (without subMatrix file)" << std::endl;
-        }
-        if( !testFilesSubMatrix )
-        {
-            std::cerr << "\t+ data not sorted and extracted (with subMatrix file)" << std::endl;
-        }
-        if( !testSubMatrix )
-        {
-            std::cerr << "\t+ subMatrix data not extracted" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SortFilesByProperties() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SortFilesByProperties( QString directory, QStringList files,"
+//                     " QMap< QString, QList<QList<double> > > &data )" << std::endl;
+//        if( !testWrongFiles )
+//        {
+//            std::cerr << "\t  no data should be sorted and extracted" << std::endl;
+//        }
+//        if( !testFilesNoSubMatrix )
+//        {
+//            std::cerr << "\t  data not sorted and extracted (without subMatrix file)" << std::endl;
+//        }
+//        if( !testFilesSubMatrix )
+//        {
+//            std::cerr << "\t  data not sorted and extracted (with subMatrix file)" << std::endl;
+//        }
+//        if( !testSubMatrix )
+//        {
+//            std::cerr << "\t  subMatrix data not extracted" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SortFilesByProperties() PASSED" << std::endl;
+        std::cerr << "Test_SortFilesByProperties() PASSED";
     }
 
     return testSortFilesByProperties_Passed;
@@ -194,12 +194,12 @@ bool TestPlot::Test_TransposeData()
     bool testTransposeData_Passed = rdData == expectedRDDataTransp;
     if( !testTransposeData_Passed )
     {
-        std::cerr << "/!\\ Test_TransposeData() FAILED /!\\" << std::endl;
+        std::cerr << "/!\\/!\\ Test_TransposeData() FAILED /!\\/!\\";
         std::cerr << "\t+ pb with TransposeData( QList < QList < double > > &data, int firstRow, int firstColumn )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_TransposeData() PASSED" << std::endl;
+        std::cerr << "Test_TransposeData() PASSED";
     }
 
     return testTransposeData_Passed;
@@ -254,12 +254,12 @@ bool TestPlot::Test_TransposeDataInQMap()
     bool testTransposeDataInQMap_Passed = data == expectedTranspDataMap;
     if( !testTransposeDataInQMap_Passed )
     {
-        std::cerr << "/!\\ Test_TransposeDataInQMap() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with TransposeDataInQMap( QMap< QString, QList<QList<double> > > &data, int firstRow, int firstColumn )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_TransposeDataInQMap() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with TransposeDataInQMap( QMap< QString, QList<QList<double> > > &data, int firstRow, int firstColumn )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_TransposeDataInQMap() PASSED" << std::endl;
+        std::cerr << "Test_TransposeDataInQMap() PASSED";
     }
 
     return testTransposeDataInQMap_Passed;
@@ -290,12 +290,12 @@ bool TestPlot::Test_SetRawData( QString rdFilePath, QString faFilePath, QString 
     bool testSetRawData_Passed = testProperties && testSubMatrix;
     if( !testSetRawData_Passed )
     {
-        std::cerr << "/!\\ Test_SetRawData() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetRawData()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetRawData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetRawData()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetRawData() PASSED" << std::endl;
+        std::cerr << "Test_SetRawData() PASSED";
     }
 
     return testSetRawData_Passed;
@@ -320,12 +320,12 @@ bool TestPlot::Test_SetBeta( QString rdBetaFilePath, QString faBetaFilePath, QSt
     bool testSetBeta_Passed = plot.m_dataBeta == expectedBetaData;
     if( !testSetBeta_Passed )
     {
-        std::cerr << "/!\\ Test_SetBeta() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetBeta()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetBeta() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetBeta()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetBeta() PASSED" << std::endl;
+        std::cerr << "Test_SetBeta() PASSED";
     }
 
     return testSetBeta_Passed;
@@ -346,12 +346,12 @@ bool TestPlot::Test_SetOmnibusLpvalue( QString omnibusLpvalueFilePath, QString o
     bool testSetOmnibusLpvalue_Passed = omnibusLpvaluesData == expectedOmnibusLpvaluesData;
     if( !testSetOmnibusLpvalue_Passed )
     {
-        std::cerr << "/!\\ Test_SetOmnibusLpvalue() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetOmnibusLpvalue(QStringList omnibusLpvalueFiles, QList < QList < double > > &omnibusLpvaluesData )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetOmnibusLpvalue() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetOmnibusLpvalue( QStringList omnibusLpvalueFiles, QList < QList < double > > &omnibusLpvaluesData )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetOmnibusLpvalue() PASSED" << std::endl;
+        std::cerr << "Test_SetOmnibusLpvalue() PASSED";
     }
 
     return testSetOmnibusLpvalue_Passed;
@@ -376,12 +376,12 @@ bool TestPlot::Test_SetConfidenceBands( QString rdConfidenceBandsFilePath, QStri
     bool testSetConfidenceBands_Passed = plot.m_dataConfidenceBands == expectedConfidenceBandsData;
     if( !testSetConfidenceBands_Passed )
     {
-        std::cerr << "/!\\ Test_SetConfidenceBands() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetConfidenceBands()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetConfidenceBands() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetConfidenceBands()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetConfidenceBands() PASSED" << std::endl;
+        std::cerr << "Test_SetConfidenceBands() PASSED";
     }
 
     return testSetConfidenceBands_Passed;
@@ -407,12 +407,12 @@ bool TestPlot::Test_SetPostHocFDRLpvalue( QString rdPostHocFDRLpvalueFilePath, Q
     bool testSetPostHocFDRLpvalue_Passed = plot.m_dataPostHocFDRLpvalue == expectedPostHocFDRLpvalueData;
     if( !testSetPostHocFDRLpvalue_Passed )
     {
-        std::cerr << "/!\\ Test_SetPostHocFDRLpvalue() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetPostHocFDRLpvalue()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetPostHocFDRLpvalue() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetPostHocFDRLpvalue()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetPostHocFDRLpvalue() PASSED" << std::endl;
+        std::cerr << "Test_SetPostHocFDRLpvalue() PASSED";
     }
 
     return testSetPostHocFDRLpvalue_Passed;
@@ -421,166 +421,203 @@ bool TestPlot::Test_SetPostHocFDRLpvalue( QString rdPostHocFDRLpvalueFilePath, Q
 
 
 
-bool TestPlot::Test_GetRawDataFiles( QString dataDir )
+bool TestPlot::Test_GetRawDataFiles( QString dataDir, QString tempoDir )
 {
     Plot plot;
-    QStringList expectedRawDataFiles = QStringList() << "test_FA_RawData.csv" << "test_RD_RawData.csv" << "test_SUBMATRIX_RawData.csv" << "testSort_FA_RawData.csv" << "testSort_RD_RawData.csv" << "testSort_SUBMATRIX_RawData.csv";
-    expectedRawDataFiles.sort();
+    QString dirTest = tempoDir + "/TestPlot/Test_GetRawDataFiles";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
+    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
+    QStringList expectedRawDataFiles = QStringList() << "test_RawData_FA.csv" << "test_RawData_RD.csv" << "test_RawData_SUBMATRIX.csv";
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
 
 
     bool testGetRawDataFiles = plot.m_csvRawDataFiles == expectedRawDataFiles;
     if( !testGetRawDataFiles )
     {
-        std::cerr << "/!\\ Test_GetRawDataFiles() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetRawDataFiles()" << std::endl;
-        DisplayError_FileList( expectedRawDataFiles, plot.m_csvRawDataFiles );
+        std::cerr << "/!\\/!\\ Test_GetRawDataFiles() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetRawDataFiles()" << std::endl;
+//        DisplayError_QStringList( expectedRawDataFiles, plot.m_csvRawDataFiles, "files" );
     }
     else
     {
-        std::cerr << "Test_GetRawDataFiles() PASSED" << std::endl;
+        std::cerr << "Test_GetRawDataFiles() PASSED";
     }
 
     return testGetRawDataFiles;
 }
 
-bool TestPlot::Test_GetBetaFiles( QString dataDir )
+bool TestPlot::Test_GetBetaFiles( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_GetBetaFiles";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_Betas_FA.csv", dirTest + "/test_Betas_FA.csv" );
+    QFile::copy( dataDir + "/test_Betas_RD.csv", dirTest + "/test_Betas_RD.csv" );
     QStringList expectedBetaFiles = QStringList() << "test_Betas_FA.csv" << "test_Betas_RD.csv";
     expectedBetaFiles.sort();
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetBetaFiles();
 
 
     bool testGetBetaFiles = plot.m_csvBetaFiles == expectedBetaFiles;
     if( !testGetBetaFiles )
     {
-        std::cerr << "/!\\ Test_GetBetaFiles() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetBetaFiles()" << std::endl;
-        DisplayError_FileList( expectedBetaFiles, plot.m_csvBetaFiles );
+        std::cerr << "/!\\/!\\ Test_GetBetaFiles() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetBetaFiles()" << std::endl;
+//        DisplayError_QStringList( expectedBetaFiles, plot.m_csvBetaFiles, "files" );
     }
     else
     {
-        std::cerr << "Test_GetBetaFiles() PASSED" << std::endl;
+        std::cerr << "Test_GetBetaFiles() PASSED";
     }
 
     return testGetBetaFiles;
 }
 
-bool TestPlot::Test_GetOmnibusLpvalueFiles( QString dataDir )
+bool TestPlot::Test_GetOmnibusLpvalueFiles( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_GetOmnibusLpvalueFiles";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_Omnibus_Local_pvalues.csv", dirTest + "/test_Omnibus_Local_pvalues.csv" );
     QStringList expectedOmnibusLpvalueFiles = QStringList() << "test_Omnibus_Local_pvalues.csv";
     expectedOmnibusLpvalueFiles.sort();
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetOmnibusLpvalueFiles();
 
 
     bool testGetOmnibusLpvalueFiles = plot.m_csvOmnibusLpvalueFiles == expectedOmnibusLpvalueFiles;
     if( !testGetOmnibusLpvalueFiles )
     {
-        std::cerr << "/!\\ Test_GetOmnibusLpvalueFiles() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetOmnibusLpvalueFiles()" << std::endl;
-        DisplayError_FileList( expectedOmnibusLpvalueFiles, plot.m_csvOmnibusLpvalueFiles );
+        std::cerr << "/!\\/!\\ Test_GetOmnibusLpvalueFiles() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetOmnibusLpvalueFiles()" << std::endl;
+//        DisplayError_QStringList( expectedOmnibusLpvalueFiles, plot.m_csvOmnibusLpvalueFiles, "files" );
     }
     else
     {
-        std::cerr << "Test_GetOmnibusLpvalueFiles() PASSED" << std::endl;
+        std::cerr << "Test_GetOmnibusLpvalueFiles() PASSED";
     }
 
     return testGetOmnibusLpvalueFiles;
 }
 
-bool TestPlot::Test_GetOmnibusFDRLpvalueFiles( QString dataDir )
+bool TestPlot::Test_GetOmnibusFDRLpvalueFiles( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_GetOmnibusFDRLpvalueFiles";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_Omnibus_FDR_Local_pvalues.csv", dirTest + "/test_Omnibus_FDR_Local_pvalues.csv" );
     QStringList expectedOmnibusFDRLpvalueFiles = QStringList() << "test_Omnibus_FDR_Local_pvalues.csv";
     expectedOmnibusFDRLpvalueFiles.sort();
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetOmnibusFDRLpvalueFiles();
 
 
     bool testGetOmnibusFDRLpvalueFiles = plot.m_csvOmnibusFDRLpvalueFiles == expectedOmnibusFDRLpvalueFiles;
     if( !testGetOmnibusFDRLpvalueFiles )
     {
-        std::cerr << "/!\\ Test_GetOmnibusFDRLpvalueFiles() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetOmnibusFDRLpvalueFiles()" << std::endl;
-        DisplayError_FileList( expectedOmnibusFDRLpvalueFiles, plot.m_csvOmnibusFDRLpvalueFiles );
+        std::cerr << "/!\\/!\\ Test_GetOmnibusFDRLpvalueFiles() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetOmnibusFDRLpvalueFiles()" << std::endl;
+//        DisplayError_QStringList( expectedOmnibusFDRLpvalueFiles, plot.m_csvOmnibusFDRLpvalueFiles, "files" );
     }
     else
     {
-        std::cerr << "Test_GetOmnibusFDRLpvalueFiles() PASSED" << std::endl;
+        std::cerr << "Test_GetOmnibusFDRLpvalueFiles() PASSED";
     }
 
     return testGetOmnibusFDRLpvalueFiles;
 }
 
-bool TestPlot::Test_GetConfidenceBandsFiles( QString dataDir )
+bool TestPlot::Test_GetConfidenceBandsFiles( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_GetConfidenceBandsFiles";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_Omnibus_ConfidenceBands_FA.csv", dirTest + "/test_Omnibus_ConfidenceBands_FA.csv" );
+    QFile::copy( dataDir + "/test_Omnibus_ConfidenceBands_RD.csv", dirTest + "/test_Omnibus_ConfidenceBands_RD.csv" );
     QStringList expectedConfidenceBandsFiles = QStringList() << "test_Omnibus_ConfidenceBands_FA.csv" << "test_Omnibus_ConfidenceBands_RD.csv";
     expectedConfidenceBandsFiles.sort();
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetConfidenceBandsFiles();
 
 
     bool testGetConfidenceBandsFiles = plot.m_csvConfidenceBandsFiles == expectedConfidenceBandsFiles;
     if( !testGetConfidenceBandsFiles )
     {
-        std::cerr << "/!\\ Test_GetConfidenceBandsFiles() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetConfidenceBandsFiles()" << std::endl;
-        DisplayError_FileList( expectedConfidenceBandsFiles, plot.m_csvConfidenceBandsFiles );
+        std::cerr << "/!\\/!\\ Test_GetConfidenceBandsFiles() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetConfidenceBandsFiles()" << std::endl;
+//        DisplayError_QStringList( expectedConfidenceBandsFiles, plot.m_csvConfidenceBandsFiles, "files" );
     }
     else
     {
-        std::cerr << "Test_GetConfidenceBandsFiles() PASSED" << std::endl;
+        std::cerr << "Test_GetConfidenceBandsFiles() PASSED";
     }
 
     return testGetConfidenceBandsFiles;
 }
 
-bool TestPlot::Test_GetPostHocFDRLpvalueFiles( QString dataDir )
+bool TestPlot::Test_GetPostHocFDRLpvalueFiles( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_GetPostHocFDRLpvalueFiles";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_PostHoc_FDR_Local_pvalues_FA.csv", dirTest + "/test_PostHoc_FDR_Local_pvalues_FA.csv" );
+    QFile::copy( dataDir + "/test_PostHoc_FDR_Local_pvalues_RD.csv", dirTest + "/test_PostHoc_FDR_Local_pvalues_RD.csv" );
     QStringList expectedGetPostHocFDRLpvalueFiles = QStringList() << "test_PostHoc_FDR_Local_pvalues_FA.csv" << "test_PostHoc_FDR_Local_pvalues_RD.csv";
     expectedGetPostHocFDRLpvalueFiles.sort();
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetPostHocFDRLpvalueFiles();
 
 
     bool testGetPostHocFDRLpvalueFiles = plot.m_csvPostHocFDRLpvalueFiles == expectedGetPostHocFDRLpvalueFiles;
     if( !testGetPostHocFDRLpvalueFiles )
     {
-        std::cerr << "/!\\ Test_GetPostHocFDRLpvalueFiles() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetPostHocFDRLpvalueFiles()" << std::endl;
-        DisplayError_FileList( expectedGetPostHocFDRLpvalueFiles, plot.m_csvPostHocFDRLpvalueFiles );
+        std::cerr << "/!\\/!\\ Test_GetPostHocFDRLpvalueFiles() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetPostHocFDRLpvalueFiles()" << std::endl;
+//        DisplayError_QStringList( expectedGetPostHocFDRLpvalueFiles, plot.m_csvPostHocFDRLpvalueFiles, "files" );
     }
     else
     {
-        std::cerr << "Test_GetPostHocFDRLpvalueFiles() PASSED" << std::endl;
+        std::cerr << "Test_GetPostHocFDRLpvalueFiles() PASSED";
     }
     return testGetPostHocFDRLpvalueFiles;
 }
 
 
 
-bool TestPlot::Test_SetPlots( QString dataDir )
+bool TestPlot::Test_SetPlots( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_SetPlots";
+    QString matlabDir = dirTest + "/MatlabOutputs";
+    QDir().mkpath( dirTest );
+    QDir().mkpath( matlabDir );
+    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
+    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
+    QFile::copy( dataDir + "/test_Betas_FA.csv", matlabDir + "/test_Betas_FA.csv" );
+    QFile::copy( dataDir + "/test_Betas_RD.csv", matlabDir + "/test_Betas_RD.csv" );
+    QFile::copy( dataDir + "/test_Omnibus_Local_pvalues.csv", matlabDir + "/test_Omnibus_Local_pvalues.csv" );
+    QFile::copy( dataDir + "/test_Omnibus_FDR_Local_pvalues.csv", matlabDir + "/test_Omnibus_FDR_Local_pvalues.csv" );
+    QFile::copy( dataDir + "/test_Omnibus_ConfidenceBands_FA.csv", matlabDir + "/test_Omnibus_ConfidenceBands_FA.csv" );
+    QFile::copy( dataDir + "/test_Omnibus_ConfidenceBands_RD.csv", matlabDir + "/test_Omnibus_ConfidenceBands_RD.csv" );
+    QFile::copy( dataDir + "/test_PostHoc_FDR_Local_pvalues_FA.csv", matlabDir + "/test_PostHoc_FDR_Local_pvalues_FA.csv" );
+    QFile::copy( dataDir + "/test_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir + "/test_PostHoc_FDR_Local_pvalues_RD.csv" );
     QStringList expectedPlotsUsedRawData = QStringList() << "Raw Data" << "Raw Stats";
     QStringList expectedPlotsUsedBetas = QStringList() << "Raw Betas by Properties" << "Raw Betas by Covariates";
     QStringList expectedPlotsUsedOmnibusLpvalues = QStringList() << "Omnibus Local pvalues";
@@ -598,33 +635,40 @@ bool TestPlot::Test_SetPlots( QString dataDir )
                                                                     << "Post-Hoc FDR Significant Betas by Covariates";
 
 
-    plot.m_directory = dataDir;
-    plot.m_matlabDirectory = dataDir;
-
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetRawDataFiles();
     plot.SetPlots();
     QStringList displayedPlotsUsedRawData = plot.m_plotsUsed;
     bool testRawData = expectedPlotsUsedRawData == displayedPlotsUsedRawData;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetBetaFiles();
     plot.SetPlots();
     QStringList displayedPlotsUsedBetas = plot.m_plotsUsed;
     bool testRawBeta = expectedPlotsUsedBetas == displayedPlotsUsedBetas;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetOmnibusLpvalueFiles();
     plot.SetPlots();
     QStringList displayedPlotsUsedOmnibusLpvalues = plot.m_plotsUsed;
     bool testOmnibusLocalPvalues = expectedPlotsUsedOmnibusLpvalues == displayedPlotsUsedOmnibusLpvalues;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetOmnibusFDRLpvalueFiles();
     plot.SetPlots();
     QStringList displayedPlotsUsedOmnibusFDRLpvalues = plot.m_plotsUsed;
     bool testOmnibusFDRLocalPvalues = expectedPlotsUsedOmnibusFDRLpvalues == displayedPlotsUsedOmnibusFDRLpvalues;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetBetaFiles();
     plot.GetOmnibusFDRLpvalueFiles();
     plot.SetPlots();
@@ -632,6 +676,8 @@ bool TestPlot::Test_SetPlots( QString dataDir )
     bool testOmnibusFDRSignificantBetas = expectedPlotsUsedOmnibusFDRSigBetas == displayedPlotsUsedOmnibusFDRSigBetas;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetBetaFiles();
     plot.GetConfidenceBandsFiles();
     plot.SetPlots();
@@ -639,12 +685,16 @@ bool TestPlot::Test_SetPlots( QString dataDir )
     bool testConfidenceBands = expectedPlotsUsedConfidenceBands == displayedPlotsUsedConfidenceBands;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetPostHocFDRLpvalueFiles();
     plot.SetPlots();
     QStringList displayedPlotsUsedPostHocFDRLpvalue = plot.m_plotsUsed;
     bool testPostHocFDRLocalPvalues = expectedPlotsUsedPostHocFDRLpvalue == displayedPlotsUsedPostHocFDRLpvalue;
 
     plot.ResetPlotData();
+    plot.m_directory = dirTest;
+    plot.m_matlabDirectory = matlabDir;
     plot.GetBetaFiles();
     plot.GetPostHocFDRLpvalueFiles();
     plot.SetPlots();
@@ -656,65 +706,70 @@ bool TestPlot::Test_SetPlots( QString dataDir )
             && testOmnibusFDRSignificantBetas && testConfidenceBands && testPostHocFDRLocalPvalues && testPostHocFDRSignificantBetas;
     if( !testSetPlots )
     {
-        std::cerr << "/!\\ Test_SetPlots() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetPlots()" << std::endl;
-        if( !testRawData )
-        {
-            std::cerr << "\t+ when getting Raw Data" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedRawData, displayedPlotsUsedRawData );
-        }
-        if( !testRawBeta )
-        {
-            std::cerr << "\t+ when getting Betas" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedBetas, displayedPlotsUsedBetas );
-        }
-        if( !testOmnibusLocalPvalues )
-        {
-            std::cerr << "\t+ when getting Omnibus Local Pvalues" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedOmnibusLpvalues, displayedPlotsUsedOmnibusLpvalues );
-        }
-        if( !testOmnibusFDRLocalPvalues )
-        {
-            std::cerr << "\t+ when getting Omnibus FDR Local Pvalues" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedOmnibusFDRLpvalues, displayedPlotsUsedOmnibusFDRLpvalues );
-        }
-        if( !testOmnibusFDRSignificantBetas )
-        {
-            std::cerr << "\t+ when getting Omnibus FDR Significant Betas" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedOmnibusFDRSigBetas, displayedPlotsUsedOmnibusFDRSigBetas );
-        }
-        if( !testConfidenceBands )
-        {
-            std::cerr << "\t+ when getting Confidence Bands" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedConfidenceBands, displayedPlotsUsedConfidenceBands );
-        }
-        if( !testPostHocFDRLocalPvalues )
-        {
-            std::cerr << "\t+ when getting PostHoc FDR Local Pvalues" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedPostHocFDRLpvalue, displayedPlotsUsedPostHocFDRLpvalue );
-        }
-        if( !testPostHocFDRSignificantBetas )
-        {
-            std::cerr << "\t+ when getting PostHoc FDR Significant Betas" << std::endl;
-            DisplayError_PlotList( expectedPlotsUsedPostHocFDRSigBetas, displayedPlotsUsedPostHocFDRSigBetas );
-        }
+        std::cerr << "/!\\/!\\ Test_SetPlots() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetPlots()" << std::endl;
+//        if( !testRawData )
+//        {
+//            std::cerr << "\t+ when getting Raw Data" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedRawData, expectedPlotsUsedRawData, "plots" );
+//        }
+//        if( !testRawBeta )
+//        {
+//            std::cerr << "\t+ when getting Betas" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedBetas, displayedPlotsUsedBetas, "plots" );
+//        }
+//        if( !testOmnibusLocalPvalues )
+//        {
+//            std::cerr << "\t+ when getting Omnibus Local Pvalues" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedOmnibusLpvalues, displayedPlotsUsedOmnibusLpvalues, "plots" );
+//        }
+//        if( !testOmnibusFDRLocalPvalues )
+//        {
+//            std::cerr << "\t+ when getting Omnibus FDR Local Pvalues" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedOmnibusFDRLpvalues, displayedPlotsUsedOmnibusFDRLpvalues, "plots" );
+//        }
+//        if( !testOmnibusFDRSignificantBetas )
+//        {
+//            std::cerr << "\t+ when getting Omnibus FDR Significant Betas" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedOmnibusFDRSigBetas, displayedPlotsUsedOmnibusFDRSigBetas, "plots" );
+//        }
+//        if( !testConfidenceBands )
+//        {
+//            std::cerr << "\t+ when getting Confidence Bands" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedConfidenceBands, displayedPlotsUsedConfidenceBands, "plots" );
+//        }
+//        if( !testPostHocFDRLocalPvalues )
+//        {
+//            std::cerr << "\t+ when getting PostHoc FDR Local Pvalues" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedPostHocFDRLpvalue, displayedPlotsUsedPostHocFDRLpvalue, "plots" );
+//        }
+//        if( !testPostHocFDRSignificantBetas )
+//        {
+//            std::cerr << "\t+ when getting PostHoc FDR Significant Betas" << std::endl;
+//            DisplayError_QStringList( expectedPlotsUsedPostHocFDRSigBetas, displayedPlotsUsedPostHocFDRSigBetas, "plots" );
+//        }
     }
     else
     {
-        std::cerr << "Test_SetPlots() PASSED" << std::endl;
+        std::cerr << "Test_SetPlots() PASSED";
     }
     return testSetPlots;
 }
 
-bool TestPlot::Test_SetProperties( QString dataDir )
+bool TestPlot::Test_SetProperties( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_SetProperties";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
+    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
     QMap<int, QString> expectedProperties;
     expectedProperties.insert( 1, "RD" );
     expectedProperties.insert( 3, "FA" );
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
     plot.SetProperties();
 
@@ -722,25 +777,32 @@ bool TestPlot::Test_SetProperties( QString dataDir )
     bool testSetProperties = plot.m_properties == expectedProperties;
     if( !testSetProperties )
     {
-        std::cerr << "/!\\ Test_SetProperties() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetProperties()" << std::endl;
-        DisplayError_Properties( expectedProperties, plot.m_properties );
+        std::cerr << "/!\\/!\\ Test_SetProperties() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetProperties()" << std::endl;
+//        DisplayError_QMapIntQString( expectedProperties, plot.m_properties, "properties" );
     }
     else
     {
-        std::cerr << "Test_SetProperties() PASSED" << std::endl;
+        std::cerr << "Test_SetProperties() PASSED";
     }
     return testSetProperties;
 }
 
-bool TestPlot::Test_SetSubjects( QString dataDir )
+bool TestPlot::Test_SetSubjects( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_SetSubjects";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
+    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
     QStringList expectedSubjects = QStringList() << "F02-1_dwi_35_all_QCed_VC_DTI_embed" << "F05-1_dwi_35_all_QCed_VC_DTI_embed" << "F06-1_42_DWI_QCed_VC_DTI_embed"
-                                                 << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed";
+                                                 << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed" << "F12-1_42_DWI_QCed_VC_DTI_embed"
+                                                 << "F21-1_42_DWI_QCed_VC_DTI_embed" << "F22-1_42_DWI_QCed_VC_DTI_embed" << "F23-1_42_DWI_QCed_VC_DTI_embed"
+                                                 << "F25-1_42_DWI_QCed_VC_DTI_embed";
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
     plot.SetSubjects();
 
@@ -748,34 +810,40 @@ bool TestPlot::Test_SetSubjects( QString dataDir )
     bool testSetSubjects = plot.m_subjects == expectedSubjects;
     if( !testSetSubjects )
     {
-        std::cerr << "/!\\ Test_SetSubjects() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetSubjects()" << std::endl;
-        DisplayError_SubjectList( expectedSubjects, plot.m_subjects );
+        std::cerr << "/!\\/!\\ Test_SetSubjects() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetSubjects()" << std::endl;
+//        DisplayError_QStringList( expectedSubjects, plot.m_subjects, "subjects" );
     }
     else
     {
-        std::cerr << "Test_SetSubjects() PASSED" << std::endl;
+        std::cerr << "Test_SetSubjects() PASSED";
     }
     return testSetSubjects;
 }
 
-bool TestPlot::Test_SetCovariates( QString dataDir )
+bool TestPlot::Test_SetCovariates( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_SetCovariates";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
+    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
     QMap<int, QString> expectedAllCovariates;
     expectedAllCovariates.insert( 0, "Intercept" );
-    expectedAllCovariates.insert( 1, "GENDER" );
-    expectedAllCovariates.insert( 2, "DaysPostBirth" );
-    expectedAllCovariates.insert( 3, "ICV_y0" );
+    expectedAllCovariates.insert( 1, "ngroup" );
+    expectedAllCovariates.insert( 2, "GENDER" );
+    expectedAllCovariates.insert( 3, "GestAgeAtBirth" );
     QMap<int, QString> expectedCovariatesNoIntercept;
-    expectedCovariatesNoIntercept.insert( 1, "GENDER" );
-    expectedCovariatesNoIntercept.insert( 2, "DaysPostBirth" );
-    expectedCovariatesNoIntercept.insert( 3, "ICV_y0" );
+    expectedCovariatesNoIntercept.insert( 1, "ngroup" );
+    expectedCovariatesNoIntercept.insert( 2, "GENDER" );
+    expectedCovariatesNoIntercept.insert( 3, "GestAgeAtBirth" );
     QMap<int, QString> expectedBinaryCovariates;
-    expectedBinaryCovariates.insert( 1, "GENDER" );
+    expectedBinaryCovariates.insert( 1, "ngroup" );
+    expectedBinaryCovariates.insert( 2, "GENDER" );
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
     plot.SetCovariates();
 
@@ -787,38 +855,50 @@ bool TestPlot::Test_SetCovariates( QString dataDir )
     bool testSetCovariates = testAllCovariates && testCovariatesNoIntercept && testBinaryCovariates;
     if( !testSetCovariates )
     {
-        std::cerr << "/!\\ Test_SetCovariates() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetCovariates()" << std::endl;
-        if( !testAllCovariates )
-        {
-            std::cerr << "\t+ pb with m_allCovariates" << std::endl;
-            DisplayError_Covariates( expectedAllCovariates, plot.m_allCovariates );
-        }
-        if( !testCovariatesNoIntercept )
-        {
-            std::cerr << "\t+ pb with m_covariatesNoIntercept" << std::endl;
-            DisplayError_Covariates( expectedCovariatesNoIntercept, plot.m_covariatesNoIntercept );
-        }
-        if( !testBinaryCovariates )
-        {
-            std::cerr << "\t+ pb with m_binaryCovariates" << std::endl;
-            DisplayError_Covariates( expectedBinaryCovariates, plot.m_binaryCovariates );
-        }
+        std::cerr << "/!\\/!\\ Test_SetCovariates() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetCovariates()" << std::endl;
+//        if( !testAllCovariates )
+//        {
+//            std::cerr << "\t+ pb with m_allCovariates" << std::endl;
+//            DisplayError_QMapIntQString( expectedAllCovariates, plot.m_allCovariates, "covariates" );
+//        }
+//        if( !testCovariatesNoIntercept )
+//        {
+//            std::cerr << "\t+ pb with m_covariatesNoIntercept" << std::endl;
+//            DisplayError_QMapIntQString( expectedCovariatesNoIntercept, plot.m_covariatesNoIntercept, "covariates" );
+//        }
+//        if( !testBinaryCovariates )
+//        {
+//            std::cerr << "\t+ pb with m_binaryCovariates" << std::endl;
+//            DisplayError_QMapIntQString( expectedBinaryCovariates, plot.m_binaryCovariates, "covariates" );
+//        }
     }
     else
     {
-        std::cerr << "Test_SetCovariates() PASSED" << std::endl;
+        std::cerr << "Test_SetCovariates() PASSED";
     }
     return testSetCovariates;
 }
 
-bool TestPlot::Test_SetAbscissa( QString dataDir )
+bool TestPlot::Test_SetAbscissa( QString dataDir, QString tempoDir )
 {
     Plot plot;
-    QList< double > expectedAbscissa = QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846;
+    QString dirTest = tempoDir + "/TestPlot/Test_SetAbscissa";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
+    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
+    QList< double > expectedAbscissa = QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846
+                                                         << -29.1846 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846
+                                                         << -19.1846 << -18.1846 << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846
+                                                         << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462 << -2.18462 << -1.18462 << -0.184619
+                                                         << 0.815381 << 1.81538 << 2.81538 << 3.81538 << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538
+                                                         << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
+                                                         << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
+                                                         << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154;
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
     plot.SetAbscissa();
 
@@ -826,12 +906,12 @@ bool TestPlot::Test_SetAbscissa( QString dataDir )
     bool testSetAbscissa = plot.m_abscissa == expectedAbscissa;
     if( !testSetAbscissa )
     {
-        std::cerr << "/!\\ Test_SetAbscissa() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetAbscissa()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_SetAbscissa() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetAbscissa()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_SetAbscissa() PASSED" << std::endl;
+        std::cerr << "Test_SetAbscissa() PASSED";
     }
     return testSetAbscissa;
 }
@@ -881,24 +961,24 @@ bool TestPlot::Test_SetSelectedPlot( QString dataDir )
     bool testSetSelectedPlot = testAllCovariates && testCovariatesNoIntercept && testBinaryCovariates;
     if( !testSetSelectedPlot )
     {
-        std::cerr << "/!\\ Test_SetSelectedPlot() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetSelectedPlot( QString plotSelected )" << std::endl;
-        if( !testAllCovariates )
-        {
-            std::cerr << "\t+ pb when sending m_allCovariates" << std::endl;
-        }
-        if( !testCovariatesNoIntercept )
-        {
-            std::cerr << "\t+ pb when sending m_covariatesNoIntercept" << std::endl;
-        }
-        if( !testBinaryCovariates )
-        {
-            std::cerr << "\t+ pb when sending m_binaryCovariates" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetSelectedPlot() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetSelectedPlot( QString plotSelected )" << std::endl;
+//        if( !testAllCovariates )
+//        {
+//            std::cerr << "\t  when sending m_allCovariates" << std::endl;
+//        }
+//        if( !testCovariatesNoIntercept )
+//        {
+//            std::cerr << "\t  when sending m_covariatesNoIntercept" << std::endl;
+//        }
+//        if( !testBinaryCovariates )
+//        {
+//            std::cerr << "\t  when sending m_binaryCovariates" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetSelectedPlot() PASSED" << std::endl;
+        std::cerr << "Test_SetSelectedPlot() PASSED";
     }
     return testSetSelectedPlot;
 }
@@ -926,28 +1006,28 @@ bool TestPlot::Test_SetTitle()
     bool testSetTitle = testTitle && testBold && testItalic && testFontSize;
     if( !testSetTitle )
     {
-        std::cerr << "/!\\ Test_SetTitle() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetTitle( QString title, bool isBold, bool isItalic, double fontSize )" << std::endl;
-        if( !testTitle )
-        {
-            std::cerr << "\t   title expected: " << title.toStdString() << " | title displayed: " << plot.m_chart->GetTitle() << std::endl;
-        }
-        if( !testBold )
-        {
-            std::cerr << "\t   bold status expected: " << ( bold == 1 ? "TRUE" : "FALSE" ) << " | bold status displayed: " << ( plot.m_chart->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testItalic )
-        {
-            std::cerr << "\t   italic status expected: " << ( italic == 1 ? "TRUE" : "FALSE" ) << " | italic status displayed: " << ( plot.m_chart->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testFontSize )
-        {
-            std::cerr << "\t   fontSize expected: " << fontSize << " | fontSize displayed: " << plot.m_chart->GetTitleProperties()->GetFontSize() << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetTitle() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetTitle( QString title, bool isBold, bool isItalic, double fontSize )" << std::endl;
+//        if( !testTitle )
+//        {
+//            std::cerr << "\t  title expected: " << title.toStdString() << " | title displayed: " << plot.m_chart->GetTitle() << std::endl;
+//        }
+//        if( !testBold )
+//        {
+//            std::cerr << "\t  bold status expected: " << ( bold == 1 ? "TRUE" : "FALSE" ) << " | bold status displayed: " << ( plot.m_chart->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testItalic )
+//        {
+//            std::cerr << "\t  italic status expected: " << ( italic == 1 ? "TRUE" : "FALSE" ) << " | italic status displayed: " << ( plot.m_chart->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testFontSize )
+//        {
+//            std::cerr << "\t  fontSize expected: " << fontSize << " | fontSize displayed: " << plot.m_chart->GetTitleProperties()->GetFontSize() << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetTitle() PASSED" << std::endl;
+        std::cerr << "Test_SetTitle() PASSED";
     }
     return testSetTitle;
 }
@@ -1005,28 +1085,28 @@ bool TestPlot::Test_SetDefaultTitle()
     bool testSetDefaultTitle = testTitle && testBold && testItalic && testFontSize;
     if( !testSetDefaultTitle )
     {
-        std::cerr << "/!\\ Test_SetDefaultTitle() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetDefaultTitle()" << std::endl;
-        if( !testTitle )
-        {
-            std::cerr << "\t   wrong title displayed" << std::endl;
-        }
-        if( !testBold )
-        {
-            std::cerr << "\t   bold status expected: FALSE | bold status displayed: " << ( plot.m_chart->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testItalic )
-        {
-            std::cerr << "\t   italic status expected: FALSE | italic status displayed: " << ( plot.m_chart->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testFontSize )
-        {
-            std::cerr << "\t   fontSize expected: 12.0 | fontSize displayed: " << plot.m_chart->GetTitleProperties()->GetFontSize() << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetDefaultTitle() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetDefaultTitle()" << std::endl;
+//        if( !testTitle )
+//        {
+//            std::cerr << "\t  wrong title displayed" << std::endl;
+//        }
+//        if( !testBold )
+//        {
+//            std::cerr << "\t  bold status expected: FALSE | bold status displayed: " << ( plot.m_chart->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testItalic )
+//        {
+//            std::cerr << "\t  italic status expected: FALSE | italic status displayed: " << ( plot.m_chart->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testFontSize )
+//        {
+//            std::cerr << "\t  fontSize expected: 12.0 | fontSize displayed: " << plot.m_chart->GetTitleProperties()->GetFontSize() << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetDefaultTitle() PASSED" << std::endl;
+        std::cerr << "Test_SetDefaultTitle() PASSED";
     }
     return testSetDefaultTitle;
 }
@@ -1062,48 +1142,47 @@ bool TestPlot::Test_SetAxis()
     bool testSetAxis = testXName && testYName && testBold && testItalic && testYMinSet && testYMinValue && testYMaxSet && testYMaxValue;
     if( !testSetAxis )
     {
-        std::cerr << "/!\\ Test_SetAxis() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetAxis( QString xName, QString yName, bool isBold, bool isItalic,"
-                     "bool isYMinSet, double yMin, bool isYMaxSet, double yMax )" << std::endl;
-        if( !testXName )
-        {
-            std::cerr << "\t   xName expected: " << xName.toStdString() << " | xName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
-        }
-        if( !testYName )
-        {
-            std::cerr << "\t   yName expected: " << yName.toStdString() << " | yName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
-        }
-        if( !testBold )
-        {
-            std::cerr << "\t   bold vtkAxis::BOTTOM status expected: " << ( bold == 1 ? "TRUE" : "FALSE" ) << " | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-            std::cerr << "\t   bold vtkAxis::LEFT status expected: " << ( bold == 1 ? "TRUE" : "FALSE" ) << " | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testItalic )
-        {
-            std::cerr << "\t   italic vtkAxis::BOTTOM status expected: " << ( italic == 1 ? "TRUE" : "FALSE" ) << " | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-            std::cerr << "\t   italic vtkAxis::LEFT status expected: " << ( italic == 1 ? "TRUE" : "FALSE" ) << " | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testYMinSet )
-        {
-            std::cerr << "\t   yMinSet status expected: " << ( yMinSet == 1 ? "TRUE" : "FALSE" ) << " | yMinSet displayed: " << ( plot.m_yMin.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-
-        if( !testYMinValue )
-        {
-            std::cerr << "\t   yMin expected: " << 0 << " | yMin displayed: " << plot.m_yMin.second << std::endl;
-        }
-        if( !testYMaxSet )
-        {
-            std::cerr << "\t   yMaxSet status expected: " << ( yMaxSet == 1 ? "TRUE" : "FALSE" ) << " | yMaxSet displayed: " << ( plot.m_yMax.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testYMaxValue )
-        {
-            std::cerr << "\t   yMax expected: " << yMax << " | yMax displayed: " << plot.m_yMax.second << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetAxis() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetAxis( QString xName, QString yName, bool isBold, bool isItalic,"
+//                     "bool isYMinSet, double yMin, bool isYMaxSet, double yMax )" << std::endl;
+//        if( !testXName )
+//        {
+//            std::cerr << "\t  xName expected: " << xName.toStdString() << " | xName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
+//        }
+//        if( !testYName )
+//        {
+//            std::cerr << "\t  yName expected: " << yName.toStdString() << " | yName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
+//        }
+//        if( !testBold )
+//        {
+//            std::cerr << "\t  bold vtkAxis::BOTTOM status expected: " << ( bold == 1 ? "TRUE" : "FALSE" ) << " | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//            std::cerr << "\t  bold vtkAxis::LEFT status expected: " << ( bold == 1 ? "TRUE" : "FALSE" ) << " | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testItalic )
+//        {
+//            std::cerr << "\t  italic vtkAxis::BOTTOM status expected: " << ( italic == 1 ? "TRUE" : "FALSE" ) << " | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//            std::cerr << "\t  italic vtkAxis::LEFT status expected: " << ( italic == 1 ? "TRUE" : "FALSE" ) << " | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testYMinSet )
+//        {
+//            std::cerr << "\t  yMinSet status expected: " << ( yMinSet == 1 ? "TRUE" : "FALSE" ) << " | yMinSet displayed: " << ( plot.m_yMin.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testYMinValue )
+//        {
+//            std::cerr << "\t  yMin expected: " << 0 << " | yMin displayed: " << plot.m_yMin.second << std::endl;
+//        }
+//        if( !testYMaxSet )
+//        {
+//            std::cerr << "\t  yMaxSet status expected: " << ( yMaxSet == 1 ? "TRUE" : "FALSE" ) << " | yMaxSet displayed: " << ( plot.m_yMax.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testYMaxValue )
+//        {
+//            std::cerr << "\t  yMax expected: " << yMax << " | yMax displayed: " << plot.m_yMax.second << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetAxis() PASSED" << std::endl;
+        std::cerr << "Test_SetAxis() PASSED";
     }
     return testSetAxis;
 }
@@ -1132,46 +1211,46 @@ bool TestPlot::Test_SetDefaultAxis()
     bool testSetDefaultAxis = testXName && testYName && testBold && testItalic && testYMinSet && testYMinValue && testYMaxSet && testYMaxValue;
     if( !testSetDefaultAxis )
     {
-        std::cerr << "/!\\ Test_SetDefaultAxis() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetDefaultAxis()" << std::endl;
-        if( !testXName )
-        {
-            std::cerr << "\t   xName expected: Arc Length | xName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
-        }
-        if( !testYName )
-        {
-            std::cerr << "\t   yName expected: -log10 | yName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
-        }
-        if( !testBold )
-        {
-            std::cerr << "\t   bold vtkAxis::BOTTOM status expected: FALSE | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-            std::cerr << "\t   bold vtkAxis::LEFT status expected: FALSE | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testItalic )
-        {
-            std::cerr << "\t   italic vtkAxis::BOTTOM status expected: FALSE | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-            std::cerr << "\t   italic vtkAxis::LEFT status expected: FALSE | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testYMinSet )
-        {
-            std::cerr << "\t   yMinSet status expected: FALSE | yMinSet displayed: " << ( plot.m_yMin.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testYMinValue )
-        {
-            std::cerr << "\t   yMin expected: " << 0 << " | yMin displayed: " << plot.m_yMin.second << std::endl;
-        }
-        if( !testYMaxSet )
-        {
-            std::cerr << "\t   yMaxSet status expected: FALSE | yMaxSet displayed: " << ( plot.m_yMax.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
-        }
-        if( !testYMaxValue )
-        {
-            std::cerr << "\t   yMax expected: " << 0 << " | yMax displayed: " << plot.m_yMax.second << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetDefaultAxis() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetDefaultAxis()" << std::endl;
+//        if( !testXName )
+//        {
+//            std::cerr << "\t  xName expected: Arc Length | xName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
+//        }
+//        if( !testYName )
+//        {
+//            std::cerr << "\t  yName expected: -log10 | yName displayed: " << plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle() << std::endl;
+//        }
+//        if( !testBold )
+//        {
+//            std::cerr << "\t  bold vtkAxis::BOTTOM status expected: FALSE | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//            std::cerr << "\t  bold vtkAxis::LEFT status expected: FALSE | bold status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetBold() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testItalic )
+//        {
+//            std::cerr << "\t  italic vtkAxis::BOTTOM status expected: FALSE | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//            std::cerr << "\t  italic vtkAxis::LEFT status expected: FALSE | italic status displayed: " << ( plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->GetItalic() == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testYMinSet )
+//        {
+//            std::cerr << "\t  yMinSet status expected: FALSE | yMinSet displayed: " << ( plot.m_yMin.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testYMinValue )
+//        {
+//            std::cerr << "\t  yMin expected: " << 0 << " | yMin displayed: " << plot.m_yMin.second << std::endl;
+//        }
+//        if( !testYMaxSet )
+//        {
+//            std::cerr << "\t  yMaxSet status expected: FALSE | yMaxSet displayed: " << ( plot.m_yMax.first == 1 ? "TRUE" : "FALSE" ) << std::endl;
+//        }
+//        if( !testYMaxValue )
+//        {
+//            std::cerr << "\t  yMax expected: " << 0 << " | yMax displayed: " << plot.m_yMax.second << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetDefaultAxis() PASSED" << std::endl;
+        std::cerr << "Test_SetDefaultAxis() PASSED";
     }
     return testSetDefaultAxis;
 }
@@ -1203,32 +1282,32 @@ bool TestPlot::Test_SetLegend()
     bool testSetLegend = testLegendAlignment1 && testLegendAlignment2 && testLegendAlignment3 && testLegendHidden1 && testLegendHidden2;
     if( !testSetLegend )
     {
-        std::cerr << "/!\\ Test_SetLegend() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetLegend( QString position )" << std::endl;
-        if( !testLegendAlignment1 )
-        {
-            std::cerr << "\t   when Top Left --> wrong legend alignment" << std::endl;
-        }
-        if( !testLegendAlignment2 )
-        {
-            std::cerr << "\t   when Middle Center --> wrong legend alignment" << std::endl;
-        }
-        if( !testLegendAlignment3 )
-        {
-            std::cerr << "\t   when Bottom Right --> wrong legend alignment" << std::endl;
-        }
-        if( !testLegendHidden1 )
-        {
-            std::cerr << "\t   when m_plotSelected == Raw Data --> legend displayed" << std::endl;
-        }
-        if( !testLegendHidden2 )
-        {
-            std::cerr << "\t   when m_plotSelected != Raw Data --> legend not displayed" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetLegend() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetLegend( QString position )" << std::endl;
+//        if( !testLegendAlignment1 )
+//        {
+//            std::cerr << "\t  when Top Left --> wrong legend alignment" << std::endl;
+//        }
+//        if( !testLegendAlignment2 )
+//        {
+//            std::cerr << "\t  when Middle Center --> wrong legend alignment" << std::endl;
+//        }
+//        if( !testLegendAlignment3 )
+//        {
+//            std::cerr << "\t  when Bottom Right --> wrong legend alignment" << std::endl;
+//        }
+//        if( !testLegendHidden1 )
+//        {
+//            std::cerr << "\t  when m_plotSelected == Raw Data --> legend displayed" << std::endl;
+//        }
+//        if( !testLegendHidden2 )
+//        {
+//            std::cerr << "\t  when m_plotSelected != Raw Data --> legend not displayed" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetLegend() PASSED" << std::endl;
+        std::cerr << "Test_SetLegend() PASSED";
     }
     return testSetLegend;
 }
@@ -1259,55 +1338,59 @@ bool TestPlot::Test_SetMarkerType()
     bool testSetMarkerType = testMarkerType1 && testMarkerType2 && testMarkerType3 && testMarkerType4 && testMarkerType5;
     if( !testSetMarkerType )
     {
-        std::cerr << "/!\\ Test_SetMarkerType() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetMarkerType( QString markerType )" << std::endl;
-        if( !testMarkerType1 )
-        {
-            std::cerr << "\t   vtkPlotPoints::CROSS not set" << std::endl;
-        }
-        if( !testMarkerType2 )
-        {
-            std::cerr << "\t   vtkPlotPoints::PLUS not set" << std::endl;
-        }
-        if( !testMarkerType3 )
-        {
-            std::cerr << "\t   vtkPlotPoints::SQUARE not set" << std::endl;
-        }
-        if( !testMarkerType4 )
-        {
-            std::cerr << "\t   vtkPlotPoints::CIRCLE not set" << std::endl;
-        }
-        if( !testMarkerType5 )
-        {
-            std::cerr << "\t   vtkPlotPoints::DIAMOND not set" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SetMarkerType() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetMarkerType( QString markerType )" << std::endl;
+//        if( !testMarkerType1 )
+//        {
+//            std::cerr << "\t  vtkPlotPoints::CROSS not set" << std::endl;
+//        }
+//        if( !testMarkerType2 )
+//        {
+//            std::cerr << "\t  vtkPlotPoints::PLUS not set" << std::endl;
+//        }
+//        if( !testMarkerType3 )
+//        {
+//            std::cerr << "\t  vtkPlotPoints::SQUARE not set" << std::endl;
+//        }
+//        if( !testMarkerType4 )
+//        {
+//            std::cerr << "\t  vtkPlotPoints::CIRCLE not set" << std::endl;
+//        }
+//        if( !testMarkerType5 )
+//        {
+//            std::cerr << "\t  vtkPlotPoints::DIAMOND not set" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SetMarkerType() PASSED" << std::endl;
+        std::cerr << "Test_SetMarkerType() PASSED";
     }
     return testSetMarkerType;
 }
 
 
 
-bool TestPlot::Test_UpdateCovariatesNames( QString dataDir )
+bool TestPlot::Test_UpdateCovariatesNames( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_UpdateCovariatesNames";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
     QMap<int, QString> expectedChangedAllCovariates;
     expectedChangedAllCovariates.insert( 0, "Intercept" );
-    expectedChangedAllCovariates.insert( 1, "Sex" );
-    expectedChangedAllCovariates.insert( 2, "DaysPostBirth" );
-    expectedChangedAllCovariates.insert( 3, "ICV" );
+    expectedChangedAllCovariates.insert( 1, "group" );
+    expectedChangedAllCovariates.insert( 2, "Sex" );
+    expectedChangedAllCovariates.insert( 3, "GestAgeAtBrith" );
     QMap<int, QString> expectedChangedCovariatesNoIntercept;
-    expectedChangedCovariatesNoIntercept.insert( 1, "Sex" );
-    expectedChangedCovariatesNoIntercept.insert( 2, "DaysPostBirth" );
-    expectedChangedCovariatesNoIntercept.insert( 3, "ICV" );
+    expectedChangedCovariatesNoIntercept.insert( 1, "group" );
+    expectedChangedCovariatesNoIntercept.insert( 2, "Sex" );
+    expectedChangedCovariatesNoIntercept.insert( 3, "GestAgeAtBrith" );
     QMap<int, QString> expectedChangedBinaryCovariates;
-    expectedChangedBinaryCovariates.insert( 1, "Sex" );
+    expectedChangedBinaryCovariates.insert( 1, "group" );
+    expectedChangedBinaryCovariates.insert( 2, "Sex" );
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
     plot.SetCovariates();
     plot.UpdateCovariatesNames( expectedChangedBinaryCovariates );
@@ -1321,24 +1404,24 @@ bool TestPlot::Test_UpdateCovariatesNames( QString dataDir )
     bool testUpdateCovariatesNames = testChangeAllCovariates && testChangeCovariatesNoIntercept && testChangeBinaryCovariates;
     if( !testUpdateCovariatesNames )
     {
-        std::cerr << "/!\\ Test_UpdateCovariatesNames() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with UpdateCovariatesNames( QMap< int, QString > newCovariateName )" << std::endl;
-        if( !testChangeAllCovariates )
-        {
-            std::cerr << "\t   m_allCovariates not correctly changed" << std::endl;
-        }
-        if( !testChangeCovariatesNoIntercept )
-        {
-            std::cerr << "\t   m_covariatesNoIntercept not correctly changed" << std::endl;
-        }
-        if( !testChangeBinaryCovariates )
-        {
-            std::cerr << "\t   m_binaryCovariates not correctly changed" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_UpdateCovariatesNames() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with UpdateCovariatesNames( QMap< int, QString > newCovariateName )" << std::endl;
+//        if( !testChangeAllCovariates )
+//        {
+//            std::cerr << "\t  m_allCovariates not correctly changed" << std::endl;
+//        }
+//        if( !testChangeCovariatesNoIntercept )
+//        {
+//            std::cerr << "\t  m_covariatesNoIntercept not correctly changed" << std::endl;
+//        }
+//        if( !testChangeBinaryCovariates )
+//        {
+//            std::cerr << "\t  m_binaryCovariates not correctly changed" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_UpdateCovariatesNames() PASSED" << std::endl;
+        std::cerr << "Test_UpdateCovariatesNames() PASSED";
     }
     return testUpdateCovariatesNames;
 }
@@ -1377,20 +1460,20 @@ bool TestPlot::Test_SeparateBinary( QString faFilePath, QString dataDir )
     bool testSeparateBinary_Passed = testTemp0 && testTemp1;
     if( !testSeparateBinary_Passed )
     {
-        std::cerr << "/!\\ Test_SeparateBinary() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin )" << std::endl;
-        if( !testTemp0 )
-        {
-            std::cerr << "\t+ 0 data not separated correctly" << std::endl;
-        }
-        if( !testTemp1 )
-        {
-            std::cerr << "\t+ 1 data not separated correctly" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_SeparateBinary() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin )" << std::endl;
+//        if( !testTemp0 )
+//        {
+//            std::cerr << "\t  0 data not separated correctly" << std::endl;
+//        }
+//        if( !testTemp1 )
+//        {
+//            std::cerr << "\t  1 data not separated correctly" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_SeparateBinary() PASSED" << std::endl;
+        std::cerr << "Test_SeparateBinary() PASSED";
     }
     return testSeparateBinary_Passed;
 }
@@ -1419,21 +1502,21 @@ bool TestPlot::Test_GetMeanAndStdDv()
     bool testGetMeanAndStdDv_Passed = testMean && testStdDv;
     if( !testGetMeanAndStdDv_Passed )
     {
-        std::cerr << "/!\\ Test_GetMeanAndStdDv() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean,"
-                     " QList < double > &tempStdDv )" << std::endl;
-        if( !testMean )
-        {
-            std::cerr << "\t+ wrong mean generated" << std::endl;
-        }
-        if( !testStdDv )
-        {
-            std::cerr << "\t+ wrong standard deviation generated" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_GetMeanAndStdDv() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean,"
+//                     " QList < double > &tempStdDv )" << std::endl;
+//        if( !testMean )
+//        {
+//            std::cerr << "\t  wrong mean generated" << std::endl;
+//        }
+//        if( !testStdDv )
+//        {
+//            std::cerr << "\t  wrong standard deviation generated" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_GetMeanAndStdDv() PASSED" << std::endl;
+        std::cerr << "Test_GetMeanAndStdDv() PASSED";
     }
     return testGetMeanAndStdDv_Passed;
 }
@@ -1466,25 +1549,25 @@ bool TestPlot::Test_ProcessRawStats()
     bool testProcessRawStats_Passed = testMean && testUp && testDown;
     if( !testProcessRawStats_Passed )
     {
-        std::cerr << "/!\\ Test_ProcessRawStats() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean,"
-                     " QList < double > &tempBinUp, QList < double > &tempBinDown )" << std::endl;
-        if( !testMean )
-        {
-            std::cerr << "\t+ wrong mean generated" << std::endl;
-        }
-        if( !testUp )
-        {
-            std::cerr << "\t+ wrong upper limit generated" << std::endl;
-        }
-        if( !testDown )
-        {
-            std::cerr << "\t+ wrong lower limit generated" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_ProcessRawStats() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean,"
+//                     " QList < double > &tempBinUp, QList < double > &tempBinDown )" << std::endl;
+//        if( !testMean )
+//        {
+//            std::cerr << "\t  wrong mean generated" << std::endl;
+//        }
+//        if( !testUp )
+//        {
+//            std::cerr << "\t  wrong upper limit generated" << std::endl;
+//        }
+//        if( !testDown )
+//        {
+//            std::cerr << "\t  wrong lower limit generated" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_ProcessRawStats() PASSED" << std::endl;
+        std::cerr << "Test_ProcessRawStats() PASSED";
     }
     return testProcessRawStats_Passed;
 }
@@ -1524,27 +1607,27 @@ bool TestPlot::Test_UpdateOrdinate( QString omnibusLpvalueFilePath )
     bool testUpdateOrdinate_Passed = testOrdinate && testLineNames && testLineColors;
     if( !testUpdateOrdinate_Passed )
     {
-        std::cerr << "/!\\ Test_UpdateOrdinate() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with UpdateOrdinate( QList< QList < double > > &ordinate, int shift )" << std::endl;
-        if( !testOrdinate )
-        {
-            std::cerr << "\t+ wrong data kept after updating m_ordinate with m_selectionToDisplay" << std::endl;
-            DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "ordinate" );
-        }
-        if( !testLineNames )
-        {
-            std::cerr << "\t+ wrong data kept after updating m_ordinate with m_selectionToDisplay" << std::endl;
-            DisplayError_LineNameList( expectedLineNames, plot.m_lineNames );
-        }
-        if( !testLineColors )
-        {
-            std::cerr << "\t+ wrong data kept after updating m_ordinate with m_selectionToDisplay" << std::endl;
-            DisplayError_QListQList( expectedLineColors, plot.m_lineColors, "line colors" );
-        }
+        std::cerr << "/!\\/!\\ Test_UpdateOrdinate() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with UpdateOrdinate( QList< QList < double > > &ordinate, int shift )" << std::endl;
+//        if( !testOrdinate )
+//        {
+//            std::cerr << "\t+ wrong data kept after updating m_ordinate with m_selectionToDisplay" << std::endl;
+//            DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "ordinate" );
+//        }
+//        if( !testLineNames )
+//        {
+//            std::cerr << "\t+ wrong data kept after updating m_ordinate with m_selectionToDisplay" << std::endl;
+//            DisplayError_QStringList( expectedLineNames, plot.m_lineNames, "line names" );
+//        }
+//        if( !testLineColors )
+//        {
+//            std::cerr << "\t+ wrong data kept after updating m_ordinate with m_selectionToDisplay" << std::endl;
+//            DisplayError_QListQList( expectedLineColors, plot.m_lineColors, "line colors" );
+//        }
     }
     else
     {
-        std::cerr << "Test_UpdateOrdinate() PASSED" << std::endl;
+        std::cerr << "Test_UpdateOrdinate() PASSED";
     }
     return testUpdateOrdinate_Passed;
 }
@@ -1564,21 +1647,24 @@ bool TestPlot::Test_Tolog10()
     bool testToLog10 = dataTolog10 == expedtedDataTolog10;
     if( !testToLog10 )
     {
-        std::cerr << "/!\\ Test_Tolog10() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with ToLog10( QList< QList < double > > data )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_Tolog10() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with ToLog10( QList< QList < double > > data )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_Tolog10() PASSED" << std::endl;
+        std::cerr << "Test_Tolog10() PASSED";
     }
     return testToLog10;
 }
 
 
 
-bool TestPlot::Test_LoadRawData( QString dataDir )
+bool TestPlot::Test_LoadRawData( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_LoadRawData";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/testSort_RawData_FA.csv", dirTest + "/testSort_RawData_FA.csv" );
     QList< QList < double > > expectedOrdinate = QList< QList < double > >()
             << ( QList < double >() << 0.101391 << 0.089874 << 0.0899232 << 0.106037 << 0.130884 )
             << ( QList < double >() << 0.100461 << 0.121609 << 0.140557 << 0.154739 << 0.165439 )
@@ -1587,7 +1673,7 @@ bool TestPlot::Test_LoadRawData( QString dataDir )
             << ( QList < double >() << 0.100568 << 0.109092 << 0.120203 << 0.13125 << 0.140868 );
 
 
-    plot.m_directory = dataDir;
+    plot.m_directory = dirTest;
     plot.GetRawDataFiles();
     plot.m_propertySelected = "FA";
     plot.m_ordinate = plot.LoadRawData();
@@ -1596,13 +1682,13 @@ bool TestPlot::Test_LoadRawData( QString dataDir )
     bool testLoadRawData = plot.m_ordinate == expectedOrdinate;
     if( !testLoadRawData )
     {
-        std::cerr << "/!\\ Test_LoadRawData() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadRawData()" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "raw data loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadRawData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadRawData()" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "raw data loaded" );
     }
     else
     {
-        std::cerr << "Test_LoadRawData() PASSED" << std::endl;
+        std::cerr << "Test_LoadRawData() PASSED";
     }
     return testLoadRawData;
 }
@@ -1647,20 +1733,23 @@ bool TestPlot::Test_LoadRawStats( QString dataDir )
     bool testLoadRawStats = plot.m_ordinate == expectedOrdinate;
     if( !testLoadRawStats )
     {
-        std::cerr << "/!\\ Test_LoadRawStats() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadRawStats()" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "raw stats loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadRawStats() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadRawStats()" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "raw stats loaded" );
     }
     else
     {
-        std::cerr << "Test_LoadRawStats() PASSED" << std::endl;
+        std::cerr << "Test_LoadRawStats() PASSED";
     }
     return testLoadRawStats;
 }
 
-bool TestPlot::Test_LoadBetas( QString dataDir )
+bool TestPlot::Test_LoadBetas( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_LoadBetas";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_Betas_FA.csv", dirTest + "/test_Betas_FA.csv" );
     QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay;
     selectionToDisplay.insert( 0, QPair< QString, QPair< bool, QString > >( "Intercept", QPair< bool, QString >( true, "Red" ) ) );
     selectionToDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "GENDER", QPair< bool, QString >( false, "Lime" ) ) );
@@ -1685,7 +1774,7 @@ bool TestPlot::Test_LoadBetas( QString dataDir )
                  << 0.011251 << 0.01104 << 0.010609 << 0.010337 << 0.010522 << 0.011324 << 0.012793 << 0.014898 << 0.017575 );
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetBetaFiles();
     plot.m_propertySelected = "FA";
     plot.m_selectionToDisplay = selectionToDisplay;
@@ -1695,13 +1784,13 @@ bool TestPlot::Test_LoadBetas( QString dataDir )
     bool testLoadBetas = plot.m_ordinate == expectedOrdinate;
     if( !testLoadBetas )
     {
-        std::cerr << "/!\\ Test_LoadBetas() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadBetas()" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "betas loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadBetas() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadBetas()" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "betas loaded" );
     }
     else
     {
-        std::cerr << "Test_LoadBetas() PASSED" << std::endl;
+        std::cerr << "Test_LoadBetas() PASSED";
     }
     return testLoadBetas;
 }
@@ -1734,13 +1823,13 @@ bool TestPlot::Test_LoadBetaByCovariate( QString dataDir )
     bool testLoadBetaByCovariate = plot.m_ordinate == expectedOrdinate;
     if( !testLoadBetaByCovariate )
     {
-        std::cerr << "/!\\ Test_LoadBetaByCovariate() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadBetaByCovariate()" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "beta by covariates loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadBetaByCovariate() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadBetaByCovariate()" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "beta by covariates loaded" );
     }
     else
     {
-        std::cerr << "Test_LoadBetaByCovariate() PASSED" << std::endl;
+        std::cerr << "Test_LoadBetaByCovariate() PASSED";
     }
     return testLoadBetaByCovariate;
 }
@@ -1770,20 +1859,24 @@ bool TestPlot::Test_LoadOmnibusLpvalues( QString dataDir )
     bool testLoadOmnibusLpvalues = plot.m_ordinate == expectedOrdinate;
     if( !testLoadOmnibusLpvalues )
     {
-        std::cerr << "/!\\ Test_LoadOmnibusLpvalues() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadOmnibusLpvalues( QList< QList < double > > omnibusLpvalues )" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "omnibus Lpvalues loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadOmnibusLpvalues() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadOmnibusLpvalues( QList< QList < double > > omnibusLpvalues )" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "omnibus Lpvalues loaded" );
     }
     else
     {
-        std::cerr << "Test_LoadOmnibusLpvalues() PASSED" << std::endl;
+        std::cerr << "Test_LoadOmnibusLpvalues() PASSED";
     }
     return testLoadOmnibusLpvalues;
 }
 
-bool TestPlot::Test_LoadConfidenceBand( QString dataDir )
+bool TestPlot::Test_LoadConfidenceBand( QString dataDir, QString tempoDir )
 {
     Plot plot;
+    QString dirTest = tempoDir + "/TestPlot/Test_LoadConfidenceBand";
+    QDir().mkpath( dirTest );
+    QFile::copy( dataDir + "/test_Betas_FA.csv", dirTest + "/test_Betas_FA.csv" );
+    QFile::copy( dataDir + "/test_Omnibus_ConfidenceBands_FA.csv", dirTest + "/test_Omnibus_ConfidenceBands_FA.csv" );
     QList< QList < double > > expectedOrdinate = QList< QList < double > >()
             << ( QList < double >() << 0.031504 << 0.034381 << 0.036106 << 0.036685 << 0.036289 << 0.035222 << 0.033835 << 0.032415 << 0.031109 << 0.02994
                  << 0.0289 << 0.028015 << 0.02735 << 0.026986 << 0.027011 << 0.027498 << 0.028458 << 0.029807 << 0.031376 << 0.032956
@@ -1811,7 +1904,7 @@ bool TestPlot::Test_LoadConfidenceBand( QString dataDir )
                  << -0.018214 << -0.018425 << -0.018856 << -0.019128 << -0.018944 << -0.018141 << -0.016673 << -0.014567 << -0.01189 );
 
 
-    plot.m_matlabDirectory = dataDir;
+    plot.m_matlabDirectory = dirTest;
     plot.GetBetaFiles();
     plot.GetConfidenceBandsFiles();
     plot.m_allCovariates.insert( 0, "Intercept" );
@@ -1826,13 +1919,13 @@ bool TestPlot::Test_LoadConfidenceBand( QString dataDir )
     bool testLoadConfidenceBand = plot.m_ordinate == expectedOrdinate;
     if( !testLoadConfidenceBand )
     {
-        std::cerr << "/!\\ Test_LoadConfidenceBand() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadConfidenceBand()" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "confidence bands loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadConfidenceBand() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadConfidenceBand()" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "confidence bands loaded" );
     }
     else
     {
-        std::cerr << "LoadConfidenceBand() PASSED" << std::endl;
+        std::cerr << "LoadConfidenceBand() PASSED";
     }
     return testLoadConfidenceBand;
 }
@@ -1855,7 +1948,6 @@ bool TestPlot::Test_LoadPostHocFDRLpvalues( QString dataDir )
     plot.m_covariatesNoIntercept.insert( 3, "ICV_y0" );
     plot.m_covariateSelected = "DaysPostBirth";
 
-//    expectedOrdinate.append( plot.m_dataPostHocFDRLpvalue.value( "RD" ).at( plot.m_covariatesNoIntercept.key( plot.m_covariateSelected ) - 1 ) );
     expectedOrdinate.append( plot.m_dataPostHocFDRLpvalue.value( "FA" ).at( plot.m_covariatesNoIntercept.key( plot.m_covariateSelected ) - 1 ) );
     expectedOrdinate = plot.ToLog10( expectedOrdinate );
 
@@ -1866,13 +1958,13 @@ bool TestPlot::Test_LoadPostHocFDRLpvalues( QString dataDir )
     bool testLoadPostHocFDRLpvalues = plot.m_ordinate == expectedOrdinate;
     if( !testLoadPostHocFDRLpvalues )
     {
-        std::cerr << "/!\\ Test_LoadPostHocFDRLpvalues() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with LoadPostHocFDRLpvalues()" << std::endl;
-        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "post-hoc FDR Lpvalues loaded" );
+        std::cerr << "/!\\/!\\ Test_LoadPostHocFDRLpvalues() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadPostHocFDRLpvalues()" << std::endl;
+//        DisplayError_QListQList( expectedOrdinate, plot.m_ordinate, "post-hoc FDR Lpvalues loaded" );
     }
     else
     {
-        std::cerr << "Test_LoadPostHocFDRLpvalues() PASSED" << std::endl;
+        std::cerr << "Test_LoadPostHocFDRLpvalues() PASSED";
     }
     return testLoadPostHocFDRLpvalues;
 }
@@ -1900,13 +1992,13 @@ bool TestPlot::Test_AddEntriesRawData()
 
     if( !testAddEntriesRawData )
     {
-        std::cerr << "/!\\ Test_AddEntriesRawData() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddEntriesRawData( vtkSmartPointer<vtkTable> &table )" << std::endl;
-        DisplayError_EntryList( plot.m_subjects, tableEntries );
+        std::cerr << "/!\\/!\\ Test_AddEntriesRawData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with AddEntriesRawData( vtkSmartPointer<vtkTable> &table )" << std::endl;
+//        DisplayError_QStringList( plot.m_subjects, tableEntries, "entries" );
     }
     else
     {
-        std::cerr << "Test_AddEntriesRawData() PASSED" << std::endl;
+        std::cerr << "Test_AddEntriesRawData() PASSED";
     }
     return testAddEntriesRawData;
 }
@@ -1932,13 +2024,13 @@ bool TestPlot::Test_AddEntriesRawStats()
 
     if( !testAddEntriesRawStats )
     {
-        std::cerr << "/!\\ Test_AddEntriesRawStats() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddEntriesRawStats( vtkSmartPointer<vtkTable> &table )" << std::endl;
-        DisplayError_EntryList( expectedEntries, tableEntries );
+        std::cerr << "/!\\/!\\ Test_AddEntriesRawStats() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with AddEntriesRawStats( vtkSmartPointer<vtkTable> &table )" << std::endl;
+//        DisplayError_QStringList( expectedEntries, tableEntries, "entries" );
     }
     else
     {
-        std::cerr << "Test_AddEntriesRawStats() PASSED" << std::endl;
+        std::cerr << "Test_AddEntriesRawStats() PASSED";
     }
     return testAddEntriesRawStats;
 }
@@ -1964,13 +2056,13 @@ bool TestPlot::Test_AddEntriesByPropertiesOrCovariates()
 
     if( !testAddEntriesByPropertiesOrCovariates )
     {
-        std::cerr << "/!\\ Test_AddEntriesByPropertiesOrCovariates() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable> &table )" << std::endl;
-        DisplayError_EntryList( plot.m_lineNames, tableEntries );
+        std::cerr << "/!\\/!\\ Test_AddEntriesByPropertiesOrCovariates() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable> &table )" << std::endl;
+//        DisplayError_QStringList( plot.m_lineNames, tableEntries, "entries" );
     }
     else
     {
-        std::cerr << "Test_AddEntriesByPropertiesOrCovariates() PASSED" << std::endl;
+        std::cerr << "Test_AddEntriesByPropertiesOrCovariates() PASSED";
     }
     return testAddEntriesByPropertiesOrCovariates;
 }
@@ -1995,13 +2087,13 @@ bool TestPlot::Test_AddEntriesCovariatesBands()
 
     if( !testAddEntriesCovariatesBands )
     {
-        std::cerr << "/!\\ Test_AddEntriesCovariatesBands() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddEntriesCovariatesBands( vtkSmartPointer<vtkTable> &table )" << std::endl;
-        DisplayError_EntryList( expectedEntries, tableEntries );
+        std::cerr << "/!\\/!\\ Test_AddEntriesCovariatesBands() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with AddEntriesCovariatesBands( vtkSmartPointer<vtkTable> &table )" << std::endl;
+//        DisplayError_QStringList( expectedEntries, tableEntries, "entries" );
     }
     else
     {
-        std::cerr << "Test_AddEntriesCovariatesBands() PASSED" << std::endl;
+        std::cerr << "Test_AddEntriesCovariatesBands() PASSED";
     }
     return testAddEntriesCovariatesBands;
 }
@@ -2050,13 +2142,13 @@ bool TestPlot::Test_SetData()
 
     if( !testSetData )
     {
-        std::cerr << "/!\\ Test_SetData() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetData( vtkSmartPointer<vtkTable> &table )" << std::endl;
-        DisplayError_QListQList( expectedTable, dataTable, "table" );
+        std::cerr << "/!\\/!\\ Test_SetData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetData( vtkSmartPointer<vtkTable> &table )" << std::endl;
+//        DisplayError_QListQList( expectedTable, dataTable, "table" );
     }
     else
     {
-        std::cerr << "Test_SetData() PASSED" << std::endl;
+        std::cerr << "Test_SetData() PASSED";
     }
     return testSetData;
 }
@@ -2076,13 +2168,13 @@ bool TestPlot::Test_InitLines()
     bool testInitLines = plot.m_chart->GetNumberOfPlots() == plot.m_nbrPlot;
     if( !testInitLines )
     {
-        std::cerr << "/!\\ Test_InitLines() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with InitLines()" << std::endl;
-        std::cerr << "\t+ initialization failed: " << plot.m_nbrPlot << " plots expected | " << plot.m_chart->GetNumberOfPlots() << " plots set" << std::endl;
+        std::cerr << "/!\\/!\\ Test_InitLines() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with InitLines()" << std::endl;
+//        std::cerr << "\t  " << plot.m_nbrPlot << " plots expected | " << plot.m_chart->GetNumberOfPlots() << " plots set" << std::endl;
     }
     else
     {
-        std::cerr << "Test_InitLines() PASSED" << std::endl;
+        std::cerr << "Test_InitLines() PASSED";
     }
     return testInitLines;
 }
@@ -2122,57 +2214,51 @@ bool TestPlot::Test_AddSignificantLevel()
     bool testAddSignificantLevel = testNbrPlots && testSignificantLevel && testLineWidth;
     if( !testAddSignificantLevel )
     {
-        std::cerr << "/!\\ Test_AddSignificantLevel() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddSignificantLevel( double significantLevel )" << std::endl;
-        if( !testNbrPlots )
-        {
-            std::cerr << "\t+ significant level not added to m_chart" << std::endl;
-        }
-        if( !testSignificantLevel )
-        {
-            std::cerr << "\t+ wrong significant level added to m_chart" << std::endl;
-            std::cerr << "\t   significant level expected: " << significantLevel << " | significant level set: " << dataTable.last().last() << std::endl;
-        }
-        if( !testLineWidth )
-        {
-            std::cerr << "\t+ wrong line width" << std::endl;
-            std::cerr << "\t   line width expected: " << lineWidth / 2 << " | line width set: " << plot.m_chart->GetPlot( indexLastPlot )->GetWidth() << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_AddSignificantLevel() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with AddSignificantLevel( double significantLevel )" << std::endl;
+//        if( !testNbrPlots )
+//        {
+//            std::cerr << "\t+ significant level not added to m_chart" << std::endl;
+//        }
+//        if( !testSignificantLevel )
+//        {
+//            std::cerr << "\t+ wrong significant level added to m_chart" << std::endl;
+//            std::cerr << "\t  significant level expected: " << significantLevel << " | significant level set: " << dataTable.last().last() << std::endl;
+//        }
+//        if( !testLineWidth )
+//        {
+//            std::cerr << "\t+ wrong line width" << std::endl;
+//            std::cerr << "\t  line width expected: " << lineWidth / 2 << " | line width set: " << plot.m_chart->GetPlot( indexLastPlot )->GetWidth() << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_AddSignificantLevel() PASSED" << std::endl;
+        std::cerr << "Test_AddSignificantLevel() PASSED";
     }
     return testAddSignificantLevel;
 }
 
 bool TestPlot::Test_AddLineSigBetas()
 {
-    Plot plot;
+//    Plot plot;
 
 
 
 
 
-    bool testAddLineSigBetas = false;
-    if( !testAddLineSigBetas )
-    {
-        std::cerr << "/!\\ Test_AddLineSigBetas() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedByProperties, bool isOmnibus, int i )" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Test_AddLineSigBetas() PASSED" << std::endl;
-    }
-    return testAddLineSigBetas;
+//    bool testAddLineSigBetas = false;
+//    if( !testAddLineSigBetas )
+//    {
+//        std::cerr << "/!\\/!\\ Test_AddLineSigBetas() FAILED /!\\/!\\";
+//        std::cerr << "\t+ pb with AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedByProperties, bool isOmnibus, int i )" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_AddLineSigBetas() PASSED";
+//    }
+//    return testAddLineSigBetas;
+    return false;
 }
-
-
-
-
-
-
-
 
 
 
@@ -2199,143 +2285,92 @@ bool TestPlot::Test_GetyMinMax()
     bool testGetyMinMax = yMinMax == expectedYMinMax;
     if( !testGetyMinMax )
     {
-        std::cerr << "/!\\ Test_GetyMinMax() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetyMinMax()" << std::endl;
-        std::cerr << "\t+ yMinMax expected: {" << yMinMax.first() << "," << yMinMax.at( 1 ) << "} | "
-                  << "yMinMax set: {" << expectedYMinMax.first() << "," << expectedYMinMax.at( 1 ) << "}" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetyMinMax() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetyMinMax()" << std::endl;
+//        std::cerr << "\t  yMinMax expected: {" << yMinMax.first() << "," << yMinMax.at( 1 ) << "} | "
+//                  << "yMinMax set: {" << expectedYMinMax.first() << "," << expectedYMinMax.at( 1 ) << "}" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetyMinMax() PASSED" << std::endl;
+        std::cerr << "Test_GetyMinMax() PASSED";
     }
     return testGetyMinMax;
 }
 
 bool TestPlot::Test_SetyMinMax()
 {
-    Plot plot;
+//    Plot plot;
 
 
 
-    bool testSetyMinMax = false;
-    if( !testSetyMinMax )
-    {
-        std::cerr << "/!\\ Test_SetyMinMax() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with SetyMinMax()" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Test_SetyMinMax() PASSED" << std::endl;
-    }
-    return testSetyMinMax;
+//    bool testSetyMinMax = false;
+//    if( !testSetyMinMax )
+//    {
+//        std::cerr << "/!\\/!\\ Test_SetyMinMax() FAILED /!\\/!\\";
+//        std::cerr << "\t+ pb with SetyMinMax()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_SetyMinMax() PASSED";
+//    }
+//    return testSetyMinMax;
+    return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 /**********************************************************************/
 /********************** Functions Used For Testing ********************/
 /**********************************************************************/
-void TestPlot::DisplayError_FileList( QStringList fileListExpected, QStringList fileListDisplayed )
-{
-    DisplayError_QStringList( fileListExpected, fileListDisplayed, "files" );
-}
-
-void TestPlot::DisplayError_SubjectList( QStringList subjectListExpected, QStringList subjectListDisplayed )
-{
-    DisplayError_QStringList( subjectListExpected, subjectListDisplayed, "subjects" );
-}
-
-void TestPlot::DisplayError_PlotList( QStringList plotListExpected, QStringList plotListDisplayed )
-{
-    DisplayError_QStringList( plotListExpected, plotListDisplayed, "plots" );
-}
-
-void TestPlot::DisplayError_LineNameList( QStringList lineNameListExpected, QStringList lineNameListDisplayed )
-{
-    DisplayError_QStringList( lineNameListExpected, lineNameListDisplayed, "line names" );
-}
-
-void TestPlot::DisplayError_EntryList( QStringList entryListExpected, QStringList entryListDisplayed )
-{
-    DisplayError_QStringList( entryListExpected, entryListDisplayed, "entries" );
-}
-
 void TestPlot::DisplayError_QStringList( QStringList qStringListExpected, QStringList qStringListDisplayed, QString type )
 {
-    std::cerr << "\t   - " << type.toStdString() << " expected" << std::endl;
+    std::cerr << "\t  - " << type.toStdString() << " expected:" << std::endl;
     for( int i = 0; i < qStringListExpected.size(); i++ )
     {
-        std::cerr << "\t\t  \"" << qStringListExpected.at( i ).toStdString() << "\"" << std::endl;
+        std::cerr << "\t      " << qStringListExpected.at( i ).toStdString() << std::endl;
     }
-    std::cerr << "\t   - " << type.toStdString() << " displayed" << std::endl;
+    std::cerr << "\t  - " << type.toStdString() << " displayed:" << std::endl;
     for( int i = 0; i < qStringListDisplayed.size(); i++ )
     {
-        std::cerr << "\t\t  \"" << qStringListDisplayed.at( i ).toStdString() << "\"" << std::endl;
+        std::cerr << "\t      " << qStringListDisplayed.at( i ).toStdString() << std::endl;
     }
-}
-
-
-void TestPlot::DisplayError_Properties( QMap<int, QString> propertiesExpected, QMap<int, QString> propertiesDisplayed )
-{
-    DisplayError_QMapIntQString( propertiesExpected, propertiesDisplayed, "properties" );
-}
-
-void TestPlot::DisplayError_Covariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed )
-{
-    DisplayError_QMapIntQString( covariatesExpected, covariatesDisplayed, "covariates" );
 }
 
 void TestPlot::DisplayError_QMapIntQString( QMap<int, QString> qMapExpected, QMap<int, QString> qMapDisplayed, QString type )
 {
-    std::cerr << "\t   - " << type.toStdString() << " expected" << std::endl;
+    std::cerr << "\t  - " << type.toStdString() << " expected:" << std::endl;
     QMap<int, QString>::ConstIterator iterQMapExpected = qMapExpected.cbegin();
     while( iterQMapExpected != qMapExpected.cend() )
     {
-        std::cerr << "\t\t  \"" << iterQMapExpected.value().toStdString() << "\" at " << iterQMapExpected.key() << std::endl;
+        std::cerr << "\t       " << iterQMapExpected.value().toStdString() << " at " << iterQMapExpected.key() << std::endl;
         ++iterQMapExpected;
     }
-    std::cerr << "\t   - " << type.toStdString() << " displayed" << std::endl;
+    std::cerr << "\t  - " << type.toStdString() << " displayed:" << std::endl;
     QMap<int, QString>::ConstIterator iterQMapDisplayed = qMapDisplayed.cbegin();
     while( iterQMapDisplayed != qMapDisplayed.cend() )
     {
-        std::cerr << "\t\t  \"" << iterQMapDisplayed.value().toStdString() << "\" at " << iterQMapDisplayed.key() << std::endl;
+        std::cerr << "\t       " << iterQMapDisplayed.value().toStdString() << " at " << iterQMapDisplayed.key() << std::endl;
         ++iterQMapDisplayed;
     }
 }
 
-
 template <typename T>
 void TestPlot::DisplayError_QListQList( T qListQListExpected, T qListQListDisplayed, QString type )
 {
-    std::cerr << "\t   - " << type.toStdString() << " expected" << std::endl;
+    std::cerr << "\t  - " << type.toStdString() << " expected:" << std::endl;
     for( int i = 0; i < qListQListExpected.size(); i++ )
     {
-        std::cerr << "\t\t  ";
+        std::cerr << "\t      ";
         for( int j = 0; j < qListQListExpected.first().size(); j++ )
         {
             std::cerr << qListQListExpected.at( i ).at( j ) << ", ";
         }
         std::cerr << std::endl;
     }
-    std::cerr << "\t   - " << type.toStdString() << " displayed" << std::endl;
+    std::cerr << "\t  - " << type.toStdString() << " displayed:" << std::endl;
     for( int i = 0; i < qListQListDisplayed.size(); i++ )
     {
-        std::cerr << "\t\t  ";
+        std::cerr << "\t      ";
         for( int j = 0; j < qListQListDisplayed.first().size(); j++ )
         {
             std::cerr << qListQListDisplayed.at( i ).at( j ) << ", ";

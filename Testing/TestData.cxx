@@ -25,23 +25,23 @@ bool TestData::Test_InitData()
         resultTest5 = resultTest5 & mData.GetSubjects().value( index ).isEmpty();
         resultTest6 = resultTest6 & mData.GetNbrSubjects( index ) == 0;
     }
-    resultTest7 = mData.GetCovariateColumnID() == 0;
+    resultTest7 = mData.GetSubjectColumnID() == 0;
 
 
     bool testInitData_Passed = resultTest1 && resultTest2 && resultTest3
             && resultTest4 && resultTest5 && resultTest6 && resultTest7;
     if( !testInitData_Passed )
     {
-        std::cerr << "/!\\ Test_InitData() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with InitData()" << std::endl;
-        std::cerr << "/!\\ WARNING /!\\" << std::endl;
-        std::cerr << "/!\\ WARNING /!\\ As many classes rely on the Data class, other tests from the Data class and\n" << std::endl;
-        std::cerr << "/!\\ WARNING /!\\ tests from other classes may not be accurate as long as Test_InitData() remains failed" << std::endl;
-        std::cerr << "/!\\ WARNING /!\\" << std::endl;
+        std::cerr << "/!\\/!\\ Test_InitData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with InitData()" << std::endl;
+//        std::cerr << std::endl;
+//        std::cerr << "/!\\ WARNING /!\\ As many classes rely on the Data class, other tests from the Data class and\n"
+//                     "/!\\ WARNING /!\\ tests from other classes may not be accurate as long as Test_InitData() remains failed" << std::endl;
+//        std::cerr << std::endl;
     }
     else
     {
-        std::cerr << "Test_InitData() PASSED" << std::endl;
+        std::cerr << "Test_InitData() PASSED";
     }
 
     return testInitData_Passed;
@@ -66,35 +66,36 @@ bool TestData::Test_GetDiffusionPropertyIndices()
             resultGetAllIndices;
     if( !testGetDiffusionPropertyIndices_Passed )
     {
-        std::cerr << "/!\\ Test_GetDiffusionPropertyIndices() FAILED /!\\" << std::endl;
-        if( !resultGetAxialDiffusivityIndex )
-        {
-            std::cerr << "\t+ pb with GetAxialDiffusivityIndex()" << std::endl;
-        }
-        if( !resultGetRadialDiffusivityIndex )
-        {
-            std::cerr << "\t+ pb with GetRadialDiffusivityIndex()" << std::endl;
-        }
-        if( !resultGetMeanDiffusivityIndex )
-        {
-            std::cerr << "\t+ pb with GetMeanDiffusivityIndex()" << std::endl;
-        }
-        if( !resultGetFractionalAnisotropyIndex )
-        {
-            std::cerr << "\t+ pb with GetFractionalAnisotropyIndex()" << std::endl;
-        }
-        if( !resultGetCovariateIndex )
-        {
-            std::cerr << "\t+ pb with GetCovariateIndex()" << std::endl;
-        }
-        if( !resultGetAllIndices )
-        {
-            std::cerr << "\t+ pb with GetDiffusionPropertiesIndices()" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_GetDiffusionPropertyIndices() FAILED /!\\/!\\";
+//        std::cerr << std::endl;
+//        if( !resultGetAxialDiffusivityIndex )
+//        {
+//            std::cerr << "\t+ pb with GetAxialDiffusivityIndex()" << std::endl;
+//        }
+//        if( !resultGetRadialDiffusivityIndex )
+//        {
+//            std::cerr << "\t+ pb with GetRadialDiffusivityIndex()" << std::endl;
+//        }
+//        if( !resultGetMeanDiffusivityIndex )
+//        {
+//            std::cerr << "\t+ pb with GetMeanDiffusivityIndex()" << std::endl;
+//        }
+//        if( !resultGetFractionalAnisotropyIndex )
+//        {
+//            std::cerr << "\t+ pb with GetFractionalAnisotropyIndex()" << std::endl;
+//        }
+//        if( !resultGetCovariateIndex )
+//        {
+//            std::cerr << "\t+ pb with GetCovariateIndex()" << std::endl;
+//        }
+//        if( !resultGetAllIndices )
+//        {
+//            std::cerr << "\t+ pb with GetDiffusionPropertiesIndices()" << std::endl;
+//        }
     }
     else
     {
-        std::cerr << "Test_GetDiffusionPropertyIndices() PASSED" << std::endl;
+        std::cerr << "Test_GetDiffusionPropertyIndices() PASSED";
     }
 
     return testGetDiffusionPropertyIndices_Passed;
@@ -117,12 +118,12 @@ bool TestData::Test_GetDiffusionPropertyName()
             && resultTest4 && resultTest5 && resultTest6;
     if( !testGetDiffusionPropertyName_Passed )
     {
-        std::cerr << "/!\\ Test_GetDiffusionPropertyName() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetDiffusionPropertyName( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetDiffusionPropertyName() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetDiffusionPropertyName( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetDiffusionPropertyName() PASSED" << std::endl;
+        std::cerr << "Test_GetDiffusionPropertyName() PASSED";
     }
 
     return testGetDiffusionPropertyName_Passed;
@@ -132,11 +133,12 @@ bool TestData::Test_GetDiffusionPropertyName()
 bool TestData::Test_GetSetFilename()
 {
     Data mData;
-    mData.InitData();
     QString filename1 = "./path1/filename1";
     QString filename2 = "./path2/filename2";
     QString filename3 = "./path3/filename2";
 
+
+    mData.InitData();
 
     mData.SetFilename( 0 ) = filename1;
     bool resultTest1 = mData.GetFilename( 0 ) == filename1;
@@ -161,12 +163,12 @@ bool TestData::Test_GetSetFilename()
             resultTest4 && resultTest5 && resultTest6;
     if( !testGetSetFilename_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetFilename() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetFilename( int diffusionPropertyIndex ) and/or SetFilename( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetFilename() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetFilename( int diffusionPropertyIndex ) and/or SetFilename( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetFilename() PASSED" << std::endl;
+        std::cerr << "Test_GetSetFilename() PASSED";
     }
 
     return testGetSetFilename_Passed;
@@ -175,7 +177,6 @@ bool TestData::Test_GetSetFilename()
 bool TestData::Test_GetSetFileData()
 {
     Data mData;
-    mData.InitData();
     QStringList row1 = QStringList() << "La" << "lune" << "était" << "sereine" << "et" << "jouait" << "sur" << "les" << "flots.";
     QStringList row2 = QStringList() << "La" << "fenêtre" << "enfin" << "libre" << "est" << "ouverte" << "à" << "la" << "brise,";
     QStringList row3 = QStringList() << "La" << "sultane" << "regarde," << "et" << "la" << "mer" << "qui" << "se" << "brise,";
@@ -208,6 +209,8 @@ bool TestData::Test_GetSetFileData()
     QList<QStringList> fileData5 = QList<QStringList>() << row17 << row18 << row19 << row20;
 
 
+    mData.InitData();
+
     mData.SetFileData( 0 ) = fileData1;
     bool resultTest1 = mData.GetFileData( 0 ) == fileData1;
 
@@ -231,12 +234,12 @@ bool TestData::Test_GetSetFileData()
             resultTest4 && resultTest5 && resultTest6;
     if( !testGetSetFileData_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetFileData() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetFileData( int diffusionPropertyIndex ) and/or SetFileData( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetFileData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetFileData( int diffusionPropertyIndex ) and/or SetFileData( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetFileData() PASSED" << std::endl;
+        std::cerr << "Test_GetSetFileData() PASSED";
     }
 
     return testGetSetFileData_Passed;
@@ -245,11 +248,12 @@ bool TestData::Test_GetSetFileData()
 bool TestData::Test_GetSetNbrRows()
 {
     Data mData;
-    mData.InitData();
     int nbrRows1 = 0;
     int nbrRows2 = 400;
     int nbrRows3 = 800;
 
+
+    mData.InitData();
 
     mData.SetNbrRows( 0 ) = nbrRows1;
     bool resultTest1 = mData.GetNbrRows( 0 ) == nbrRows1;
@@ -274,12 +278,12 @@ bool TestData::Test_GetSetNbrRows()
             resultTest4 && resultTest5 && resultTest6;
     if( !testGetSetNbrRows_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetNbrRows() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetNbrRows( int diffusionPropertyIndex ) and/or SetNbrRows( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetNbrRows() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetNbrRows( int diffusionPropertyIndex ) and/or SetNbrRows( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetNbrRows() PASSED" << std::endl;
+        std::cerr << "Test_GetSetNbrRows() PASSED";
     }
 
     return testGetSetNbrRows_Passed;
@@ -288,11 +292,12 @@ bool TestData::Test_GetSetNbrRows()
 bool TestData::Test_GetSetNbrColumns()
 {
     Data mData;
-    mData.InitData();
     int nbrColumns1 = 0;
     int nbrColumns2 = 400;
     int nbrColumns3 = 800;
 
+
+    mData.InitData();
 
     mData.SetNbrColumns( 0 ) = nbrColumns1;
     bool resultTest1 = mData.GetNbrColumns( 0 ) == nbrColumns1;
@@ -317,12 +322,12 @@ bool TestData::Test_GetSetNbrColumns()
             resultTest4 && resultTest5 && resultTest6;
     if( !testGetSetNbrColumns_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetNbrColumns() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetNbrColumns( int diffusionPropertyIndex ) and/or SetNbrColumns( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetNbrColumns() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetNbrColumns( int diffusionPropertyIndex ) and/or SetNbrColumns( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetNbrColumns() PASSED" << std::endl;
+        std::cerr << "Test_GetSetNbrColumns() PASSED";
     }
 
     return testGetSetNbrColumns_Passed;
@@ -331,12 +336,13 @@ bool TestData::Test_GetSetNbrColumns()
 bool TestData::Test_GetSetSubjects()
 {
     Data mData;
-    mData.InitData();
     QStringList subjectsList1 = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Wendy" << "Craig" << "Pip";
     QStringList subjectsList2 = QStringList() << "Yoda" << "Luke" << "Darth Vader" << "Han Solo" << "Chewbacca" << "R2D2" << "C3PO" << "Obi-Wan" << "Leila";
     QStringList subjectsList3 = QStringList() << "Frodo" << "Gandalf" << "Aragorn" << "Legolas" << "Gimli" << "Boromir" << "Sam" << "Merry" << "Pipino";
     QMap<int, QStringList> subjectsMap;
 
+
+    mData.InitData();
 
     mData.SetSubjects( 0 ) = subjectsList1;
     mData.SetSubjects( 1 ) = subjectsList2;
@@ -355,12 +361,12 @@ bool TestData::Test_GetSetSubjects()
             resultTest4 && resultTest5;
     if( !testGetSetSubjects_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetSubjects() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetSubjects() and/or SetSubjects( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetSubjects() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetSubjects() and/or SetSubjects( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetSubjects() PASSED" << std::endl;
+        std::cerr << "Test_GetSetSubjects() PASSED";
     }
 
     return testGetSetSubjects_Passed;
@@ -369,11 +375,12 @@ bool TestData::Test_GetSetSubjects()
 bool TestData::Test_GetSetNbrSubjects()
 {
     Data mData;
-    mData.InitData();
     int nbrSubjects1 = 0;
     int nbrSubjects2 = 400;
     int nbrSubjects3 = 800;
 
+
+    mData.InitData();
 
     mData.SetNbrSubjects( 0 ) = nbrSubjects1;
     bool resultTest1 = mData.GetNbrSubjects( 0 ) == nbrSubjects1;
@@ -398,12 +405,12 @@ bool TestData::Test_GetSetNbrSubjects()
             resultTest4 && resultTest5 && resultTest6;
     if( !testGetSetNbrSubjects_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetNbrSubjects() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetNbrSubjects( int diffusionPropertyIndex ) and/or SetNbrSubjects( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetNbrSubjects() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetNbrSubjects( int diffusionPropertyIndex ) and/or SetNbrSubjects( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetNbrSubjects() PASSED" << std::endl;
+        std::cerr << "Test_GetSetNbrSubjects() PASSED";
     }
 
     return testGetSetNbrSubjects_Passed;
@@ -454,50 +461,50 @@ bool TestData::Test_GetSetCovariates()
     bool testGetSetCovariates_Passed = resultTest1 && resultTest2 && resultTest3 && resultTest4 && resultTest5;
     if( !testGetSetCovariates_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetCovariates() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetCovariate() and/or SetCovariate()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetCovariates() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetCovariate() and/or SetCovariate()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetCovariates() PASSED" << std::endl;
+        std::cerr << "Test_GetSetCovariates() PASSED";
     }
 
     return testGetSetCovariates_Passed;
 }
 
-bool TestData::Test_GetSetCovariateColumnID()
+bool TestData::Test_GetSetSubjectColumnID()
 {
     Data mData;
-    int covariateColumnID1 = 0;
-    int covariateColumnID2 = 4;
-    int covariateColumnID3 = 8;
+    int subjectColumnID1 = 0;
+    int subjectColumnID2 = 4;
+    int subjectColumnID3 = 8;
 
 
-    mData.SetCovariateColumnID() = covariateColumnID1;
-    bool resultTest1 = mData.GetCovariateColumnID() == covariateColumnID1;
+    mData.SetSubjectColumnID() = subjectColumnID1;
+    bool resultTest1 = mData.GetSubjectColumnID() == subjectColumnID1;
 
-    mData.SetCovariateColumnID() = covariateColumnID2;
-    bool resultTest2 = mData.GetCovariateColumnID() == covariateColumnID2;
+    mData.SetSubjectColumnID() = subjectColumnID2;
+    bool resultTest2 = mData.GetSubjectColumnID() == subjectColumnID2;
 
-    mData.SetCovariateColumnID() = covariateColumnID3;
-    bool resultTest3 = mData.GetCovariateColumnID() == covariateColumnID3;
+    mData.SetSubjectColumnID() = subjectColumnID3;
+    bool resultTest3 = mData.GetSubjectColumnID() == subjectColumnID3;
 
-    mData.SetCovariateColumnID() = 0;
-    bool resultTest4 = mData.GetCovariateColumnID() == 0;
+    mData.SetSubjectColumnID() = 0;
+    bool resultTest4 = mData.GetSubjectColumnID() == 0;
 
 
-    bool testGetSetCovariateColumnID_Passed = resultTest1 && resultTest2 && resultTest3 && resultTest4;
-    if( !testGetSetCovariateColumnID_Passed )
+    bool testGetSetSubjectColumnID_Passed = resultTest1 && resultTest2 && resultTest3 && resultTest4;
+    if( !testGetSetSubjectColumnID_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetCovariateColumnID() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetCovariateColumnID() and/or SetCovariateColumnID()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetSubjectColumnID() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetSubjectColumnID() and/or SetSubjectColumnID()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetCovariateColumnID() PASSED" << std::endl;
+        std::cerr << "Test_GetSetSubjectColumnID() PASSED";
     }
 
-    return testGetSetCovariateColumnID_Passed;
+    return testGetSetSubjectColumnID_Passed;
 }
 
 bool TestData::Test_GetSetOutputDir()
@@ -524,12 +531,12 @@ bool TestData::Test_GetSetOutputDir()
     bool testGetSetOutputDir_Passed = resultTest1 && resultTest2 && resultTest3 && resultTest4;
     if( !testGetSetOutputDir_Passed )
     {
-        std::cerr << "/!\\ Test_GetSetOutputDir() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with GetOutputDir() and/or SetOutputDir()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_GetSetOutputDir() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetOutputDir() and/or SetOutputDir()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetSetOutputDir() PASSED" << std::endl;
+        std::cerr << "Test_GetSetOutputDir() PASSED";
     }
 
     return testGetSetOutputDir_Passed;
@@ -539,7 +546,6 @@ bool TestData::Test_GetSetOutputDir()
 bool TestData::Test_ClearFileInformation()
 {
     Data mData;
-    mData.InitData();
     bool resultTest1, resultTest2, resultTest3, resultTest4, resultTest5, resultTest6;
     QString filename = "./path/filename";
 
@@ -573,6 +579,8 @@ bool TestData::Test_ClearFileInformation()
     }
 
 
+    mData.InitData();
+
     foreach ( int index, mData.GetDiffusionPropertiesIndices() )
     {
         mData.SetFilename( index ) = filename;
@@ -585,7 +593,7 @@ bool TestData::Test_ClearFileInformation()
 
     foreach ( int index, mData.GetDiffusionPropertiesIndices() )
     {
-        mData.ClearFileInformation( index );
+        mData.ClearData( index );
     }
 
     foreach ( int index, mData.GetDiffusionPropertiesIndices() )
@@ -602,12 +610,12 @@ bool TestData::Test_ClearFileInformation()
     bool testClearFileInformation_Passed = resultTest1 && resultTest2 && resultTest3 && resultTest4;
     if( !testClearFileInformation_Passed )
     {
-        std::cerr << "/!\\ Test_ClearFileInformation() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with ClearFileInformation( int diffusionPropertyIndex )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_ClearFileInformation() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with ClearFileInformation( int diffusionPropertyIndex )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_ClearFileInformation() PASSED" << std::endl;
+        std::cerr << "Test_ClearFileInformation() PASSED";
     }
 
     return testClearFileInformation_Passed;
@@ -631,12 +639,12 @@ bool TestData::Test_AddInterceptToCovariates()
 
     if( !testAddInterceptToCovariates_Passed )
     {
-        std::cerr << "/!\\ Test_AddInterceptToCovariates() FAILED /!\\" << std::endl;
-        std::cerr << "\t+ pb with AddInterceptToCovariates()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_AddInterceptToCovariates() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with AddInterceptToCovariates()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_AddInterceptToCovariates() PASSED" << std::endl;
+        std::cerr << "Test_AddInterceptToCovariates() PASSED";
     }
 
     return testAddInterceptToCovariates_Passed;

@@ -88,6 +88,10 @@ bool Plot::InitPlot( QString directory, QString fibername )
 
 void Plot::ResetPlotData()
 {
+    m_directory.clear();
+    m_matlabDirectory.clear();
+    m_fibername.clear();
+
     m_csvRawDataFiles.clear();
     m_csvBetaFiles.clear();
     m_csvOmnibusLpvalueFiles.clear();
@@ -104,10 +108,12 @@ void Plot::ResetPlotData()
     m_dataConfidenceBands.clear();
     m_dataPostHocFDRLpvalue.clear();
 
+    m_plotsUsed.clear();
     m_properties.clear();
     m_covariatesNoIntercept.clear();
     m_allCovariates.clear();
     m_binaryCovariates.clear();
+    m_abscissa.clear();
 }
 
 void Plot::ClearPlot()
@@ -163,7 +169,7 @@ void Plot::SetSelectedCovariate( QString covariateSelected )
     m_covariateSelected = covariateSelected;
 }
 
-void Plot::SetSelectionToDisPlay( const QMap< int, QPair< QString, QPair< bool, QString > > > currentSelectionToDisplay )
+void Plot::SetSelectionToDisPlay( const QMap<int, QPair<QString, QPair<bool, QString> > >& currentSelectionToDisplay )
 {
     m_selectionToDisplay.clear();
     m_selectionToDisplay = currentSelectionToDisplay;
@@ -360,7 +366,7 @@ void Plot::SetMarkerSize( double markerSize )
 }
 
 
-void Plot::UpdateCovariatesNames( QMap< int, QString > newCovariateName )
+void Plot::UpdateCovariatesNames( const QMap< int, QString >& newCovariateName )
 {
     QMap< int, QString >::ConstIterator iterNewCovariatesNames = newCovariateName.cbegin();
     while( iterNewCovariatesNames != newCovariateName.cend() )
@@ -498,27 +504,27 @@ void Plot::OnSavePlot()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-QList < double > Plot::QStringListToDouble( QStringList rowData )
+QList< double > Plot::QStringListToDouble( const QStringList& rowData )
 {
-    QList < double > newRowData;
+    QList< double > rowDataDouble;
     foreach ( QString data, rowData )
     {
-        newRowData.append( data.toDouble() );
+        rowDataDouble.append( data.toDouble() );
     }
-    return newRowData;
+    return rowDataDouble;
 }
 
-QList < QList < double > > Plot::DataToDouble( QList < QStringList > data )
+QList< QList< double > > Plot::DataToDouble( const QList< QStringList >& data )
 {
-    QList < QList < double > > newData;
+    QList< QList< double > > dataDouble;
     foreach ( QStringList rowData, data )
     {
-        newData.append( QStringListToDouble( rowData ) );
+        dataDouble.append( QStringListToDouble( rowData ) );
     }
-    return newData;
+    return dataDouble;
 }
 
-void Plot::SortFilesByProperties( QString directory, QStringList files, QMap< QString, QList<QList<double> > > &data )
+void Plot::SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data )
 {
     bool adFound = false;
     bool mdFound = false;
@@ -563,12 +569,12 @@ void Plot::SortFilesByProperties( QString directory, QStringList files, QMap< QS
     }
 }
 
-void Plot::TransposeData( QList < QList < double > > &data, int firstRow, int firstColumn )
+void Plot::TransposeData( QList<QList<double> >& data, int firstRow, int firstColumn )
 {
-    QList < QList < double > > dataTransposed;
+    QList< QList< double > > dataTransposed;
     for( int j = firstColumn; j < data.first().size(); j++ )
     {
-        QList < double > rowData;
+        QList< double > rowData;
         for( int i = firstRow; i < data.size(); i++ )
         {
             rowData.append( data.at( i ).at( j ) );
@@ -579,9 +585,9 @@ void Plot::TransposeData( QList < QList < double > > &data, int firstRow, int fi
     data = dataTransposed;
 }
 
-void Plot::TransposeDataInQMap( QMap< QString, QList<QList<double> > > &data, int firstRow, int firstColumn )
+void Plot::TransposeDataInQMap( QMap<QString, QList<QList<double> > >& data, int firstRow, int firstColumn )
 {
-    QMap< QString, QList < QList < double > > >::Iterator iterData = data.begin();
+    QMap< QString, QList< QList< double > > >::Iterator iterData = data.begin();
     while( iterData != data.end() )
     {
         TransposeData( iterData.value(), firstRow, firstColumn );
@@ -601,10 +607,10 @@ void Plot::SetBeta()
     SortFilesByProperties( m_matlabDirectory, m_csvBetaFiles, m_dataBeta );
 }
 
-void Plot::SetOmnibusLpvalue(QStringList omnibusLpvalueFiles, QList < QList < double > > &omnibusLpvaluesData )
+void Plot::SetOmnibusLpvalue( const QStringList& omnibusLpvalueFiles, QList<QList<double> >& omnibusLpvaluesData )
 {
     QString currentPath = m_matlabDirectory + "/" + omnibusLpvalueFiles.first();
-    QList < QList < double > > dataTempo = DataToDouble( m_processing.GetDataFromFile( currentPath ) );
+    QList< QList< double > > dataTempo = DataToDouble( m_processing.GetDataFromFile( currentPath ) );
     TransposeData( dataTempo, 0, 0 );
     omnibusLpvaluesData = dataTempo;
 }
@@ -623,7 +629,7 @@ void Plot::SetPostHocFDRLpvalue()
 
 bool Plot::GetRawDataFiles()
 {
-    QStringList nameFilterRawData( "*RawData.csv" );
+    QStringList nameFilterRawData( "*_RawData_*.csv" );
     m_csvRawDataFiles = QDir( m_directory ).entryList( nameFilterRawData );
     m_csvRawDataFiles.sort();
     SetRawData();
@@ -722,19 +728,19 @@ void Plot::SetProperties()
 {
     foreach( QString path, m_csvRawDataFiles )
     {
-        if( path.contains( "_ad_", Qt::CaseInsensitive ) )
+        if( path.contains( "_ad_", Qt::CaseInsensitive ) || path.contains( "_ad.csv", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 0, "AD" );
         }
-        if( path.contains( "_rd_", Qt::CaseInsensitive ) )
+        if( path.contains( "_rd_", Qt::CaseInsensitive ) || path.contains( "_rd.csv", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 1, "RD" );
         }
-        if( path.contains( "_md_", Qt::CaseInsensitive ) )
+        if( path.contains( "_md_", Qt::CaseInsensitive ) || path.contains( "_md.csv", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 2, "MD" );
         }
-        if( path.contains( "_fa_", Qt::CaseInsensitive ) )
+        if( path.contains( "_fa_", Qt::CaseInsensitive ) || path.contains( "_fa.csv", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 3, "FA" );
         }
@@ -776,7 +782,7 @@ void Plot::SetAbscissa()
 }
 
 
-void Plot::SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < double > > &temp1Bin )
+void Plot::SeparateBinary( QList< QList< double > >& temp0Bin, QList< QList< double > >& temp1Bin )
 {
     int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
     for( int i = 0; i < m_ordinate.size(); i++ )
@@ -792,7 +798,7 @@ void Plot::SeparateBinary( QList< QList < double > > &temp0Bin, QList< QList < d
     }
 }
 
-void Plot::GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > &tempMean, QList < double > &tempStdDv )
+void Plot::GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< double >& tempMean, QList< double >& tempStdDv )
 {
     int nbrSubjects = tempBin.size();
     for( int i = 0; i < m_nbrPoint; i++ )
@@ -814,9 +820,9 @@ void Plot::GetMeanAndStdDv( QList< QList < double > > tempBin, QList < double > 
     }
 }
 
-void Plot::ProcessRawStats( QList< QList < double > > tempBin, QList < double > &tempBinMean, QList < double > &tempBinUp, QList < double > &tempBinDown )
+void Plot::ProcessRawStats( const QList< QList< double > >& tempBin, QList< double >& tempBinMean, QList< double >& tempBinUp, QList< double >& tempBinDown )
 {
-    QList < double > tempBinStdDv;
+    QList< double > tempBinStdDv;
     GetMeanAndStdDv( tempBin, tempBinMean, tempBinStdDv );
     for( int i = 0; i < m_nbrPoint; i++ )
     {
@@ -825,19 +831,16 @@ void Plot::ProcessRawStats( QList< QList < double > > tempBin, QList < double > 
     }
 }
 
-void Plot::UpdateOrdinate( QList< QList < double > > &ordinate )
+void Plot::UpdateOrdinate( QList< QList< double > >& ordinate )
 {
     m_lineNames.clear();
     m_lineColors.clear();
 
-//    qDebug() << endl << "ordinate test: " << endl << ordinate << endl;
     int shiftPlot = ordinate.size() - 1;
     QMap< int, QPair< QString, QPair< bool, QString > > >::ConstIterator iterSelectionToDisplay = m_selectionToDisplay.cend();
     while( iterSelectionToDisplay != m_selectionToDisplay.cbegin() )
     {
         --iterSelectionToDisplay;
-//        qDebug() << iterSelectionToDisplay.value().first;
-//        qDebug() << iterSelectionToDisplay.value().second.first;
         if( iterSelectionToDisplay.value().second.first )
         {
             m_lineNames.prepend( iterSelectionToDisplay.value().first );
@@ -845,22 +848,21 @@ void Plot::UpdateOrdinate( QList< QList < double > > &ordinate )
         }
         else
         {
-//            qDebug() << endl << "remove at: " << shiftPlot << endl;
             ordinate.removeAt( shiftPlot );
         }
         shiftPlot--;
     }
 }
 
-QList< QList < double > > Plot::ToLog10( QList< QList < double > > data )
+QList< QList< double > > Plot::ToLog10( const QList< QList< double > >& data )
 {
-    QList< QList < double > > dataToLog10;
-    foreach( QList < double > rowData, data )
+    QList< QList< double > > dataToLog10;
+    foreach( QList< double > rowData, data )
     {
-        QList < double > rowDataTempo;
-        foreach( double dbl, rowData )
+        QList< double > rowDataTempo;
+        foreach( double dataToModify, rowData )
         {
-            rowDataTempo.append( - std::log10( dbl ) );
+            rowDataTempo.append( - std::log10( dataToModify ) );
         }
         dataToLog10.append( rowDataTempo );
     }
@@ -868,30 +870,30 @@ QList< QList < double > > Plot::ToLog10( QList< QList < double > > data )
 }
 
 
-QList< QList < double > > Plot::LoadRawData()
+QList< QList< double > > Plot::LoadRawData()
 {
-    QList< QList < double > > ordinate = m_dataRawData.value( m_propertySelected );
+    QList< QList< double > > ordinate = m_dataRawData.value( m_propertySelected );
     ordinate.removeFirst();
     return ordinate;
 }
 
-QList< QList < double > > Plot::LoadRawStats()
+QList< QList< double > > Plot::LoadRawStats()
 {
-    QList< QList < double > > temp0Bin;
-    QList< QList < double > > temp1Bin;
+    QList< QList< double > > temp0Bin;
+    QList< QList< double > > temp1Bin;
     SeparateBinary( temp0Bin, temp1Bin );
 
-    QList < double > temp0BinUp;
-    QList < double > temp0BinMean;
-    QList < double > temp0BinDown;
+    QList< double > temp0BinUp;
+    QList< double > temp0BinMean;
+    QList< double > temp0BinDown;
     ProcessRawStats( temp0Bin, temp0BinMean, temp0BinUp, temp0BinDown );
 
-    QList < double > temp1BinUp;
-    QList < double > temp1BinMean;
-    QList < double > temp1BinDown;
+    QList< double > temp1BinUp;
+    QList< double > temp1BinMean;
+    QList< double > temp1BinDown;
     ProcessRawStats( temp1Bin, temp1BinMean, temp1BinUp, temp1BinDown );
 
-    QList< QList < double > > ordinate;
+    QList< QList< double > > ordinate;
     ordinate.append( temp0BinUp );
     ordinate.append( temp0BinMean );
     ordinate.append( temp0BinDown );
@@ -904,9 +906,9 @@ QList< QList < double > > Plot::LoadRawStats()
     return ordinate;
 }
 
-QList< QList < double > > Plot::LoadBetas()
+QList< QList< double > > Plot::LoadBetas()
 {
-    QList< QList < double > > ordinate;
+    QList< QList< double > > ordinate;
     ordinate = m_dataBeta.value( m_propertySelected );
 
     UpdateOrdinate( ordinate );
@@ -914,9 +916,9 @@ QList< QList < double > > Plot::LoadBetas()
     return ordinate;
 }
 
-QList< QList < double > > Plot::LoadBetaByCovariate()
+QList< QList< double > > Plot::LoadBetaByCovariate()
 {
-    QList< QList < double > > ordinate;
+    QList< QList< double > > ordinate;
     QMap< int, QString >::ConstIterator iterProperties = m_properties.cbegin();
     while( iterProperties != m_properties.cend() )
     {
@@ -928,18 +930,18 @@ QList< QList < double > > Plot::LoadBetaByCovariate()
     return ordinate;
 }
 
-QList< QList < double > > Plot::LoadOmnibusLpvalues( QList< QList < double > > omnibusLpvalues )
+QList< QList< double > > Plot::LoadOmnibusLpvalues( QList< QList< double > > omnibusLpvalues )
 {
-    QList< QList < double > > ordinate = omnibusLpvalues;
+    QList< QList< double > > ordinate = omnibusLpvalues;
     m_selectionToDisplay.remove( m_selectionToDisplay.firstKey() );
     UpdateOrdinate( ordinate );
 
     return ToLog10( ordinate );
 }
 
-QList< QList < double > > Plot::LoadConfidenceBand()
+QList< QList< double > > Plot::LoadConfidenceBand()
 {
-    QList< QList < double > > ordinate;
+    QList< QList< double > > ordinate;
     ordinate.append( m_dataConfidenceBands.value( m_propertySelected ).at( 2*m_allCovariates.key( m_covariateSelected ) + 1 ) );
     ordinate.append( m_dataBeta.value( m_propertySelected ).at( m_allCovariates.key( m_covariateSelected ) ) );
     ordinate.append( m_dataConfidenceBands.value( m_propertySelected ).at( 2*m_allCovariates.key( m_covariateSelected ) ) );
@@ -947,9 +949,9 @@ QList< QList < double > > Plot::LoadConfidenceBand()
     return ordinate;
 }
 
-QList< QList < double > > Plot::LoadPostHocFDRLpvalues()
+QList< QList< double > > Plot::LoadPostHocFDRLpvalues()
 {
-    QList< QList < double > > ordinate;
+    QList< QList< double > > ordinate;
     QMap< int, QString >::ConstIterator iterProperties = m_properties.cbegin();
     while( iterProperties != m_properties.cend() )
     {
@@ -1018,7 +1020,7 @@ bool Plot::LoadData()
 }
 
 
-void Plot::AddEntriesRawData( vtkSmartPointer<vtkTable> &table )
+void Plot::AddEntriesRawData( vtkSmartPointer<vtkTable>& table )
 {
     for( int i = 0; i < m_nbrPlot; i++ )
     {
@@ -1028,7 +1030,7 @@ void Plot::AddEntriesRawData( vtkSmartPointer<vtkTable> &table )
     }
 }
 
-void Plot::AddEntriesRawStats( vtkSmartPointer<vtkTable> &table )
+void Plot::AddEntriesRawStats( vtkSmartPointer<vtkTable>& table )
 {
     vtkSmartPointer<vtkFloatArray> std0up = vtkSmartPointer<vtkFloatArray>::New();
     std0up->SetName( QString( m_covariateSelected + " = 0 std+" ).toStdString().c_str() );
@@ -1050,7 +1052,7 @@ void Plot::AddEntriesRawStats( vtkSmartPointer<vtkTable> &table )
     table->AddColumn( std1down );
 }
 
-void Plot::AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable> &table )
+void Plot::AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable>& table )
 {
     for( int i = 0; i < m_nbrPlot; i++ )
     {
@@ -1060,7 +1062,7 @@ void Plot::AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable> &table 
     }
 }
 
-void Plot::AddEntriesCovariatesBands( vtkSmartPointer<vtkTable> &table )
+void Plot::AddEntriesCovariatesBands( vtkSmartPointer<vtkTable>& table )
 {
     vtkSmartPointer<vtkFloatArray> upperConfidenceBand = vtkSmartPointer<vtkFloatArray>::New();
     upperConfidenceBand->SetName( "Upper Confidence Band" );
@@ -1073,7 +1075,7 @@ void Plot::AddEntriesCovariatesBands( vtkSmartPointer<vtkTable> &table )
     table->AddColumn( lowerConfidenceBand );
 }
 
-void Plot::AddEntries( vtkSmartPointer<vtkTable> &table )
+void Plot::AddEntries( vtkSmartPointer<vtkTable>& table )
 {
     vtkSmartPointer<vtkFloatArray> abscissa = vtkSmartPointer<vtkFloatArray>::New();
     abscissa->SetName( "Arc Length" );
@@ -1104,7 +1106,7 @@ void Plot::AddEntries( vtkSmartPointer<vtkTable> &table )
 }
 
 
-void Plot::SetData( vtkSmartPointer<vtkTable> &table )
+void Plot::SetData( vtkSmartPointer<vtkTable>& table )
 {
     table->SetNumberOfRows( m_nbrPoint );
     for( int i = 0; i < m_nbrPoint; i++ )
@@ -1156,7 +1158,7 @@ void Plot::AddSignificantLevel( double significantLevel )
     sigLevelLine->SetWidth( m_lineWidth / 2 );
 }
 
-void Plot::AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedByProperties, bool isOmnibus, int i )
+void Plot::AddLineSigBetas( const vtkSmartPointer<vtkTable>& table, bool betaDisplayedByProperties, bool isOmnibus, int i )
 {
     vtkSmartPointer<vtkFloatArray> abscissaSigBetaTempo = vtkSmartPointer<vtkFloatArray>::New();
     abscissaSigBetaTempo->SetNumberOfComponents( 1 );
@@ -1227,7 +1229,7 @@ void Plot::AddLineSigBetas( vtkSmartPointer<vtkTable> table, bool betaDisplayedB
     }
 }
 
-void Plot::AddLineRawData( vtkSmartPointer<vtkTable> table )
+void Plot::AddLineRawData( const vtkSmartPointer<vtkTable>& table )
 {
     int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
     for( int i = 0; i < m_nbrPlot; i++ )
@@ -1241,14 +1243,14 @@ void Plot::AddLineRawData( vtkSmartPointer<vtkTable> table )
         }
         else
         {
-            QList < int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+            QList< int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
             currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
             currentLine->SetWidth( m_lineWidth );
         }
     }
 }
 
-void Plot::AddLineRawStats( vtkSmartPointer<vtkTable> table )
+void Plot::AddLineRawStats( const vtkSmartPointer<vtkTable>& table )
 {
     for( int i = 0; i < m_nbrPlot; i++ )
     {
@@ -1260,7 +1262,7 @@ void Plot::AddLineRawStats( vtkSmartPointer<vtkTable> table )
         }
         else
         {
-            QList < int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+            QList< int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
             currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
         }
 
@@ -1276,7 +1278,7 @@ void Plot::AddLineRawStats( vtkSmartPointer<vtkTable> table )
     }
 }
 
-void Plot::AddLineBetas( vtkSmartPointer<vtkTable> table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus )
+void Plot::AddLineBetas( const vtkSmartPointer<vtkTable>& table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus )
 {
     for( int i = 0; i < m_nbrPlot; i++ )
     {
@@ -1302,7 +1304,7 @@ void Plot::AddLineBetas( vtkSmartPointer<vtkTable> table, bool isSigBeta, bool b
     AddSignificantLevel( 0 );
 }
 
-void Plot::AddLineLPvalue( vtkSmartPointer<vtkTable> table )
+void Plot::AddLineLPvalue( const vtkSmartPointer<vtkTable>& table )
 {
     for( int i = 0; i < m_nbrPlot; i++ )
     {
@@ -1315,7 +1317,7 @@ void Plot::AddLineLPvalue( vtkSmartPointer<vtkTable> table )
     AddSignificantLevel( -log10( m_pvalueThreshold ) );
 }
 
-void Plot::AddLineLConfidenceBands( vtkSmartPointer<vtkTable> table )
+void Plot::AddLineLConfidenceBands( const vtkSmartPointer<vtkTable>& table )
 {
     for( int i = 0; i < m_nbrPlot; i++ )
     {
@@ -1323,7 +1325,7 @@ void Plot::AddLineLConfidenceBands( vtkSmartPointer<vtkTable> table )
         currentLine->SetInputData( table, 0, i + 1 );
         if( i%2 )
         {
-            QList < int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+            QList< int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
             currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
         }
         else
@@ -1337,7 +1339,7 @@ void Plot::AddLineLConfidenceBands( vtkSmartPointer<vtkTable> table )
     AddSignificantLevel( 0 );
 }
 
-void Plot::AddLines( vtkSmartPointer<vtkTable> table )
+void Plot::AddLines( const vtkSmartPointer<vtkTable>& table )
 {
     InitLines();
 
@@ -1386,7 +1388,7 @@ QList< double > Plot::GetyMinMax()
     QList< double > yMinMax;
     double yMin = m_yMin.first ? m_yMin.second : 1000;
     double yMax = m_yMax.first ? m_yMax.second : -1000;
-    foreach( QList < double > rowData, m_ordinate )
+    foreach( QList< double > rowData, m_ordinate )
     {
         foreach( double data, rowData )
         {

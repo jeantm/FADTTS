@@ -1,5 +1,6 @@
 #include "FADTTSWindowConfig.h"
 
+
 FADTTSWindowConfig::FADTTSWindowConfig( QWidget *parent, Qt::WindowFlags f ):
     QMainWindow( parent, f )
 {
@@ -150,7 +151,6 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     para_inputTab_faFile_lineEdit->setText( m_para_m->getpara_inputTab_faFile_lineEdit() );
     para_inputTab_subMatrixFile_lineEdit->setText( m_para_m->getpara_inputTab_subMatrixFile_lineEdit() );
 
-
     /*2nd tab: Subjects/Covariates*/
     para_subjectCovariateTab_adFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_adFile_checkBox() );
     para_subjectCovariateTab_rdFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_rdFile_checkBox() );
@@ -173,7 +173,6 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
 
     para_subjectCovariateTab_subjectFile_lineEdit->setText( m_para_m->getpara_subjectCovariateTab_subjectFile_lineEdit() );
 
-
     /*3rd tab: Execution*/
     para_executionTab_fiberName_lineEdit->setText( m_para_m->getpara_executionTab_fiberName_lineEdit() );
     para_executionTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_executionTab_nbrPermutations_spinBox() );
@@ -192,7 +191,6 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
     soft_executionTab_runMatlabKD_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabKD_radioButton() );
     soft_executionTab_killDevilQueue_comboBox->setCurrentText( m_soft_m->getsoft_executionTab_killDevilQueue_comboBox() );
     soft_executionTab_killDevilAllocatedMemory_spinBox->setValue( m_soft_m->getsoft_executionTab_killDevilAllocatedMemory_spinBox() );
-
 
     m_sync = false;
 }

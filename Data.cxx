@@ -17,7 +17,7 @@ void Data::InitData()
         m_nbrSubjectsMap[ diffusionPropertyIndex ];
     }
 
-    m_covariateColumnID = 0;
+    m_subjectColumnID = 0;
 }
 
 
@@ -110,9 +110,9 @@ QMap<int, QString> Data::GetCovariates() const
     return m_covariateMap;
 }
 
-int Data::GetCovariateColumnID() const
+int Data::GetSubjectColumnID() const
 {
-    return m_covariateColumnID;
+    return m_subjectColumnID;
 }
 
 QString Data::GetOutputDir() const
@@ -159,9 +159,9 @@ QMap<int, QString>& Data::SetCovariates()
     return m_covariateMap;
 }
 
-int& Data::SetCovariateColumnID()
+int& Data::SetSubjectColumnID()
 {
-    return m_covariateColumnID;
+    return m_subjectColumnID;
 }
 
 QString& Data::SetOutputDir()
@@ -171,7 +171,7 @@ QString& Data::SetOutputDir()
 
 
 
-void Data::ClearFileInformation( int diffusionPropertyIndex )
+void Data::ClearData( int diffusionPropertyIndex )
 {
     m_filenameMap[ diffusionPropertyIndex ].clear();
     m_fileDataMap[ diffusionPropertyIndex ].clear();

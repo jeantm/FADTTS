@@ -16,11 +16,9 @@ public:
     /**********************************************************************/
     bool Test_InitData();
 
-
     bool Test_GetDiffusionPropertyIndices();
 
     bool Test_GetDiffusionPropertyName();
-
 
     bool Test_GetSetFilename();
 
@@ -34,13 +32,11 @@ public:
 
     bool Test_GetSetNbrSubjects();
 
-
     bool Test_GetSetCovariates();
 
-    bool Test_GetSetCovariateColumnID();
+    bool Test_GetSetSubjectColumnID();
 
     bool Test_GetSetOutputDir();
-
 
     bool Test_ClearFileInformation();
 

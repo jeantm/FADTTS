@@ -25,16 +25,16 @@ QList<QStringList> Processing::GetDataFromFile( QString filePath )
     /** Read all the file line by line **/
     while( !ts.atEnd() )
     {
-         tempRows.append( ts.readLine() );
+        tempRows.append( ts.readLine() );
     }
     file.close();
 
     /** If only one line read, check for the carriage return character "\r" **/
     if(  tempRows.size() == 1 )
     {
-         tempRows =  tempRows.first().split( "\r" );
+        tempRows =  tempRows.first().split( "\r" );
     }
-     tempRows.removeAll( "" );
+    tempRows.removeAll( "" );
 
     /** For each line (== row), dispatch data in columns **/
     foreach( QString dataRow,  tempRows )
@@ -62,7 +62,7 @@ QList<QStringList> Processing::GetDataFromFile( QString filePath )
 }
 
 
-bool Processing::IsMatrixDimensionOK( const QList<QStringList> data )
+bool Processing::IsMatrixDimensionOK( const QList<QStringList>& data )
 {
     if( data.isEmpty() )
     {
@@ -83,7 +83,7 @@ bool Processing::IsMatrixDimensionOK( const QList<QStringList> data )
     }
 }
 
-bool Processing::IsSubMatrix( const QStringList dataSecondRow )
+bool Processing::IsSubMatrix( const QStringList& dataSecondRow )
 {
     bool ok;
     foreach( QString data, dataSecondRow )
@@ -101,30 +101,33 @@ bool Processing::IsSubMatrix( const QStringList dataSecondRow )
 
 QStringList Processing::GetSubjectsFromFileList( QString filePath )
 {
-    QFile file( filePath );
-    file.open( QIODevice::ReadOnly );
-    QTextStream ts( &file );
     QStringList subjectList;
 
-    /** Read all the file line by line **/
-    while( !ts.atEnd() )
+    QFile file( filePath );
+    if( file.open( QIODevice::ReadOnly ) )
     {
-         subjectList.append( ts.readLine() );
-    }
-    file.close();
+        QTextStream ts( &file );
 
-    /** If only one line read, check for the carriage return character "\r" **/
-    if(  subjectList.size() == 1 )
-    {
-         subjectList =  subjectList.first().split( "\r" );
+        /** Read all the file line by line **/
+        while( !ts.atEnd() )
+        {
+            subjectList.append( ts.readLine() );
+        }
+        file.close();
+
+        /** If only one line read, check for the carriage return character "\r" **/
+        if(  subjectList.size() == 1 )
+        {
+            subjectList =  subjectList.first().split( "\r" );
+        }
+        subjectList.removeAll( "" );
+        subjectList.sort();
     }
-     subjectList.removeAll( "" );
-     subjectList.sort();
 
     return subjectList;
 }
 
-QStringList Processing::GetSubjectsFromData( QList<QStringList> data, int covariateColumnID )
+QStringList Processing::GetSubjectsFromData(const QList<QStringList>& data, int subjectColumnID )
 {
     QStringList subjectList;
     int nbRows = data.count();
@@ -134,7 +137,7 @@ QStringList Processing::GetSubjectsFromData( QList<QStringList> data, int covari
     {
         for( int row = 1; row < nbRows; row++ )
         {
-            subjectList.append( data.at( row ).at( covariateColumnID ) );
+            subjectList.append( data.at( row ).at( subjectColumnID ) );
         }
     }
     else
@@ -149,8 +152,23 @@ QStringList Processing::GetSubjectsFromData( QList<QStringList> data, int covari
     return subjectList;
 }
 
+QMap<int, QString> Processing::GetCovariatesFromData( QList<QStringList> data, int subjectColumnID )
+{
+    QMap<int, QString> covariates;
+    int nbrColumns = data.first().count();
+    for( int column = 0; column < nbrColumns; ++column )
+    {
+        if( column != subjectColumnID )
+        {
+            covariates.insert( column, data.first().at( column ) );
+        }
+    }
 
-QStringList Processing::GetAllSubjects( QMap<int, QStringList> subjectsMap )
+    return covariates;
+}
+
+
+QStringList Processing::GetAllSubjects( const QMap<int, QStringList>& subjectsMap )
 {
     /** Return a list of all subjects found in the input files provided **/
 
@@ -167,7 +185,7 @@ QStringList Processing::GetAllSubjects( QMap<int, QStringList> subjectsMap )
     return allSubjects;
 }
 
-QMap<int, QStringList> Processing::GetSubjectsFromSelectedFiles( const QMap<int, bool> diffusionPropertiesCheckState, const QMap<int, QStringList > subjectsMap )
+QMap<int, QStringList> Processing::GetSubjectsFromSelectedFiles( const QMap<int, bool>& diffusionPropertiesCheckState, const QMap<int, QStringList>& subjectsMap )
 {
     QMap<int, QStringList> subjectsFromSelectedFiles;
     QMap<int, bool>::ConstIterator iterProperty = diffusionPropertiesCheckState.cbegin();
@@ -186,7 +204,7 @@ QMap<int, QStringList> Processing::GetSubjectsFromSelectedFiles( const QMap<int,
     return subjectsFromSelectedFiles;
 }
 
-QMap< QString, QMap<int, bool> > Processing::SortSubjects( const QStringList subjects, const QMap<int, QStringList> subjectsMap )
+QMap< QString, QMap<int, bool> > Processing::SortSubjects( const QStringList &subjects, const QMap<int, QStringList>& subjectsMap )
 {
     QMap< QString, QMap<int, bool> > sortedSubjects;
     foreach( QString subject, subjects )
@@ -202,8 +220,7 @@ QMap< QString, QMap<int, bool> > Processing::SortSubjects( const QStringList sub
     return sortedSubjects;
 }
 
-void Processing::AssignSortedSubject( const QMap< QString, QMap<int, bool> > sortedSubjects, QStringList& matchedSubjects,
-                                      QMap<QString, QList<int> >& unMatchedSubjects )
+void Processing::AssignSortedSubject( const QMap<QString, QMap<int, bool> >& sortedSubjects, QStringList& matchedSubjects, QMap<QString, QList<int> >& unMatchedSubjects )
 {
     /** We go through all the sorted subjects **/
     QMap< QString, QMap<int, bool> >::ConstIterator iterSortedSubjects = sortedSubjects.cbegin();
@@ -244,27 +261,8 @@ void Processing::AssignSortedSubject( const QMap< QString, QMap<int, bool> > sor
 }
 
 
-
-
-QMap<int, QString> Processing::GetCovariatesFromData( QList<QStringList> data, int covariateColumnID )
-{
-    QMap<int, QString> covariates;
-    int nbrColumns = data.first().count();
-    for( int column = 0; column < nbrColumns; ++column )
-    {
-        if( column != covariateColumnID )
-        {
-            covariates.insert( column, data.first().at( column ) );
-        }
-    }
-
-    return covariates;
-}
-
-
-QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QString fiberName,
-                                                       QMap< int, QString > inputs, QMap< int, QString > properties,
-                                                       QMap<int, QString> covariates, int covariateColumnID, QStringList subjects )
+QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QString fiberName, const QMap<int, QString>& inputs, const QMap<int, QString>& properties,
+                                                       const QMap<int, QString>& covariates, int subjectColumnID, const QStringList& subjects )
 {
     /** Files with standard names are created in the output directory.
      *  Based on the input type (AD/RD/MD/FA/SubMatrix), the covariates, and the subjects,
@@ -276,7 +274,7 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
     QMap< int, QString >::ConstIterator iterProperty = properties.cbegin();
     while( iterInput != inputs.cend() )
     {
-        QFile matlabInput( outputDir + "/" + fiberName + "_" + iterProperty.value().toUpper() + "_RawData.csv" ); // check if modification works; iterProperty.value().toUpper()
+        QFile matlabInput( outputDir + "/" + fiberName + "_RawData_" + iterProperty.value().toUpper() + ".csv" ); // check if modification works; iterProperty.value().toUpper()
         matlabInput.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInput );
 
@@ -289,13 +287,13 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
         if( IsSubMatrix( data.at( 1 ) ) )
         {
             /** File is SubMatrix -> subject data stored by row.
-             *  Subjects are all in the column covariateColumnID. **/
+             *  Subjects are all in the column subjectColumnID. **/
 
             for( int row = 0; row < nbRows; row++ )
             {
                 rowData.clear();
 
-                QString currentSubject = data.at( row ).at( covariateColumnID );
+                QString currentSubject = data.at( row ).at( subjectColumnID );
                 /** If subject is not already stored. **/
                 if( !subjectProcessed.contains( currentSubject ) )
                 {

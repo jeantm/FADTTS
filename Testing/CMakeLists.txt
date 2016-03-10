@@ -31,13 +31,13 @@ set(subMatrixMatlabFilePath DATA{${SOURCE_DIR}/testSubMatrixMatlabInput.csv})
 set(refMatlabScript DATA{${SOURCE_DIR}/testRefMatlabScriptWithPlots.m})
 set(myFDRScript DATA{${SOURCE_DIR}/myFDR.m})
 
-set(rdRawDataToSortPath DATA{${SOURCE_DIR}/testSort_RD_RawData.csv})
-set(faRawDataToSortPath DATA{${SOURCE_DIR}/testSort_FA_RawData.csv})
-set(subMatrixRawDataToSortPath DATA{${SOURCE_DIR}/testSort_SUBMATRIX_RawData.csv})
+set(rdRawDataToSortPath DATA{${SOURCE_DIR}/testSort_RawData_RD.csv})
+set(faRawDataToSortPath DATA{${SOURCE_DIR}/testSort_RawData_FA.csv})
+set(subMatrixRawDataToSortPath DATA{${SOURCE_DIR}/testSort_RawData_SUBMATRIX.csv})
 
-set(rdRawDataPath DATA{${SOURCE_DIR}/test_RD_RawData.csv})
-set(faRawDataPath DATA{${SOURCE_DIR}/test_FA_RawData.csv})
-set(subMatrixRawDataPath DATA{${SOURCE_DIR}/test_SUBMATRIX_RawData.csv})
+set(rdRawDataPath DATA{${SOURCE_DIR}/test_RawData_RD.csv})
+set(faRawDataPath DATA{${SOURCE_DIR}/test_RawData_FA.csv})
+set(subMatrixRawDataPath DATA{${SOURCE_DIR}/test_RawData_SUBMATRIX.csv})
 set(rdBetaPath DATA{${SOURCE_DIR}/test_Betas_RD.csv})
 set(faBetaPath DATA{${SOURCE_DIR}/test_Betas_FA.csv})
 set(omnibusLpvaluesPath DATA{${SOURCE_DIR}/test_Omnibus_Local_pvalues.csv})
@@ -52,6 +52,40 @@ set(transposedFARawDataPath DATA{${SOURCE_DIR}/testFARawDataTransposed.csv})
 set(transposedOmnibusLpvaluesPath DATA{${SOURCE_DIR}/testOmnibusLpvaluesTransposed.csv})
 set(transposedRDPostHocFDRPath DATA{${SOURCE_DIR}/testRDPostHocFDRTransposed.csv})
 set(transposedFAPostHocFDRPath DATA{${SOURCE_DIR}/testFAPostHocFDRTransposed.csv})
+
+set(testParaSettings DATA{${SOURCE_DIR}/testParaSettings.xml})
+set(testParaNoSettings DATA{${SOURCE_DIR}/testParaNoSettings.xml})
+set(testSoftSettings DATA{${SOURCE_DIR}/testSoftSettings.xml})
+set(testSoftNoSettings DATA{${SOURCE_DIR}/testSoftNoSettings.xml})
+
+set(okIcon DATA{${SOURCE_DIR}/okIconOut.xpm})
+set(koIcon DATA{${SOURCE_DIR}/koIconOut.xpm})
+set(warningIcon DATA{${SOURCE_DIR}/warningIconOut.xpm})
+
+set(mdRawDataPath1 DATA{${SOURCE_DIR}/testPlot1_RawData_MD.csv})
+set(rdRawDataPath1 DATA{${SOURCE_DIR}/testPlot1_RawData_RD.csv})
+set(subMatrixRawDataPath1 DATA{${SOURCE_DIR}/testPlot1_RawData_SUBMATRIX.csv})
+set(mdBetaPath1 DATA{${SOURCE_DIR}/testPlot1_Betas_MD.csv})
+set(rdBetaPath1 DATA{${SOURCE_DIR}/testPlot1_Betas_RD.csv})
+set(mdConfidenceBandsPath1 DATA{${SOURCE_DIR}/testPlot1_Omnibus_ConfidenceBands_MD.csv})
+set(rdConfidenceBandsPath1 DATA{${SOURCE_DIR}/testPlot1_Omnibus_ConfidenceBands_RD.csv})
+set(mdPostHocFDRLpvaluesPath1 DATA{${SOURCE_DIR}/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv})
+set(rdPostHocFDRLpvaluesPath1 DATA{${SOURCE_DIR}/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv})
+
+set(rdRawDataPath2 DATA{${SOURCE_DIR}/testPlot2_RawData_AD.csv})
+set(faRawDataPath2 DATA{${SOURCE_DIR}/testPlot2_RawData_FA.csv})
+set(subMatrixRawDataPath2 DATA{${SOURCE_DIR}/testPlot2_RawData_SUBMATRIX.csv})
+set(adBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_AD.csv})
+set(faBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_FA.csv})
+set(omnibusFDRLpvaluesPath2 DATA{${SOURCE_DIR}/testPlot2_Omnibus_FDR_Local_pvalues.csv})
+
+
+
+
+
+
+
+
 
 
 
@@ -127,22 +161,36 @@ ExternalData_add_test(
         MY_DATA
         NAME TestPlot
         COMMAND $<TARGET_FILE:FADTTS_Test_Plot> ${rdRawDataToSortPath} ${faRawDataToSortPath} ${subMatrixRawDataToSortPath}
+
                                                 ${rdRawDataPath} ${faRawDataPath} ${subMatrixRawDataPath}
                                                 ${rdBetaPath} ${faBetaPath}
                                                 ${omnibusLpvaluesPath} ${omnibusFDRLpvaluesPath}
                                                 ${rdConfidenceBandsPath} ${faConfidenceBandsPath}
                                                 ${rdPostHocFDRLpvaluesPath} ${faPostHocFDRLpvaluesPath}
+
                                                 ${transposedRDRawDataPath} ${transposedFARawDataPath}
                                                 ${transposedOmnibusLpvaluesPath}
                                                 ${transposedRDPostHocFDRPath} ${transposedFAPostHocFDRPath}
-                                                ${DATA_DIR}
+
+                                                ${DATA_DIR} ${TEMP_DIR}
 )
 
 # Test for FADTTSWindow class except final running function
 ExternalData_add_test(
         MY_DATA
         NAME TestFADTTSWindow
-        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${ad_TestFADTTS_Input} ${COMP_0_TestFADTTS_Input}
+        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${testParaSettings} ${testParaNoSettings} ${testSoftSettings} ${testSoftNoSettings}
+                                                        ${rdRawDataPath} ${faRawDataPath} ${subMatrixRawDataPath} ${subjectsListFilePath}
+
+                                                        ${mdRawDataPath1} ${rdRawDataPath1} ${subMatrixRawDataPath1}
+                                                        ${mdBetaPath1} ${rdBetaPath1} ${mdConfidenceBandsPath1} ${rdConfidenceBandsPath1}
+                                                        ${mdPostHocFDRLpvaluesPath1} ${rdPostHocFDRLpvaluesPath1}
+
+                                                        ${rdRawDataPath2} ${faRawDataPath2} ${subMatrixRawDataPath2}
+                                                        ${adBetaPath2} ${faBetaPath2} ${omnibusFDRLpvaluesPath2}
+
+                                                        ${okIcon} ${koIcon} ${warningIcon}
+                                                        ${DATA_DIR} ${TEMP_DIR}
 )
 
 # Test for the command --help

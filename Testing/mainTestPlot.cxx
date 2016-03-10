@@ -6,6 +6,7 @@
  * argv[1] = rdRawDataToSortPath
  * argv[2] = faRawDataToSortPath
  * argv[3] = subMatrixRawDataToSortPath
+ *
  * argv[4] = rdRawDataPath
  * argv[5] = faRawDataPath
  * argv[6] = subMatrixRawDataPath
@@ -17,12 +18,15 @@
  * argv[12] = faConfidenceBandsPath
  * argv[13] = rdPostHocFDRLpvaluesPath
  * argv[14] = faPostHocFDRLpvaluesPath
+ *
  * argv[15] = transposedRDRawDataPath
  * argv[16] = transposedFARawDataPath
  * argv[17] = transposedOmnibusLpvaluesPath
  * argv[18] = transposedRDPostHocFDRPath
- * argv[20] = transposedFAPostHocFDRPath
+ * argv[19] = transposedFAPostHocFDRPath
+ *
  * argv[20] = dataDir
+ * argv[21] = tempoDir
  */
 
 int main( int argc, char *argv[] )
@@ -33,7 +37,10 @@ int main( int argc, char *argv[] )
     int nbrTests = 0;
     int nbrTestsPassed = 0;
 
-    std::cerr << std::endl << std::endl << nbrTests + 1 << "- ";
+
+    /************** Initialization *************/
+    std::cerr << std::endl << std::endl << std::endl << "/************** Initialization *************/";
+    std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_SetQVTKWidget() )
     {
         nbrTestsPassed++;
@@ -41,6 +48,9 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
 
+    std::cerr << std::endl;
+    /***************** Set Data ****************/
+    std::cerr << std::endl << "/***************** Set Data ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_QStringListToDouble() )
     {
@@ -113,79 +123,85 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
 
+    std::cerr << std::endl;
+    /***************** Get Data ****************/
+    std::cerr << std::endl << "/***************** Get Data ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetRawDataFiles( argv[20] ) )
+    if( testPlot.Test_GetRawDataFiles( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetBetaFiles( argv[20] ) )
+    if( testPlot.Test_GetBetaFiles( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetOmnibusLpvalueFiles( argv[20] ) )
+    if( testPlot.Test_GetOmnibusLpvalueFiles( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetOmnibusFDRLpvalueFiles( argv[20] ) )
+    if( testPlot.Test_GetOmnibusFDRLpvalueFiles( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetConfidenceBandsFiles( argv[20] ) )
+    if( testPlot.Test_GetConfidenceBandsFiles( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetPostHocFDRLpvalueFiles( argv[20] ) )
+    if( testPlot.Test_GetPostHocFDRLpvalueFiles( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
 
+    std::cerr << std::endl;
+    /***************** Settings ****************/
+    std::cerr << std::endl << "/***************** Settings ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetPlots( argv[20] ) )
+    if( testPlot.Test_SetPlots( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetProperties( argv[20] ) )
+    if( testPlot.Test_SetProperties( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetSubjects( argv[20] ) )
+    if( testPlot.Test_SetSubjects( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetCovariates( argv[20] ) )
+    if( testPlot.Test_SetCovariates( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetAbscissa( argv[20] ) )
+    if( testPlot.Test_SetAbscissa( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -245,13 +261,16 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_UpdateCovariatesNames( argv[20] ) )
+    if( testPlot.Test_UpdateCovariatesNames( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
 
+    std::cerr << std::endl;
+    /************** Loading Data ***************/
+    std::cerr << std::endl << "/************** Loading Data ***************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_SeparateBinary( argv[2], argv[20] ) )
     {
@@ -289,7 +308,7 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadRawData( argv[20] ) )
+    if( testPlot.Test_LoadRawData( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -303,7 +322,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadBetas( argv[20] ) )
+    if( testPlot.Test_LoadBetas( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -324,7 +343,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadConfidenceBand( argv[20] ) )
+    if( testPlot.Test_LoadConfidenceBand( argv[20], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -338,6 +357,9 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
 
+    std::cerr << std::endl;
+    /************** Adding Entries *************/
+    std::cerr << std::endl << "/************** Adding Entries *************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_AddEntriesRawData() )
     {
@@ -397,6 +419,9 @@ int main( int argc, char *argv[] )
 //    nbrTests++;
 
 
+    std::cerr << std::endl;
+    /************* Set Plot Option *************/
+    std::cerr << std::endl << "/************* Set Plot Option *************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_GetyMinMax() )
     {
@@ -422,12 +447,14 @@ int main( int argc, char *argv[] )
 
 
     app->exit();
-    std::cout << std::endl << std::endl << std::endl;
-    std::cout << "                   Tests Summary                " << std::endl;
-    std::cout << "************************************************" << std::endl;
-    std::cout << "* " << 100*nbrTestsPassed/nbrTests << "% tests passed, " << ( nbrTests - nbrTestsPassed ) << " test(s) failed out of " << nbrTests << " *" << std::endl;
-    std::cout << "************************************************";
-    std::cout << std::endl << std::endl << std::endl << std::endl;
+    std::cerr << std::endl << std::endl << std::endl << std::endl << std::endl;
+    std::cerr << "                   Tests Summary                " << std::endl;
+    std::cerr << "*************************************************" << std::endl;
+    std::cerr << "* " << 100*nbrTestsPassed/nbrTests << "% tests passed, " <<
+                 ( nbrTests - nbrTestsPassed ) << " test(s) failed out of " <<
+                 nbrTests << " *" << std::endl;
+    std::cerr << "*************************************************";
+    std::cerr << std::endl << std::endl << std::endl;
 
     if( nbrTestsPassed == nbrTests )
     {

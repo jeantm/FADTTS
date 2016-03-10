@@ -17,9 +17,7 @@ public:
     /**********************************************************************/
     /*************************** Test Functions ***************************/
     /**********************************************************************/
-    bool Test_SetCurrentDir();
-
-    bool Test_CovariateColumnID();
+    bool Test_SubjectColumnID();
 
 
     bool Test_OnDelete( QString adFilePath );
@@ -28,7 +26,7 @@ public:
     bool Test_LoadDisplayData( QString adFilePath, QString subMatrixFilePath );
 
 
-    bool Test_OnSaveFile( QString outputDir, QString adFilePath, QString newADFile );
+    bool Test_OnSaveFile( QString adFilePath, QString newADFile , QString tempoDir );
 
 
 private:
