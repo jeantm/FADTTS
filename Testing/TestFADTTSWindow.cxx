@@ -12,7 +12,7 @@ TestFADTTSWindow::TestFADTTSWindow()
 /********** Configuration && Events **********/
 bool TestFADTTSWindow::Test_UpdateCurrentDir()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString currentFileInputDir = fadttsWindow->m_currentInputFileDir;
     QString currentSubjectListInputDir = fadttsWindow->m_currentSubjectFileDir;
     QString filePathOK1 = "/home/file.txt";
@@ -62,7 +62,7 @@ bool TestFADTTSWindow::Test_UpdateCurrentDir()
 
 bool TestFADTTSWindow::Test_SetDir(QString paraFilePath, QString dataDir, QString tempoDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
 
 
     fadttsWindow->m_currentInputFileDir = dataDir;
@@ -98,7 +98,7 @@ bool TestFADTTSWindow::Test_SetDir(QString paraFilePath, QString dataDir, QStrin
 
 bool TestFADTTSWindow::Test_DisplayIcon( QString dataDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QPixmap okPixmap = dataDir + "/okIconOut.xpm";
     QPixmap koPixmap = dataDir + "/koIconOut.xpm";
 
@@ -140,7 +140,7 @@ bool TestFADTTSWindow::Test_DisplayIcon( QString dataDir )
 
 bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QString noParaFilePath, QString dataDir, QString tempoDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString testDir = tempoDir + "/TestFADTTSWindow/Test_OnLoadSaveSoftSettings";
     QDir().mkpath( testDir );
     bool testAllPara = true;
@@ -293,7 +293,7 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
 
 bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QString noSoftFilePath, QString dataDir, QString tempoDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString testDir = tempoDir + "/TestFADTTSWindow/Test_OnLoadSaveSoftSettings";
     QDir().mkpath( testDir );
     bool testAllSoft = true;
@@ -319,11 +319,11 @@ bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QStrin
     fadttsWindow->Load_Software_Configuration( softFilePath.toStdString() );
     testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
     testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_runMatlab_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
-    testAllSoft = testAllSoft && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
-    testAllSoft = testAllSoft && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
+//    testAllSoft = testAllSoft && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
+//    testAllSoft = testAllSoft && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
     testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 4 );
-    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
-    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
+//    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
+//    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
 
     fadttsWindow->SyncUiToModelStructure();
     fadttsWindow->Save_Software_Configuration( QString( testDir + "/saveSoftSettings.xml" ).toStdString() );
@@ -332,21 +332,21 @@ bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QStrin
     fadttsWindow->Load_Software_Configuration( noSoftFilePath.toStdString() );
     testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_mvcm_lineEdit->text().isEmpty();
     testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_runMatlab_lineEdit->text().isEmpty();
-    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
-    testNoSoft = testNoSoft && !fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
+//    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
+//    testNoSoft = testNoSoft && !fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
     testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 1 );
-    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Hour (60 mins)" );
-    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 4 );
+//    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Hour (60 mins)" );
+//    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 4 );
 
     fadttsWindow->SyncUiToModelStructure();
     fadttsWindow->Load_Software_Configuration( QString( testDir + "/saveSoftSettings.xml" ).toStdString() );
     testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
     testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_runMatlab_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
-    testSoftAfterSave = testSoftAfterSave && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
-    testSoftAfterSave = testSoftAfterSave && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
+//    testSoftAfterSave = testSoftAfterSave && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
+//    testSoftAfterSave = testSoftAfterSave && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
     testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 4 );
-    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
-    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
+//    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
+//    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
 
 
     bool testOnLoadSaveSoftSettings_Passed = testAllSoft && testNoSoft && testSoftAfterSave;
@@ -370,7 +370,7 @@ bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QStrin
 /********* Subjects/Covariates Tab *********/
 bool TestFADTTSWindow::Test_SetSelectedInputFiles()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QString > expectedPropertySelected;
     expectedPropertySelected.insert( 0, "ad" );
     expectedPropertySelected.insert( 2, "md" );
@@ -422,7 +422,7 @@ bool TestFADTTSWindow::Test_SetSelectedInputFiles()
 
 bool TestFADTTSWindow::Test_UpdateAvailableDiffusionProperties()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString adFileAvailable = "50 x 99";
     QString fileNotAvailable = "N/A";
 
@@ -538,7 +538,7 @@ bool TestFADTTSWindow::Test_UpdateAvailableDiffusionProperties()
 
 bool TestFADTTSWindow::Test_GetDiffusionPropertiesCheckState()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, bool > expectedDiffusionPropertyCheckStatus;
     expectedDiffusionPropertyCheckStatus.insert( 0, true );
     expectedDiffusionPropertyCheckStatus.insert( 1, false );
@@ -571,7 +571,7 @@ bool TestFADTTSWindow::Test_GetDiffusionPropertiesCheckState()
 
 bool TestFADTTSWindow::Test_SetSelectedCovariates()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QString > covariates;
     covariates.insert( -1, "Intercept" );
     covariates.insert( 0, "ICV" );
@@ -589,7 +589,7 @@ bool TestFADTTSWindow::Test_SetSelectedCovariates()
 
     fadttsWindow->m_data.SetCovariates() = covariates;
 
-    QMap<int, QString>::ConstIterator iterCovariate = covariates.begin();
+    QMap< int, QString >::ConstIterator iterCovariate = covariates.begin();
     while( iterCovariate != covariates.end() )
     {
         QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), fadttsWindow->m_covariateListWidget );
@@ -623,7 +623,7 @@ bool TestFADTTSWindow::Test_SetSelectedCovariates()
 
 bool TestFADTTSWindow::Test_SetCheckStateAllCovariates()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QString > covariates;
     covariates.insert( -1, "Intercept" );
     covariates.insert( 0, "ICV" );
@@ -640,7 +640,7 @@ bool TestFADTTSWindow::Test_SetCheckStateAllCovariates()
 
     fadttsWindow->m_data.SetCovariates() = covariates;
 
-    QMap<int, QString>::ConstIterator iterCovariate = covariates.begin();
+    QMap< int, QString >::ConstIterator iterCovariate = covariates.begin();
     while( iterCovariate != covariates.end() )
     {
         QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), fadttsWindow->m_covariateListWidget );
@@ -685,7 +685,7 @@ bool TestFADTTSWindow::Test_SetCheckStateAllCovariates()
 
 bool TestFADTTSWindow::Test_DisplaySubjectInformation()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Wendy" << "Craig" << "Pip";
     QStringList unMatchedSubjects = QStringList() << "Yoda" << "Luke" << "Darth Vader" << "Han Solo" << "Chewbacca" << "R2D2" << "C3PO" << "Obi-Wan" << "Leila";
 
@@ -756,7 +756,7 @@ bool TestFADTTSWindow::Test_DisplaySubjectInformation()
 
 bool TestFADTTSWindow::Test_DisplayNbrSubjectSelected()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Wendy" << "Craig" << "Pip";
 
 
@@ -793,14 +793,14 @@ bool TestFADTTSWindow::Test_DisplayNbrSubjectSelected()
 
 bool TestFADTTSWindow::Test_DisplaySortedSubjects()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Wendy" << "Craig" << "Pip";
-    QList<int> inYoda = QList<int>() << -1 << 1 << 2 << 3 << 4;
-    QList<int> inLuke = QList<int>() << 0 << 1 << 2 << 3;
-    QList<int> inDarthVader = QList<int>() << -1 << 1 << 2;
-    QList<int> inHanSolo = QList<int>() << 0 << 1;
-    QList<int> inChewbacca = QList<int>() << 0;
-    QMap<QString, QList<int> > unMatchedSubjects;
+    QList< int > inYoda = QList< int >() << -1 << 1 << 2 << 3 << 4;
+    QList< int > inLuke = QList< int >() << 0 << 1 << 2 << 3;
+    QList< int > inDarthVader = QList< int >() << -1 << 1 << 2;
+    QList< int > inHanSolo = QList< int >() << 0 << 1;
+    QList< int > inChewbacca = QList< int >() << 0;
+    QMap< QString, QList< int > > unMatchedSubjects;
     unMatchedSubjects.insert( "Chewbacca", inChewbacca );
     unMatchedSubjects.insert( "Darth Vader", inDarthVader );
     unMatchedSubjects.insert( "Han Solo", inHanSolo );
@@ -826,7 +826,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     bool testFlagsSubjectsMatched1 = true;
 
 
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap<QString, QList<int> >() );
+    fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap< QString, QList< int > >() );
 
     nbrMatchedSubjects1 = fadttsWindow->m_matchedSubjectListWidget->count();
     bool testSizeListWidgetMatchedSubjects1 = nbrMatchedSubjects1 == expectedNbrMatchedSubjects;
@@ -898,7 +898,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
         }
     }
 
-    QMap<QString, QList<int> >::ConstIterator iterUnmatchedSubjects = unMatchedSubjects.begin();
+    QMap< QString, QList< int > >::ConstIterator iterUnmatchedSubjects = unMatchedSubjects.begin();
     for( int i = 0; i < expectedNbrUnmatchedSubjects; i++ )
     {
         QString expectedText = iterUnmatchedSubjects.key() + " --> " + expectedTextUnmatchedSubjects.at( i ).join( ", " );
@@ -946,7 +946,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     nbrUnmatchedSubjects3 = fadttsWindow->m_unmatchedSubjectListWidget->count();
     bool testSizeListWidgetUnmatchedSubjects3 = nbrUnmatchedSubjects3 == expectedNbrUnmatchedSubjects;
 
-    QMap<QString, QList<int> >::ConstIterator iterUnmatchedSubjectsBis = unMatchedSubjects.begin();
+    QMap< QString, QList< int > >::ConstIterator iterUnmatchedSubjectsBis = unMatchedSubjects.begin();
     for( int i = 0; i < expectedNbrUnmatchedSubjects; i++ )
     {
         QString expectedText = iterUnmatchedSubjectsBis.key() + " --> " + expectedTextUnmatchedSubjects.at( i ).join( ", " );
@@ -983,7 +983,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     int nbrUnmatchedSubjects4;
 
 
-    fadttsWindow->DisplaySortedSubjects( QStringList(), QMap<QString, QList<int> >() );
+    fadttsWindow->DisplaySortedSubjects( QStringList(), QMap< QString, QList< int > >() );
 
     nbrMatchedSubjects4 = fadttsWindow->m_matchedSubjectListWidget->count();
     bool testSizeListWidgetMatchedSubjects4 = nbrMatchedSubjects4 == 0;
@@ -1008,7 +1008,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     if( !testDisplaySortedSubjects_Passed )
     {
         std::cerr << "/!\\/!\\ Test_DisplaySortedSubjects() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with DisplaySortedSubjects( const QStringList matchedSubjects, const QMap<QString, QList<int> > unMatchedSubjects )" << std::endl;
+//        std::cerr << std::endl << "\t+ pb with DisplaySortedSubjects( const QStringList matchedSubjects, const QMap< QString, QList< int > > unMatchedSubjects )" << std::endl;
 //        if( !testSizeListWidgetMatchedSubjects1 || !testSizeListWidgetUnmatchedSubjects1
 //                || !testCheckState1 || !testBackgroundColorSubjectsMatched1 || !testFlagsSubjectsMatched1
 //                || !testMatchedSubjectsInformation1 || !testUnmatchedSubjectsInformation1 )
@@ -1140,7 +1140,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
 
 bool TestFADTTSWindow::Test_SetCheckStateAllVisibleSubjects()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "stanley" << "Stanny" << "Butters" << "Wendy" << "Craig" << "Pip";
     QStringList expectedCheckedSubjects1 = QStringList() << "Kyle" << "Kenny" << "Butters" << "Wendy" << "Craig" << "Pip";
     QStringList expectedCheckedSubjects2 = QStringList() << "Stan" << "stanley" << "Stanny";
@@ -1152,7 +1152,7 @@ bool TestFADTTSWindow::Test_SetCheckStateAllVisibleSubjects()
     QStringList uncheckedSubjects2;
 
 
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap<QString, QList<int> >() );
+    fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap< QString, QList< int > >() );
 
     fadttsWindow->m_caseSensitivity = Qt::CaseInsensitive;
     fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "tan" );
@@ -1238,13 +1238,13 @@ bool TestFADTTSWindow::Test_SetCheckStateAllVisibleSubjects()
 
 bool TestFADTTSWindow::Test_SearchSubjects()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "stanley" << "Stanny" << "Butters" << "Wendy" << "Craig" << "Pip";
-    QList<int> inStan = QList<int>() << -1 << 2 << 4;
-    QList<int> inKyle = QList<int>() << 0 << 1 << 3;
-    QList<int> inKenny = QList<int>() << -1 << 2 << 4;
-    QList<int> inR2D2 = QList<int>() << -1 << 2 << 4;
-    QMap<QString, QList<int> > unMatchedSubjects;
+    QList< int > inStan = QList< int >() << -1 << 2 << 4;
+    QList< int > inKyle = QList< int >() << 0 << 1 << 3;
+    QList< int > inKenny = QList< int >() << -1 << 2 << 4;
+    QList< int > inR2D2 = QList< int >() << -1 << 2 << 4;
+    QMap< QString, QList< int > > unMatchedSubjects;
     unMatchedSubjects.insert( "Stan", inStan );
     unMatchedSubjects.insert( "Kyle", inKyle );
     unMatchedSubjects.insert( "Kenny", inKenny );
@@ -1297,20 +1297,45 @@ bool TestFADTTSWindow::Test_SearchSubjects()
     return testSearchSubjects_Passed;
 }
 
+bool TestFADTTSWindow::Test_SaveCheckedSubjects( QString dataDir, QString tempoDir )
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QString dirTest = tempoDir + "/TestFADTTSWindow/Test_SaveCheckedSubjects";
+    QDir().mkpath( dirTest );
+
+
+    fadttsWindow->OnSettingSubjectList( dataDir + "/testSubjectList.txt" );
+    fadttsWindow->SaveCheckedSubjects( dirTest + "/testSubjectList.txt" );
+
+
+    bool testSaveCheckedSubjects_Passed = CompareFile( dataDir + "/testSubjectList.txt", dirTest + "/testSubjectList.txt" );
+    if( !testSaveCheckedSubjects_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_SaveCheckedSubjects() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SaveCheckedSubjects( QString filePath )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_SaveCheckedSubjects() PASSED";
+    }
+
+    return testSaveCheckedSubjects_Passed;
+}
+
 
 
 bool TestFADTTSWindow::Test_OnCovariateFileToggled()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
-    QMap<int, QString> covariates;
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
     covariates.insert( -1, "Intercept" );
     covariates.insert( 0, "ngroup" );
     covariates.insert( 1, "GENDER" );
     covariates.insert( 2, "Twin" );
     covariates.insert( 3, "Scanner" );
-    QMap<int, QString> covariatesDisplayed1;
-    QMap<int, QString> covariatesDisplayed2;
-    QMap<int, QString> covariatesDisplayed3;
+    QMap< int, QString > covariatesDisplayed1;
+    QMap< int, QString > covariatesDisplayed2;
+    QMap< int, QString > covariatesDisplayed3;
     bool testCovariateText = true;
     bool testCovariateCheckState = true;
 
@@ -1326,7 +1351,7 @@ bool TestFADTTSWindow::Test_OnCovariateFileToggled()
 
     fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->setChecked( true );
     fadttsWindow->OnCovariateFileToggled();
-    QMap<int, QString>::ConstIterator iterCovariate = covariates.cbegin();
+    QMap< int, QString >::ConstIterator iterCovariate = covariates.cbegin();
     for( int i = 0; i < fadttsWindow->m_covariateListWidget->count(); i++ )
     {
         QListWidgetItem *item = fadttsWindow->m_covariateListWidget->item( i );
@@ -1371,7 +1396,7 @@ bool TestFADTTSWindow::Test_OnCovariateFileToggled()
 //            if( !testSelectedCovariates1 )
 //            {
 //                std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
-//                DisplayError_QMapIntQString( QMap<int, QString>(), covariatesDisplayed1, "m_selectedCovariates" );
+//                DisplayError_QMapIntQString( QMap< int, QString >(), covariatesDisplayed1, "m_selectedCovariates" );
 //            }
 //        }
 //        if( !testCovariateListWidget3 || !testCovariatesInformation3 || !testSelectedCovariates3 )
@@ -1388,7 +1413,7 @@ bool TestFADTTSWindow::Test_OnCovariateFileToggled()
 //            if( !testSelectedCovariates3 )
 //            {
 //                std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
-//                DisplayError_QMapIntQString( QMap<int, QString>(), covariatesDisplayed3, "m_selectedCovariates" );
+//                DisplayError_QMapIntQString( QMap< int, QString >(), covariatesDisplayed3, "m_selectedCovariates" );
 //            }
 //        }
 //        if( !testCovariateListWidget2 || !testCovariatesInformation2 || !testSelectedCovariates2 )
@@ -1419,13 +1444,13 @@ bool TestFADTTSWindow::Test_OnCovariateFileToggled()
 
 bool TestFADTTSWindow::Test_OnCovariateClicked()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
-    QMap<int, QString> covariates;
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
     covariates.insert( -1, "Intercept" );
     covariates.insert( 0, "ngroup" );
     covariates.insert( 1, "GENDER" );
     covariates.insert( 2, "Twin" );
-    QMap<int, QString> expectedSelectedCovariates;
+    QMap< int, QString > expectedSelectedCovariates;
     expectedSelectedCovariates.insert( -1, "Intercept" );
     expectedSelectedCovariates.insert( 2, "Twin" );
     bool testCovariateCheckState= true;
@@ -1472,7 +1497,7 @@ bool TestFADTTSWindow::Test_OnCovariateClicked()
 
 bool TestFADTTSWindow::Test_OnInputToggled()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList adSujects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "Chef";
     QStringList rdSujects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "Butters";
     QStringList mdSujects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "Wendy";
@@ -1542,7 +1567,7 @@ bool TestFADTTSWindow::Test_OnInputToggled()
 
 bool TestFADTTSWindow::Test_OnSetCaseSensitivityToggled()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
 
 
     fadttsWindow->OnSetCaseSensitivityToggled( true );
@@ -1569,13 +1594,13 @@ bool TestFADTTSWindow::Test_OnSetCaseSensitivityToggled()
 
 bool TestFADTTSWindow::Test_OnSubjectClicked()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef";
     bool testCheckState = true;
     bool testColor = true;
 
 
-    fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap<QString, QList<int> >() );
+    fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap< QString, QList< int > >() );
 
     fadttsWindow->OnSubjectClicked( fadttsWindow->m_matchedSubjectListWidget->item( 0 ) );
     fadttsWindow->OnSubjectClicked( fadttsWindow->m_matchedSubjectListWidget->item( 2 ) );
@@ -1619,7 +1644,7 @@ bool TestFADTTSWindow::Test_OnSubjectClicked()
 
 bool TestFADTTSWindow::Test_OnSettingSubjectList( QString subjectListPath )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList expectedMatchedSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed"
                                                         << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed"
                                                         << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
@@ -1641,7 +1666,8 @@ bool TestFADTTSWindow::Test_OnSettingSubjectList( QString subjectListPath )
     bool testLoadedSubjects2 = fadttsWindow->m_loadedSubjects == expectedMatchedSubjects;
     bool testSubjectsLoaded2 = fadttsWindow->m_areSubjectsLoaded;
 
-    fadttsWindow->OnSettingSubjectList( "" );
+    fadttsWindow->OnResetSubjectList();
+    fadttsWindow->OnSettingSubjectList( fadttsWindow->m_subjectFileLineEdit->text() );
     bool testMatchedSubjects3 = fadttsWindow->m_matchedSubjectListWidget->count() == 0;
     bool testLoadedSubjects3 = fadttsWindow->m_loadedSubjects.isEmpty();
     bool testSubjectsLoaded3 = !fadttsWindow->m_areSubjectsLoaded;
@@ -1680,7 +1706,7 @@ bool TestFADTTSWindow::Test_OnSettingSubjectList( QString subjectListPath )
 /**************** Input  Tab ****************/
 bool TestFADTTSWindow::Test_GetDisplayInputFileInformation()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString adInformationExpected = "Filename: <i>adFile.csv</i><br>Number of subjects: <i>10</i><br>Data matrix: <i>94x10</i><br>";
     QString mdInformationExpected = "Filename: <i>mdFile.csv</i><br>Number of subjects: <i>100</i><br>Data matrix: <i>94x100</i><br>";
     QString subMatrixInformationExpected = "Filename: <i>subMatrixFile.csv</i><br>Number of subjects: <i>1000</i><br>Data matrix: <i>1000x7</i><br>Number of covariates: <i>3</i>"
@@ -1754,7 +1780,7 @@ bool TestFADTTSWindow::Test_GetDisplayInputFileInformation()
 
 bool TestFADTTSWindow::Test_DisplayInputLineEditIcon( QString dataDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QPixmap okPixmap = dataDir + "/okIconOut.xpm";
     QPixmap koPixmap = dataDir + "/koIconOut.xpm";
 
@@ -1800,7 +1826,7 @@ bool TestFADTTSWindow::Test_DisplayInputLineEditIcon( QString dataDir )
 
 bool TestFADTTSWindow::Test_UpdateInputFileInformation( QString rdFilePath, QString faFilePath, QString subMatrixFilePath )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList expectedSubjects = QStringList() << "F02-1_dwi_35_all_QCed_VC_DTI_embed" << "F05-1_dwi_35_all_QCed_VC_DTI_embed" << "F06-1_42_DWI_QCed_VC_DTI_embed"
                                                  << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed" << "F12-1_42_DWI_QCed_VC_DTI_embed"
                                                  << "F21-1_42_DWI_QCed_VC_DTI_embed" << "F22-1_42_DWI_QCed_VC_DTI_embed" << "F23-1_42_DWI_QCed_VC_DTI_embed"
@@ -1872,7 +1898,7 @@ bool TestFADTTSWindow::Test_UpdateInputFileInformation( QString rdFilePath, QStr
 
 bool TestFADTTSWindow::Test_UpdateLineEditsAfterAddingMultipleFiles( QString dataDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList MultipleFilesListOK = QStringList() << "/path/ad_file.csv" << "/path/file_md_file.csv" << "/path/fa_file.csv" << "/path/subMatrix_file.csv";
     QStringList MultipleFilesListKO = QStringList() << "/path/ad_file.csv" << "/path/file_ad_file.csv" << "/path/filemd_file.csv" << "/path/subMatrixFile.csv";
     bool testMultipleFilesListOK = true;
@@ -1921,7 +1947,7 @@ bool TestFADTTSWindow::Test_UpdateLineEditsAfterAddingMultipleFiles( QString dat
 
 bool TestFADTTSWindow::Test_SetInfoSubjectColumnID( QString subMatrixFilePath )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
 
 
     fadttsWindow->m_data.SetFilename( 4 ) = subMatrixFilePath;
@@ -1964,7 +1990,7 @@ bool TestFADTTSWindow::Test_SetInfoSubjectColumnID( QString subMatrixFilePath )
 
 bool TestFADTTSWindow::Test_OnSettingInputFile( QString rdFilePath, QString subMatrixFilePath )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
 
 
     /******************************************/
@@ -2067,7 +2093,7 @@ bool TestFADTTSWindow::Test_OnSettingInputFile( QString rdFilePath, QString subM
 
 bool TestFADTTSWindow::Test_OnUpdatingInputFile()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString adFilePath = "/path/adFilePath.csv";
     QString subMatrixFilePath = "/path/subMatrixFilePath.csv";
 
@@ -2094,7 +2120,7 @@ bool TestFADTTSWindow::Test_OnUpdatingInputFile()
 
 bool TestFADTTSWindow::Test_OnUpdatingSubjectColumnID( QString subMatrixRawDataPath )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList expectedSubjects = QStringList() << "0" << "1";
     QStringList expectedCovariates = QStringList() << "Intercept" << "Case_orig_Shaili" << "ngroup" << "GestAgeAtBirth";
     QStringList subjects;
@@ -2150,7 +2176,7 @@ bool TestFADTTSWindow::Test_OnUpdatingSubjectColumnID( QString subMatrixRawDataP
 /************** Plotting  Tab **************/
 bool TestFADTTSWindow::Test_SetProperties()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList colors = QStringList() << "Red" << "Lime" << "Blue" << "Yellow" << "Cyan" << "Magenta"
                                        << "Olive" << "Teal" << "Purple" << "Rosy Brown" << "Dark Sea Green" << "Corn Flower Blue"
                                        << "Maroon" << "Green" << "Navy" << "Orange" << "Mint" << "Pink" << "Brown" << "Black";
@@ -2242,7 +2268,7 @@ bool TestFADTTSWindow::Test_SetProperties()
 
 bool TestFADTTSWindow::Test_SetPropertiesForDisplay()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList properties1 = QStringList() << "AD" << "RD" << "FA";
     QStringList properties2 = QStringList() << "RD" << "MD";
     QMap< int, QPair< QString, QPair< bool, QString > > > expectedPropertiesForDisplay1;
@@ -2279,17 +2305,17 @@ bool TestFADTTSWindow::Test_SetPropertiesForDisplay()
 
 bool TestFADTTSWindow::Test_SetCovariates()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList colors = QStringList() << "Red" << "Lime" << "Blue" << "Yellow" << "Cyan" << "Magenta"
                                        << "Olive" << "Teal" << "Purple" << "Rosy Brown" << "Dark Sea Green" << "Corn Flower Blue"
                                        << "Maroon" << "Green" << "Navy" << "Orange" << "Mint" << "Pink" << "Brown" << "Black";
-    QMap<int, QString> covariates1;
+    QMap< int, QString > covariates1;
     covariates1.insert( 0, "Intercept" );
     covariates1.insert( 1, "ngroup" );
     covariates1.insert( 2, "GENDER" );
     covariates1.insert( 3, "Scanner" );
     covariates1.insert( 4, "Direction" );
-    QMap<int, QString> covariates2;
+    QMap< int, QString > covariates2;
     covariates2.insert( 0, "Intercept" );
     covariates2.insert( 1, "Twin" );
     covariates2.insert( 2, "ICV" );
@@ -2402,13 +2428,13 @@ bool TestFADTTSWindow::Test_SetCovariates()
 
 bool TestFADTTSWindow::Test_SetCovariatesForDisplay()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
-    QMap<int, QString> covariates1;
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates1;
     covariates1.insert( 0, "Intercept" );
     covariates1.insert( 1, "ICV" );
     covariates1.insert( 2, "Direction" );
     covariates1.insert( 3, "Scanner" );
-    QMap<int, QString> covariates2;
+    QMap< int, QString > covariates2;
     covariates2.insert( 0, "Intercept" );
     covariates2.insert( 1, "GENDER" );
     covariates2.insert( 2, "Sex" );
@@ -2448,7 +2474,7 @@ bool TestFADTTSWindow::Test_SetCovariatesForDisplay()
 
 bool TestFADTTSWindow::Test_SetPlotOptions()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     bool test1 = true;
     bool test2 = true;
     bool test3 = true;
@@ -2508,7 +2534,7 @@ bool TestFADTTSWindow::Test_SetPlotOptions()
 
 bool TestFADTTSWindow::Test_AddLinesForDisplay()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QPair< QString, QPair< bool, QString > > > propertiesForDisplay;
     propertiesForDisplay.insert( 0, QPair< QString, QPair< bool, QString > >( "AD", QPair< bool, QString >( true, "red" ) ) );
     propertiesForDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "RD", QPair< bool, QString >( false, "green" ) ) );
@@ -2572,7 +2598,7 @@ bool TestFADTTSWindow::Test_AddLinesForDisplay()
 
 bool TestFADTTSWindow::Test_SetCheckStateLinesToDisplay()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QPair< QString, QPair< bool, QString > > > propertiesForDisplay;
     propertiesForDisplay.insert( 0, QPair< QString, QPair< bool, QString > >( "AD", QPair< bool, QString >( true, "red" ) ) );
     propertiesForDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "RD", QPair< bool, QString >( false, "green" ) ) );
@@ -2613,14 +2639,14 @@ bool TestFADTTSWindow::Test_SetCheckStateLinesToDisplay()
 
 bool TestFADTTSWindow::Test_EditCovariatesNames()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
-    QMap<int, QString> covariates;
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
     covariates.insert( 0, "Intercept" );
     covariates.insert( 1, "ngroup" );
     covariates.insert( 2, "GENDER" );
     covariates.insert( 3, "Scanner" );
     covariates.insert( 4, "Direction" );
-    QMap<int, QString> newCovariates;
+    QMap< int, QString > newCovariates;
     newCovariates.insert( 0, "Intercept" );
     newCovariates.insert( 1, "Group" );
     newCovariates.insert( 2, "Sex" );
@@ -2686,7 +2712,7 @@ bool TestFADTTSWindow::Test_EditCovariatesNames()
 
 bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString dirTest = tempoDir + "/TestFADTTSWindow/Test_SetResetPlotTab";
 
 
@@ -2865,7 +2891,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
             && fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
 
 
-    bool testSetResetPlotTab_Passed = testSet1 && testReset && testSet2 ;
+    bool testSetResetPlotTab_Passed = testSet1 && testReset && testSet2;
     if( !testSetResetPlotTab_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SetResetPlotTab() FAILED /!\\/!\\";
@@ -2880,10 +2906,66 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
 }
 
 
+bool TestFADTTSWindow::Test_LoadSavePlotSettings( QString dataDir, QString tempoDir )
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QString dirTest = tempoDir + "/TestFADTTSWindow/Test_LoadSavePlotSettings";
+    QString outputDir = dirTest + "/FADTTSter_testPlotSettings";
+    QString matlabDir = outputDir + "/MatlabOutputs";
+    QDir().mkpath( outputDir );
+    QDir().mkpath( matlabDir );
+    QFile::copy( dataDir + "/testPlot1_RawData_MD.csv", outputDir + "/testPlot1_RawData_MD.csv" );
+    QFile::copy( dataDir + "/testPlot1_RawData_RD.csv", outputDir + "/testPlot1_RawData_RD.csv" );
+    QFile::copy( dataDir + "/testPlot1_RawData_SUBMATRIX.csv", outputDir + "/testPlot1_RawData_SUBMATRIX.csv" );
+    QFile::copy( dataDir + "/testPlot1_Betas_MD.csv", matlabDir + "/testPlot1_Betas_MD.csv" );
+    QFile::copy( dataDir + "/testPlot1_Betas_RD.csv", matlabDir + "/testPlot1_Betas_RD.csv" );
+    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv", matlabDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv" );
+    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv", matlabDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv" );
+    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv", matlabDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" );
+    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" );
+    QMap< int, QString > expectedProperties;
+    expectedProperties.insert( 1, "RD" );
+    expectedProperties.insert( 2, "MD" );
+    QMap< int, QString > expectedAllCovariates;
+    expectedAllCovariates.insert( 0, "Intercept" );
+    expectedAllCovariates.insert( 1, "ngroup" );
+    expectedAllCovariates.insert( 2, "GENDER" );
+    expectedAllCovariates.insert( 3, "DaysPostBirth" );
+    expectedAllCovariates.insert( 4, "ICV_y0" );
+    QMap< int, QString > expectedCovariatesNoIntercept;
+    expectedCovariatesNoIntercept.insert( 1, "ngroup" );
+    expectedCovariatesNoIntercept.insert( 2, "GENDER" );
+    expectedCovariatesNoIntercept.insert( 3, "DaysPostBirth" );
+    expectedCovariatesNoIntercept.insert( 4, "ICV_y0" );
+    QMap< int, QString > expectedBinaryCovariates;
+    expectedBinaryCovariates.insert( 1, "ngroup" );
+    expectedBinaryCovariates.insert( 2, "GENDER" );
+
+
+    fadttsWindow->m_plot->InitPlot( outputDir, "testPlotSettings" );
+    fadttsWindow->LoadPlotSettings( dataDir + "/plotSettings.csv" );
+    fadttsWindow->SavePlotSettings( dirTest + "/plotSettings.csv" );
+
+
+    bool testLoadSavePlotSettings_Passed = CompareFile( dataDir + "/plotSettings.csv", dirTest + "/plotSettings.csv" );
+    if( !testLoadSavePlotSettings_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_LoadSavePlotSettings() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadPlotSettings( QString filePath ) and/or SavePlotSettings( QString filePath )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_LoadSavePlotSettings() PASSED";
+    }
+
+    return testLoadSavePlotSettings_Passed;
+}
+
+
 
 bool TestFADTTSWindow::Test_OnSettingPlotsUsed()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList expectedPlots1 = QStringList() << "Plot1" << "Plot2" << "Plot2";
     QStringList expectedPlots2 = QStringList() << "plot1" << "plot2" << "plot2" << "plot3";
     QStringList plots1;
@@ -2923,7 +3005,7 @@ bool TestFADTTSWindow::Test_OnSettingPlotsUsed()
 
 bool TestFADTTSWindow::Test_OnSettingAllPropertiesUsed()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QString > propertiesUsed1;
     propertiesUsed1.insert( 0, "AD" );
     propertiesUsed1.insert( 2, "MD" );
@@ -2968,7 +3050,7 @@ bool TestFADTTSWindow::Test_OnSettingAllPropertiesUsed()
 
 bool TestFADTTSWindow::Test_OnUpdatingCovariatesAvailable()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QString > covariatesUsed1;
     covariatesUsed1.insert( 0, "Intercept" );
     covariatesUsed1.insert( 1, "ngroup" );
@@ -3016,8 +3098,8 @@ bool TestFADTTSWindow::Test_OnUpdatingCovariatesAvailable()
 
 bool TestFADTTSWindow::Test_OnUpdatingPropertyPlotColor()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
-    QMap<int, QString> properties;
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > properties;
     properties.insert( 0, "AD" );
     properties.insert( 1, "RD" );
     properties.insert( 3, "FA" );
@@ -3049,8 +3131,8 @@ bool TestFADTTSWindow::Test_OnUpdatingPropertyPlotColor()
 
 bool TestFADTTSWindow::Test_OnUpdatingCovariatePlotColor()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
-    QMap<int, QString> covariates;
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
     covariates.insert( 0, "Intercept" );
     covariates.insert( 1, "ngroup" );
     covariates.insert( 2, "GENDER" );
@@ -3082,7 +3164,7 @@ bool TestFADTTSWindow::Test_OnUpdatingCovariatePlotColor()
 
 bool TestFADTTSWindow::Test_OnPropertySelection()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString propertySelected = "AD";
 
 
@@ -3105,7 +3187,7 @@ bool TestFADTTSWindow::Test_OnPropertySelection()
 
 bool TestFADTTSWindow::Test_OnCovariateSelection()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString covariateSelected = "GENDER";
 
 
@@ -3127,14 +3209,29 @@ bool TestFADTTSWindow::Test_OnCovariateSelection()
 }
 
 
-
-
 bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QStringList properties = QStringList() << "AD" << "RD" << "FA";
+    QMap< int, QPair< QString, QPair< bool, QString > > > expectedPropertyForDisplay;
+    expectedPropertyForDisplay.insert( 0, QPair< QString, QPair< bool, QString > >( "AD", QPair< bool, QString >( true, "Red" ) ) );
+    expectedPropertyForDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "RD", QPair< bool, QString >( false, "Lime" ) ) );
+    expectedPropertyForDisplay.insert( 2, QPair< QString, QPair< bool, QString > >( "FA", QPair< bool, QString >( true, "Blue" ) ) );
 
 
-    bool testOnLineForDisplayClicked_Passed = false;
+    fadttsWindow->SetPropertyEdition( properties );
+    fadttsWindow->SetPropertiesForDisplay( properties );
+    fadttsWindow->AddLinesForDisplay( true );
+    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_plotListWidget->item( 0 ) );
+    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_plotListWidget->item( 0 ) );
+    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_plotListWidget->item( 1 ) );
+
+    bool testCheckState = fadttsWindow->m_plotListWidget->item( 0 )->checkState()
+            && !fadttsWindow->m_plotListWidget->item( 1 )->checkState() && fadttsWindow->m_plotListWidget->item( 2 )->checkState();
+    bool testPropertyForDisplay = fadttsWindow->m_propertiesForDisplay == expectedPropertyForDisplay;
+
+
+    bool testOnLineForDisplayClicked_Passed = testCheckState && testPropertyForDisplay;
     if( !testOnLineForDisplayClicked_Passed )
     {
         std::cerr << "/!\\/!\\ Test_OnLineForDisplayClicked() FAILED /!\\/!\\";
@@ -3150,7 +3247,7 @@ bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
 
 bool TestFADTTSWindow::Test_OnYMinToggled()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
 
 
     fadttsWindow->OnYMinToggled( true );
@@ -3184,7 +3281,7 @@ bool TestFADTTSWindow::Test_OnYMinToggled()
 
 bool TestFADTTSWindow::Test_OnYMaxToggled()
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
 
 
     fadttsWindow->OnYMaxToggled( true );
@@ -3216,32 +3313,19 @@ bool TestFADTTSWindow::Test_OnYMaxToggled()
     return testOnYMaxToggled_Passed;
 }
 
-bool Test_OnDisplayPlot();
-
-bool Test_OnResetPlot();
-
-bool Test_OnLoadSavePlotSettings();
-
-
-
-
-
-
-
-
 
 
 /************** Execution Tab **************/
 bool TestFADTTSWindow::Test_GenerateSelectedSubjectFile( QString subjectListPath, QString tempoDir )
 {
-    QSharedPointer<FADTTSWindow> fadttsWindow = QSharedPointer<FADTTSWindow>( new FADTTSWindow );
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString testDir = tempoDir + "/TestFADTTSWindow/Test_GenerateSelectedSubjectFile";
     QDir().mkpath( testDir );
     QStringList subjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
                                          << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed";
 
 
-    fadttsWindow->DisplaySortedSubjects( subjects, QMap<QString, QList<int> >() );
+    fadttsWindow->DisplaySortedSubjects( subjects, QMap< QString, QList< int > >() );
     fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testSubjects" );
     fadttsWindow->GenerateSelectedSubjectFile( testDir );
 
@@ -3262,12 +3346,122 @@ bool TestFADTTSWindow::Test_GenerateSelectedSubjectFile( QString subjectListPath
     return testGenerateSelectedSubjectFile_Passed;
 }
 
+//bool TestFADTTSWindow::Test_SetLogDisplay()
+//{
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+
+//    bool testSetLogDisplay_Passed = false;
+//    if( !testSetLogDisplay_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_SetLogDisplay() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap< int, QString >& selectedCovariates );" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_SetLogDisplay() PASSED";
+//    }
+
+//    return testSetLogDisplay_Passed;
+//}
+
+
+
+//bool TestFADTTSWindow::Test_OnRun()
+//{
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+
+//    bool testOnRun_Passed = false;
+//    if( !testOnRun_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_OnRun() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with OnRun()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_OnRun() PASSED";
+//    }
+
+//    return testOnRun_Passed;
+//}
+
+//bool TestFADTTSWindow::Test_OnStop()
+//{
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+
+//    bool testOnStop_Passed = false;
+//    if( !testOnStop_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_OnStop() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with OnStop()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_OnStop() PASSED";
+//    }
+
+//    return testOnStop_Passed;
+//}
+
+//bool TestFADTTSWindow::Test_OnDisplayLog()
+//{
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+
+//    bool testOnDisplayLog_Passed = false;
+//    if( !testOnDisplayLog_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_OnDisplayLog() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with OnDisplayLog()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_OnDisplayLog() PASSED";
+//    }
+
+//    return testOnDisplayLog_Passed;
+//}
+
+//bool TestFADTTSWindow::Test_OnClearLog()
+//{
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+
+//    bool testOnClearLog_Passed = false;
+//    if( !testOnClearLog_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_OnClearLog() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with OnClearLog()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_OnClearLog() PASSED";
+//    }
+
+//    return testOnClearLog_Passed;
+//}
+
+//bool TestFADTTSWindow::Test_OnMatlabThreadFinished()
+//{
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+
+//    bool testOnMatlabThreadFinished_Passed = false;
+//    if( !testOnMatlabThreadFinished_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_OnMatlabThreadFinished() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with OnMatlabThreadFinished()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_OnMatlabThreadFinished() PASSED";
+//    }
+
+//    return testOnMatlabThreadFinished_Passed;
+//}
+
 
 
 /**********************************************************************/
 /********************** Functions Used For Testing ********************/
 /**********************************************************************/
-void TestFADTTSWindow::AddIcon( QSharedPointer<FADTTSWindow> fadttsWindow, QString dataDir )
+void TestFADTTSWindow::AddIcon( QSharedPointer< FADTTSWindow > fadttsWindow, QString dataDir )
 {
     fadttsWindow->m_okPixmap = dataDir + "/okIconOut.xpm";
     fadttsWindow->m_koPixmap = dataDir + "/koIconOut.xpm";
@@ -3302,17 +3496,17 @@ void TestFADTTSWindow::DisplayError_QStringList( QStringList qStringListExpected
     }
 }
 
-void TestFADTTSWindow::DisplayError_QMapIntQString( QMap<int, QString> qMapExpected, QMap<int, QString> qMapDisplayed, QString type )
+void TestFADTTSWindow::DisplayError_QMapIntQString( QMap< int, QString > qMapExpected, QMap< int, QString > qMapDisplayed, QString type )
 {
     std::cerr << "\t  - " << type.toStdString() << " expected:" << std::endl;
-    QMap<int, QString>::ConstIterator iterQMapExpected = qMapExpected.cbegin();
+    QMap< int, QString >::ConstIterator iterQMapExpected = qMapExpected.cbegin();
     while( iterQMapExpected != qMapExpected.cend() )
     {
         std::cerr << "\t       " << iterQMapExpected.value().toStdString() << " at " << iterQMapExpected.key() << std::endl;
         ++iterQMapExpected;
     }
     std::cerr << "\t  - " << type.toStdString() << " displayed:" << std::endl;
-    QMap<int, QString>::ConstIterator iterQMapDisplayed = qMapDisplayed.cbegin();
+    QMap< int, QString >::ConstIterator iterQMapDisplayed = qMapDisplayed.cbegin();
     while( iterQMapDisplayed != qMapDisplayed.cend() )
     {
         std::cerr << "\t       " << iterQMapDisplayed.value().toStdString() << " at " << iterQMapDisplayed.key() << std::endl;

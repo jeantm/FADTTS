@@ -23,9 +23,9 @@ void Data::InitData()
 
 
 /*************** Getters ***************/
-QList<int> Data::GetDiffusionPropertiesIndices() const
+QList< int > Data::GetDiffusionPropertiesIndices() const
 {
-    QList<int> diffusionPropertiesIndices = QList<int>() << AD << RD << MD << FA << SubMatrix;
+    QList< int > diffusionPropertiesIndices = QList< int >() << AD << RD << MD << FA << SubMatrix;
     return diffusionPropertiesIndices;
 }
 
@@ -79,7 +79,7 @@ QString Data::GetFilename( int diffusionPropertyIndex ) const
     return m_filenameMap[ diffusionPropertyIndex ];
 }
 
-QList<QStringList> Data::GetFileData( int diffusionPropertyIndex ) const
+QList< QStringList > Data::GetFileData( int diffusionPropertyIndex ) const
 {
     return m_fileDataMap[ diffusionPropertyIndex ];
 }
@@ -94,7 +94,7 @@ int Data::GetNbrColumns( int diffusionPropertyIndex ) const
     return m_nbrColumnsMap[ diffusionPropertyIndex ];
 }
 
-QMap<int, QStringList> Data::GetSubjects() const
+QMap< int, QStringList > Data::GetSubjects() const
 {
     return m_subjectMap;
 }
@@ -105,7 +105,7 @@ int Data::GetNbrSubjects( int diffusionPropertyIndex ) const
 }
 
 
-QMap<int, QString> Data::GetCovariates() const
+QMap< int, QString > Data::GetCovariates() const
 {
     return m_covariateMap;
 }
@@ -128,7 +128,7 @@ QString& Data::SetFilename( int diffusionPropertyIndex )
     return m_filenameMap[ diffusionPropertyIndex ];
 }
 
-QList<QStringList>& Data::SetFileData( int diffusionPropertyIndex )
+QList< QStringList >& Data::SetFileData( int diffusionPropertyIndex )
 {
     return m_fileDataMap[ diffusionPropertyIndex ];
 }
@@ -154,7 +154,7 @@ int& Data::SetNbrSubjects( int diffusionPropertyIndex )
 }
 
 
-QMap<int, QString>& Data::SetCovariates()
+QMap< int, QString >& Data::SetCovariates()
 {
     return m_covariateMap;
 }

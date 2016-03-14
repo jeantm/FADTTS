@@ -58,11 +58,11 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
 
     m_para_m->setpara_executionTab_runMatlab_checkBox( para_executionTab_runMatlab_checkBox->checkState() );
     m_soft_m->setsoft_executionTab_runMatlab_lineEdit( soft_executionTab_runMatlab_lineEdit->text() );
-    m_soft_m->setsoft_executionTab_runMatlabSystem_radioButton( soft_executionTab_runMatlabSystem_radioButton->isChecked() );
+//    m_soft_m->setsoft_executionTab_runMatlabSystem_radioButton( soft_executionTab_runMatlabSystem_radioButton->isChecked() );
     m_soft_m->setsoft_executionTab_nbrCompThreads_spinBox( soft_executionTab_nbrCompThreads_spinBox->value() );
-    m_soft_m->setsoft_executionTab_runMatlabKD_radioButton( soft_executionTab_runMatlabKD_radioButton->isChecked() );
-    m_soft_m->setsoft_executionTab_killDevilQueue_comboBox( soft_executionTab_killDevilQueue_comboBox->currentText() );
-    m_soft_m->setsoft_executionTab_killDevilAllocatedMemory_spinBox( soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
+//    m_soft_m->setsoft_executionTab_runMatlabKD_radioButton( soft_executionTab_runMatlabKD_radioButton->isChecked() );
+//    m_soft_m->setsoft_executionTab_killDevilQueue_comboBox( soft_executionTab_killDevilQueue_comboBox->currentText() );
+//    m_soft_m->setsoft_executionTab_killDevilAllocatedMemory_spinBox( soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
 
 
     m_sync = false;
@@ -125,11 +125,11 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_soft_m->setsoft_executionTab_mvcm_lineEdit( soft_executionTab_mvcm_lineEdit->text() );
 
         m_soft_m->setsoft_executionTab_runMatlab_lineEdit( soft_executionTab_runMatlab_lineEdit->text() );
-        m_soft_m->setsoft_executionTab_runMatlabSystem_radioButton( soft_executionTab_runMatlabSystem_radioButton->isChecked() );
+//        m_soft_m->setsoft_executionTab_runMatlabSystem_radioButton( soft_executionTab_runMatlabSystem_radioButton->isChecked() );
         m_soft_m->setsoft_executionTab_nbrCompThreads_spinBox( soft_executionTab_nbrCompThreads_spinBox->value() );
-        m_soft_m->setsoft_executionTab_runMatlabKD_radioButton( soft_executionTab_runMatlabKD_radioButton->isChecked() );
-        m_soft_m->setsoft_executionTab_killDevilQueue_comboBox( soft_executionTab_killDevilQueue_comboBox->currentText() );
-        m_soft_m->setsoft_executionTab_killDevilAllocatedMemory_spinBox( soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
+//        m_soft_m->setsoft_executionTab_runMatlabKD_radioButton( soft_executionTab_runMatlabKD_radioButton->isChecked() );
+//        m_soft_m->setsoft_executionTab_killDevilQueue_comboBox( soft_executionTab_killDevilQueue_comboBox->currentText() );
+//        m_soft_m->setsoft_executionTab_killDevilAllocatedMemory_spinBox( soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
     }
 
     m_sync = false;
@@ -186,11 +186,11 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
 
     para_executionTab_runMatlab_checkBox->setChecked( m_para_m->getpara_executionTab_runMatlab_checkBox() );
     soft_executionTab_runMatlab_lineEdit->setText( m_soft_m->getsoft_executionTab_runMatlab_lineEdit() );
-    soft_executionTab_runMatlabSystem_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabSystem_radioButton() );
+//    soft_executionTab_runMatlabSystem_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabSystem_radioButton() );
     soft_executionTab_nbrCompThreads_spinBox->setValue( m_soft_m->getsoft_executionTab_nbrCompThreads_spinBox() );
-    soft_executionTab_runMatlabKD_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabKD_radioButton() );
-    soft_executionTab_killDevilQueue_comboBox->setCurrentText( m_soft_m->getsoft_executionTab_killDevilQueue_comboBox() );
-    soft_executionTab_killDevilAllocatedMemory_spinBox->setValue( m_soft_m->getsoft_executionTab_killDevilAllocatedMemory_spinBox() );
+//    soft_executionTab_runMatlabKD_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabKD_radioButton() );
+//    soft_executionTab_killDevilQueue_comboBox->setCurrentText( m_soft_m->getsoft_executionTab_killDevilQueue_comboBox() );
+//    soft_executionTab_killDevilAllocatedMemory_spinBox->setValue( m_soft_m->getsoft_executionTab_killDevilAllocatedMemory_spinBox() );
 
     m_sync = false;
 }
@@ -251,11 +251,11 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         soft_executionTab_mvcm_lineEdit->setText( m_soft_m->getsoft_executionTab_mvcm_lineEdit() );
 
         soft_executionTab_runMatlab_lineEdit->setText( m_soft_m->getsoft_executionTab_runMatlab_lineEdit() );
-        soft_executionTab_runMatlabSystem_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabSystem_radioButton() );
+//        soft_executionTab_runMatlabSystem_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabSystem_radioButton() );
         soft_executionTab_nbrCompThreads_spinBox->setValue( m_soft_m->getsoft_executionTab_nbrCompThreads_spinBox() );
-        soft_executionTab_runMatlabKD_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabKD_radioButton() );
-        soft_executionTab_killDevilQueue_comboBox->setCurrentText( m_soft_m->getsoft_executionTab_killDevilQueue_comboBox() );
-        soft_executionTab_killDevilAllocatedMemory_spinBox->setValue( m_soft_m->getsoft_executionTab_killDevilAllocatedMemory_spinBox() );
+//        soft_executionTab_runMatlabKD_radioButton->setChecked( m_soft_m->getsoft_executionTab_runMatlabKD_radioButton() );
+//        soft_executionTab_killDevilQueue_comboBox->setCurrentText( m_soft_m->getsoft_executionTab_killDevilQueue_comboBox() );
+//        soft_executionTab_killDevilAllocatedMemory_spinBox->setValue( m_soft_m->getsoft_executionTab_killDevilAllocatedMemory_spinBox() );
     }
 
     m_sync = false;

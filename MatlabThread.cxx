@@ -110,13 +110,13 @@ void MatlabThread::SetInputFiles( const QMap< int, QString >& csvInputFiles )
     m_matlabScript.replace( "$diffusionData$", diffusionData );
 }
 
-void MatlabThread::SetCovariates( const QMap<int, QString> &selectedCovariates )
+void MatlabThread::SetCovariates( const QMap< int, QString > &selectedCovariates )
 {
     m_matlabScript.replace( "$nbrCovariates$", "nbrCovariates = " + QString::number( selectedCovariates.count() ) + ";" );
     QString covariates;
     QString listCovariates;
     int i = 1;
-    QMap<int, QString>::ConstIterator iterCovariate = selectedCovariates.cbegin();
+    QMap< int, QString >::ConstIterator iterCovariate = selectedCovariates.cbegin();
     while( iterCovariate != selectedCovariates.cend() )
     {
         covariates.append( iterCovariate.value() + " = \'" + iterCovariate.value() + "\';\n" );
@@ -222,26 +222,10 @@ bool& MatlabThread::SetRunMatlab()
     return m_runMatlab;
 }
 
-bool& MatlabThread::SetRunMatlabOnKD()
-{
-    return m_runMatlabOnKD;
-}
-
-QString& MatlabThread::SetQueueKD()
-{
-    return m_queueKD;
-}
-
-int& MatlabThread::SetAllocatedMemoryKD()
-{
-    return m_allocatedMemoryKD;
-}
-
 
 void MatlabThread::terminate()
 {
     m_process->terminate();
-//    delete m_process;
     QThread::terminate();
 }
 
@@ -259,10 +243,6 @@ void MatlabThread::RunScript()
     QStringList arguments;
     QString mScript = "run('" + m_matlabScriptPath + "')";
     std::cout << mScript.toStdString() << std::endl;
-    if( m_runMatlabOnKD ) // Do we keep it?
-    {
-        arguments << ( QString( "bsub -q " + m_queueKD + "-M " + m_allocatedMemoryKD ) );
-    }
     arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" ) << "-logfile matlabLog.out";
 
     m_process->start( m_matlabExe, arguments );

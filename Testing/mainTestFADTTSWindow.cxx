@@ -30,12 +30,14 @@
  * argv[22] = faBetaPath2
  * argv[23] = omnibusFDRLpvaluesPath2
  *
- * argv[24] = okIcon
- * argv[25] = koIcon
- * argv[26] = warningIcon
+ * argv[24] = plotSettingsPath;
  *
- * argv[27] = dataDir
- * argv[28] = tempoDir
+ * argv[25] = okIcon
+ * argv[26] = koIcon
+ * argv[27] = warningIcon
+ *
+ * argv[28] = dataDir
+ * argv[29] = tempoDir
  */
 
 int main( int argc, char *argv[] )
@@ -57,14 +59,14 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetDir( argv[1], argv[27], argv[28] ) )
+    if( testFADTTSWindow.Test_SetDir( argv[1], argv[28], argv[29] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_DisplayIcon( argv[27] ) )
+    if( testFADTTSWindow.Test_DisplayIcon( argv[28] ) )
     {
         nbrTestsPassed++;
     }
@@ -73,14 +75,14 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLoadSaveParaSettings( argv[1], argv[2], argv[27], argv[28] ) )
+    if( testFADTTSWindow.Test_OnLoadSaveParaSettings( argv[1], argv[2], argv[28], argv[29] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLoadSaveSoftSettings( argv[3], argv[4], argv[27], argv[28] ) )
+    if( testFADTTSWindow.Test_OnLoadSaveSoftSettings( argv[3], argv[4], argv[28], argv[29] ) )
     {
         nbrTestsPassed++;
     }
@@ -161,6 +163,13 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_SaveCheckedSubjects( argv[28], argv[29] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
@@ -218,7 +227,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_DisplayInputLineEditIcon( argv[27] ) )
+    if( testFADTTSWindow.Test_DisplayInputLineEditIcon( argv[28] ) )
     {
         nbrTestsPassed++;
     }
@@ -232,7 +241,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_UpdateLineEditsAfterAddingMultipleFiles( argv[27] ) )
+    if( testFADTTSWindow.Test_UpdateLineEditsAfterAddingMultipleFiles( argv[28] ) )
     {
         nbrTestsPassed++;
     }
@@ -330,7 +339,14 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetResetPlotTab( argv[27], argv[28] ) )
+    if( testFADTTSWindow.Test_SetResetPlotTab( argv[28], argv[29] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_LoadSavePlotSettings( argv[28], argv[29] ) )
     {
         nbrTestsPassed++;
     }
@@ -387,10 +403,6 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
-
-
-
-
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_OnLineForDisplayClicked() )
     {
@@ -414,24 +426,59 @@ int main( int argc, char *argv[] )
 
 
 
-
-
-
-
-
-
-
-
-
     std::cerr << std::endl;
     /************** Execution Tab **************/
     std::cerr << std::endl << "/************** Execution Tab **************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_GenerateSelectedSubjectFile( argv[8], argv[28] ) )
+    if( testFADTTSWindow.Test_GenerateSelectedSubjectFile( argv[8], argv[29] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
+
+//    std::cerr << std::endl << nbrTests + 1 << "- ";
+//    if( testFADTTSWindow.Test_SetLogDisplay() )
+//    {
+//        nbrTestsPassed++;
+//    }
+//    nbrTests++;
+
+
+
+//    std::cerr << std::endl << nbrTests + 1 << "- ";
+//    if( testFADTTSWindow.Test_OnRun() )
+//    {
+//        nbrTestsPassed++;
+//    }
+//    nbrTests++;
+
+//    std::cerr << std::endl << nbrTests + 1 << "- ";
+//    if( testFADTTSWindow.Test_OnStop() )
+//    {
+//        nbrTestsPassed++;
+//    }
+//    nbrTests++;
+
+//    std::cerr << std::endl << nbrTests + 1 << "- ";
+//    if( testFADTTSWindow.Test_OnDisplayLog() )
+//    {
+//        nbrTestsPassed++;
+//    }
+//    nbrTests++;
+
+//    std::cerr << std::endl << nbrTests + 1 << "- ";
+//    if( testFADTTSWindow.Test_OnClearLog() )
+//    {
+//        nbrTestsPassed++;
+//    }
+//    nbrTests++;
+
+//    std::cerr << std::endl << nbrTests + 1 << "- ";
+//    if( testFADTTSWindow.Test_OnMatlabThreadFinished() )
+//    {
+//        nbrTestsPassed++;
+//    }
+//    nbrTests++;
 
 
 

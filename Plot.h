@@ -41,29 +41,29 @@ public:
     explicit Plot( QObject *parent = 0 );
 
 
-    void SetQVTKWidget( QSharedPointer<QVTKWidget> qvtkWidget ); // Tested
+    void SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget ); // Tested
 
-    bool InitPlot( QString directory, QString fibername ); /// Not directly tested
+    bool InitPlot( QString directory, QString fibername ); // Tested
 
-    void ResetPlotData(); /// Not tested
+    void ResetPlotData(); // Tested
 
-    void ClearPlot(); /// Not tested
+    void ClearPlot(); // Tested
 
 
     void SetSelectedPlot( QString plotSelected ); // Tested
 
-    void SetSelectedProperty( QString propertySelected ); /// Not tested
+    QString&  SetSelectedProperty(); // Tested
 
-    void SetSelectedCovariate( QString covariateSelected ); /// Not tested
+    QString& SetSelectedCovariate(); // Tested
 
-    void SetSelectionToDisPlay( const QMap< int, QPair< QString, QPair< bool, QString > > >& currentSelectionToDisplay ); /// Not tested
+    QMap< int, QPair< QString, QPair< bool, QString > > >& SetSelectionToDisPlay(); // Tested
 
 
     void SetTitle( QString title, bool isBold, bool isItalic, double fontSize ); // Tested
 
     void SetDefaultTitle(); // Tested
 
-    void SetGrid( bool gridOn ); /// Not tested
+    bool& SetGrid(); // Not Directly Tested
 
     void SetAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
 
@@ -72,23 +72,23 @@ public:
     void SetLegend( QString position ); // Tested
 
 
-    void SetPvalueThreshold( double pvalueThreshold ); /// Not tested
+    double& SetPvalueThreshold(); // Tested
 
-    void SetLineWidth( double lineWidth ); /// Not tested
+    double& SetLineWidth(); // Tested
 
     void SetMarkerType( QString markerType ); // Tested
 
-    void SetMarkerSize( double markerSize ); /// Not tested
+    double& SetMarkerSize(); // Tested
 
 
-    void UpdateCovariatesNames( const QMap<int, QString>& newCovariatesNames ); // Tested
+    void UpdateCovariatesNames( const QMap< int, QString >& newCovariatesNames ); // Tested
 
 
-    bool DisplayVTKPlot(); /// Not directly tested
+    bool DisplayVTKPlot(); // Not Directly Tested
 
 
 public slots:
-    void OnSavePlot(); /// Not tested
+    void OnSavePlot(); // Tested
 
 
 signals:
@@ -134,9 +134,9 @@ private:
 
     Processing m_processing;
 
-    QSharedPointer<QVTKWidget> m_qvtkWidget;
-    vtkSmartPointer<vtkContextView> m_view;
-    vtkSmartPointer<vtkChartXY> m_chart;
+    QSharedPointer< QVTKWidget > m_qvtkWidget;
+    vtkSmartPointer< vtkContextView > m_view;
+    vtkSmartPointer< vtkChartXY > m_chart;
     QMap< int, vtkPlot* > m_line;
 
 
@@ -171,20 +171,20 @@ private:
 
     QList< double > QStringListToDouble( const QStringList& rowData ); // Tested
 
-    QList< QList< double > > DataToDouble( const QList<QStringList>& data ); // Tested
+    QList< QList< double > > DataToDouble( const QList< QStringList >& data ); // Tested
 
-    void SortFilesByProperties( QString directory, const QStringList& files, QMap<QString, QList<QList<double> > >& data ); // Tested
+    void SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data ); // Tested
 
-    void TransposeData( QList<QList<double> >& data, int firstRow, int firstColumn ); // Tested
+    void TransposeData( QList< QList< double > >& data, int firstRow, int firstColumn ); // Tested
 
-    void TransposeDataInQMap( QMap< QString, QList<QList<double> > >& data, int firstRow, int firstColumn ); // Tested
+    void TransposeDataInQMap( QMap< QString, QList< QList< double > > >& data, int firstRow, int firstColumn ); // Tested
 
 
     void SetRawData(); // Tested
 
     void SetBeta(); // Tested
 
-    void SetOmnibusLpvalue( const QStringList& omnibusLpvalueFiles, QList<QList<double> >& omnibusLpvaluesData ); // Tested
+    void SetOmnibusLpvalue( const QStringList& omnibusLpvalueFiles, QList< QList< double > >& omnibusLpvaluesData ); // Tested
 
     void SetConfidenceBands(); // Tested
 
@@ -234,53 +234,56 @@ private:
 
     QList< QList< double > > LoadBetaByCovariate(); // Tested
 
-    QList< QList< double > > LoadOmnibusLpvalues( QList<QList<double> > omnibusLpvalues ); // Tested
+    QList< QList< double > > LoadOmnibusLpvalues( QList< QList< double > > omnibusLpvalues ); // Tested
 
     QList< QList< double > > LoadConfidenceBand(); // Tested
 
     QList< QList< double > > LoadPostHocFDRLpvalues(); // Tested
 
-    bool LoadData(); /// Not directly tested
+    bool LoadData(); // Not Directly Tested
 
 
-    void AddEntriesRawData( vtkSmartPointer<vtkTable>& table ); // Tested
+    void AddEntriesRawData( vtkSmartPointer< vtkTable >& table ); // Tested
 
-    void AddEntriesRawStats( vtkSmartPointer<vtkTable>& table ); // Tested
+    void AddEntriesRawStats( vtkSmartPointer< vtkTable >& table ); // Tested
 
-    void AddEntriesByPropertiesOrCovariates( vtkSmartPointer<vtkTable>& table ); // Tested
+    void AddEntriesByPropertiesOrCovariates( vtkSmartPointer< vtkTable >& table ); // Tested
 
-    void AddEntriesCovariatesBands( vtkSmartPointer<vtkTable>& table ); // Tested
+    void AddEntriesCovariatesBands( vtkSmartPointer< vtkTable >& table ); // Tested
 
-    void AddEntries( vtkSmartPointer<vtkTable>& table ); /// Not directly tested
+    void AddEntries( vtkSmartPointer< vtkTable >& table ); // Tested
 
 
-    void SetData( vtkSmartPointer<vtkTable>& table ); // Tested
+    void SetData( vtkSmartPointer< vtkTable >& table ); // Tested
 
 
     void InitLines(); // Tested
 
     void AddSignificantLevel( double significantLevel ); // Tested
 
-    void AddLineSigBetas( const vtkSmartPointer<vtkTable>& table, bool betaDisplayedByProperties, bool isOmnibus, int i ); /** /!\ WRITE TEST /!\ **/
+    void AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i ); /** /!\ PB WITH TEST /!\ **/
 
-    void AddLineRawData( const vtkSmartPointer<vtkTable>& table ); /// Not tested
+    void AddLineRawData( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddLineRawStats( const vtkSmartPointer<vtkTable>& table ); /// Not tested
+    void AddLineRawStats( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddLineBetas( const vtkSmartPointer<vtkTable>& table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus ); /// Not tested
+    void AddLineBetas( const vtkSmartPointer< vtkTable >& table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus ); // Not Directly Tested
 
-    void AddLineLPvalue( const vtkSmartPointer<vtkTable>& table ); /// Not tested
+    void AddLineLPvalue( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddLineLConfidenceBands( const vtkSmartPointer<vtkTable>& table ); /// Not tested
+    void AddLineLConfidenceBands( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddLines( const vtkSmartPointer<vtkTable>& table ); /// Not directly tested
+    void AddLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
 
-    QList<double> GetyMinMax(); // Tested
+    QList< double > GetyMinMax(); // Tested
 
     void SetyMinMax(); /** /!\ WRITE TEST /!\ **/
 
-    void SetChartProperties(); /// Not tested
+    void SetChartProperties(); /** /!\ WRITE TEST /!\ **/
+
+
+    void SavePlot( QString filePath ); /** /!\ PB WITH TEST /!\ **/
 };
 
 #endif // PLOT_H

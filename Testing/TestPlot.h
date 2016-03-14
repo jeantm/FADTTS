@@ -4,6 +4,9 @@
 #include "Plot.h"
 #include "Processing.h"
 
+#include <QCryptographicHash>
+#include <QSet>
+
 #include <iostream>
 
 
@@ -129,12 +132,18 @@ public:
 
     bool Test_AddSignificantLevel();
 
-    bool Test_AddLineSigBetas(); // write test
+    bool Test_AddLineSigBetas( QString dataDir, QString tempoDir ); /** /!\ PB WITH TEST /!\ **/
 
 
     bool Test_GetyMinMax();
 
-    bool Test_SetyMinMax(); // write test
+    bool Test_SetyMinMax(); /** /!\ WRITE TEST /!\ **/
+
+    bool Test_SetChartProperties(); /** /!\ WRITE TEST /!\ **/
+
+
+    bool Test_SavePlot( QString plotPath , QString dataDir, QString tempoDir ); /** /!\ WRITE TEST /!\ **/
+
 
 
 
@@ -144,10 +153,14 @@ private:
     /**********************************************************************/
     void DisplayError_QStringList( QStringList qStringListExpected, QStringList qStringListDisplayed, QString type );
 
-    void DisplayError_QMapIntQString( QMap<int, QString> qMapExpected, QMap<int, QString> qMapDisplayed, QString type );
+    void DisplayError_QMapIntQString( QMap< int, QString > qMapExpected, QMap< int, QString > qMapDisplayed, QString type );
 
     template <typename T>
     void DisplayError_QListQList( T qListQListExpected, T qListQListDisplayed, QString type );
+
+    QByteArray GetHashFile( QString filePath );
+
+    bool CompareFile( QString filePath1, QString filePath2 );
 };
 
 #endif // TESTPLOT_H

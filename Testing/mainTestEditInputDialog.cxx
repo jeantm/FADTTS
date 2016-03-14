@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testEditInputDialog.Test_OnSaveFile( argv[1], argv[3], argv[4] ) )
+    if( testEditInputDialog.Test_SaveFile( argv[1], argv[3], argv[4] ) )
     {
         nbrTestsPassed++;
     }

@@ -36,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -1513,67 +1513,7 @@
            </item>
            <item row="3" column="0" colspan="4">
             <layout class="QGridLayout" name="gridLayout_12">
-             <item row="3" column="2" colspan="2">
-              <widget class="QLabel" name="executionTab_killDevilAllocatedMemory_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Allocated Memoy</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3" colspan="3">
-              <widget class="QComboBox" name="soft_executionTab_killDevilQueue_comboBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <item>
-                <property name="text">
-                 <string>Hour (60 mins)</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Day (24 hrs)</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Week (7 days)</string>
-                </property>
-               </item>
-              </widget>
-             </item>
              <item row="1" column="0">
-              <widget class="QRadioButton" name="soft_executionTab_runMatlabSystem_radioButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>On the system</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
               <widget class="QLabel" name="executionTab_nbrCompThreads_label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1586,7 +1526,7 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
+             <item row="1" column="1">
               <widget class="QSpinBox" name="soft_executionTab_nbrCompThreads_spinBox">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1605,7 +1545,7 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1" colspan="7">
+             <item row="0" column="1" colspan="2">
               <widget class="QLineEdit" name="soft_executionTab_runMatlab_lineEdit">
                <property name="enabled">
                 <bool>true</bool>
@@ -1624,7 +1564,7 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="8">
+             <item row="0" column="3">
               <widget class="QLabel" name="executionTab_iconMatlab_label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -1646,68 +1586,13 @@
              <item row="0" column="0">
               <widget class="QPushButton" name="executionTab_runMatlab_pushButton">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="text">
                 <string>Specify Matlab Executable</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="4">
-              <widget class="QSpinBox" name="soft_executionTab_killDevilAllocatedMemory_spinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimum">
-                <number>4</number>
-               </property>
-               <property name="maximum">
-                <number>12</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2" colspan="6">
-              <widget class="QRadioButton" name="soft_executionTab_runMatlabKD_radioButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>On KillDevil ( UNC users only )</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QLabel" name="executionTab_killDevilQueue_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Queue</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="5">
-              <widget class="QLabel" name="executionTab_killDevilAllocatedMemoryInfo_label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;(MB)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -1736,7 +1621,7 @@
            <item row="2" column="0" colspan="3">
             <widget class="QCheckBox" name="para_executionTab_runMatlab_checkBox">
              <property name="text">
-              <string>Run matlab after file generation</string>
+              <string>Run matlab on the system after file generation</string>
              </property>
             </widget>
            </item>
@@ -1771,7 +1656,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="plottingTab_loadSetDataTab">
            <attribute name="title">
@@ -2195,6 +2080,9 @@
                  <property name="text">
                   <string>Use customized title</string>
                  </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -2340,6 +2228,9 @@
                 <widget class="QCheckBox" name="plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox">
                  <property name="text">
                   <string>Use customized axis</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>

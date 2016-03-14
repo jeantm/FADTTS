@@ -53,13 +53,13 @@ private:
     /**********************************************************************/
     void DisplayError_GetSubjects( QStringList subjectsExpected, QStringList subjectsDisplayed );
 
-    void DisplayError_GetSubjectsFromSelectedFiles( QMap<int, QStringList> expectedSubjects, QMap<int, QStringList> selectedSubjects );
+    void DisplayError_GetSubjectsFromSelectedFiles( QMap< int, QStringList > expectedSubjects, QMap< int, QStringList > selectedSubjects );
 
-    void DisplayError_SortedSubjects( QMap< QString, QMap<int, bool> > expectedSortedSubjects, QMap< QString, QMap<int, bool> > sortedSubjects );
+    void DisplayError_SortedSubjects( QMap< QString, QMap< int, bool > > expectedSortedSubjects, QMap< QString, QMap< int, bool > > sortedSubjects );
 
-    void DisplayError_UnMatchedSubjects( QMap<QString, QList<int> > unMatchedSubjectsExpected, QMap<QString, QList<int> > unMatchedSubjectsDisplayed );
+    void DisplayError_UnMatchedSubjects( QMap< QString, QList< int > > unMatchedSubjectsExpected, QMap< QString, QList< int > > unMatchedSubjectsDisplayed );
 
-    void DisplayError_GetCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed );
+    void DisplayError_GetCovariates( QMap< int, QString > covariatesExpected, QMap< int, QString > covariatesDisplayed );
 
 
     QByteArray GetHashFile( QString filePath );

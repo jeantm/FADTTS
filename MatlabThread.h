@@ -56,7 +56,7 @@ public:
 
     void SetInputFiles( const QMap< int, QString >& csvInputFiles ); // Tested
 
-    void SetCovariates( const QMap<int, QString>& selectedCovariates ); // Tested
+    void SetCovariates( const QMap< int, QString >& selectedCovariates ); // Tested
 
 
     void SetNbrPermutation( int nbrPermutation ); // Tested
@@ -77,12 +77,6 @@ public:
 
     bool& SetRunMatlab(); // Tested
 
-    bool& SetRunMatlabOnKD(); // Tested
-
-    QString& SetQueueKD(); /// Not tested
-
-    int& SetAllocatedMemoryKD(); /// Not tested
-
 
     void terminate(); /// Not tested
 
@@ -95,15 +89,13 @@ private:
     QProcess *m_process;
 
     QString m_matlabScript, m_outputDir, m_matlabScriptName,
-    m_matlabExe, m_matlabScriptPath, m_queueKD;
+    m_matlabExe, m_matlabScriptPath;
 
-    int m_allocatedMemoryKD;
-
-    bool m_runMatlab, m_runMatlabOnKD;
+    bool m_runMatlab;
 
 
     /*************** Script ***************/
-    void GenerateMyFDR(); // Tested
+    void GenerateMyFDR(); // Not Directly Tested
 
     QString GenerateMatlabFiles(); // Tested
 

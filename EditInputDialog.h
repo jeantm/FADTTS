@@ -73,11 +73,14 @@ private:
     bool m_rowDeleted, m_columnDeleted;
 
 
-    void InitEditInputDialog();
+    void InitEditInputDialog(); // Not Directly Tested
 
-    void LoadData(); // Tested
+    void LoadData(); // Not Directly Tested
 
     void ResetTableWidget(); // Tested
+
+
+    void SaveFile( QString newFilePath );
 
 
     void closeEvent( QCloseEvent *event ); /// Not tested

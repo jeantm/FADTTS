@@ -11,7 +11,7 @@ bool TestProcessing::Test_GetDataFromFile( QString file_N_Path, QString file_R_P
 {
     Processing processing;
     QStringList dataReference_row = QStringList() << "a" << "b" << "c" << "d" << "e" << "f";
-    QList<QStringList> dataReference = QList<QStringList>() << dataReference_row << dataReference_row <<
+    QList< QStringList > dataReference = QList< QStringList >() << dataReference_row << dataReference_row <<
                                                                dataReference_row << dataReference_row;
 
 
@@ -54,11 +54,11 @@ bool TestProcessing::Test_GetDataFromFile( QString file_N_Path, QString file_R_P
 bool TestProcessing::Test_IsMatrixDimensionOK( QString adFilePath )
 {
     Processing processing;
-    QList<QStringList> randomData;
+    QList< QStringList > randomData;
     QStringList randomDataRow1 = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "123" << "0"
                                                << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
     QStringList randomDataRow2 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795";
-    randomData.append( QList<QStringList>() << randomDataRow1 << randomDataRow2 );
+    randomData.append( QList< QStringList >() << randomDataRow1 << randomDataRow2 );
 
 
     bool testMatrixDimensionOK = processing.IsMatrixDimensionOK( processing.GetDataFromFile( adFilePath ) );
@@ -69,7 +69,7 @@ bool TestProcessing::Test_IsMatrixDimensionOK( QString adFilePath )
     if( !testIsMatrixDimensionOK_Passed )
     {
         std::cerr << "/!\\/!\\ Test_IsMatrixDimensionOK() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with IsMatrixDimensionOK( const QList<QStringList> data )" << std::endl;
+        std::cerr << "\t+ pb with IsMatrixDimensionOK( const QList< QStringList > data )" << std::endl;
         if( !testMatrixDimensionOK )
         {
             std::cerr << "\t  data do not have the same number of columns for each row when it should" << std::endl;
@@ -169,7 +169,7 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
 {
     Processing processing;
     // AD, RA, MD or FA file
-    QList<QStringList> adData = processing.GetDataFromFile( adFilePath );
+    QList< QStringList > adData = processing.GetDataFromFile( adFilePath );
     QStringList adSubjects = processing.GetSubjectsFromData( adData, 2 );
     QStringList expectedADSubjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
                                                    << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
@@ -181,7 +181,7 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
     expectedADSubjects.sort();
 
     // SubMatrix file: subjects on 1st column
-    QList<QStringList> subMatrix0Data = processing.GetDataFromFile( subMatrix0FilePath );
+    QList< QStringList > subMatrix0Data = processing.GetDataFromFile( subMatrix0FilePath );
     QStringList subMatrix0Subjects = processing.GetSubjectsFromData( subMatrix0Data, 0 );
     QStringList expectedSubMatrix0Subjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
                                                            << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
@@ -193,7 +193,7 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
     expectedSubMatrix0Subjects.sort();
 
     // SubMatrix file: subjects not on 1st column
-    QList<QStringList> subMatrix3Data = processing.GetDataFromFile( subMatrix3FilePath );
+    QList< QStringList > subMatrix3Data = processing.GetDataFromFile( subMatrix3FilePath );
     QStringList subMatrix3Subjects = processing.GetSubjectsFromData( subMatrix3Data, 3 );
     QStringList expectedSubMatrix3Subjects = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
                                                            << "neo-0019-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0029-3_dwi_35_all_QCed_VC_DTI_embed" << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed"
@@ -214,7 +214,7 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
     if( !testGetSubjectsFromData_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetSubjectsFromData() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetSubjectsFromData( QList<QStringList> data, int subjectColumnID )" << std::endl;
+        std::cerr << "\t+ pb with GetSubjectsFromData( QList< QStringList > data, int subjectColumnID )" << std::endl;
         if( !testADSubjects )
         {
             std::cerr << "\t+ Incorrect subjects generated from AD, RD, MD or FA file" << std::endl;
@@ -243,7 +243,7 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
 bool TestProcessing::Test_GetAllSubjects( QString adFilePath, QString subMatrix0FilePath )
 {
     Processing processing;
-    QMap<int, QStringList> subjectsMap;
+    QMap< int, QStringList > subjectsMap;
     subjectsMap.insert( -1, QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" );
     subjectsMap.insert( 0, processing.GetSubjectsFromData( processing.GetDataFromFile( adFilePath ), 4 ) );
     subjectsMap.insert( 1, QStringList() );
@@ -267,7 +267,7 @@ bool TestProcessing::Test_GetAllSubjects( QString adFilePath, QString subMatrix0
     if( !testGetAllSubjects_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetAllSubjects() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetAllSubjects( QMap<int, QStringList> subjectsMap )" << std::endl;
+        std::cerr << "\t+ pb with GetAllSubjects( QMap< int, QStringList > subjectsMap )" << std::endl;
         std::cerr << "\t+ Wrong list of subjects extracted:" << std::endl;
         DisplayError_GetSubjects( expectedSubjects, extractedSubjectList );
     }
@@ -318,8 +318,8 @@ bool TestProcessing::Test_GetSubjectsFromSelectedFiles()
     allSubjects.insert( 3, QStringList() );
     allSubjects.insert( 4, subMatrixSubjects );
 
-    QMap< int, QStringList> selectedSubjects = processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, allSubjects );
-    QMap< int, QStringList> expectedSubjects;
+    QMap< int, QStringList > selectedSubjects = processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, allSubjects );
+    QMap< int, QStringList > expectedSubjects;
     expectedSubjects.insert( -1, loadedSubjects );
     expectedSubjects.insert( 4, subMatrixSubjects );
 
@@ -328,8 +328,8 @@ bool TestProcessing::Test_GetSubjectsFromSelectedFiles()
     if( !testGetSubjectsFromSelectedFiles_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetSubjectsFromSelectedFiles() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetSubjectsFromSelectedFiles( const QMap<int, bool> diffusionPropertiesCheckState,"
-                     " const QMap<int, QStringList > subjectsMap )" << std::endl;
+        std::cerr << "\t+ pb with GetSubjectsFromSelectedFiles( const QMap< int, bool > diffusionPropertiesCheckState,"
+                     " const QMap< int, QStringList > subjectsMap )" << std::endl;
         std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
         std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
         DisplayError_GetSubjectsFromSelectedFiles( expectedSubjects, selectedSubjects );
@@ -375,14 +375,14 @@ bool TestProcessing::Test_SortSubjects()
         ( expectedSortedSubjects[subj] )[0] = adSubjects.contains( subj ) ? true : false;
         ( expectedSortedSubjects[subj] )[4] = subMatrixSubjects.contains( subj ) ? true : false;
     }
-    QMap< QString, QMap<int, bool> > sortedSubjects = processing.SortSubjects( allSubjects, selectedSubjects );
+    QMap< QString, QMap< int, bool > > sortedSubjects = processing.SortSubjects( allSubjects, selectedSubjects );
 
 
     bool testSortSubjects_Passed = sortedSubjects == expectedSortedSubjects;
     if( !testSortSubjects_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SortSubjects() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with SortSubjects( const QStringList subjects, const QMap<int, QStringList> subjectsMap )" << std::endl;
+        std::cerr << "\t+ pb with SortSubjects( const QStringList subjects, const QMap< int, QStringList > subjectsMap )" << std::endl;
         std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
         std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
         DisplayError_SortedSubjects( expectedSortedSubjects, sortedSubjects );
@@ -424,18 +424,18 @@ bool TestProcessing::Test_AssignSortedSubject()
     selectedSubjects.insert( -1, loadedSubjects );
     selectedSubjects.insert( 0, adSubjects );
     selectedSubjects.insert( 4, subMatrixSubjects );
-    QMap< QString, QMap<int, bool> > sortedSubjects = processing.SortSubjects( allSubjects, selectedSubjects );
-    QMap<QString, QList<int> > expectedUnMatchedSubjects;
+    QMap< QString, QMap< int, bool > > sortedSubjects = processing.SortSubjects( allSubjects, selectedSubjects );
+    QMap< QString, QList< int > > expectedUnMatchedSubjects;
     QStringList expectedMatchedSubjects;
     QStringList matchedSubjects;
-    QMap<QString, QList<int> > unMatchedSubjects;
+    QMap< QString, QList< int > > unMatchedSubjects;
 
 
     foreach( QString subject, allSubjects )
     {
         if( !loadedSubjects.contains( subject ) || !adSubjects.contains( subject ) || !subMatrixSubjects.contains( subject ) )
         {
-            QList<int> indices;
+            QList< int > indices;
             if( loadedSubjects.contains( subject ) )
             {
                 indices.append( -1 );
@@ -467,8 +467,8 @@ bool TestProcessing::Test_AssignSortedSubject()
     if( !testAssignSortedSubject_Passed )
     {
         std::cerr << "/!\\/!\\ Test_AssignSortedSubject() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with AssignSortedSubject( const QMap< QString, QMap<int, bool> > sortedSubjects,"
-                     " QStringList& matchedSubjects, QMap<QString, QList<int> >& unMatchedSubjects )" << std::endl;
+        std::cerr << "\t+ pb with AssignSortedSubject( const QMap< QString, QMap< int, bool > > sortedSubjects,"
+                     " QStringList& matchedSubjects, QMap< QString, QList< int > >& unMatchedSubjects )" << std::endl;
         if( !testMatchedSubjects )
         {
             std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
@@ -494,16 +494,16 @@ bool TestProcessing::Test_GetCovariatesFromFileData( QString subMatrix0FilePath,
 {
     Processing processing;
 
-    QMap<int, QString> covariatesExpected0;
+    QMap< int, QString > covariatesExpected0;
     covariatesExpected0.insert( 1, "COMP" );
     covariatesExpected0.insert( 2, "Gender" );
     covariatesExpected0.insert( 3, "GestAgeBirth" );
-    QMap<int, QString> covariatesExpected3;
+    QMap< int, QString > covariatesExpected3;
     covariatesExpected3.insert( 0, "COMP" );
     covariatesExpected3.insert( 1, "Gender" );
     covariatesExpected3.insert( 2, "GestAgeBirth" );
-    QMap<int, QString> covariates0 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix0FilePath ), 0 );
-    QMap<int, QString> covariates3 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix3FilePath ), 3 );
+    QMap< int, QString > covariates0 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix0FilePath ), 0 );
+    QMap< int, QString > covariates3 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix3FilePath ), 3 );
 
 
     bool resultTest1 = covariates0 == covariatesExpected0;
@@ -514,7 +514,7 @@ bool TestProcessing::Test_GetCovariatesFromFileData( QString subMatrix0FilePath,
     if( !testGetCovariatesFromFileData_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetCovariatesFromFileData() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetCovariatesFromData( QList<QStringList> data, int subjectColumnID )" << std::endl;
+        std::cerr << "\t+ pb with GetCovariatesFromData( QList< QStringList > data, int subjectColumnID )" << std::endl;
         if( !resultTest1 )
         {
             std::cerr << "\t+ Covariates retrieved when subjects are in the 1st row are not the ones expected" <<std::endl;
@@ -563,7 +563,7 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     QMap< int, QString > propertiesTest1;
     propertiesTest1.insert( 0, "ad" );
     propertiesTest1.insert( 4, "subMatrix" );
-    QMap<int, QString> covariatesTest1;
+    QMap< int, QString > covariatesTest1;
     covariatesTest1.insert( -1, "Intercept" );
     covariatesTest1.insert( 1, "Gender" );
     covariatesTest1.insert( 2, "DaysSinceBirth" );
@@ -584,7 +584,7 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     QMap< int, QString > propertiesTest2;
     propertiesTest2.insert( 0, "ad" );
     propertiesTest2.insert( 4, "subMatrix" );
-    QMap<int, QString> covariatesTest2;
+    QMap< int, QString > covariatesTest2;
     covariatesTest2.insert( -1, "Intercept" );
     covariatesTest2.insert( 0, "subMatrix" );
     covariatesTest2.insert( 1, "Gender" );
@@ -631,8 +631,8 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     {
         std::cerr << "/!\\/!\\ Test_GenerateMatlabInputs() FAILED /!\\/!\\";
         std::cerr << "\t+ pb with GenerateMatlabInputs( QString outputDir, QString fiberName,"
-                     " QMap<int, QString> inputs, QMap< int, QString > properties,"
-                     " QMap<int, QString> covariates, int subjectColumnID, QStringList subjects);" << std::endl;
+                     " QMap< int, QString > inputs, QMap< int, QString > properties,"
+                     " QMap< int, QString > covariates, int subjectColumnID, QStringList subjects);" << std::endl;
         if( !adFilesMatched )
         {
             std::cerr << "\t  matlab input for AD, RD, MD or FA file not generated correctly" << std::endl;
@@ -673,9 +673,9 @@ void TestProcessing::DisplayError_GetSubjects( QStringList subjectsExpected, QSt
     }
 }
 
-void TestProcessing::DisplayError_GetSubjectsFromSelectedFiles( QMap<int, QStringList> expectedSubjects, QMap<int, QStringList> selectedSubjects )
+void TestProcessing::DisplayError_GetSubjectsFromSelectedFiles( QMap< int, QStringList > expectedSubjects, QMap< int, QStringList > selectedSubjects )
 {
-    QMap<int, QStringList>::ConstIterator iterExpectedSubjects = expectedSubjects.cbegin();
+    QMap< int, QStringList >::ConstIterator iterExpectedSubjects = expectedSubjects.cbegin();
     std::cerr << "\t  - subjects expected" << std::endl;
     while( iterExpectedSubjects != expectedSubjects.cend() )
     {
@@ -687,7 +687,7 @@ void TestProcessing::DisplayError_GetSubjectsFromSelectedFiles( QMap<int, QStrin
         ++iterExpectedSubjects;
     }
 
-    QMap<int, QStringList>::ConstIterator iterSubjects = selectedSubjects.cbegin();
+    QMap< int, QStringList >::ConstIterator iterSubjects = selectedSubjects.cbegin();
     std::cerr << "\t  - subjects retrieved" << std::endl;
     while( iterSubjects != selectedSubjects.cend() )
     {
@@ -700,14 +700,14 @@ void TestProcessing::DisplayError_GetSubjectsFromSelectedFiles( QMap<int, QStrin
     }
 }
 
-void TestProcessing::DisplayError_SortedSubjects( QMap< QString, QMap<int, bool> > expectedSortedSubjects, QMap< QString, QMap<int, bool> > sortedSubjects )
+void TestProcessing::DisplayError_SortedSubjects( QMap< QString, QMap< int, bool > > expectedSortedSubjects, QMap< QString, QMap< int, bool > > sortedSubjects )
 {
-    QMap< QString, QMap<int, bool> >::ConstIterator iterExpectedSortedSubjects = expectedSortedSubjects.cbegin();
+    QMap< QString, QMap< int, bool > >::ConstIterator iterExpectedSortedSubjects = expectedSortedSubjects.cbegin();
     std::cerr << "\t  - sorted subjects expected" << std::endl;
     while( iterExpectedSortedSubjects != expectedSortedSubjects.cend() )
     {
         std::cerr << "\t      " << iterExpectedSortedSubjects.key().toStdString() << " --> ";
-        QMap<int, bool>::ConstIterator iterExpectedFile = iterExpectedSortedSubjects.value().cbegin();
+        QMap< int, bool >::ConstIterator iterExpectedFile = iterExpectedSortedSubjects.value().cbegin();
         while( iterExpectedFile != iterExpectedSortedSubjects.value().cend() )
         {
             std::cerr << " index: " << iterExpectedFile.key() << " [" << ( iterExpectedFile.value() == 1 ? "True" : "False" ) << "]";
@@ -717,12 +717,12 @@ void TestProcessing::DisplayError_SortedSubjects( QMap< QString, QMap<int, bool>
         ++iterExpectedSortedSubjects;
     }
 
-    QMap< QString, QMap<int, bool> >::ConstIterator iterSortedSubjects = sortedSubjects.cbegin();
+    QMap< QString, QMap< int, bool > >::ConstIterator iterSortedSubjects = sortedSubjects.cbegin();
     std::cerr << "\t  - sorted subjects displayed" << std::endl;
     while( iterSortedSubjects != sortedSubjects.cend() )
     {
         std::cerr << "\t      " << iterSortedSubjects.key().toStdString() << " --> ";
-        QMap<int, bool>::ConstIterator iterFile = iterSortedSubjects.value().cbegin();
+        QMap< int, bool >::ConstIterator iterFile = iterSortedSubjects.value().cbegin();
         while( iterFile != iterSortedSubjects.value().cend() )
         {
             std::cerr << " index: " << iterFile.key() << " [" << ( iterFile.value() == 1 ? "True" : "False" ) << "]";
@@ -733,9 +733,9 @@ void TestProcessing::DisplayError_SortedSubjects( QMap< QString, QMap<int, bool>
     }
 }
 
-void TestProcessing::DisplayError_UnMatchedSubjects( QMap<QString, QList<int> > unMatchedSubjectsExpected, QMap<QString, QList<int> > unMatchedSubjectsDisplayed )
+void TestProcessing::DisplayError_UnMatchedSubjects( QMap< QString, QList< int > > unMatchedSubjectsExpected, QMap< QString, QList< int > > unMatchedSubjectsDisplayed )
 {
-    QMap<QString, QList<int> >::ConstIterator iterExpectedUnMatched = unMatchedSubjectsExpected.cbegin();
+    QMap< QString, QList< int > >::ConstIterator iterExpectedUnMatched = unMatchedSubjectsExpected.cbegin();
     std::cerr << "\t  - unMatched subjects expected" << std::endl;
     while( iterExpectedUnMatched != unMatchedSubjectsExpected.cend() )
     {
@@ -748,7 +748,7 @@ void TestProcessing::DisplayError_UnMatchedSubjects( QMap<QString, QList<int> > 
         ++iterExpectedUnMatched;
     }
 
-    QMap<QString, QList<int> >::ConstIterator iterUnMatched = unMatchedSubjectsDisplayed.cbegin();
+    QMap< QString, QList< int > >::ConstIterator iterUnMatched = unMatchedSubjectsDisplayed.cbegin();
     std::cerr << "\t  - unMatched subjects displayed" << std::endl;
     while( iterUnMatched != unMatchedSubjectsDisplayed.cend() )
     {
@@ -762,17 +762,17 @@ void TestProcessing::DisplayError_UnMatchedSubjects( QMap<QString, QList<int> > 
     }
 }
 
-void TestProcessing::DisplayError_GetCovariates( QMap<int, QString> covariatesExpected, QMap<int, QString> covariatesDisplayed )
+void TestProcessing::DisplayError_GetCovariates( QMap< int, QString > covariatesExpected, QMap< int, QString > covariatesDisplayed )
 {
     std::cerr << "\t  - covariates expected" << std::endl;
-    QMap<int, QString>::ConstIterator iterCovariatesExpected = covariatesExpected.cbegin();
+    QMap< int, QString >::ConstIterator iterCovariatesExpected = covariatesExpected.cbegin();
     while( iterCovariatesExpected != covariatesExpected.cend() )
     {
         std::cerr << "\t      " << iterCovariatesExpected.value().toStdString() << " on column " << iterCovariatesExpected.key() << std::endl;
         ++iterCovariatesExpected;
     }
     std::cerr << "\t  - covariates displayed" << std::endl;
-    QMap<int, QString>::ConstIterator iterCovariatesDisplayed = covariatesDisplayed.cbegin();
+    QMap< int, QString >::ConstIterator iterCovariatesDisplayed = covariatesDisplayed.cbegin();
     while( iterCovariatesDisplayed != covariatesDisplayed.cend() )
     {
         std::cerr << "\t      " << iterCovariatesDisplayed.value().toStdString() << " on column " << iterCovariatesDisplayed.key() << std::endl;

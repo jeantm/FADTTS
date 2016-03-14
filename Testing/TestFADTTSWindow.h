@@ -55,6 +55,8 @@ public:
 
     bool Test_SearchSubjects();
 
+    bool Test_SaveCheckedSubjects( QString dataDir, QString tempoDir );
+
 
 
     bool Test_OnCovariateFileToggled();
@@ -101,7 +103,7 @@ public:
 
     bool Test_SetCovariatesForDisplay();
 
-    bool Test_SetPlotOptions(); /// pb test
+    bool Test_SetPlotOptions(); /** /!\ PB WITH TEST /!\ **/
 
     bool Test_AddLinesForDisplay();
 
@@ -110,6 +112,8 @@ public:
     bool Test_EditCovariatesNames();
 
     bool Test_SetResetPlotTab( QString dataDir, QString tempoDir );
+
+    bool Test_LoadSavePlotSettings( QString dataDir, QString tempoDir );
 
 
 
@@ -129,50 +133,30 @@ public:
 
     bool Test_OnCovariateSelection();
 
-
-
-    /** ******* **/
-    /** To Test **/
-    /** ******* **/
     bool Test_OnLineForDisplayClicked();
 
-    bool Test_OnYMinToggled(); /// pb test
+    bool Test_OnYMinToggled(); /** /!\ PB WITH TEST /!\ **/
 
-    bool Test_OnYMaxToggled(); /// pb test
-
-    bool Test_OnDisplayPlot();
-
-    bool Test_OnResetPlot();
-
-    bool Test_OnLoadSavePlotSettings();
+    bool Test_OnYMaxToggled(); /** /!\ PB WITH TEST /!\ **/
 
 
 
     /************** Execution Tab **************/
     bool Test_GenerateSelectedSubjectFile( QString subjectListPath , QString tempoDir );
 
+//    bool Test_SetLogDisplay(); /** /!\ WRITE TEST /!\ **/
 
 
-    /** ******* **/
-    /** To Test **/
-    /** ******* **/
-    bool Test_OnRunMatlabToggled();
 
-    bool Test_OnRunOnKillDevil();
+//    bool Test_OnRun(); /** /!\ WRITE TEST /!\ **/
 
-    bool Test_OnKillDevilQueueSelection();
+//    bool Test_OnStop(); /** /!\ WRITE TEST /!\ **/
 
-    bool Test_OnKillDevilAllocatedMemoryChanged();
+//    bool Test_OnDisplayLog(); /** /!\ WRITE TEST /!\ **/
 
-    bool Test_OnRun();
+//    bool Test_OnClearLog(); /** /!\ WRITE TEST /!\ **/
 
-    bool Test_OnStop();
-
-    bool Test_OnDisplayLog();
-
-    bool Test_OnClearLog();
-
-    bool Test_OnMatlabThreadFinished();
+//    bool Test_OnMatlabThreadFinished(); /** /!\ WRITE TEST /!\ **/
 
 
 
@@ -180,7 +164,7 @@ private:
     /**********************************************************************/
     /********************** Functions Used For Testing ********************/
     /**********************************************************************/
-    void AddIcon( QSharedPointer<FADTTSWindow> fadttsWindow, QString dataDir );
+    void AddIcon( QSharedPointer< FADTTSWindow > fadttsWindow, QString dataDir );
 
 
     void DisplayError_int( int intExpected, int intDisplayed );
@@ -189,7 +173,7 @@ private:
 
     void DisplayError_QStringList( QStringList qStringListExpected, QStringList qStringListDisplayed, QString type );
 
-    void DisplayError_QMapIntQString( QMap<int, QString> qMapExpected, QMap<int, QString> qMapDisplayed, QString type );
+    void DisplayError_QMapIntQString( QMap< int, QString > qMapExpected, QMap< int, QString > qMapDisplayed, QString type );
 
     void DisplayError_matchedSubjects( bool checkState, bool backgroundColor, bool flags );
 

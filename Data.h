@@ -17,7 +17,7 @@ public:
 
 
     /*************** Getters ***************/
-    QList<int> GetDiffusionPropertiesIndices() const; // Tested
+    QList< int > GetDiffusionPropertiesIndices() const; // Tested
 
     int GetAxialDiffusivityIndex() const; // Tested
 
@@ -34,18 +34,18 @@ public:
 
     QString GetFilename( int diffusionPropertyIndex ) const; // Tested
 
-    QList<QStringList> GetFileData( int diffusionPropertyIndex ) const; // Tested
+    QList< QStringList > GetFileData( int diffusionPropertyIndex ) const; // Tested
 
     int GetNbrRows( int diffusionPropertyIndex ) const; // Tested
 
     int GetNbrColumns( int diffusionPropertyIndex ) const; // Tested
 
-    QMap<int, QStringList> GetSubjects() const; // Tested
+    QMap< int, QStringList > GetSubjects() const; // Tested
 
     int GetNbrSubjects( int diffusionPropertyIndex ) const; // Tested
 
 
-    QMap<int, QString> GetCovariates() const; // Tested
+    QMap< int, QString > GetCovariates() const; // Tested
 
     int GetSubjectColumnID() const; // Tested
 
@@ -56,7 +56,7 @@ public:
     /*************** Setters ***************/
     QString& SetFilename( int diffusionPropertyIndexID ); // Tested
 
-    QList<QStringList>& SetFileData( int diffusionPropertyIndexID ); // Tested
+    QList< QStringList >& SetFileData( int diffusionPropertyIndexID ); // Tested
 
     int& SetNbrRows( int diffusionPropertyIndexID ); // Tested
 
@@ -67,7 +67,7 @@ public:
     int& SetNbrSubjects( int diffusionPropertyIndexID ); // Tested
 
 
-    QMap<int, QString>& SetCovariates(); // Tested
+    QMap< int, QString >& SetCovariates(); // Tested
 
     int& SetSubjectColumnID(); // Tested
 
@@ -79,7 +79,7 @@ public:
 
     void ClearSubjects( int diffusionPropertyIndexID ); // Tested
 
-    void ClearCovariates(); // Tested
+    void ClearCovariates(); // Not Directly Tested
 
 
     void AddInterceptToCovariates(); // Tested
@@ -88,13 +88,13 @@ public:
 private:
     enum diffusionProperties { AD, RD, MD, FA, SubMatrix } m_diffusionProperties;
 
-    QMap< int, QList<QStringList> > m_fileDataMap;
+    QMap< int, QList< QStringList > > m_fileDataMap;
 
-    QMap<int, QStringList> m_subjectMap;
+    QMap< int, QStringList > m_subjectMap;
 
-    QMap<int, QString> m_filenameMap, m_covariateMap;
+    QMap< int, QString > m_filenameMap, m_covariateMap;
 
-    QMap<int, int> m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
+    QMap< int, int > m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
 
     QString m_outputDir;
 

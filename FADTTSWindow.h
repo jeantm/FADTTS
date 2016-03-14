@@ -45,9 +45,9 @@ private slots:
     /**************** Input  Tab ****************/
     void OnSettingInputFile( const int& diffusionPropertyID ); // Tested
 
-    void OnAddInputFiles(); /// Not directly tested
+    void OnAddInputFiles(); // Not Directly Tested
 
-    void OnAddInputFile( const int& diffusionPropertyID ); /// Not directly tested
+    void OnAddInputFile( const int& diffusionPropertyID ); // Not Directly Tested
 
     void OnEditInputFile( const int& diffusionPropertyID ); /// Not tested
 
@@ -80,10 +80,10 @@ private slots:
 
     void OnUnCheckAllVisibleSubjects(); // Tested
 
-    void OnSaveCheckedSubjects(); /// Not tested
+    void OnSaveCheckedSubjects(); // Tested
 
 
-    void OnLoadSubjectList(); /// Not tested
+    void OnLoadSubjectList(); // Not Directly Tested
 
     void OnResetSubjectList(); // Tested
 
@@ -91,41 +91,34 @@ private slots:
 
 
     /************** Execution Tab **************/
-    void OnSettingFiberName( const QString& fibername ); // Tested
+    void OnSettingFiberName( const QString& fibername ); // Not Directly Tested
 
-    void OnBrowsingOutputDir(); /// Not tested
+    void OnBrowsingOutputDir(); // Not Directly Tested
 
-    void OnSettingOutputDir( const QString& path ); // Tested
+    void OnSettingOutputDir( const QString& path ); // Not Directly Tested
 
-    void OnBrowsingMVCMPath(); /// Not tested
+    void OnBrowsingMVCMPath(); // Not Directly Tested
 
-    void OnSettingMVCMPath( const QString& path );
+    void OnSettingMVCMPath( const QString& path ); // Not Directly Tested
 
-    void OnBrowsingMatlabExe(); /// Not tested
+    void OnBrowsingMatlabExe(); // Not Directly Tested
 
-    void OnSettingMatlabExe( const QString& executable );
-
-
-    void OnRunMatlabToggled( const bool& choice );
-
-    void OnRunOnKillDevil( const bool& choice );
-
-    void OnKillDevilQueueSelection( const QString& queue );
-
-    void OnKillDevilAllocatedMemoryChanged( const int& allocatedMemory );
+    void OnSettingMatlabExe( const QString& executable ); // Not Directly Tested
 
 
-    void OnRun();
-
-    void OnStop();
+    void OnRunMatlabToggled( const bool& choice ); // Not Directly Tested
 
 
-    void OnDisplayLog();
+    void OnRun(); /// Not tested
 
-    void OnClearLog();
+    void OnStop(); /// Not tested
+
+    void OnDisplayLog(); /// Not tested
+
+    void OnClearLog(); /// Not tested
 
 
-    void OnMatlabThreadFinished();
+    void OnMatlabThreadFinished(); /// Not tested
 
 
     /************** Plotting  Tab **************/
@@ -143,32 +136,37 @@ private slots:
     void OnUpdatingCovariatePlotColor( const QString& covariate ); // Tested
 
 
-    void OnPlotSelection( const QString& plotSelected ); // Tested
+    void OnPlotSelection( const QString& plotSelected ); // Not Directly Tested
 
     void OnPropertySelection( const QString& propertySelected ); // Tested
 
     void OnCovariateSelection( const QString& covariateSelected ); // Tested
 
 
-    void OnLineForDisplayClicked( QListWidgetItem *item ); /** /!\ Write Test /!\ **/
+    void OnLineForDisplayClicked( QListWidgetItem *item ); // Tested
 
     void OnCheckAllLinesToDisplay(); // Tested
 
     void OnUncheckAllToDisplay(); // Tested
 
 
-    void OnYMinToggled( const bool& checkState ); /** /!\ PB with test /!\ **/
+    void OnUseCustomizedTitle( const bool& checkState );
 
-    void OnYMaxToggled( const bool& checkState ); /** /!\ PB with test /!\ **/
+    void OnUseCustomizedAxis( const bool& checkState );
 
 
-    void OnDisplayPlot();
+    void OnYMinToggled( const bool& checkState ); /** /!\ PB WITH TEST /!\ **/
 
-    void OnResetPlot();
+    void OnYMaxToggled( const bool& checkState ); /** /!\ PB WITH TEST /!\ **/
 
-    void OnLoadPlotSettings();
 
-    void OnSavePlotSettings();
+    void OnDisplayPlot(); // Not Directly Tested
+
+    void OnResetPlot(); // Not Directly Tested
+
+    void OnLoadPlotSettings(); // Tested
+
+    void OnSavePlotSettings(); // Tested
 
 
 private:
@@ -186,13 +184,13 @@ private:
     QPixmap m_koPixmap;
     QPixmap m_warningPixmap;
 
-    typedef QMap<int, QPushButton*> pushButtonMapType;
-    typedef QMap<int, QLineEdit*> lineEditMapType;
-    typedef QMap<int, QCheckBox*> checkBoxMapType;
-    typedef QMap<int, QLabel*> labelMapType;
+    typedef QMap< int, QPushButton* > pushButtonMapType;
+    typedef QMap< int, QLineEdit* > lineEditMapType;
+    typedef QMap< int, QCheckBox* > checkBoxMapType;
+    typedef QMap< int, QLabel* > labelMapType;
     typedef QMap< int, QPair< QString, QPair< bool, QString > > > displayMapType;
     typedef QMap< int, QPair< QString, QLabel* > > nameLabelMapType;
-    typedef QMap< int, QPair< QString, QComboBox*> > comboBoxMapType;
+    typedef QMap< int, QPair< QString, QComboBox* > > comboBoxMapType;
     typedef QMap< int, QPair< QString, QLineEdit* > > covariateNameLineEditMapType;
 
 
@@ -202,7 +200,7 @@ private:
 
 
     /**************** Input Tab ****************/
-    QSharedPointer<EditInputDialog> m_editInputDialog;
+    QSharedPointer< EditInputDialog > m_editInputDialog;
 
     pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
     lineEditMapType m_inputTabInputFileLineEditMap;
@@ -219,7 +217,7 @@ private:
     checkBoxMapType m_paramTabFileCheckBoxMap;
     labelMapType m_paramTabFileDataSizeLabelMap;
 
-    QMap<int, QString> m_selectedCovariates;
+    QMap< int, QString > m_selectedCovariates;
 
     QLineEdit *m_subjectFileLineEdit;
     QStringList m_loadedSubjects;
@@ -245,7 +243,7 @@ private:
 
 
     /************** Plotting  Tab **************/
-    QSharedPointer<QVTKWidget> m_qvtkWidget;
+    QSharedPointer< QVTKWidget > m_qvtkWidget;
 
     Plot *m_plot;
 
@@ -266,17 +264,17 @@ private:
 
 
     /********** Configuration & Events **********/
-    void InitMenuBar(); /// Not tested
+    void InitMenuBar(); // Not Directly Tested
 
-    void InitInputTab(); /// Not tested
+    void InitInputTab(); // Not Directly Tested
 
-    void InitSubjectCovariateTab(); /// Not tested
+    void InitSubjectCovariateTab(); // Not Directly Tested
 
-    void InitExecutionTab(); /// Not tested
+    void InitExecutionTab(); // Not Directly Tested
 
-    void InitPlottingTab(); /// Not tested
+    void InitPlottingTab(); // Not Directly Tested
 
-    void InitFADTTSWindow(); /// Not tested
+    void InitFADTTSWindow(); // Not Directly Tested
 
 
     QDir UpdateCurrentDir( QString newfilePath, QString& currentDir ); // Tested
@@ -327,13 +325,15 @@ private:
 
     void DisplayNbrSubjectSelected(); // Tested
 
-    void DisplaySortedSubjects( const QStringList& matchedSubjectList, const QMap<QString, QList<int> >& unMatchedSubjectMap ); // Tested
+    void DisplaySortedSubjects( const QStringList& matchedSubjectList, const QMap< QString, QList< int > >& unMatchedSubjectMap ); // Tested
 
-    void UpdateSubjectList(); /// Not directly tested
+    void UpdateSubjectList(); // Tested
 
     void SetCheckStateAllVisibleSubjects( Qt::CheckState checkState ); // Tested
 
     int SearchSubjects( QListWidget *list ); // Tested
+
+    void SaveCheckedSubjects( QString filePath ); // Tested
 
 
     /************** Execution Tab **************/
@@ -342,9 +342,10 @@ private:
 
     bool IsFADTTSReadyToBeRun(); /// Not tested
 
-    void SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap<int, QString>& selectedCovariates ); /// Not tested
+    void SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles,
+                        const QMap< int, QString >& selectedCovariates ); /// Not tested
 
-    void SetMatlabScript(); /// Not tested
+    void SetMatlabScript(); // Not Directly Tested
 
 
     /************** Plotting  Tab **************/
@@ -364,7 +365,7 @@ private:
 
 
     void SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable,
-                         bool covariateSelectionAvailable, bool lineSelectionAvailable ); /** /!\ PB with test /!\ **/
+                         bool covariateSelectionAvailable, bool lineSelectionAvailable ); /** /!\ PB WITH TEST /!\ **/
 
     void AddLinesForDisplay( bool isSelectionProperties ); // Tested
 
@@ -376,6 +377,11 @@ private:
     void ResetPlotTab(); // Tested
 
     void SetPlotTab(); // Tested
+
+    void LoadPlotSettings( QString filePath ); // Tested
+
+    void SavePlotSettings( QString filePath ); // Tested
+
 
 
     void HideLegendBinaryCovariate( bool hideLegend ); /// Not tested

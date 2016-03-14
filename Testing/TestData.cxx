@@ -202,11 +202,11 @@ bool TestData::Test_GetSetFileData()
     QStringList row19 = QStringList() << "Se" << "mouvoir" << "dans" << "leurs" << "flancs" << "comme" << "une" << "forme" << "humaine...";
     QStringList row20 = QStringList() << "La" << "lune" << "était" << "sereine" << "et" << "jouait" << "sur" << "les" << "flots.";
 
-    QList<QStringList> fileData1 = QList<QStringList>() << row1 << row2 << row3 << row4;
-    QList<QStringList> fileData2 = QList<QStringList>() << row5 << row6 << row7 << row8;
-    QList<QStringList> fileData3 = QList<QStringList>() << row9 << row10 << row11 << row12;
-    QList<QStringList> fileData4 = QList<QStringList>() << row13 << row14 << row15 << row16;
-    QList<QStringList> fileData5 = QList<QStringList>() << row17 << row18 << row19 << row20;
+    QList< QStringList > fileData1 = QList< QStringList >() << row1 << row2 << row3 << row4;
+    QList< QStringList > fileData2 = QList< QStringList >() << row5 << row6 << row7 << row8;
+    QList< QStringList > fileData3 = QList< QStringList >() << row9 << row10 << row11 << row12;
+    QList< QStringList > fileData4 = QList< QStringList >() << row13 << row14 << row15 << row16;
+    QList< QStringList > fileData5 = QList< QStringList >() << row17 << row18 << row19 << row20;
 
 
     mData.InitData();
@@ -339,7 +339,7 @@ bool TestData::Test_GetSetSubjects()
     QStringList subjectsList1 = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "Chef" << "Butters" << "Wendy" << "Craig" << "Pip";
     QStringList subjectsList2 = QStringList() << "Yoda" << "Luke" << "Darth Vader" << "Han Solo" << "Chewbacca" << "R2D2" << "C3PO" << "Obi-Wan" << "Leila";
     QStringList subjectsList3 = QStringList() << "Frodo" << "Gandalf" << "Aragorn" << "Legolas" << "Gimli" << "Boromir" << "Sam" << "Merry" << "Pipino";
-    QMap<int, QStringList> subjectsMap;
+    QMap< int, QStringList > subjectsMap;
 
 
     mData.InitData();
@@ -422,7 +422,7 @@ bool TestData::Test_GetSetCovariates()
     Data mData;
     QList< int > covariateIndices = QList< int >() << -1 << 0 << 1 << 2 << 3 << 4;
     QStringList covariateNames = QStringList() << "Intercept" << "Gender" << "Age" << "Group" << "Scanner" << "Direction";
-    QMap<int, QString> covariatesMap1, covariatesMap2, covariatesMap3, covariatesMap4;
+    QMap< int, QString > covariatesMap1, covariatesMap2, covariatesMap3, covariatesMap4;
 
 
     for( int i = 0; i < covariateIndices.size(); i++ )
@@ -564,7 +564,7 @@ bool TestData::Test_ClearFileInformation()
     QStringList row11 = QStringList() << "Et" << "quand" << "j'arriverai," << "je" << "mettrai" << "sur" << "ta" << "tombe";
     QStringList row12 = QStringList() << "Un" << "bouquet" << "de" << "houx" << "vert" << "et" << "de" << "bruyère" << "en" << "fleur.";
 
-    QList<QStringList> fileData = QList<QStringList>() << row1 << row2 << row3 << row4 << row5 << row6 << row7 << row8 << row9 << row10 << row11 << row12;
+    QList< QStringList > fileData = QList< QStringList >() << row1 << row2 << row3 << row4 << row5 << row6 << row7 << row8 << row9 << row10 << row11 << row12;
     int nbrRows = fileData.size();
     int nbrColumns = fileData.first().size();
     QStringList subjects = QStringList() << "Rachel" << "Ross" << "Monica" << "Chandler" << "Phoebe" << "Gunther";
@@ -572,7 +572,7 @@ bool TestData::Test_ClearFileInformation()
 
     QList< int > covariateIndices = QList< int >() << -1 << 0 << 1 << 2 << 3 << 4;
     QStringList covariateNames = QStringList() << "Intercept" << "Gender" << "Age" << "Group" << "Scanner" << "Direction";
-    QMap<int, QString> covariates;
+    QMap< int, QString > covariates;
     for( int i = 0; i < covariateIndices.size(); i++ )
     {
         covariates.insert( covariateIndices.at( i ), covariateNames.at( i ) );
@@ -626,7 +626,7 @@ bool TestData::Test_AddInterceptToCovariates()
     Data mData;
     QList< int > covariateIndices = QList< int >() << 0 << 1 << 2 << 3 << 4;
     QStringList covariateNames = QStringList() << "Gender" << "Age" << "Group" << "Scanner" << "Direction";
-    QMap<int, QString> covariates;
+    QMap< int, QString > covariates;
     for( int i = 0; i < covariateIndices.size(); i++ )
     {
         covariates.insert( covariateIndices.at( i ), covariateNames.at( i ) );

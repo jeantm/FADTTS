@@ -26,14 +26,14 @@ public:
     bool Test_LoadDisplayData( QString adFilePath, QString subMatrixFilePath );
 
 
-    bool Test_OnSaveFile( QString adFilePath, QString newADFile , QString tempoDir );
+    bool Test_SaveFile( QString adFilePath, QString newADFile , QString tempoDir );
 
 
 private:
     /**********************************************************************/
     /********************** Functions Used For Testing ********************/
     /**********************************************************************/
-    bool TestQTableWidget( QList<QStringList> expectedData, QSharedPointer<EditInputDialog> editInputDialog );
+    bool TestQTableWidget( QList< QStringList > expectedData, QSharedPointer< EditInputDialog > editInputDialog );
 
 
     QByteArray GetHashFile( QString filePath );

@@ -14,12 +14,12 @@ Processing::Processing( QObject *parent ) :
 /*****************************************************/
 /***************** Public  Functions *****************/
 /*****************************************************/
-QList<QStringList> Processing::GetDataFromFile( QString filePath )
+QList< QStringList > Processing::GetDataFromFile( QString filePath )
 {
     QFile file( filePath );
     file.open( QIODevice::ReadOnly );
     QTextStream ts( &file );
-    QList<QStringList> fileData;
+    QList< QStringList > fileData;
     QStringList  tempRows;
 
     /** Read all the file line by line **/
@@ -62,7 +62,7 @@ QList<QStringList> Processing::GetDataFromFile( QString filePath )
 }
 
 
-bool Processing::IsMatrixDimensionOK( const QList<QStringList>& data )
+bool Processing::IsMatrixDimensionOK( const QList< QStringList >& data )
 {
     if( data.isEmpty() )
     {
@@ -127,7 +127,7 @@ QStringList Processing::GetSubjectsFromFileList( QString filePath )
     return subjectList;
 }
 
-QStringList Processing::GetSubjectsFromData(const QList<QStringList>& data, int subjectColumnID )
+QStringList Processing::GetSubjectsFromData(const QList< QStringList >& data, int subjectColumnID )
 {
     QStringList subjectList;
     int nbRows = data.count();
@@ -152,9 +152,9 @@ QStringList Processing::GetSubjectsFromData(const QList<QStringList>& data, int 
     return subjectList;
 }
 
-QMap<int, QString> Processing::GetCovariatesFromData( QList<QStringList> data, int subjectColumnID )
+QMap< int, QString > Processing::GetCovariatesFromData( QList< QStringList > data, int subjectColumnID )
 {
-    QMap<int, QString> covariates;
+    QMap< int, QString > covariates;
     int nbrColumns = data.first().count();
     for( int column = 0; column < nbrColumns; ++column )
     {
@@ -168,12 +168,12 @@ QMap<int, QString> Processing::GetCovariatesFromData( QList<QStringList> data, i
 }
 
 
-QStringList Processing::GetAllSubjects( const QMap<int, QStringList>& subjectsMap )
+QStringList Processing::GetAllSubjects( const QMap< int, QStringList >& subjectsMap )
 {
     /** Return a list of all subjects found in the input files provided **/
 
     QStringList allSubjects;
-    QMap<int, QStringList>::ConstIterator iterSubjectList = subjectsMap.cbegin();
+    QMap< int, QStringList >::ConstIterator iterSubjectList = subjectsMap.cbegin();
     while( iterSubjectList != subjectsMap.cend() )
     {
         allSubjects.append( iterSubjectList.value() );
@@ -185,11 +185,11 @@ QStringList Processing::GetAllSubjects( const QMap<int, QStringList>& subjectsMa
     return allSubjects;
 }
 
-QMap<int, QStringList> Processing::GetSubjectsFromSelectedFiles( const QMap<int, bool>& diffusionPropertiesCheckState, const QMap<int, QStringList>& subjectsMap )
+QMap< int, QStringList > Processing::GetSubjectsFromSelectedFiles( const QMap< int, bool >& diffusionPropertiesCheckState, const QMap< int, QStringList >& subjectsMap )
 {
-    QMap<int, QStringList> subjectsFromSelectedFiles;
-    QMap<int, bool>::ConstIterator iterProperty = diffusionPropertiesCheckState.cbegin();
-    QMap<int, QStringList >::ConstIterator iterSubjects = subjectsMap.cbegin();
+    QMap< int, QStringList > subjectsFromSelectedFiles;
+    QMap< int, bool >::ConstIterator iterProperty = diffusionPropertiesCheckState.cbegin();
+    QMap< int, QStringList >::ConstIterator iterSubjects = subjectsMap.cbegin();
     while( iterProperty != diffusionPropertiesCheckState.cend() )
     {
         if( iterProperty.value() )
@@ -204,12 +204,12 @@ QMap<int, QStringList> Processing::GetSubjectsFromSelectedFiles( const QMap<int,
     return subjectsFromSelectedFiles;
 }
 
-QMap< QString, QMap<int, bool> > Processing::SortSubjects( const QStringList &subjects, const QMap<int, QStringList>& subjectsMap )
+QMap< QString, QMap< int, bool > > Processing::SortSubjects( const QStringList &subjects, const QMap< int, QStringList >& subjectsMap )
 {
-    QMap< QString, QMap<int, bool> > sortedSubjects;
+    QMap< QString, QMap< int, bool > > sortedSubjects;
     foreach( QString subject, subjects )
     {
-        QMap<int, QStringList >::ConstIterator iterSubjects = subjectsMap.cbegin();
+        QMap< int, QStringList >::ConstIterator iterSubjects = subjectsMap.cbegin();
         while( iterSubjects != subjectsMap.cend() )
         {
             ( ( sortedSubjects[subject] )[iterSubjects.key()] ) = iterSubjects.value().contains( subject ) ? true : false;
@@ -220,16 +220,16 @@ QMap< QString, QMap<int, bool> > Processing::SortSubjects( const QStringList &su
     return sortedSubjects;
 }
 
-void Processing::AssignSortedSubject( const QMap<QString, QMap<int, bool> >& sortedSubjects, QStringList& matchedSubjects, QMap<QString, QList<int> >& unMatchedSubjects )
+void Processing::AssignSortedSubject( const QMap<QString, QMap< int, bool > >& sortedSubjects, QStringList& matchedSubjects, QMap<QString, QList< int > >& unMatchedSubjects )
 {
     /** We go through all the sorted subjects **/
-    QMap< QString, QMap<int, bool> >::ConstIterator iterSortedSubjects = sortedSubjects.cbegin();
+    QMap< QString, QMap< int, bool > >::ConstIterator iterSortedSubjects = sortedSubjects.cbegin();
     while( iterSortedSubjects != sortedSubjects.cend() )
     {
         bool subjectInAll = true;
 
         /** For each subjects, we check if it is contained in the required files/list **/
-        QMap<int, bool>::ConstIterator iterSubject = iterSortedSubjects.value().cbegin();
+        QMap< int, bool >::ConstIterator iterSubject = iterSortedSubjects.value().cbegin();
         while( iterSubject != iterSortedSubjects.value().cend() )
         {
             subjectInAll = subjectInAll && iterSubject.value();
@@ -245,7 +245,7 @@ void Processing::AssignSortedSubject( const QMap<QString, QMap<int, bool> >& sor
          *  the subject has been found in and, if necessary the index of the loaded subject list (-1) **/
         else
         {
-            QMap<int, bool>::ConstIterator iterSubject = iterSortedSubjects.value().cbegin();
+            QMap< int, bool >::ConstIterator iterSubject = iterSortedSubjects.value().cbegin();
             while( iterSubject != iterSortedSubjects.value().cend() )
             {
                 if( iterSubject.value() )
@@ -261,8 +261,8 @@ void Processing::AssignSortedSubject( const QMap<QString, QMap<int, bool> >& sor
 }
 
 
-QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QString fiberName, const QMap<int, QString>& inputs, const QMap<int, QString>& properties,
-                                                       const QMap<int, QString>& covariates, int subjectColumnID, const QStringList& subjects )
+QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QString fiberName, const QMap< int, QString >& inputs, const QMap< int, QString >& properties,
+                                                       const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects )
 {
     /** Files with standard names are created in the output directory.
      *  Based on the input type (AD/RD/MD/FA/SubMatrix), the covariates, and the subjects,
@@ -278,7 +278,7 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
         matlabInput.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInput );
 
-        QList<QStringList> data = GetDataFromFile( iterInput.value() );
+        QList< QStringList > data = GetDataFromFile( iterInput.value() );
         int nbRows = data.count();
         int nbColumns = data.first().count();
 
@@ -304,7 +304,7 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
                     {
                         /** If row == 0 --> Only required covariates are kept. 'Intercept' (-1) is ignored.
                          *  If subjects.contains( currentSubject ) --> Data in the required covariates columns is kept **/
-                        QMap<int, QString>::ConstIterator iterCovariate = covariates.cbegin();
+                        QMap< int, QString >::ConstIterator iterCovariate = covariates.cbegin();
                         while( iterCovariate != covariates.cend() )
                         {
                             int covariateID = iterCovariate.key();
@@ -338,7 +338,7 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
              *  The column index is saved only if the subject linked to this index is
              *  among the required subjects and is not a duplicate.
              *  0 is always saved. **/
-            QList<int> columnIndex;
+            QList< int > columnIndex;
             columnIndex.append( 0 );
             for( int column = 1; column < nbColumns; column++ )
             {

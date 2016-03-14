@@ -9,7 +9,7 @@ TestEditInputDialog::TestEditInputDialog()
 /**********************************************************************/
 bool TestEditInputDialog::Test_SubjectColumnID()
 {
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
     int subjectColumnID = 10;
     int emitedSubjectColumnID;
 
@@ -53,10 +53,10 @@ bool TestEditInputDialog::Test_SubjectColumnID()
 
 bool TestEditInputDialog::Test_OnDelete( QString adFilePath )
 {
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
     Data data;
     Processing processing;
-    QList<QStringList> expectedFileData;
+    QList< QStringList > expectedFileData;
     int indexAD;
     int rowID = 1;
     int columnID = 5;
@@ -117,11 +117,11 @@ bool TestEditInputDialog::Test_OnDelete( QString adFilePath )
 
 bool TestEditInputDialog::Test_LoadDisplayData( QString adFilePath, QString subMatrixFilePath )
 {
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
     Data data;
     Processing processing;
-    QList<QStringList> adData;
-    QList<QStringList> subMatrixData;
+    QList< QStringList > adData;
+    QList< QStringList > subMatrixData;
     int indexAD;
     int indexSubMatrix;
     int IDRow = 2;
@@ -248,9 +248,9 @@ bool TestEditInputDialog::Test_LoadDisplayData( QString adFilePath, QString subM
 }
 
 
-bool TestEditInputDialog::Test_OnSaveFile( QString adFilePath, QString newADFile, QString tempoDir )
+bool TestEditInputDialog::Test_SaveFile( QString adFilePath, QString newADFile, QString tempoDir )
 {
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
     QString dirTest = tempoDir + "/TestEditInputDialog/Test_OnSaveFile";
     QDir().mkpath( dirTest );
     Data data;
@@ -274,13 +274,10 @@ bool TestEditInputDialog::Test_OnSaveFile( QString adFilePath, QString newADFile
     editInputDialog->OnDeleteColumns();
 
     editInputDialog->m_data->SetFilename( indexAD ) = dirTest + "/adFile.csv";
+    editInputDialog->SaveFile( defaultSavedFilePath );
 
 
-    bool testFileSaved = editInputDialog->OnSaveFile();
-    bool testFileWellSaved = CompareFile( defaultSavedFilePath, newADFile );
-
-
-    bool testOnSaveFile_Passed = testFileSaved && testFileWellSaved;
+    bool testOnSaveFile_Passed = CompareFile( defaultSavedFilePath, newADFile );
     if( !testOnSaveFile_Passed )
     {
         std::cerr << "/!\\/!\\ Test_OnSaveFile() FAILED /!\\ /!\\";
@@ -306,7 +303,7 @@ bool TestEditInputDialog::Test_OnSaveFile( QString adFilePath, QString newADFile
 /**********************************************************************/
 /********************** Functions Used For Testing ********************/
 /**********************************************************************/
-bool TestEditInputDialog::TestQTableWidget( QList<QStringList> expectedFileData, QSharedPointer<EditInputDialog> editInputDialog )
+bool TestEditInputDialog::TestQTableWidget( QList< QStringList > expectedFileData, QSharedPointer< EditInputDialog > editInputDialog )
 {
     for( int i = 0; i < editInputDialog->m_dataTableWidget->rowCount(); i++ )
     {

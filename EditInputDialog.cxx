@@ -48,7 +48,7 @@ void EditInputDialog::OnDeleteRows()
 {
     QItemSelection currentSelection( m_dataTableWidget->selectionModel()->selection() );
 
-    QList<int> rows;
+    QList< int > rows;
     foreach( const QModelIndex &index, currentSelection.indexes() )
     {
         rows.append( index.row() );
@@ -72,7 +72,7 @@ void EditInputDialog::OnDeleteColumns()
 {
     QItemSelection currentSelection( m_dataTableWidget->selectionModel()->selection() );
 
-    QList<int> columns;
+    QList< int > columns;
     foreach( const QModelIndex &index, currentSelection.indexes() )
     {
         columns.append( index.column() );
@@ -110,22 +110,7 @@ bool EditInputDialog::OnSaveFile()
                                                         + "/new" + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + "File.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !newFilePath.isEmpty() )
     {
-        QFile exportedCSV( newFilePath );
-        exportedCSV.open( QIODevice::WriteOnly );
-        QTextStream ts( &exportedCSV );
-        QStringList data;
-
-        for( int row = 0; row < m_dataTableWidget->rowCount(); ++row )
-        {
-            data.clear();
-            for( int column = 0; column < m_dataTableWidget->columnCount(); ++column )
-            {
-                data << m_dataTableWidget->item( row, column )->text();
-            }
-            ts << data.join( m_csvSeparator ) << endl;
-        }
-        exportedCSV.flush();
-        exportedCSV.close();
+        SaveFile( newFilePath );
 
         emit UpdateInputFile( m_diffusionPropertyIndex, newFilePath ); /** Update file path in mainWindow LineEdit **/
 
@@ -164,7 +149,7 @@ void EditInputDialog::InitEditInputDialog()
 
 void EditInputDialog::LoadData()
 {
-    QList<QStringList> fileData = m_data->GetFileData( m_diffusionPropertyIndex );
+    QList< QStringList > fileData = m_data->GetFileData( m_diffusionPropertyIndex );
     int nbrRows = 0;
     int nbrColumns = 0;
 
@@ -212,6 +197,27 @@ void EditInputDialog::ResetTableWidget()
     m_dataTableWidget->clear();
     m_dataTableWidget->setRowCount( 0 );
     m_dataTableWidget->setColumnCount( 0 );
+}
+
+
+void EditInputDialog::SaveFile( QString newFilePath )
+{
+    QFile exportedCSV( newFilePath );
+    exportedCSV.open( QIODevice::WriteOnly );
+    QTextStream ts( &exportedCSV );
+    QStringList data;
+
+    for( int row = 0; row < m_dataTableWidget->rowCount(); ++row )
+    {
+        data.clear();
+        for( int column = 0; column < m_dataTableWidget->columnCount(); ++column )
+        {
+            data << m_dataTableWidget->item( row, column )->text();
+        }
+        ts << data.join( m_csvSeparator ) << endl;
+    }
+    exportedCSV.flush();
+    exportedCSV.close();
 }
 
 

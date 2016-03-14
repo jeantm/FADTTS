@@ -79,6 +79,9 @@ set(adBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_AD.csv})
 set(faBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_FA.csv})
 set(omnibusFDRLpvaluesPath2 DATA{${SOURCE_DIR}/testPlot2_Omnibus_FDR_Local_pvalues.csv})
 
+set(plotSettingsPath DATA{${SOURCE_DIR}/plotSettings.csv})
+set(plotPath DATA{${SOURCE_DIR}/test_Betas_FA.pdf})
+
 
 
 
@@ -172,6 +175,8 @@ ExternalData_add_test(
                                                 ${transposedOmnibusLpvaluesPath}
                                                 ${transposedRDPostHocFDRPath} ${transposedFAPostHocFDRPath}
 
+                                                ${plotPath}
+
                                                 ${DATA_DIR} ${TEMP_DIR}
 )
 
@@ -189,7 +194,10 @@ ExternalData_add_test(
                                                         ${rdRawDataPath2} ${faRawDataPath2} ${subMatrixRawDataPath2}
                                                         ${adBetaPath2} ${faBetaPath2} ${omnibusFDRLpvaluesPath2}
 
+                                                        ${plotSettingsPath}
+
                                                         ${okIcon} ${koIcon} ${warningIcon}
+
                                                         ${DATA_DIR} ${TEMP_DIR}
 )
 

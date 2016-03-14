@@ -358,7 +358,7 @@ bool TestMatlabThread::Test_SetInputFiles()
 bool TestMatlabThread::Test_SetCovariates()
 {
     MatlabThread matlabThread;
-    QMap<int, QString> selectedCovariates;
+    QMap< int, QString > selectedCovariates;
     selectedCovariates.insert( -1, "Intercept" );
     selectedCovariates.insert( 0, "Gender" );
     selectedCovariates.insert( 2, "Scanner" );
@@ -399,7 +399,7 @@ bool TestMatlabThread::Test_SetCovariates()
     if( !testSetCovariates_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SetCovariates() FAILED /!\\ /!\\";
-//        std::cerr << std::endl << "\t+ pb with SetCovariates( QMap<int, QString> selectedCovariates )" << std::endl;
+//        std::cerr << std::endl << "\t+ pb with SetCovariates( QMap< int, QString > selectedCovariates )" << std::endl;
 //        if( !testSubMatrixFile )
 //        {
 //            std::cerr << "\t  - When setting $inputNbrCovariates$:" << std::endl;

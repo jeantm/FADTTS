@@ -25,8 +25,10 @@
  * argv[18] = transposedRDPostHocFDRPath
  * argv[19] = transposedFAPostHocFDRPath
  *
- * argv[20] = dataDir
- * argv[21] = tempoDir
+ * argv[20] = plotPath
+ *
+ * argv[21] = dataDir
+ * argv[22] = tempoDir
  */
 
 int main( int argc, char *argv[] )
@@ -88,35 +90,35 @@ int main( int argc, char *argv[] )
     
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetRawData( argv[4], argv[5], argv[6], argv[15], argv[16], argv[20] ) )
+    if( testPlot.Test_SetRawData( argv[4], argv[5], argv[6], argv[15], argv[16], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetBeta( argv[7], argv[8], argv[20] ) )
+    if( testPlot.Test_SetBeta( argv[7], argv[8], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetOmnibusLpvalue( argv[9], argv[17], argv[20] ) )
+    if( testPlot.Test_SetOmnibusLpvalue( argv[9], argv[17], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetConfidenceBands( argv[11], argv[12], argv[20] ) )
+    if( testPlot.Test_SetConfidenceBands( argv[11], argv[12], argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetPostHocFDRLpvalue( argv[13], argv[14], argv[18], argv[19], argv[20] ) )
+    if( testPlot.Test_SetPostHocFDRLpvalue( argv[13], argv[14], argv[18], argv[19], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -127,42 +129,42 @@ int main( int argc, char *argv[] )
     /***************** Get Data ****************/
     std::cerr << std::endl << "/***************** Get Data ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetRawDataFiles( argv[20], argv[21] ) )
+    if( testPlot.Test_GetRawDataFiles( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetBetaFiles( argv[20], argv[21] ) )
+    if( testPlot.Test_GetBetaFiles( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetOmnibusLpvalueFiles( argv[20], argv[21] ) )
+    if( testPlot.Test_GetOmnibusLpvalueFiles( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetOmnibusFDRLpvalueFiles( argv[20], argv[21] ) )
+    if( testPlot.Test_GetOmnibusFDRLpvalueFiles( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetConfidenceBandsFiles( argv[20], argv[21] ) )
+    if( testPlot.Test_GetConfidenceBandsFiles( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetPostHocFDRLpvalueFiles( argv[20], argv[21] ) )
+    if( testPlot.Test_GetPostHocFDRLpvalueFiles( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
@@ -173,35 +175,35 @@ int main( int argc, char *argv[] )
     /***************** Settings ****************/
     std::cerr << std::endl << "/***************** Settings ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetPlots( argv[20], argv[21] ) )
+    if( testPlot.Test_SetPlots( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetProperties( argv[20], argv[21] ) )
+    if( testPlot.Test_SetProperties( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetSubjects( argv[20], argv[21] ) )
+    if( testPlot.Test_SetSubjects( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetCovariates( argv[20], argv[21] ) )
+    if( testPlot.Test_SetCovariates( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetAbscissa( argv[20], argv[21] ) )
+    if( testPlot.Test_SetAbscissa( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
@@ -209,7 +211,7 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetSelectedPlot( argv[20] ) )
+    if( testPlot.Test_SetSelectedPlot( argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -261,7 +263,7 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_UpdateCovariatesNames( argv[20], argv[21] ) )
+    if( testPlot.Test_UpdateCovariatesNames( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
@@ -272,7 +274,7 @@ int main( int argc, char *argv[] )
     /************** Loading Data ***************/
     std::cerr << std::endl << "/************** Loading Data ***************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SeparateBinary( argv[2], argv[20] ) )
+    if( testPlot.Test_SeparateBinary( argv[2], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -308,49 +310,49 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadRawData( argv[20], argv[21] ) )
+    if( testPlot.Test_LoadRawData( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadRawStats( argv[20] ) )
+    if( testPlot.Test_LoadRawStats( argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadBetas( argv[20], argv[21] ) )
+    if( testPlot.Test_LoadBetas( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadBetaByCovariate( argv[20] ) )
+    if( testPlot.Test_LoadBetaByCovariate( argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadOmnibusLpvalues( argv[20] ) )
+    if( testPlot.Test_LoadOmnibusLpvalues( argv[21] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadConfidenceBand( argv[20], argv[21] ) )
+    if( testPlot.Test_LoadConfidenceBand( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_LoadPostHocFDRLpvalues( argv[20] ) )
+    if( testPlot.Test_LoadPostHocFDRLpvalues( argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -411,12 +413,12 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
-//    std::cerr << std::endl << nbrTests + 1 << "- ";
-//    if( testPlot.Test_AddLineSigBetas() )
-//    {
-//        nbrTestsPassed++;
-//    }
-//    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_AddLineSigBetas( argv[21], argv[22] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
 
 
     std::cerr << std::endl;
@@ -429,19 +431,30 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
-//    std::cerr << std::endl << nbrTests + 1 << "- ";
-//    if( testPlot.Test_SetyMinMax() )
-//    {
-//        nbrTestsPassed++;
-//    }
-//    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_SetyMinMax() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_SetChartProperties() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
 
 
-
-
-
-
-
+    std::cerr << std::endl;
+    /**************** Save Plot ****************/
+    std::cerr << std::endl << "/**************** Save Plot ****************/";
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_SavePlot( argv[20], argv[21], argv[22] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
 
 
 

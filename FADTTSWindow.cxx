@@ -138,7 +138,7 @@ void FADTTSWindow::InitMenuBar()
 
 void FADTTSWindow::InitInputTab()
 {
-    m_editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog( this ) );
+    m_editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog( this ) );
     m_editInputDialog->SetData( &m_data );
 
     connect( this->inputTab_addMultipleInputFiles_pushButton, SIGNAL( clicked() ), this, SLOT( OnAddInputFiles() ) );
@@ -295,10 +295,6 @@ void FADTTSWindow::InitExecutionTab()
     connect( this->executionTab_runMatlab_pushButton, SIGNAL( clicked() ), this, SLOT( OnBrowsingMatlabExe() ) );
     connect( this->soft_executionTab_runMatlab_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingMatlabExe( const QString& ) ) );
 
-    connect( this->soft_executionTab_runMatlabKD_radioButton, SIGNAL( toggled( const bool& ) ), this, SLOT( OnRunOnKillDevil( const bool& ) ) );
-    connect( this->soft_executionTab_killDevilQueue_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( OnKillDevilQueueSelection( const QString& ) ) );
-    connect( this->soft_executionTab_killDevilAllocatedMemory_spinBox, SIGNAL( valueChanged( const int& ) ), this, SLOT( OnKillDevilAllocatedMemoryChanged( const int& ) ) );
-
     connect( this->executionTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( OnRun() ) );
     connect( this->executionTab_stop_pushButton, SIGNAL( clicked() ), this, SLOT( OnStop() ) );
     connect( m_matlabThread, SIGNAL( finished() ), this, SLOT( OnMatlabThreadFinished() ) );
@@ -315,7 +311,7 @@ void FADTTSWindow::InitExecutionTab()
 
 void FADTTSWindow::InitPlottingTab()
 {
-    m_qvtkWidget = QSharedPointer<QVTKWidget>( this->plottingTab_plot_qvtkWidget );
+    m_qvtkWidget = QSharedPointer< QVTKWidget >( this->plottingTab_plot_qvtkWidget );
 
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget );
@@ -349,8 +345,12 @@ void FADTTSWindow::InitPlottingTab()
     connect( this->plottingTab_loadSetDataTab_checkAllLinesToDisplay_pushButton, SIGNAL( clicked() ), this, SLOT( OnCheckAllLinesToDisplay() ) );
     connect( this->plottingTab_loadSetDataTab_uncheckAllLinesToDisplay_pushButton, SIGNAL( clicked() ), this, SLOT( OnUncheckAllToDisplay() ) );
 
-    connect( this->plottingTab_titleAxisLegendTab_yMin_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMinToggled( const bool& ) ) );
+    connect( this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnUseCustomizedTitle( const bool& ) ) );
+    connect( this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnUseCustomizedAxis( const bool& ) ) );
     connect( this->plottingTab_titleAxisLegendTab_yMax_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMaxToggled( const bool& ) ) );
+    connect( this->plottingTab_titleAxisLegendTab_yMin_checkBox, SIGNAL( toggled( const bool& ) ), this, SLOT( OnYMinToggled( const bool& ) ) );
+    this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( false );
+    this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( false );
     this->plottingTab_titleAxisLegendTab_yMin_checkBox->setChecked( false );
     this->plottingTab_titleAxisLegendTab_yMax_checkBox->setChecked( false );
 
@@ -444,7 +444,7 @@ void FADTTSWindow::OnSettingInputFile( const int &diffusionPropertyIndex )
         else
         {
             file.close();
-            QList<QStringList> fileData = m_processing.GetDataFromFile( filePath );
+            QList< QStringList > fileData = m_processing.GetDataFromFile( filePath );
             if( m_processing.IsMatrixDimensionOK( fileData ) )
             {
                 DisplayInputLineEditIcon( diffusionPropertyIndex, m_okPixmap );
@@ -577,7 +577,7 @@ void FADTTSWindow::DisplayInputLineEditIcon( int diffusionPropertyIndex, const Q
 
 void FADTTSWindow::UpdateInputFileInformation( int diffusionPropertyIndex )
 {
-    QList<QStringList> fileData = m_data.GetFileData( diffusionPropertyIndex );
+    QList< QStringList > fileData = m_data.GetFileData( diffusionPropertyIndex );
 
     if( !fileData.isEmpty() )
     {
@@ -612,7 +612,7 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList& f
 {
     /** This function only works with filename that start with ad_, rd_, md_, fa_ and subMatrix_.
      *  If a prefix is detected more than once, the reated files will be ignored. **/
-    QMap<int, QStringList > fileMap;
+    QMap< int, QStringList > fileMap;
     foreach ( int diffusionPropertyIndex, m_data.GetDiffusionPropertiesIndices() )
     {
         foreach( QString file, fileList )
@@ -631,7 +631,7 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList& f
         m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->clear();
     }
 
-    QMap<int, QStringList>::ConstIterator iter = fileMap.cbegin();
+    QMap< int, QStringList >::ConstIterator iter = fileMap.cbegin();
     while( iter != fileMap.constEnd() )
     {
         int diffusionPropertyIndex = iter.key();
@@ -666,12 +666,12 @@ void  FADTTSWindow::LaunchEditInputDialog( int diffusionPropertyIndex )
 /***********************  Private slots  ************************/
 void FADTTSWindow::OnCovariateFileToggled()
 {
-    QMap<int, QString> covariate = m_data.GetCovariates();
+    QMap< int, QString > covariate = m_data.GetCovariates();
     m_covariateListWidget->clear();
 
     if( !( covariate.isEmpty() ) && this->para_subjectCovariateTab_subMatrixFile_checkBox->isChecked() )
     {
-        QMap<int, QString>::ConstIterator iterCovariate = covariate.cbegin();
+        QMap< int, QString >::ConstIterator iterCovariate = covariate.cbegin();
         while( iterCovariate != covariate.cend() )
         {
             QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), m_covariateListWidget );
@@ -775,27 +775,7 @@ void FADTTSWindow::OnSaveCheckedSubjects()
     QString filePath = QFileDialog::getSaveFileName( this, tr( "Save subject list as ..." ), m_currentSubjectFileDir + "/newSubjectList.txt", tr( ".txt ( *.txt ) ;; .*( * )" ) );
     if( !filePath.isEmpty() )
     {
-        QFile exportedTXT( filePath );
-        exportedTXT.open( QIODevice::WriteOnly );
-        QTextStream ts( &exportedTXT );
-
-        for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
-        {
-            if( m_matchedSubjectListWidget->item( i )->checkState() == Qt::Checked )
-            {
-                ts << m_matchedSubjectListWidget->item( i )->text() <<  endl;
-            }
-        }
-        exportedTXT.flush();
-        exportedTXT.close();
-
-        QString previousFilePath = m_subjectFileLineEdit->text();
-        m_subjectFileLineEdit->setText( filePath );
-        if( previousFilePath == filePath )
-        {
-            /** If filePath does not change, an update is needed to display the right subject list **/
-            UpdateSubjectList();
-        }
+        SaveCheckedSubjects( filePath );
     }
 }
 
@@ -881,7 +861,7 @@ QMap< int, bool > FADTTSWindow::GetDiffusionPropertiesCheckState()
 {
     QMap< int, bool > diffusionPropertyCheckStatus;
 
-    QMap<int, QCheckBox*>::ConstIterator iterCheckBoxMap = m_paramTabFileCheckBoxMap.cbegin();
+    QMap< int, QCheckBox* >::ConstIterator iterCheckBoxMap = m_paramTabFileCheckBoxMap.cbegin();
     while( iterCheckBoxMap != m_paramTabFileCheckBoxMap.cend() )
     {
         diffusionPropertyCheckStatus.insert( iterCheckBoxMap.key(), iterCheckBoxMap.value()->isChecked() );
@@ -981,7 +961,7 @@ void FADTTSWindow::DisplayNbrSubjectSelected()
     }
 }
 
-void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, const QMap<QString, QList<int> >& unMatchedSubjectMap )
+void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, const QMap< QString, QList< int > >& unMatchedSubjectMap )
 {
     m_matchedSubjectListWidget->clear();
     m_matchedSubjectListWidget->setUpdatesEnabled( false );
@@ -999,7 +979,7 @@ void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, co
     m_unmatchedSubjectListWidget->clear();
     m_unmatchedSubjectListWidget->setUpdatesEnabled( false );
     m_unmatchedSubjectListWidget->setSelectionMode( QAbstractItemView::NoSelection );
-    QMap<QString, QList<int> >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.cbegin();
+    QMap< QString, QList< int > >::ConstIterator iterUnmatchedSubjects = unMatchedSubjectMap.cbegin();
     while( iterUnmatchedSubjects != unMatchedSubjectMap.constEnd() )
     {
         QStringList sortedText;
@@ -1031,7 +1011,7 @@ void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, co
 void FADTTSWindow::UpdateSubjectList()
 {
     QMap< int, bool > diffusionPropertiesCheckState = GetDiffusionPropertiesCheckState();
-    QMap<int, QStringList> allSubjects = m_processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, m_data.GetSubjects() );
+    QMap< int, QStringList > allSubjects = m_processing.GetSubjectsFromSelectedFiles( diffusionPropertiesCheckState, m_data.GetSubjects() );
     if( m_areSubjectsLoaded )
     {
         allSubjects.insert( -1, m_loadedSubjects );
@@ -1044,10 +1024,10 @@ void FADTTSWindow::UpdateSubjectList()
         allSubjectsList.removeDuplicates();
     }
 
-    QMap< QString, QMap<int, bool> > sortedSubjects = m_processing.SortSubjects( allSubjectsList, allSubjects );
+    QMap< QString, QMap< int, bool > > sortedSubjects = m_processing.SortSubjects( allSubjectsList, allSubjects );
 
     QStringList matchedSubjects;
-    QMap<QString, QList<int> > unMatchedSubjects;
+    QMap< QString, QList< int > > unMatchedSubjects;
     m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
 
     DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
@@ -1117,6 +1097,30 @@ int FADTTSWindow::SearchSubjects( QListWidget *list )
     return nbrFound;
 }
 
+void FADTTSWindow::SaveCheckedSubjects( QString filePath )
+{
+    QFile exportedTXT( filePath );
+    exportedTXT.open( QIODevice::WriteOnly );
+    QTextStream ts( &exportedTXT );
+
+    for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
+    {
+        if( m_matchedSubjectListWidget->item( i )->checkState() == Qt::Checked )
+        {
+            ts << m_matchedSubjectListWidget->item( i )->text() <<  endl;
+        }
+    }
+    exportedTXT.flush();
+    exportedTXT.close();
+
+    QString previousFilePath = m_subjectFileLineEdit->text();
+    m_subjectFileLineEdit->setText( filePath );
+    if( previousFilePath == filePath )
+    {
+        /** If filePath does not change, an update is needed to display the right subject list **/
+        UpdateSubjectList();
+    }
+}
 
 /****************************************************************/
 /************************ Execution  tab ************************/
@@ -1125,7 +1129,6 @@ int FADTTSWindow::SearchSubjects( QListWidget *list )
 /***********************  Private  slots  ***********************/
 void FADTTSWindow::OnSettingFiberName( const QString& fibername )
 {
-    m_fibername.clear();
     m_fibername = fibername;
 
     SetPlotTab();
@@ -1162,61 +1165,8 @@ void FADTTSWindow::OnSettingOutputDir( const QString& path )
     {
         label->clear();
     }
+
     SetPlotTab();
-}
-
-void FADTTSWindow::OnRunMatlabToggled( const bool& choice )
-{
-    this->executionTab_runMatlab_pushButton->setEnabled( choice );
-    this->soft_executionTab_runMatlab_lineEdit->setEnabled( choice );
-    this->executionTab_iconMatlab_label->setEnabled( choice );
-
-    this->soft_executionTab_runMatlabSystem_radioButton->setEnabled( choice );
-    this->soft_executionTab_runMatlabKD_radioButton->setEnabled( choice );
-
-
-    bool isMatlabRunOnKD = this->soft_executionTab_runMatlabKD_radioButton->isChecked();
-
-    this->executionTab_killDevilQueue_label->setEnabled( choice && isMatlabRunOnKD );
-    this->soft_executionTab_killDevilQueue_comboBox->setEnabled( choice && isMatlabRunOnKD );
-    this->executionTab_killDevilAllocatedMemory_label->setEnabled( choice && isMatlabRunOnKD );
-    this->soft_executionTab_killDevilAllocatedMemory_spinBox->setEnabled( choice && isMatlabRunOnKD );
-    this->executionTab_killDevilAllocatedMemoryInfo_label->setEnabled( choice && isMatlabRunOnKD );
-
-    this->executionTab_nbrCompThreads_label->setEnabled( choice && !isMatlabRunOnKD );
-    this->soft_executionTab_nbrCompThreads_spinBox->setEnabled( choice && !isMatlabRunOnKD );
-
-    m_matlabThread->SetRunMatlab() = choice;
-    m_matlabThread->SetRunMatlabOnKD() = choice && isMatlabRunOnKD;
-}
-
-void FADTTSWindow::OnRunOnKillDevil( const bool& choice )
-{
-    this->executionTab_killDevilQueue_label->setEnabled( choice );
-    this->soft_executionTab_killDevilQueue_comboBox->setEnabled( choice );
-    this->executionTab_killDevilAllocatedMemory_label->setEnabled( choice );
-    this->soft_executionTab_killDevilAllocatedMemory_spinBox->setEnabled( choice );
-    this->executionTab_killDevilAllocatedMemoryInfo_label->setEnabled( choice );
-
-    this->executionTab_nbrCompThreads_label->setEnabled( !choice );
-    this->soft_executionTab_nbrCompThreads_spinBox->setEnabled( !choice );
-
-    m_matlabThread->SetRunMatlabOnKD() = choice;
-    if( choice )
-    {
-        OnKillDevilQueueSelection( this->soft_executionTab_killDevilQueue_comboBox->currentText() );
-        OnKillDevilAllocatedMemoryChanged( this->soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
-    }
-}
-
-void FADTTSWindow::OnKillDevilQueueSelection( const QString& queue )
-{
-    m_matlabThread->SetQueueKD() = queue.split( "" ).first().toLower();
-}
-
-void FADTTSWindow::OnKillDevilAllocatedMemoryChanged( const int& allocatedMemory )
-{
-    m_matlabThread->SetAllocatedMemoryKD() = allocatedMemory;
 }
 
 void FADTTSWindow::OnBrowsingMVCMPath()
@@ -1299,6 +1249,18 @@ void FADTTSWindow::OnSettingMatlabExe( const QString& executable )
 }
 
 
+void FADTTSWindow::OnRunMatlabToggled( const bool& choice )
+{
+    this->executionTab_runMatlab_pushButton->setEnabled( choice );
+    this->soft_executionTab_runMatlab_lineEdit->setEnabled( choice );
+    this->executionTab_iconMatlab_label->setEnabled( choice );
+    this->executionTab_nbrCompThreads_label->setEnabled( choice );
+    this->soft_executionTab_nbrCompThreads_spinBox->setEnabled( choice );
+
+    m_matlabThread->SetRunMatlab() = choice;
+}
+
+
 void FADTTSWindow::OnRun()
 {
     SyncUiToModelStructure();
@@ -1363,6 +1325,7 @@ void FADTTSWindow::OnClearLog()
 {
     m_logWindow->clear();
 }
+
 
 void FADTTSWindow::OnMatlabThreadFinished()
 {
@@ -1489,7 +1452,7 @@ bool FADTTSWindow::IsFADTTSReadyToBeRun()
     }
 }
 
-void FADTTSWindow::SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap<int, QString>& selectedCovariates )
+void FADTTSWindow::SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap< int, QString >& selectedCovariates )
 {
     m_logWindow->clear();
 
@@ -1523,7 +1486,7 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, const QMap< int, QString >&
     *m_textStreamLog << endl;
     *m_textStreamLog << "- nbr covariates: " << QString::number( selectedCovariates.size() ) << endl;
     *m_textStreamLog << "- covariates: ";
-    QMap<int, QString>::ConstIterator iterCovariates = selectedCovariates.cbegin();
+    QMap< int, QString >::ConstIterator iterCovariates = selectedCovariates.cbegin();
     while( iterCovariates != selectedCovariates.cend() )
     {
         *m_textStreamLog << iterCovariates.value() << ", ";
@@ -1545,16 +1508,7 @@ void FADTTSWindow::SetLogDisplay( QString outputDir, const QMap< int, QString >&
     {
         *m_textStreamLog << "Matlab will be run after file generation" << endl;
         *m_textStreamLog << "- matlab executable: " << this->soft_executionTab_runMatlab_lineEdit->text() << endl;
-        *m_textStreamLog << QString( this->soft_executionTab_runMatlabSystem_radioButton->isChecked() ? "- run on: System" : "- run on: KillDevil" ) << endl;
-        if( this->soft_executionTab_runMatlabSystem_radioButton->isChecked() )
-        {
-            *m_textStreamLog << "- nbr computational threads: " << soft_executionTab_nbrCompThreads_spinBox->value() << endl;
-        }
-        else
-        {
-            *m_textStreamLog << "- queue: " << this->soft_executionTab_killDevilQueue_comboBox->currentText() << endl;
-            *m_textStreamLog << "- memory allocated: " << this->soft_executionTab_killDevilAllocatedMemory_spinBox->value() << endl;
-        }
+        *m_textStreamLog << "- nbr computational threads: " << soft_executionTab_nbrCompThreads_spinBox->value() << endl;
     }
     else
     {
@@ -1577,8 +1531,6 @@ void FADTTSWindow::SetMatlabScript()
 
     m_matlabThread->InitMatlabScript( outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( this->para_executionTab_nbrPermutations_spinBox->value() ) + "perm.m" );
     m_matlabThread->SetHeader();
-    m_matlabThread->SetNbrCompThreads( ( this->soft_executionTab_runMatlabSystem_radioButton->isChecked() && this->para_executionTab_runMatlab_checkBox->isChecked() ),
-                                       this->soft_executionTab_nbrCompThreads_spinBox->value() );
     m_matlabThread->SetMVCMPath( this->soft_executionTab_mvcm_lineEdit->text() );
     m_matlabThread->SetFiberName( m_fibername );
     m_matlabThread->SetDiffusionProperties( m_propertySelected.values() );
@@ -1650,7 +1602,7 @@ void FADTTSWindow::OnUpdatingCovariatesAvailable( const QMap< int, QString >& co
     QString currentCovariate = m_covariateComboBox->currentText();
     m_covariateComboBox->clear();
     m_covariateComboBox->addItem( "" );
-    QMap<int, QString>::ConstIterator iterCovariateAvailable = covariateAvailable.cbegin();
+    QMap< int, QString >::ConstIterator iterCovariateAvailable = covariateAvailable.cbegin();
     while( iterCovariateAvailable != covariateAvailable.cend() )
     {
         m_covariateComboBox->addItem( iterCovariateAvailable.value() );
@@ -1738,12 +1690,12 @@ void FADTTSWindow::OnPlotSelection( const QString& plotSelected )
 
 void FADTTSWindow::OnPropertySelection( const QString& propertySelected )
 {
-    m_plot->SetSelectedProperty( propertySelected );
+    m_plot->SetSelectedProperty() = propertySelected;
 }
 
 void FADTTSWindow::OnCovariateSelection( const QString& covariateSelected )
 {
-    m_plot->SetSelectedCovariate( covariateSelected );
+    m_plot->SetSelectedCovariate() = covariateSelected;
 }
 
 
@@ -1789,6 +1741,30 @@ void FADTTSWindow::OnUncheckAllToDisplay()
 }
 
 
+void FADTTSWindow::OnUseCustomizedTitle( const bool& checkState )
+{
+    this->plottingTab_titleAxisLegendTab_titleName_lineEdit->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_titleBold_checkBox->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_titleSize_label->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setEnabled( checkState );
+}
+
+void FADTTSWindow::OnUseCustomizedAxis( const bool& checkState )
+{
+    this->plottingTab_titleAxisLegendTab_xName_label->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_xName_lineEdit->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_yName_label->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_yName_lineEdit->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_axisBold_checkBox->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_yMin_checkBox->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setEnabled( checkState && this->plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked() );
+    this->plottingTab_titleAxisLegendTab_yMax_checkBox->setEnabled( checkState );
+    this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setEnabled( checkState && this->plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked() );
+}
+
+
 void FADTTSWindow::OnYMinToggled( const bool& checkState )
 {
     this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setEnabled( checkState );
@@ -1806,7 +1782,8 @@ void FADTTSWindow::OnDisplayPlot()
 
     m_plot->ClearPlot();
 
-    m_plot->SetSelectionToDisPlay( m_currentLinesForDisplay );
+    m_plot->SetSelectionToDisPlay() = m_currentLinesForDisplay;
+
     if( this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() )
     {
         m_plot->SetTitle( this->plottingTab_titleAxisLegendTab_titleName_lineEdit->text(),
@@ -1819,7 +1796,7 @@ void FADTTSWindow::OnDisplayPlot()
         m_plot->SetDefaultTitle();
     }
 
-    m_plot->SetGrid( this->plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked() );
+    m_plot->SetGrid() = this->plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked();
     if( this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked() )
     {
         m_plot->SetAxis( this->plottingTab_titleAxisLegendTab_xName_lineEdit->text(),
@@ -1836,10 +1813,10 @@ void FADTTSWindow::OnDisplayPlot()
         m_plot->SetDefaultAxis();
     }
     m_plot->SetLegend( this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->currentText() );
-    m_plot->SetPvalueThreshold( this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value() );
-    m_plot->SetLineWidth( this->plottingTab_editionTab_lineWidth_doubleSpinBox->value() );
+    m_plot->SetPvalueThreshold() = this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value();
+    m_plot->SetLineWidth() = this->plottingTab_editionTab_lineWidth_doubleSpinBox->value();
     m_plot->SetMarkerType( this->plottingTab_editionTab_markerType_comboBox->currentText() );
-    m_plot->SetMarkerSize( this->plottingTab_editionTab_markerSize_doubleSpinBox->value() );
+    m_plot->SetMarkerSize() = this->plottingTab_editionTab_markerSize_doubleSpinBox->value();
 
     bool isPlotDisplayed = m_plot->DisplayVTKPlot();
     this->plottingTab_savePlot_pushButton->setEnabled( isPlotDisplayed );
@@ -1862,82 +1839,17 @@ void FADTTSWindow::OnResetPlot()
 
 void FADTTSWindow::OnLoadPlotSettings()
 {
-    QList<QStringList> plotSettings;
+//    QList< QStringList > plotSettings;
     QString filename = QFileDialog::getOpenFileName( this , tr( "Load Plot Settings" ) , "" , tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
-        plotSettings = m_processing.GetDataFromFile( filename );
-    }
-
-    int nbrFixedSettings = 19;
-    if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
-    {
-        int index = 0;
-        this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_titleBold_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_titleAxisLegendTab_gridOn_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_xName_lineEdit->setText( plotSettings.at( index ).at( 1 ) );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yName_lineEdit->setText( plotSettings.at( index ).at( 1 ) );
-        index++;
-        this->plottingTab_titleAxisLegendTab_axisBold_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMin_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMax_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
-        index++;
-
-        this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_editionTab_lineWidth_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_editionTab_markerType_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
-        index++;
-        this->plottingTab_editionTab_markerSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
-        while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
-        {
-            iterPropertyColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
-            index++;
-            ++iterPropertyColor;
-        }
-
-        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
-        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
-        while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
-        {
-            iterCovariateColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
-            index++;
-            iterCovariateName.value().second->setText( plotSettings.at( index ).at( 1 ) );
-            index++;
-            ++iterCovariateColor;
-            ++iterCovariateName;
-        }
-
-        EditCovariatesNames();
+//        plotSettings = m_processing.GetDataFromFile( filename );
+//        int nbrFixedSettings = 19;
+//        if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
+//        {
+//            LoadPlotSettings( plotSettings );
+//        }
+        LoadPlotSettings( filename );
     }
 }
 
@@ -1946,56 +1858,10 @@ void FADTTSWindow::OnSavePlotSettings()
     QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save Plot Settings as ..." ) ), "newPlotSettings.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !filePath.isEmpty() )
     {
-        QFile exportedCSV( filePath );
-        exportedCSV.open( QIODevice::WriteOnly );
-        QTextStream ts( &exportedCSV );
-
-        ts << ( QStringList() << "setTitle_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "titleBold_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "titleItalic_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "titleSize_value" << QString::number( this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-
-        ts << ( QStringList() << "gridOn" << QString::number( this->plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "setAxis_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "xAxis_name" << this->plottingTab_titleAxisLegendTab_xName_lineEdit->text() ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "yAxis_name" << this->plottingTab_titleAxisLegendTab_yName_lineEdit->text() ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "axisBold_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "axisItalic_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "yMin_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "yMin_value" << QString::number( this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "yMax_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "yMax_value" << QString::number( this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-
-        ts << ( QStringList() << "legend_position" << this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->currentText() ).join( m_csvSeparator ) << endl;
-
-        ts << ( QStringList() << "alpha_value" << QString::number( this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-
-        ts << ( QStringList() << "lineWidth" << QString::number( this->plottingTab_editionTab_lineWidth_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-
-        ts << ( QStringList() << "markerType" << this->plottingTab_editionTab_markerType_comboBox->currentText() ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << "markerSize" << QString::number( this->plottingTab_editionTab_markerSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-
-        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
-        while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
-        {
-            ts << ( QStringList() << ( iterPropertyColor.value().first  + "_color" ) << iterPropertyColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
-            ++iterPropertyColor;
-        }
-
-        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
-        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
-        while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
-        {
-            ts << ( QStringList() << ( iterCovariateColor.value().first + "_color" ) << iterCovariateColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
-            ts << ( QStringList() << ( iterCovariateColor.value().first + "_newName" ) << iterCovariateName.value().second->text() ).join( m_csvSeparator ) << endl;
-            ++iterCovariateColor;
-            ++iterCovariateName;
-        }
-
-        exportedCSV.flush();
-        exportedCSV.close();
+        SavePlotSettings( filePath );
     }
 }
+
 
 
 /***********************  Private  functions  ***********************/
@@ -2049,12 +1915,12 @@ void FADTTSWindow::SetPropertyEdition( const QStringList& propertiesAvailable )
         gridLayout_PropertiesColors->addWidget( newComboBox, i, 1 );
         gridLayout_PropertiesColors->addItem( new QSpacerItem( 27, 27, QSizePolicy::Expanding, QSizePolicy::Fixed ), i, 2 );
 
-        QPair< QString, QLabel*> currentLabelPair;
+        QPair< QString, QLabel* > currentLabelPair;
         currentLabelPair.first = property;
         currentLabelPair.second = newLabel;
         m_propertiesNameLabelMap.insert( i, currentLabelPair );
 
-        QPair< QString, QComboBox*> currentComboBoxPair;
+        QPair< QString, QComboBox* > currentComboBoxPair;
         currentComboBoxPair.first = property;
         currentComboBoxPair.second = newComboBox;
         m_propertiesColorsComboBoxMap.insert( i, currentComboBoxPair );
@@ -2118,7 +1984,7 @@ void FADTTSWindow::ResetCovariateEdition()
     m_covariatesNameLineEditMap.clear();
 }
 
-void FADTTSWindow::SetCovariateEdition( const QMap<int, QString>& allCovariatesUsed )
+void FADTTSWindow::SetCovariateEdition( const QMap< int, QString >& allCovariatesUsed )
 {
     ResetCovariateEdition();
 
@@ -2138,12 +2004,12 @@ void FADTTSWindow::SetCovariateEdition( const QMap<int, QString>& allCovariatesU
         gridLayout_CovariatesEdition->addWidget( newComboBox, iterCovariateForDisplay.key(), 1 );
         gridLayout_CovariatesEdition->addWidget( newLineEdit, iterCovariateForDisplay.key(), 2 );
 
-        QPair< QString, QLabel*> currentLabelPair;
+        QPair< QString, QLabel* > currentLabelPair;
         currentLabelPair.first = iterCovariateForDisplay.value();
         currentLabelPair.second = newLabel;
         m_covariatesNameLabelMap.insert( iterCovariateForDisplay.key(), currentLabelPair );
 
-        QPair< QString, QComboBox*> currentComboBoxPair;
+        QPair< QString, QComboBox* > currentComboBoxPair;
         currentComboBoxPair.first = iterCovariateForDisplay.value();
         currentComboBoxPair.second = newComboBox;
         m_covariatesColorsComboBoxMap.insert( iterCovariateForDisplay.key(), currentComboBoxPair );
@@ -2267,6 +2133,23 @@ void FADTTSWindow::EditCovariatesNames()
 }
 
 
+void FADTTSWindow::ResetPlotTab()
+{
+    this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
+    this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
+
+    m_plotComboBox->setCurrentText( "No Plot" );
+
+    this->plottingTab_titleAxisLegendTab_titleName_lineEdit->clear();
+
+    this->plottingTab_displayPlot_pushButton->setEnabled( false );
+    this->plottingTab_resetPlot_pushButton->setEnabled( false );
+    this->plottingTab_savePlot_pushButton->setEnabled( false );
+
+    this->plottingTab_loadPlotSettings_pushButton->setEnabled( false );
+    this->plottingTab_savePlotSettings_pushButton->setEnabled( false );
+}
+
 void FADTTSWindow::SetPlotTab()
 {
     QString fibername = this->para_executionTab_fiberName_lineEdit->text();
@@ -2301,21 +2184,133 @@ void FADTTSWindow::SetPlotTab()
     SetPlotOptions( false, false, false, false );
 }
 
-void FADTTSWindow::ResetPlotTab()
+void FADTTSWindow::LoadPlotSettings( QString filePath )
 {
-    this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( "N/A" );
-    this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( "N/A" );
+    QList< QStringList > plotSettings = m_processing.GetDataFromFile( filePath );
+    int nbrFixedSettings = 19;
 
-    m_plotComboBox->setCurrentText( "No Plot" );
+    if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
+    {
+        int index = 0;
 
-    this->plottingTab_titleAxisLegendTab_titleName_lineEdit->clear();
+        this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_titleBold_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
 
-    this->plottingTab_displayPlot_pushButton->setEnabled( false );
-    this->plottingTab_resetPlot_pushButton->setEnabled( false );
-    this->plottingTab_savePlot_pushButton->setEnabled( false );
+        this->plottingTab_titleAxisLegendTab_gridOn_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_xName_lineEdit->setText( plotSettings.at( index ).at( 1 ) );
+        index++;
+        this->plottingTab_titleAxisLegendTab_yName_lineEdit->setText( plotSettings.at( index ).at( 1 ) );
+        index++;
+        this->plottingTab_titleAxisLegendTab_axisBold_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_yMin_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
+        this->plottingTab_titleAxisLegendTab_yMax_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
+        index++;
+        this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
 
-    this->plottingTab_loadPlotSettings_pushButton->setEnabled( false );
-    this->plottingTab_savePlotSettings_pushButton->setEnabled( false );
+        this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
+        index++;
+
+        this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
+
+        this->plottingTab_editionTab_lineWidth_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
+
+        this->plottingTab_editionTab_markerType_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
+        index++;
+        this->plottingTab_editionTab_markerSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
+
+        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
+        while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
+        {
+            iterPropertyColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
+            index++;
+            ++iterPropertyColor;
+        }
+
+        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
+        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
+        while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
+        {
+            iterCovariateColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
+            index++;
+            iterCovariateName.value().second->setText( plotSettings.at( index ).at( 1 ) );
+            index++;
+            ++iterCovariateColor;
+            ++iterCovariateName;
+        }
+
+        EditCovariatesNames();
+    }
+}
+
+void FADTTSWindow::SavePlotSettings( QString filePath )
+{
+    QFile exportedCSV( filePath );
+    exportedCSV.open( QIODevice::WriteOnly );
+    QTextStream ts( &exportedCSV );
+
+    ts << ( QStringList() << "setTitle_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "titleBold_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "titleItalic_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "titleSize_value" << QString::number( this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+
+    ts << ( QStringList() << "gridOn" << QString::number( this->plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "setAxis_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "xAxis_name" << this->plottingTab_titleAxisLegendTab_xName_lineEdit->text() ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "yAxis_name" << this->plottingTab_titleAxisLegendTab_yName_lineEdit->text() ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "axisBold_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "axisItalic_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "yMin_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "yMin_value" << QString::number( this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "yMax_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "yMax_value" << QString::number( this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+
+    ts << ( QStringList() << "legend_position" << this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->currentText() ).join( m_csvSeparator ) << endl;
+
+    ts << ( QStringList() << "alpha_value" << QString::number( this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+
+    ts << ( QStringList() << "lineWidth" << QString::number( this->plottingTab_editionTab_lineWidth_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+
+    ts << ( QStringList() << "markerType" << this->plottingTab_editionTab_markerType_comboBox->currentText() ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "markerSize" << QString::number( this->plottingTab_editionTab_markerSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+
+    comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
+    while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
+    {
+        ts << ( QStringList() << ( iterPropertyColor.value().first  + "_color" ) << iterPropertyColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
+        ++iterPropertyColor;
+    }
+
+    comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
+    covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
+    while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
+    {
+        ts << ( QStringList() << ( iterCovariateColor.value().first + "_color" ) << iterCovariateColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
+        ts << ( QStringList() << ( iterCovariateColor.value().first + "_newName" ) << iterCovariateName.value().second->text() ).join( m_csvSeparator ) << endl;
+        ++iterCovariateColor;
+        ++iterCovariateName;
+    }
+
+    exportedCSV.flush();
+    exportedCSV.close();
 }
 
 
