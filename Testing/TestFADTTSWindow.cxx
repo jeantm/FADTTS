@@ -2791,7 +2791,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
                                                      << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
                                                      << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
             && fadttsWindow->plottingTab_loadSetDataTab_currentFibernameSet_label->text() == "testPlot1"
-            && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == dirTest
+//            && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == dirTest
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
             && fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled()
             && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
@@ -2882,7 +2882,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
                                                      << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
                                                      << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
             && fadttsWindow->plottingTab_loadSetDataTab_currentFibernameSet_label->text() == "testPlot2"
-            && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == dirTest
+//            && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == dirTest
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
             && fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled()
             && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()

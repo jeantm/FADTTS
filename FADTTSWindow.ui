@@ -36,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <property name="sizePolicy">
@@ -1656,7 +1656,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="plottingTab_loadSetDataTab">
            <attribute name="title">
@@ -2436,18 +2436,28 @@
               <property name="title">
                <string>Line</string>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <layout class="QGridLayout" name="gridLayout_23">
                <property name="margin">
                 <number>0</number>
                </property>
-               <item>
+               <item row="1" column="2">
+                <widget class="QComboBox" name="plottingTab_editionTab_selectedLineColor_comboBox"/>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QLabel" name="plottingTab_editionTab_selectedLineColor_label">
+                 <property name="text">
+                  <string>Selected Line Color</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
                 <widget class="QLabel" name="plottingTab_editionTab_lineWidth_label">
                  <property name="text">
                   <string>Line Width</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="0" column="1">
                 <widget class="QDoubleSpinBox" name="plottingTab_editionTab_lineWidth_doubleSpinBox">
                  <property name="minimum">
                   <double>0.250000000000000</double>
@@ -2463,7 +2473,20 @@
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="1" column="3">
+                <spacer name="plottingTab_editionTab_selectedLineColor_horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="2" colspan="2">
                 <spacer name="plottingTab_editionTab_lineWidth_horizontalSpacer">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>

@@ -13,6 +13,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkContextScene.h>
 #include <vtkContextView.h>
+#include <vtkRenderWindow.h>
 #include <vtkChartXY.h>
 #include <vtkTable.h>
 #include <vtkFloatArray.h>
@@ -25,8 +26,22 @@
 #include <vtkGL2PSExporter.h>
 #include <vtkPen.h>
 #include <vtkChartLegend.h>
-#include <vtkRenderWindow.h>
+
+#include <vtkCommand.h>
+#include <vtkCallbackCommand.h>
 #include <vtkContextMouseEvent.h>
+
+#include <vtkDoubleArray.h>
+
+
+
+
+
+void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /** /!\ WRITE TEST /!\ **/
+
+void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /** /!\ WRITE TEST /!\ **/
+
+void CallbackAddZoomOut( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /** /!\ WRITE TEST /!\ **/
 
 
 class Plot : public QObject
@@ -84,6 +99,23 @@ public:
     void UpdateCovariatesNames( const QMap< int, QString >& newCovariatesNames ); // Tested
 
 
+
+
+    void SetSelectedLineColor( QString color ); /** /!\ WRITE TEST /!\ **/
+
+    double* GetSelectedLineColor(); /** /!\ WRITE TEST /!\ **/
+
+    double  GetLineWidth() const; /** /!\ WRITE TEST /!\ **/
+
+    void AddSelectedLine (vtkSmartPointer< vtkPlot > newLine, double* newRGB, float newLineWidth, QString newLabel ); /** /!\ WRITE TEST /!\ **/
+
+    void UpdateLineSelection(); /** /!\ WRITE TEST /!\ **/
+
+    int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /** /!\ WRITE TEST /!\ **/
+
+
+
+
     bool DisplayVTKPlot(); // Not Directly Tested
 
 
@@ -137,7 +169,22 @@ private:
     QSharedPointer< QVTKWidget > m_qvtkWidget;
     vtkSmartPointer< vtkContextView > m_view;
     vtkSmartPointer< vtkChartXY > m_chart;
-    QMap< int, vtkPlot* > m_line;
+    QMap< int, vtkSmartPointer< vtkPlot > > m_line;
+
+    typedef struct
+    {
+        vtkSmartPointer< vtkPlot > line;
+        double color[3];
+        double lineWidth;
+    } struct_selectedLine;
+    struct_selectedLine m_selectedLine;
+
+    typedef struct
+    {
+        QMap< int, struct_selectedLine > selectedLines;
+        bool isEmpty;
+    } struct_selectedLines;
+    struct_selectedLines m_previousSelectedLines, m_currentSelectedLines;
 
 
     QMap< QString, QList< QList< double > > > m_dataRawData, m_dataBeta, m_dataConfidenceBands, m_dataPostHocFDRLpvalue;
@@ -157,10 +204,12 @@ private:
     QPair< bool, double > m_yMin, m_yMax;
 
     QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles,
-    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed;
+    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed, m_selectedLineLabels;
 
     QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
     m_fibername;
+
+    double m_selectedLineColor[3];
 
     double m_pvalueThreshold, m_lineWidth, m_markerSize;
 
@@ -278,9 +327,9 @@ private:
 
     QList< double > GetyMinMax(); // Tested
 
-    void SetyMinMax(); /** /!\ WRITE TEST /!\ **/
+    void SetyMinMax(); /** /!\ PB WITH TEST /!\ **/
 
-    void SetChartProperties(); /** /!\ WRITE TEST /!\ **/
+    void SetChartProperties(); /** /!\ PB WITH TEST /!\ **/
 
 
     void SavePlot( QString filePath ); /** /!\ PB WITH TEST /!\ **/

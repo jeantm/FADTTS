@@ -360,6 +360,7 @@ void FADTTSWindow::InitPlottingTab()
     connect( this->plottingTab_loadPlotSettings_pushButton, SIGNAL( clicked() ), this, SLOT( OnLoadPlotSettings() ) );
     connect( this->plottingTab_savePlotSettings_pushButton, SIGNAL( clicked() ), this, SLOT( OnSavePlotSettings() ) );
 
+    SetColorsComboBox( this->plottingTab_editionTab_selectedLineColor_comboBox );
     SetPlotTab();
 }
 
@@ -619,7 +620,8 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList& f
         {
             QString filename = QFileInfo( QFile( file ) ).fileName();
             if( filename.contains( "_" + m_data.GetDiffusionPropertyName( diffusionPropertyIndex ) + "_", Qt::CaseInsensitive ) ||
-                    filename.startsWith( m_data.GetDiffusionPropertyName( diffusionPropertyIndex ) + "_", Qt::CaseInsensitive ) )
+                    filename.startsWith( m_data.GetDiffusionPropertyName( diffusionPropertyIndex ) + "_", Qt::CaseInsensitive ) ||
+                    filename.endsWith( "_" + m_data.GetDiffusionPropertyName( diffusionPropertyIndex ) + ".csv", Qt::CaseInsensitive ) )
             {
                 ( fileMap[ diffusionPropertyIndex ] ).append( file );
             }
@@ -635,7 +637,6 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList& f
     while( iter != fileMap.constEnd() )
     {
         int diffusionPropertyIndex = iter.key();
-
         m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->setText( iter.value().size() == 1 ? iter.value().first() : "" );
         ++iter;
     }
@@ -645,8 +646,7 @@ void FADTTSWindow::UpdateLineEditsAfterAddingMultipleFiles( const QStringList& f
 void FADTTSWindow::SetInfoSubjectColumnID()
 {
     this->inputTab_subjectColumnID_label->setText( !m_data.GetFileData( m_data.GetSubMatrixIndex() ).isEmpty() ?
-                                                       tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" +
-                                                                       QString::number( m_data.GetSubjectColumnID() + 1 ) + "</span></i></b>" ) ) :
+                                                       tr( qPrintable( "<b><i><span style=""font-size:7pt;"">" + QString::number( m_data.GetSubjectColumnID() + 1 ) + "</span></i></b>" ) ) :
                                                        "" );
 }
 
@@ -1778,9 +1778,9 @@ void FADTTSWindow::OnYMaxToggled( const bool& checkState )
 
 void FADTTSWindow::OnDisplayPlot()
 {
-    EditCovariatesNames();
-
     m_plot->ClearPlot();
+
+    EditCovariatesNames();
 
     m_plot->SetSelectionToDisPlay() = m_currentLinesForDisplay;
 
@@ -1815,6 +1815,7 @@ void FADTTSWindow::OnDisplayPlot()
     m_plot->SetLegend( this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->currentText() );
     m_plot->SetPvalueThreshold() = this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value();
     m_plot->SetLineWidth() = this->plottingTab_editionTab_lineWidth_doubleSpinBox->value();
+    m_plot->SetSelectedLineColor( this->plottingTab_editionTab_selectedLineColor_comboBox->currentText() );
     m_plot->SetMarkerType( this->plottingTab_editionTab_markerType_comboBox->currentText() );
     m_plot->SetMarkerSize() = this->plottingTab_editionTab_markerSize_doubleSpinBox->value();
 
@@ -1839,16 +1840,9 @@ void FADTTSWindow::OnResetPlot()
 
 void FADTTSWindow::OnLoadPlotSettings()
 {
-//    QList< QStringList > plotSettings;
     QString filename = QFileDialog::getOpenFileName( this , tr( "Load Plot Settings" ) , "" , tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
-//        plotSettings = m_processing.GetDataFromFile( filename );
-//        int nbrFixedSettings = 19;
-//        if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
-//        {
-//            LoadPlotSettings( plotSettings );
-//        }
         LoadPlotSettings( filename );
     }
 }
@@ -2164,7 +2158,15 @@ void FADTTSWindow::SetPlotTab()
     if( isMatlabOutputDirDefine )
     {
         isPlottingEnabled = m_plot->InitPlot( matlabOutputDir, fibername );
+
         this->plottingTab_loadSetDataTab_currentFibernameSet_label->setText( fibername );
+        QStringList splitOutputDir = outputDirectory.split( "/" );
+        int size = splitOutputDir.size();
+        if( size > 5 )
+        {
+            QStringList tempoOutputDir = QStringList() << splitOutputDir.first() << splitOutputDir.at( 1 ) << splitOutputDir.at( 2 ) << "..." << splitOutputDir.at( size - 2 ) << splitOutputDir.at( size - 1 );
+            outputDirectory = tempoOutputDir.join( "/" );
+        }
         this->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->setText( outputDirectory );
     }
     else
@@ -2187,7 +2189,7 @@ void FADTTSWindow::SetPlotTab()
 void FADTTSWindow::LoadPlotSettings( QString filePath )
 {
     QList< QStringList > plotSettings = m_processing.GetDataFromFile( filePath );
-    int nbrFixedSettings = 19;
+    int nbrFixedSettings = 20;
 
     if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
     {
@@ -2230,6 +2232,8 @@ void FADTTSWindow::LoadPlotSettings( QString filePath )
         index++;
 
         this->plottingTab_editionTab_lineWidth_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
+        index++;
+        this->plottingTab_editionTab_selectedLineColor_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
         index++;
 
         this->plottingTab_editionTab_markerType_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
@@ -2288,6 +2292,7 @@ void FADTTSWindow::SavePlotSettings( QString filePath )
     ts << ( QStringList() << "alpha_value" << QString::number( this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
 
     ts << ( QStringList() << "lineWidth" << QString::number( this->plottingTab_editionTab_lineWidth_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+    ts << ( QStringList() << "selectedLine_color" << this->plottingTab_editionTab_selectedLineColor_comboBox->currentText() ).join( m_csvSeparator ) << endl;
 
     ts << ( QStringList() << "markerType" << this->plottingTab_editionTab_markerType_comboBox->currentText() ).join( m_csvSeparator ) << endl;
     ts << ( QStringList() << "markerSize" << QString::number( this->plottingTab_editionTab_markerSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
