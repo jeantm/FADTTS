@@ -80,7 +80,7 @@ private:
     void ResetTableWidget(); // Tested
 
 
-    void SaveFile( QString newFilePath );
+    void SaveFile( QString newFilePath ); // Tested
 
 
     void closeEvent( QCloseEvent *event ); /// Not tested

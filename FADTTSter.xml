@@ -2,9 +2,9 @@
 <executable>
     <category>PROJECT</category>
     <title>FADTTSter</title>
-    <version>2.0</version>
+    <version>3.0</version>
     <contributor>Jean Noel</contributor>
-    <description>This interface purpose is to simplify data processing when working with FADTTS. This interface enables the user to work on the row data as well as on the subjects used for the study.</description>
+    <description>This interface simplifies data processing when working with FADTTS. This interface enables the user not only to customize the data to process ( row data, subjects, covariates, ... ) but also to plot the outputs.</description>
     <parameters>
     </parameters>
 </executable>

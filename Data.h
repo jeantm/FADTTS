@@ -2,7 +2,6 @@
 #define DATA_H
 
 #include <QMap>
-#include <vector>
 
 class Data
 {

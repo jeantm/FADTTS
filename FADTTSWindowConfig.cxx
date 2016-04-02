@@ -23,7 +23,6 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
     m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() );
     m_para_m->setpara_inputTab_subMatrixFile_lineEdit( para_inputTab_subMatrixFile_lineEdit->text() );
 
-
     /*2nd tab: Subjects/Covariates*/
     m_para_m->setpara_subjectCovariateTab_adFile_checkBox( para_subjectCovariateTab_adFile_checkBox->checkState() );
     m_para_m->setpara_subjectCovariateTab_rdFile_checkBox( para_subjectCovariateTab_rdFile_checkBox->checkState() );
@@ -44,7 +43,6 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
 
     m_para_m->setpara_subjectCovariateTab_subjectFile_lineEdit( para_subjectCovariateTab_subjectFile_lineEdit->text() );
 
-
     /*3rd tab: Execution*/
     m_para_m->setpara_executionTab_fiberName_lineEdit( para_executionTab_fiberName_lineEdit->text() );
     m_para_m->setpara_executionTab_nbrPermutations_spinBox( para_executionTab_nbrPermutations_spinBox->value() );
@@ -64,6 +62,9 @@ void FADTTSWindowConfig::SyncUiToModelStructure()
 //    m_soft_m->setsoft_executionTab_killDevilQueue_comboBox( soft_executionTab_killDevilQueue_comboBox->currentText() );
 //    m_soft_m->setsoft_executionTab_killDevilAllocatedMemory_spinBox( soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
 
+    /*4th tab: Plotting*/
+    m_para_m->setpara_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit( para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->text() );
+    m_para_m->setpara_plottingTab_loadSetDataTab_fibername_lineEdit( para_plottingTab_loadSetDataTab_fibername_lineEdit->text() );
 
     m_sync = false;
 }
@@ -83,7 +84,6 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_para_m->setpara_inputTab_mdFile_lineEdit( para_inputTab_mdFile_lineEdit->text() );
         m_para_m->setpara_inputTab_faFile_lineEdit( para_inputTab_faFile_lineEdit->text() );
         m_para_m->setpara_inputTab_subMatrixFile_lineEdit( para_inputTab_subMatrixFile_lineEdit->text() );
-
 
         /*2nd tab: Subjects/Covariates*/
         m_para_m->setpara_subjectCovariateTab_adFile_checkBox( para_subjectCovariateTab_adFile_checkBox->checkState() );
@@ -105,7 +105,6 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
 
         m_para_m->setpara_subjectCovariateTab_subjectFile_lineEdit( para_subjectCovariateTab_subjectFile_lineEdit->text() );
 
-
         /*3rd tab: Execution*/
         m_para_m->setpara_executionTab_fiberName_lineEdit( para_executionTab_fiberName_lineEdit->text() );
         m_para_m->setpara_executionTab_nbrPermutations_spinBox( para_executionTab_nbrPermutations_spinBox->value() );
@@ -117,6 +116,10 @@ void FADTTSWindowConfig::SyncUiToModelStructure( QString prefix )
         m_para_m->setpara_executionTab_outputDir_lineEdit(para_executionTab_outputDir_lineEdit->text() );
 
         m_para_m->setpara_executionTab_runMatlab_checkBox( para_executionTab_runMatlab_checkBox->checkState() );
+
+        /*4th tab: Plotting*/
+        m_para_m->setpara_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit( para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->text() );
+        m_para_m->setpara_plottingTab_loadSetDataTab_fibername_lineEdit( para_plottingTab_loadSetDataTab_fibername_lineEdit->text() );
     }
 
     if( prefix == "soft" )
@@ -192,6 +195,10 @@ void FADTTSWindowConfig::SyncModelStructureToUi()
 //    soft_executionTab_killDevilQueue_comboBox->setCurrentText( m_soft_m->getsoft_executionTab_killDevilQueue_comboBox() );
 //    soft_executionTab_killDevilAllocatedMemory_spinBox->setValue( m_soft_m->getsoft_executionTab_killDevilAllocatedMemory_spinBox() );
 
+    /*4th tab: Plotting*/
+    para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( m_para_m->getpara_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit() );
+    para_plottingTab_loadSetDataTab_fibername_lineEdit->setText( m_para_m->getpara_plottingTab_loadSetDataTab_fibername_lineEdit() );
+
     m_sync = false;
 }
 
@@ -212,7 +219,6 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         para_inputTab_faFile_lineEdit->setText( m_para_m->getpara_inputTab_faFile_lineEdit() );
         para_inputTab_subMatrixFile_lineEdit->setText( m_para_m->getpara_inputTab_subMatrixFile_lineEdit() );
 
-
         /*2nd tab: Subjects/Covariates*/
         para_subjectCovariateTab_adFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_adFile_checkBox() );
         para_subjectCovariateTab_rdFile_checkBox->setChecked( m_para_m->getpara_subjectCovariateTab_rdFile_checkBox() );
@@ -231,7 +237,6 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
 
         para_subjectCovariateTab_subjectFile_lineEdit->setText( m_para_m->getpara_subjectCovariateTab_subjectFile_lineEdit() );
 
-
         /*3rd tab: Execution*/
         para_executionTab_fiberName_lineEdit->setText( m_para_m->getpara_executionTab_fiberName_lineEdit() );
         para_executionTab_nbrPermutations_spinBox->setValue( m_para_m->getpara_executionTab_nbrPermutations_spinBox() );
@@ -243,6 +248,10 @@ void FADTTSWindowConfig::SyncModelStructureToUi( QString prefix )
         para_executionTab_outputDir_lineEdit->setText( m_para_m->getpara_executionTab_outputDir_lineEdit() );
 
         para_executionTab_runMatlab_checkBox->setChecked( m_para_m->getpara_executionTab_runMatlab_checkBox() );
+
+        /*4th tab: Plotting*/
+        para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( m_para_m->getpara_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit() );
+        para_plottingTab_loadSetDataTab_fibername_lineEdit->setText( m_para_m->getpara_plottingTab_loadSetDataTab_fibername_lineEdit() );
     }
 
     if( prefix == "soft" )

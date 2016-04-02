@@ -1,20 +1,16 @@
 #include "Plot.h"
-#include <QDebug>
 
+#include <QVTKWidget.h>
+
+//#include <QDebug>
 
 
 void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData )
 {
     Plot* plot = static_cast< Plot* >( clientData );
     vtkSmartPointer< vtkPlot > currentLine = static_cast< vtkPlot* >( caller );
-    double currentRGB[3];
-    currentLine->GetColor( currentRGB );
-    QString currentLabel = QString::fromStdString( currentLine->GetLabel() );
-    float currentLineWidth = currentLine->GetWidth();
 
-    plot->AddSelectedLine( currentLine, currentRGB, currentLineWidth, currentLabel );
-
-    qDebug() << endl << "CallbackAddSelectedLine";
+    plot->AddSelectedLine( currentLine );
 }
 
 void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData )
@@ -22,13 +18,6 @@ void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, 
     Plot* plot = static_cast< Plot* >( clientData );
 
     plot->UpdateLineSelection();
-
-    qDebug() << endl << "CallbackUpdateSelectedLines";
-}
-
-void CallbackAddZoomOut( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData )
-{
-    qDebug() << "Zoom out";
 }
 
 
@@ -42,13 +31,17 @@ Plot::Plot( QObject *parent ) :
 {
 }
 
+
 void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )
 {
     m_qvtkWidget = QSharedPointer< QVTKWidget >( qvtkWidget );
     m_view = vtkSmartPointer< vtkContextView >::New();
+    m_chart = vtkSmartPointer< vtkChartXY >::New();
+
     m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
     m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
-    m_chart = vtkSmartPointer< vtkChartXY >::New();
+
+    connect( m_qvtkWidget.data(), SIGNAL( mouseEvent( QMouseEvent * ) ), this, SLOT( OnMouseEvent( QMouseEvent * ) ) );
 }
 
 bool Plot::InitPlot( QString directory, QString fibername )
@@ -76,22 +69,39 @@ bool Plot::InitPlot( QString directory, QString fibername )
         SetCovariates();
         SetAbscissa();
     }
-    else
-    {
-        QString warningMessage;
-        warningMessage.append( "<center><b>Plotting Disabled</b></center>" );
-        if( m_dataRawData.isEmpty() )
-        {
-            warningMessage.append( "No abcsissa can be genereted because no raw data file was detected. Please ensure that your raw data file names contain '_ad_', '_md_', '_rd_' or '_fa_' depending on the property and end with 'RawData.csv'.<br>");
-        }
-        if( m_dataSubMatrix.isEmpty() )
-        {
-            warningMessage.append( "No covariate file detected. Please ensure that your covariate file name contains '_subMatrix_' and ends with 'RawData.csv'.<br>");
-        }
-        QMessageBox::warning( m_qvtkWidget.data(), tr( "WARNING" ), tr( qPrintable( warningMessage ) ), QMessageBox::Ok );
-    }
 
     return isPlottingEnabled;
+}
+
+bool Plot::DisplayVTKPlot()
+{
+    // Resetting scene and Observers
+    m_view->GetScene()->ClearItems();
+    m_view->GetScene()->AddItem( m_chart );
+    m_chart->RemoveAllObservers();
+
+    // Loading data
+    bool dataAvailable = LoadData();
+    if( dataAvailable )
+    {
+        m_nbrPlots = m_ordinate.size();
+
+        // Adding entries
+        vtkSmartPointer< vtkTable > table = vtkSmartPointer< vtkTable >::New();
+        AddEntries( table );
+
+        // Adding data
+        SetData( table );
+
+        // Adding lines
+        AddLines( table );
+
+        // Setting axis properties and observers
+        SetAxisProperties();
+        SetObservers();
+    }
+
+    return dataAvailable;
 }
 
 void Plot::ResetPlotData()
@@ -109,7 +119,6 @@ void Plot::ResetPlotData()
 
     m_dataRawData.clear();
     m_dataSubMatrix.clear();
-    m_subjects.clear();
     m_dataBeta.clear();
     m_dataOmnibusLpvalue.clear();
     m_dataOmnibusFDRLpvalue.clear();
@@ -118,6 +127,7 @@ void Plot::ResetPlotData()
 
     m_plotsUsed.clear();
     m_properties.clear();
+    m_subjects.clear();
     m_covariatesNoIntercept.clear();
     m_allCovariates.clear();
     m_binaryCovariates.clear();
@@ -126,10 +136,26 @@ void Plot::ResetPlotData()
 
 void Plot::ClearPlot()
 {
+    m_selectedLineLabels.clear();
+
+    m_currentSelectedLines.selectedLines.clear();
+    m_currentSelectedLines.isEmpty = true;
+
+    m_previousSelectedLines.selectedLines.clear();
     m_previousSelectedLines.isEmpty = true;
+
+    for( int i = 0; i < m_chart->GetNumberOfPlots(); i++ )
+    {
+        m_chart->GetPlot( i )->RemoveAllObservers();
+    }
     m_chart->ClearPlots();
 }
 
+
+QString& Plot::SetFibername()
+{
+    return m_fibername;
+}
 
 void Plot::SetSelectedPlot( QString plotSelected )
 {
@@ -144,8 +170,7 @@ void Plot::SetSelectedPlot( QString plotSelected )
             m_isCovariatesNoInterceptSent = false;
         }
     }
-    if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
-            m_plotSelected == "Betas with Omnibus Confidence Bands" || m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
+    if( m_plotSelected.contains( "by Properties" ) || m_plotSelected.contains( "Confidence Bands" ) )
     {
         if( !m_isAllCovariatesSent )
         {
@@ -155,8 +180,7 @@ void Plot::SetSelectedPlot( QString plotSelected )
             m_isCovariatesNoInterceptSent = false;
         }
     }
-    if( m_plotSelected == "Raw Betas by Covariates" || m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
-            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" || m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
+    if( m_plotSelected.contains( "by Covariates" ) )
     {
         if( !m_isCovariatesNoInterceptSent )
         {
@@ -183,14 +207,39 @@ QMap< int, QPair< QString, QPair< bool, QString > > >& Plot::SetSelectionToDisPl
     return m_selectionToDisplay;
 }
 
-
-void Plot::SetTitle( QString title, bool isBold, bool isItalic, double fontSize )
+void Plot::UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay )
 {
-    m_chart->SetTitle( title.toStdString() );
-    m_chart->GetTitleProperties()->SetBold( isBold );
-    m_chart->GetTitleProperties()->SetItalic( isItalic );
-    m_chart->GetTitleProperties()->SetFontSize( fontSize );
+    m_selectionToDisplay = selectionToDisplay;
+
+    int shift = ( m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" ) ? 1 : 0;
+
+    for( int indexPlot = 0; indexPlot < m_chart->GetNumberOfPlots() - 1; indexPlot++ )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( indexPlot );
+
+
+        if( indexPlot < m_nbrPlots )
+        {
+            currentLine->SetVisible( m_selectionToDisplay.value( indexPlot + shift ).second.first );
+        }
+        else
+        {
+            QString currentName = QString::fromStdString( currentLine->GetLabel() );
+            for( int i = 0; i < m_selectionToDisplay.size(); i++ )
+            {
+                if( currentName.contains( m_selectionToDisplay.value( i ).first ) )
+                {
+                    currentLine->SetVisible( m_selectionToDisplay.value( i ).second.first );
+                }
+            }
+        }
+    }
+
+    SetAxisProperties();
+
+    m_view->Render();
 }
+
 
 void Plot::SetDefaultTitle()
 {
@@ -239,10 +288,23 @@ void Plot::SetDefaultTitle()
     {
         title = m_fibername + " Post-Hoc FDR Significant Beta Values " + m_covariateSelected + " alpha=" + QString::number( m_pvalueThreshold );
     }
+
     m_chart->SetTitle( title.toStdString() );
     m_chart->GetTitleProperties()->SetBold( false );
     m_chart->GetTitleProperties()->SetItalic( false );
     m_chart->GetTitleProperties()->SetFontSize( 12.0 );
+
+    m_view->Render();
+}
+
+void Plot::SetCustomizedTitle( QString title, bool isBold, bool isItalic, double fontSize )
+{
+    m_chart->SetTitle( title.toStdString() );
+    m_chart->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetTitleProperties()->SetFontSize( fontSize );
+
+    m_view->Render();
 }
 
 bool& Plot::SetGrid()
@@ -250,27 +312,13 @@ bool& Plot::SetGrid()
     return m_gridOn;
 }
 
-void Plot::SetAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax )
+void Plot::UpdateGrid( bool checkState )
 {
-    m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( xName.toStdString() );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetBold( isBold );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetItalic( isItalic );
+    m_gridOn = checkState;
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
 
-    m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( yName.toStdString() );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( isBold );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( isItalic );
-
-    m_yMin.first = isYMinSet ? true : false;
-    if( m_yMin.first )
-    {
-        m_yMin.second = yMin;
-    }
-
-    m_yMax.first = isYMaxSet ? true : false;
-    if( m_yMax.first )
-    {
-        m_yMax.second = yMax;
-    }
+    m_view->Render();
 }
 
 void Plot::SetDefaultAxis()
@@ -292,6 +340,43 @@ void Plot::SetDefaultAxis()
 
     m_yMin.first = false;
     m_yMax.first = false;
+
+    if( !m_abscissa.isEmpty() )
+    {
+        SetAxisProperties();
+    }
+
+    m_view->Render();
+}
+
+void Plot::SetCustomizedAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax )
+{
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( xName.toStdString() );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetItalic( isItalic );
+
+    m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( yName.toStdString() );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( isItalic );
+
+    m_yMin.first = isYMinSet ? true : false;
+    if( m_yMin.first )
+    {
+        m_yMin.second = yMin;
+    }
+
+    m_yMax.first = isYMaxSet ? true : false;
+    if( m_yMax.first )
+    {
+        m_yMax.second = yMax;
+    }
+
+    if( !m_abscissa.isEmpty() )
+    {
+        SetAxisProperties();
+    }
+
+    m_view->Render();
 }
 
 void Plot::SetLegend( QString position )
@@ -299,7 +384,6 @@ void Plot::SetLegend( QString position )
     vtkSmartPointer< vtkChartLegend > legend = m_chart->GetLegend();
 
     int verticalPosition;
-    int horizontalPosition;
     if( position.contains( "Top" ) )
     {
         verticalPosition = vtkChartLegend::TOP;
@@ -313,6 +397,7 @@ void Plot::SetLegend( QString position )
         verticalPosition = vtkChartLegend::BOTTOM;
     }
 
+    int horizontalPosition;
     if( position.contains( "Left" ) )
     {
         horizontalPosition = vtkChartLegend::LEFT;
@@ -325,10 +410,13 @@ void Plot::SetLegend( QString position )
     {
         horizontalPosition = vtkChartLegend::RIGHT;
     }
+
     legend->SetVerticalAlignment( verticalPosition );
     legend->SetHorizontalAlignment( horizontalPosition );
-
+    legend->GetBrush()->SetColor( 255, 255, 255, 255 );
     m_chart->SetShowLegend( m_plotSelected == "Raw Data" ? false : true );
+
+    m_view->Render();
 }
 
 
@@ -337,9 +425,129 @@ double& Plot::SetPvalueThreshold()
     return m_pvalueThreshold;
 }
 
+void Plot::UpdatePvalueThresold( bool customizedTitle )
+{
+    if( m_plotSelected.contains( "Significant Betas" ) )
+    {
+        const vtkSmartPointer< vtkTable >& table = m_chart->GetPlot( 0 )->GetInput();
+        bool betaDisplayedByProperties = m_plotSelected.contains( "by Properties" );
+        bool isOmnibus = m_plotSelected.contains( "Omnibus" );
+
+        for( int indexPlot = m_chart->GetNumberOfPlots(); indexPlot > m_nbrPlots ; indexPlot-- )
+        {
+            m_chart->RemovePlot( indexPlot - 1 );
+        }
+
+        for( int indexPlot = 0; indexPlot < m_nbrPlots; indexPlot++ )
+        {
+            if( ( betaDisplayedByProperties && ( m_lineNames.at( indexPlot ) != m_allCovariates.first() ) ) || !betaDisplayedByProperties )
+            {
+                AddLineSigBetas( table, betaDisplayedByProperties, isOmnibus, indexPlot );
+            }
+        }
+
+        AddSignificantLevel( 0 );
+    }
+
+    if( m_plotSelected.contains( "Local pvalues" ) )
+    {
+        m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+        AddSignificantLevel( -log10( m_pvalueThreshold ) );
+    }
+
+    if( !customizedTitle )
+    {
+        SetDefaultTitle();
+    }
+
+    m_view->Render();
+}
+
 double& Plot::SetLineWidth()
 {
     return m_lineWidth;
+}
+
+void Plot::UpdateLineWidth()
+{
+    for( int i = 0; i < m_chart->GetNumberOfPlots() ; i++ )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
+        double currentLineWidth;
+
+        if( m_plotSelected == "Raw Data" )
+        {
+            int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
+            int lineIndex = LineAlreadySelected( currentLine );
+            if( m_covariateSelected.isEmpty() || m_dataSubMatrix.at( i + 1 ).at( indexCovariate ).toDouble() == 0 )
+            {
+                if( lineIndex != -1 )
+                {
+                    m_previousSelectedLines.selectedLines[ lineIndex ].lineWidth = m_lineWidth / 2;
+                    currentLineWidth = 3 * m_lineWidth;
+                }
+                else
+                {
+                    currentLineWidth = m_lineWidth / 2;
+                }
+            }
+            else
+            {
+                if( lineIndex != -1 )
+                {
+                    m_previousSelectedLines.selectedLines[ lineIndex ].lineWidth = m_lineWidth;
+                    currentLineWidth = 3 * m_lineWidth;
+                }
+                else
+                {
+                    currentLineWidth = m_lineWidth;
+                }
+            }
+        }
+        else
+        {
+            if( m_plotSelected != "Raw Stats" && ( i == m_chart->GetNumberOfPlots() - 1 ) )
+            {
+                currentLineWidth = m_lineWidth / 2;
+            }
+            else
+            {
+                currentLineWidth = m_lineWidth;
+            }
+        }
+
+        currentLine->SetWidth( currentLineWidth );
+    }
+
+    m_view->Render();
+}
+
+void Plot::SetSelectedLineColor( QString color )
+{
+    m_selectedLineColor[ 0 ] = m_allColors.value( color ).at( 0 );
+    m_selectedLineColor[ 1 ] = m_allColors.value( color ).at( 1 );
+    m_selectedLineColor[ 2 ] = m_allColors.value( color ).at( 2 );
+}
+
+void Plot::UpdateSelectedLineColor( QString color )
+{
+    SetSelectedLineColor( color );
+
+    if( !m_previousSelectedLines.selectedLines.isEmpty() )
+    {
+        QMap< int, struct_selectedLine >::ConstIterator iterCurrentSelectedLine = m_previousSelectedLines.selectedLines.cbegin();
+        while( iterCurrentSelectedLine != m_previousSelectedLines.selectedLines.cend() )
+        {
+            vtkSmartPointer< vtkPlot > currentLine = iterCurrentSelectedLine.value().line;
+
+            double* selectedRGB = GetSelectedLineColor();
+            currentLine->SetColor( selectedRGB[ 0 ], selectedRGB[ 1 ], selectedRGB[ 2 ], 255 );
+
+            ++iterCurrentSelectedLine;
+        }
+    }
+
+    m_view->Render();
 }
 
 void Plot::SetMarkerType( QString markerType )
@@ -369,6 +577,21 @@ void Plot::SetMarkerType( QString markerType )
 double& Plot::SetMarkerSize()
 {
     return m_markerSize;
+}
+
+void Plot::UpdateMarker()
+{
+    if( m_plotSelected.contains( "Significant Betas" ) )
+    {
+        for( int i = m_nbrPlots; i < m_chart->GetNumberOfPlots() - 1; i++ )
+        {
+            vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
+            vtkPlotPoints::SafeDownCast( currentLine )->SetMarkerStyle( m_markerType );
+            vtkPlotPoints::SafeDownCast( currentLine )->SetMarkerSize( m_markerSize );
+        }
+
+        m_view->Render();
+    }
 }
 
 
@@ -409,28 +632,10 @@ void Plot::UpdateCovariatesNames( const QMap< int, QString >& newCovariateName )
 }
 
 
-
-
-void Plot::SetSelectedLineColor( QString color )
-{
-    m_selectedLineColor[ 0 ] = m_allColors.value( color ).at( 0 );
-    m_selectedLineColor[ 1 ] = m_allColors.value( color ).at( 1 );
-    m_selectedLineColor[ 2 ] = m_allColors.value( color ).at( 2 );
-}
-
-double* Plot::GetSelectedLineColor()
-{
-    return m_selectedLineColor;
-}
-
-double Plot::GetLineWidth() const
-{
-    return m_lineWidth;
-}
-
-void Plot::AddSelectedLine( vtkSmartPointer< vtkPlot > newLine, double* newRGB, float newLineWidth, QString newLabel )
+void Plot::AddSelectedLine( vtkSmartPointer< vtkPlot > newLine )
 {
     struct_selectedLine newSelectedLine;
+    QString newLabel = QString::fromStdString( newLine->GetLabel() );
     int newSelectedLineIndex = m_currentSelectedLines.selectedLines.size();
     int indexLineAlreadySelected = LineAlreadySelected( newLine );
 
@@ -445,6 +650,10 @@ void Plot::AddSelectedLine( vtkSmartPointer< vtkPlot > newLine, double* newRGB, 
     }
     else
     {
+        double newRGB[3];
+        newLine->GetColor( newRGB );
+        double newLineWidth = newLine->GetWidth();
+
         newSelectedLine.line = newLine;
         newSelectedLine.color[ 0 ] = newRGB[ 0 ];
         newSelectedLine.color[ 1 ] = newRGB[ 1 ];
@@ -452,14 +661,21 @@ void Plot::AddSelectedLine( vtkSmartPointer< vtkPlot > newLine, double* newRGB, 
         newSelectedLine.lineWidth = newLineWidth;
     }
 
-    m_currentSelectedLines.selectedLines.insert( newSelectedLineIndex, newSelectedLine );
-    m_currentSelectedLines.isEmpty = false;
+    if( !m_selectedLineLabels.contains( newLabel ) )
+    {
+        m_currentSelectedLines.selectedLines.insert( newSelectedLineIndex, newSelectedLine );
 
-    m_selectedLineLabels.append( newLabel );
+        m_selectedLineLabels.append( newLabel );
+        double index = m_chart->GetPlotIndex( newLine );
+        m_selectedLineIndex.append( index );
+    }
+    m_currentSelectedLines.isEmpty = false;
 }
 
 void Plot::UpdateLineSelection()
 {
+    LinesSelected( m_selectedLineLabels );
+
     if( !m_previousSelectedLines.isEmpty )
     {
         QMap< int, struct_selectedLine >::ConstIterator iterPreviousSelectedLine = m_previousSelectedLines.selectedLines.cbegin();
@@ -485,11 +701,10 @@ void Plot::UpdateLineSelection()
         QMap< int, struct_selectedLine >::ConstIterator iterCurrentSelectedLine = m_currentSelectedLines.selectedLines.cbegin();
         while( iterCurrentSelectedLine != m_currentSelectedLines.selectedLines.cend() )
         {
-            struct_selectedLine currentSelectedLine = iterCurrentSelectedLine.value();
-            vtkSmartPointer< vtkPlot > currentLine = currentSelectedLine.line;
+            vtkSmartPointer< vtkPlot > currentLine = iterCurrentSelectedLine.value().line;
 
             double* selectedRGB = GetSelectedLineColor();
-            float selectedLineWidth = 3 * GetLineWidth();
+            double selectedLineWidth = 3 * GetLineWidth();
 
             currentLine->SetColor( selectedRGB[ 0 ], selectedRGB[ 1 ], selectedRGB[ 2 ], 255 );
             currentLine->SetWidth( selectedLineWidth );
@@ -497,74 +712,16 @@ void Plot::UpdateLineSelection()
             ++iterCurrentSelectedLine;
         }
 
-        qDebug() << endl << "m_selectedLineLabels: " << endl << m_selectedLineLabels;
-
-        qDebug() << endl << "Table size: nbrColumns: " << m_previousSelectedLines.selectedLines.last().line->GetInput()->GetNumberOfColumns()
-                 << " nbrRows: " <<  m_previousSelectedLines.selectedLines.last().line->GetInput()->GetNumberOfRows();
+        foreach( int lineIndex, m_selectedLineIndex )
+        {
+            m_chart->GetPlot( lineIndex )->SetSelection( NULL );
+        }
 
         m_selectedLineLabels.clear();
+        m_selectedLineIndex.clear();
         m_currentSelectedLines.selectedLines.clear();
         m_currentSelectedLines.isEmpty = true;
     }
-}
-
-int Plot::LineAlreadySelected( vtkSmartPointer< vtkPlot > line )
-{
-    int index = -1;
-    QMap< int, struct_selectedLine >::ConstIterator iterPreviousSelectedLine = m_previousSelectedLines.selectedLines.cbegin();
-    while( iterPreviousSelectedLine != m_previousSelectedLines.selectedLines.cend() )
-    {
-        if( iterPreviousSelectedLine.value().line == line )
-        {
-            return iterPreviousSelectedLine.key();
-        }
-        ++iterPreviousSelectedLine;
-    }
-
-    return index;
-}
-
-
-
-
-bool Plot::DisplayVTKPlot()
-{
-    // Resetting scene and Observers
-    m_view->GetScene()->ClearItems();
-    m_view->GetScene()->AddItem( m_chart );
-    if( !m_line.isEmpty() )
-    {
-        for( int i = 0; i < m_nbrPlot; i++ )
-        {
-            m_line.value( i )->RemoveAllObservers();
-        }
-    }
-    m_line.clear();
-    m_chart->RemoveAllObservers();
-    m_currentSelectedLines.isEmpty = true;
-    m_previousSelectedLines.isEmpty = true;
-
-    // Loading data
-    bool dataAvailable = LoadData();
-    if( dataAvailable )
-    {
-        m_nbrPlot = m_ordinate.size();
-
-        // Adding entries
-        vtkSmartPointer< vtkTable > table = vtkSmartPointer< vtkTable >::New();
-        AddEntries( table );
-
-        // Adding data
-        SetData( table );
-
-        // Adding lines
-        AddLines( table );
-
-        // Setting chart properties
-        SetChartProperties();
-    }
-
-    return dataAvailable;
 }
 
 
@@ -618,9 +775,9 @@ void Plot::OnSavePlot()
     {
         fileName += "PostHoc_FDR_SigBetas_" + m_covariateSelected;
     }
-    fileName += ".pdf";
+    fileName +=".eps";
 
-    QString filePath = QFileDialog::getSaveFileName( m_qvtkWidget.data(), tr( "Save plot as ..." ), fileName, tr( ".pdf ( *.pdf ) ;; .*( * )" ) );
+    QString filePath = QFileDialog::getSaveFileName( m_qvtkWidget.data(), tr( "Save plot as ..." ), fileName, tr( ".eps ( *.eps ) ;; .*( * )" ) );
     if( !filePath.isEmpty() )
     {
         SavePlot( filePath );
@@ -756,7 +913,7 @@ void Plot::SetPostHocFDRLpvalue()
 
 bool Plot::GetRawDataFiles()
 {
-    QStringList nameFilterRawData( "*_RawData_*.csv" );
+    QStringList nameFilterRawData = QStringList() << "*_RawData_*.csv" << "*_RawData.csv";
     m_csvRawDataFiles = QDir( m_directory ).entryList( nameFilterRawData );
     m_csvRawDataFiles.sort();
     SetRawData();
@@ -833,7 +990,7 @@ void Plot::SetPlots()
     if( !m_dataBeta.isEmpty() && !m_dataOmnibusFDRLpvalue.isEmpty() )
     {
         m_plotsUsed.append( QStringList() << "Omnibus FDR Significant Betas by Properties" <<
-                          "Omnibus FDR Significant Betas by Covariates" );
+                            "Omnibus FDR Significant Betas by Covariates" );
     }
     if( !m_dataBeta.isEmpty() && !m_dataConfidenceBands.isEmpty() )
     {
@@ -846,7 +1003,7 @@ void Plot::SetPlots()
     if( !m_dataBeta.isEmpty() && !m_dataPostHocFDRLpvalue.isEmpty() )
     {
         m_plotsUsed.append( QStringList() << "Post-Hoc FDR Significant Betas by Properties" <<
-                          "Post-Hoc FDR Significant Betas by Covariates" );
+                            "Post-Hoc FDR Significant Betas by Covariates" );
     }
     emit PlotsUsed( m_plotsUsed );
 }
@@ -905,7 +1062,7 @@ void Plot::SetAbscissa()
 {
     m_abscissa.clear();
     m_abscissa.append( m_dataRawData.first().first() );
-    m_nbrPoint = m_abscissa.size();
+    m_nbrPoints = m_abscissa.size();
 }
 
 
@@ -928,9 +1085,9 @@ void Plot::SeparateBinary( QList< QList< double > >& temp0Bin, QList< QList< dou
 void Plot::GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< double >& tempMean, QList< double >& tempStdDv )
 {
     int nbrSubjects = tempBin.size();
-    for( int i = 0; i < m_nbrPoint; i++ )
+    for( int i = 0; i < m_nbrPoints; i++ )
     {
-        float currentMean = 0;
+        double currentMean = 0;
         for( int j = 0; j < nbrSubjects; j++ )
         {
             currentMean += tempBin.at( j ).at( i );
@@ -938,7 +1095,7 @@ void Plot::GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< doub
         currentMean = currentMean / nbrSubjects;
         tempMean.append( currentMean );
 
-        float currentStdDv = 0;
+        double currentStdDv = 0;
         for( int j = 0; j < nbrSubjects; j++ )
         {
             currentStdDv += std::pow( tempBin.at( j ).at( i ) - currentMean, 2 );
@@ -951,33 +1108,25 @@ void Plot::ProcessRawStats( const QList< QList< double > >& tempBin, QList< doub
 {
     QList< double > tempBinStdDv;
     GetMeanAndStdDv( tempBin, tempBinMean, tempBinStdDv );
-    for( int i = 0; i < m_nbrPoint; i++ )
+    for( int i = 0; i < m_nbrPoints; i++ )
     {
         tempBinUp.append( tempBinMean.at( i ) + tempBinStdDv.at( i ) );
         tempBinDown.append( tempBinMean.at( i ) - tempBinStdDv.at( i ) );
     }
 }
 
-void Plot::UpdateOrdinate( QList< QList< double > >& ordinate )
+void Plot::SetSelectionToDisplayProperties()
 {
     m_lineNames.clear();
     m_lineColors.clear();
 
-    int shiftPlot = ordinate.size() - 1;
-    QMap< int, QPair< QString, QPair< bool, QString > > >::ConstIterator iterSelectionToDisplay = m_selectionToDisplay.cend();
-    while( iterSelectionToDisplay != m_selectionToDisplay.cbegin() )
+    QMap< int, QPair< QString, QPair< bool, QString > > >::ConstIterator iterSelectionToDisplay = m_selectionToDisplay.cbegin();
+    while( iterSelectionToDisplay != m_selectionToDisplay.cend() )
     {
-        --iterSelectionToDisplay;
-        if( iterSelectionToDisplay.value().second.first )
-        {
-            m_lineNames.prepend( iterSelectionToDisplay.value().first );
-            m_lineColors.prepend( m_allColors.value( iterSelectionToDisplay.value().second.second ) );
-        }
-        else
-        {
-            ordinate.removeAt( shiftPlot );
-        }
-        shiftPlot--;
+        m_lineNames.append( iterSelectionToDisplay.value().first );
+        m_lineColors.append( m_allColors.value( iterSelectionToDisplay.value().second.second ) );
+
+        ++iterSelectionToDisplay;
     }
 }
 
@@ -1028,6 +1177,14 @@ QList< QList< double > > Plot::LoadRawStats()
     ordinate.append( temp1BinMean );
     ordinate.append( temp1BinDown);
 
+    for( int i = ordinate.size() - 1; i >= 0; i-- )
+    {
+        if( std::isnan( ordinate.at( i ).first() ) )
+        {
+            ordinate.removeAt( i );
+        }
+    }
+
     m_ordinate.clear();
 
     return ordinate;
@@ -1037,7 +1194,7 @@ QList< QList< double > > Plot::LoadBetas()
 {
     QList< QList< double > > ordinate;
     ordinate = m_dataBeta.value( m_propertySelected );
-    UpdateOrdinate( ordinate );
+    SetSelectionToDisplayProperties();
 
     return ordinate;
 }
@@ -1051,7 +1208,7 @@ QList< QList< double > > Plot::LoadBetaByCovariate()
         ordinate.append( m_dataBeta.value( iterProperties.value() ).at( m_allCovariates.key( m_covariateSelected ) ) );
         ++iterProperties;
     }
-    UpdateOrdinate( ordinate );
+    SetSelectionToDisplayProperties();
 
     return ordinate;
 }
@@ -1060,7 +1217,7 @@ QList< QList< double > > Plot::LoadOmnibusLpvalues( QList< QList< double > > omn
 {
     QList< QList< double > > ordinate = omnibusLpvalues;
     m_selectionToDisplay.remove( m_selectionToDisplay.firstKey() );
-    UpdateOrdinate( ordinate );
+    SetSelectionToDisplayProperties();
 
     return ToLog10( ordinate );
 }
@@ -1084,7 +1241,7 @@ QList< QList< double > > Plot::LoadPostHocFDRLpvalues()
         ordinate.append( m_dataPostHocFDRLpvalue.value( iterProperties.value() ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 ) );
         ++iterProperties;
     }
-    UpdateOrdinate( ordinate );
+    SetSelectionToDisplayProperties();
 
     return ToLog10( ordinate );
 }
@@ -1094,7 +1251,7 @@ bool Plot::LoadData()
     m_ordinate.clear();
     if( ( m_plotSelected == "Raw Data" ) || ( m_plotSelected == "Raw Stats" ) )
     {
-        if( !m_propertySelected.isEmpty() && !m_covariateSelected.isEmpty() )
+        if( !m_propertySelected.isEmpty() )
         {
             m_ordinate = LoadRawData();
 
@@ -1147,10 +1304,10 @@ bool Plot::LoadData()
 
 
 void Plot::AddEntriesRawData( vtkSmartPointer< vtkTable >& table )
-{
-    for( int i = 0; i < m_nbrPlot; i++ )
+{   
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkFloatArray > currentEntry = vtkSmartPointer< vtkFloatArray >::New();
+        vtkSmartPointer< vtkDoubleArray > currentEntry = vtkSmartPointer< vtkDoubleArray >::New();
         currentEntry->SetName( m_subjects.at( i ).toStdString().c_str() );
         table->AddColumn( currentEntry );
     }
@@ -1158,52 +1315,86 @@ void Plot::AddEntriesRawData( vtkSmartPointer< vtkTable >& table )
 
 void Plot::AddEntriesRawStats( vtkSmartPointer< vtkTable >& table )
 {
-    vtkSmartPointer< vtkFloatArray > std0up = vtkSmartPointer< vtkFloatArray >::New();
-    std0up->SetName( QString( m_covariateSelected + " = 0 std+" ).toStdString().c_str() );
-    table->AddColumn( std0up );
-    vtkSmartPointer< vtkFloatArray > mean0 = vtkSmartPointer< vtkFloatArray >::New();
-    mean0->SetName( QString( m_covariateSelected + " = 0 mean" ).toStdString().c_str() );
-    table->AddColumn( mean0 );
-    vtkSmartPointer< vtkFloatArray > std0down = vtkSmartPointer< vtkFloatArray >::New();
-    std0down->SetName( QString( m_covariateSelected + " = 0 std-" ).toStdString().c_str() );
-    table->AddColumn( std0down );
-    vtkSmartPointer< vtkFloatArray > std1up = vtkSmartPointer< vtkFloatArray >::New();
-    std1up->SetName( QString( m_covariateSelected + " = 1 std+" ).toStdString().c_str() );
-    table->AddColumn( std1up );
-    vtkSmartPointer< vtkFloatArray > mean1 = vtkSmartPointer< vtkFloatArray >::New();
-    mean1->SetName( QString( m_covariateSelected + " = 1 mean" ).toStdString().c_str() );
-    table->AddColumn( mean1 );
-    vtkSmartPointer< vtkFloatArray > std1down = vtkSmartPointer< vtkFloatArray >::New();
-    std1down->SetName( QString( m_covariateSelected + " = 1 std-" ).toStdString().c_str() );
-    table->AddColumn( std1down );
+    if( m_covariateSelected.isEmpty() )
+    {
+        vtkSmartPointer< vtkDoubleArray > stdUp = vtkSmartPointer< vtkDoubleArray >::New();
+        stdUp->SetName( QString( m_propertySelected + " std+" ).toStdString().c_str() );
+        table->AddColumn( stdUp );
+        vtkSmartPointer< vtkDoubleArray > mean = vtkSmartPointer< vtkDoubleArray >::New();
+        mean->SetName( QString( m_propertySelected + " mean" ).toStdString().c_str() );
+        table->AddColumn( mean );
+        vtkSmartPointer< vtkDoubleArray > stdDown = vtkSmartPointer< vtkDoubleArray >::New();
+        stdDown->SetName( QString( m_propertySelected + " std-" ).toStdString().c_str() );
+        table->AddColumn( stdDown );
+    }
+    else
+    {
+        if( m_nbrPlots == 3 )
+        {
+            int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
+            QString name = m_dataSubMatrix.at( 1 ).at( indexCovariate ).toDouble() == 0 ?
+                        QString( m_covariateSelected + " = 0 " ) : QString(  m_covariateSelected + " = 1 " );
+
+            vtkSmartPointer< vtkDoubleArray > stdUp = vtkSmartPointer< vtkDoubleArray >::New();
+            stdUp->SetName( QString( name + "std+" ).toStdString().c_str() );
+            table->AddColumn( stdUp );
+            vtkSmartPointer< vtkDoubleArray > mean = vtkSmartPointer< vtkDoubleArray >::New();
+            mean->SetName( QString( name + "mean" ).toStdString().c_str() );
+            table->AddColumn( mean );
+            vtkSmartPointer< vtkDoubleArray > stdDown = vtkSmartPointer< vtkDoubleArray >::New();
+            stdDown->SetName( QString( name + "std-" ).toStdString().c_str() );
+            table->AddColumn( stdDown );
+        }
+        else
+        {
+            vtkSmartPointer< vtkDoubleArray > std0_Up = vtkSmartPointer< vtkDoubleArray >::New();
+            std0_Up->SetName( QString( m_covariateSelected + " = 0 std+" ).toStdString().c_str() );
+            table->AddColumn( std0_Up );
+            vtkSmartPointer< vtkDoubleArray > mean0 = vtkSmartPointer< vtkDoubleArray >::New();
+            mean0->SetName( QString( m_covariateSelected + " = 0 mean" ).toStdString().c_str() );
+            table->AddColumn( mean0 );
+            vtkSmartPointer< vtkDoubleArray > std0_Down = vtkSmartPointer< vtkDoubleArray >::New();
+            std0_Down->SetName( QString( m_covariateSelected + " = 0 std-" ).toStdString().c_str() );
+            table->AddColumn( std0_Down );
+            vtkSmartPointer< vtkDoubleArray > std1_Up = vtkSmartPointer< vtkDoubleArray >::New();
+            std1_Up->SetName( QString( m_covariateSelected + " = 1 std+" ).toStdString().c_str() );
+            table->AddColumn( std1_Up );
+            vtkSmartPointer< vtkDoubleArray > mean1 = vtkSmartPointer< vtkDoubleArray >::New();
+            mean1->SetName( QString( m_covariateSelected + " = 1 mean" ).toStdString().c_str() );
+            table->AddColumn( mean1 );
+            vtkSmartPointer< vtkDoubleArray > std1_Down = vtkSmartPointer< vtkDoubleArray >::New();
+            std1_Down->SetName( QString( m_covariateSelected + " = 1 std-" ).toStdString().c_str() );
+            table->AddColumn( std1_Down );
+        }
+    }
 }
 
 void Plot::AddEntriesByPropertiesOrCovariates( vtkSmartPointer< vtkTable >& table )
 {
-    for( int i = 0; i < m_nbrPlot; i++ )
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkFloatArray > currentEntry = vtkSmartPointer< vtkFloatArray >::New();
+        vtkSmartPointer< vtkDoubleArray > currentEntry = vtkSmartPointer< vtkDoubleArray >::New();
         currentEntry->SetName( m_lineNames.at( i ).toStdString().c_str() );
         table->AddColumn( currentEntry );
     }
 }
 
-void Plot::AddEntriesCovariatesBands( vtkSmartPointer< vtkTable >& table )
+void Plot::AddEntriesConfidenceBands( vtkSmartPointer< vtkTable >& table )
 {
-    vtkSmartPointer< vtkFloatArray > upperConfidenceBand = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > upperConfidenceBand = vtkSmartPointer< vtkDoubleArray >::New();
     upperConfidenceBand->SetName( "Upper Confidence Band" );
     table->AddColumn( upperConfidenceBand );
-    vtkSmartPointer< vtkFloatArray > betas = vtkSmartPointer< vtkFloatArray >::New();
-    betas->SetName( "Betas" );
-    table->AddColumn( betas );
-    vtkSmartPointer< vtkFloatArray > lowerConfidenceBand = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > meanBetas = vtkSmartPointer< vtkDoubleArray >::New();
+    meanBetas->SetName( "Mean Betas" );
+    table->AddColumn( meanBetas );
+    vtkSmartPointer< vtkDoubleArray > lowerConfidenceBand = vtkSmartPointer< vtkDoubleArray >::New();
     lowerConfidenceBand->SetName( "Lower Confidence Band" );
     table->AddColumn( lowerConfidenceBand );
 }
 
 void Plot::AddEntries( vtkSmartPointer< vtkTable >& table )
 {
-    vtkSmartPointer< vtkFloatArray > abscissa = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > abscissa = vtkSmartPointer< vtkDoubleArray >::New();
     abscissa->SetName( "Arc Length" );
     table->AddColumn( abscissa );
 
@@ -1227,21 +1418,21 @@ void Plot::AddEntries( vtkSmartPointer< vtkTable >& table )
     }
     if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
     {
-        AddEntriesCovariatesBands( table );
+        AddEntriesConfidenceBands( table );
     }
 }
 
 
 void Plot::SetData( vtkSmartPointer< vtkTable >& table )
 {
-    table->SetNumberOfRows( m_nbrPoint );
-    for( int i = 0; i < m_nbrPoint; i++ )
+    table->SetNumberOfRows( m_nbrPoints );
+    for( int i = 0; i < m_nbrPoints; i++ )
     {
         // Adding abscissa
         table->SetValue( i, 0, m_abscissa.at( i ) );
 
         // Adding data
-        for( int j = 0; j < m_nbrPlot; j++ )
+        for( int j = 0; j < m_nbrPlots; j++ )
         {
             table->SetValue( i, j + 1, m_ordinate.at( j ).at( i ) );
         }
@@ -1251,32 +1442,34 @@ void Plot::SetData( vtkSmartPointer< vtkTable >& table )
 
 void Plot::InitLines()
 {
-    for( int i = 0; i < m_nbrPlot; i++ )
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        m_line.insert( i, m_chart->AddPlot( vtkChart::LINE ) );
+        m_chart->AddPlot( vtkChart::LINE );
+        m_chart->GetPlot( i )->SetSelectable( m_plotSelected == "Raw Data" ? true : false );
     }
 }
 
 void Plot::AddSignificantLevel( double significantLevel )
 {
-    vtkSmartPointer< vtkFloatArray > abscissaSigLevel = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > abscissaSigLevel = vtkSmartPointer< vtkDoubleArray >::New();
     abscissaSigLevel->SetNumberOfComponents( 1 );
     abscissaSigLevel->SetName( "Abscissa SigLevel" );
-    vtkSmartPointer< vtkFloatArray > dataSigLevel = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > dataSigLevel = vtkSmartPointer< vtkDoubleArray >::New();
     dataSigLevel->SetNumberOfComponents( 1 );
     dataSigLevel->SetName( "Significant Level" );
-    for( int i = 0; i < m_nbrPoint; i++ )
+    for( int i = 0; i < m_nbrPoints; i++ )
     {
         abscissaSigLevel->InsertNextValue( m_abscissa.at( i ) );
         dataSigLevel->InsertNextValue( significantLevel );
     }
 
     vtkSmartPointer< vtkTable > tableSigLevel = vtkSmartPointer< vtkTable >::New();
-    tableSigLevel->SetNumberOfRows( m_nbrPoint );
+    tableSigLevel->SetNumberOfRows( m_nbrPoints );
     tableSigLevel->AddColumn( abscissaSigLevel );
     tableSigLevel->AddColumn( dataSigLevel );
 
     vtkSmartPointer< vtkPlot > sigLevelLine = m_chart->AddPlot( vtkChart::LINE );
+    sigLevelLine->SetSelectable( false );
     sigLevelLine->SetInputData( tableSigLevel, 0, 1 );
     sigLevelLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
     sigLevelLine->SetWidth( m_lineWidth / 2 );
@@ -1284,14 +1477,14 @@ void Plot::AddSignificantLevel( double significantLevel )
 
 void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i )
 {
-    vtkSmartPointer< vtkFloatArray > abscissaSigBetaTempo = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > abscissaSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
     abscissaSigBetaTempo->SetNumberOfComponents( 1 );
     abscissaSigBetaTempo->SetName( "Abscissa SigBeta" );
-    vtkSmartPointer< vtkFloatArray > dataSigBetaTempo = vtkSmartPointer< vtkFloatArray >::New();
+    vtkSmartPointer< vtkDoubleArray > dataSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
     dataSigBetaTempo->SetNumberOfComponents( 1 );
     dataSigBetaTempo->SetName( QString( m_lineNames.at( i ) + " SigBeta" ).toStdString().c_str() );
     int index = 0;
-    for( int j = 0; j < m_nbrPoint; j++ )
+    for( int j = 0; j < m_nbrPoints; j++ )
     {
         if( betaDisplayedByProperties )
         {
@@ -1299,8 +1492,8 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
             {
                 if( m_dataOmnibusFDRLpvalue.at( m_allCovariates.key( m_lineNames.at( i ) ) - 1 ).at( j ) <= m_pvalueThreshold )
                 {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToFloat() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToFloat() );
+                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
+                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
                     index++;
                 }
             }
@@ -1308,8 +1501,8 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
             {
                 if( m_dataPostHocFDRLpvalue.value( m_propertySelected ).at( m_allCovariates.key( m_lineNames.at( i ) ) - 1 ).at( j ) <= m_pvalueThreshold )
                 {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToFloat() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToFloat() );
+                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
+                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
                     index++;
                 }
             }
@@ -1320,8 +1513,8 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
             {
                 if( m_dataOmnibusFDRLpvalue.at( m_allCovariates.key( m_covariateSelected ) - 1 ).at( j ) <= m_pvalueThreshold )
                 {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToFloat() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToFloat() );
+                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
+                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
                     index++;
                 }
             }
@@ -1329,8 +1522,8 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
             {
                 if( m_dataPostHocFDRLpvalue.value( m_lineNames.at( i ) ).at( m_allCovariates.key( m_covariateSelected ) - 1 ).at( j ) <= m_pvalueThreshold )
                 {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToFloat() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToFloat() );
+                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
+                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
                     index++;
                 }
             }
@@ -1345,6 +1538,7 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
         tableSigBetas->AddColumn( dataSigBetaTempo );
 
         vtkSmartPointer< vtkPlot > sigBetas = m_chart->AddPlot( vtkChart::POINTS );
+        sigBetas->SetSelectable( false );
         sigBetas->SetInputData( tableSigBetas, 0, 1 );
         vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerStyle( m_markerType );
         vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerSize( m_markerSize );
@@ -1354,40 +1548,78 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
 
 void Plot::AddLineRawData( const vtkSmartPointer< vtkTable >& table )
 {
-    int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
-    for( int i = 0; i < m_nbrPlot; i++ )
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkPlot > currentLine = m_line.value( i );
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
-        if( m_dataSubMatrix.at( i + 1 ).at( indexCovariate ).toDouble() == 0 )
+
+        QList< int > color;
+        double currentLineWidth = 0;
+        if( m_covariateSelected.isEmpty() )
         {
-            currentLine->SetColor( 0, 0, 0, 255 );
-            currentLine->SetWidth( m_lineWidth / 2 );
+            color = m_allColors.value( "Black" );
+            currentLineWidth = m_lineWidth / 2;
         }
         else
         {
-            QList< int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
-            currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
-            currentLine->SetWidth( m_lineWidth );
+            int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
+            if( m_dataSubMatrix.at( i + 1 ).at( indexCovariate ).toDouble() == 0 )
+            {
+                color = m_allColors.value( "Black" );
+                currentLineWidth = m_lineWidth / 2;
+            }
+            else
+            {
+                color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+                currentLineWidth = m_lineWidth;
+            }
         }
+
+        currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
+        currentLine->SetWidth( currentLineWidth );
     }
 }
 
 void Plot::AddLineRawStats( const vtkSmartPointer< vtkTable >& table )
 {
-    for( int i = 0; i < m_nbrPlot; i++ )
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkPlot > currentLine = m_line.value( i );
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
-        if( i < 3 )
+
+        QList< int > color;
+        if( m_covariateSelected.isEmpty() )
         {
-            currentLine->SetColor( 0, 0, 0, 255 );
+            color = m_allColors.value( "Black" );
         }
         else
         {
-            QList< int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
-            currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
+            if( m_nbrPlots == 3 )
+            {
+                int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
+                if( m_dataSubMatrix.at( 1 ).at( indexCovariate ).toDouble() == 0 )
+                {
+                    color = m_allColors.value( "Black" );
+                }
+                else
+                {
+                    color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+                }
+            }
+            else
+            {
+                if( i < 3 )
+                {
+                    color = m_allColors.value( "Black" );
+                }
+                else
+                {
+                    color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+                }
+            }
         }
+        currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
+
 
         if( ( i == 0 || i == 3 ) )
         {
@@ -1397,26 +1629,32 @@ void Plot::AddLineRawStats( const vtkSmartPointer< vtkTable >& table )
         {
             currentLine->GetPen()->SetLineType( vtkPen::DASH_DOT_DOT_LINE );
         }
+
         currentLine->SetWidth( m_lineWidth );
     }
 }
 
-void Plot::AddLineBetas( const vtkSmartPointer< vtkTable >& table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus )
+void Plot::AddLineBetas( const vtkSmartPointer< vtkTable >& table )
 {
-    for( int i = 0; i < m_nbrPlot; i++ )
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkPlot > currentLine = m_line.value( i );
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
         currentLine->SetColor( m_lineColors.at( i ).first(), m_lineColors.at( i ).at( 1 ), m_lineColors.at( i ).at( 2 ), 255 );
         currentLine->SetWidth( m_lineWidth );
 
-        if( isSigBeta )
+        if( m_plotSelected.contains( "Significant Betas" ) )
         {
+            bool betaDisplayedByProperties = m_plotSelected.contains( "by Properties" );
+            bool isOmnibus = m_plotSelected.contains( "Omnibus" );
+
             if( ( betaDisplayedByProperties && ( m_lineNames.at( i ) != m_allCovariates.first() ) ) || !betaDisplayedByProperties )
             {
                 AddLineSigBetas( table, betaDisplayedByProperties, isOmnibus, i );
             }
         }
+
+        currentLine->SetVisible( m_selectionToDisplay.value( i ).second.first );
     }
 
     AddSignificantLevel( 0 );
@@ -1424,12 +1662,15 @@ void Plot::AddLineBetas( const vtkSmartPointer< vtkTable >& table, bool isSigBet
 
 void Plot::AddLineLPvalue( const vtkSmartPointer< vtkTable >& table )
 {
-    for( int i = 0; i < m_nbrPlot; i++ )
+    int shift = ( m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" ) ? 0 : 1;
+
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkPlot > currentLine = m_line.value( i );
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
         currentLine->SetColor( m_lineColors.at( i ).first(), m_lineColors.at( i ).at( 1 ), m_lineColors.at( i ).at( 2 ), 255 );
         currentLine->SetWidth( m_lineWidth );
+        currentLine->SetVisible( m_selectionToDisplay.value( i + shift ).second.first );
     }
 
     AddSignificantLevel( -log10( m_pvalueThreshold ) );
@@ -1437,9 +1678,9 @@ void Plot::AddLineLPvalue( const vtkSmartPointer< vtkTable >& table )
 
 void Plot::AddLineLConfidenceBands( const vtkSmartPointer< vtkTable >& table )
 {
-    for( int i = 0; i < m_nbrPlot; i++ )
+    for( int i = 0; i < m_nbrPlots; i++ )
     {
-        vtkSmartPointer< vtkPlot > currentLine = m_line.value( i );
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
         if( i%2 )
         {
@@ -1469,193 +1710,134 @@ void Plot::AddLines( const vtkSmartPointer< vtkTable >& table )
     {
         AddLineRawStats( table );
     }
-    if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Raw Betas by Covariates" )
+    if( m_plotSelected.contains( "Raw Betas" ) || m_plotSelected.contains( "Significant Betas" ) )
     {
-        AddLineBetas( table, false, false, false );
+        AddLineBetas( table );
     }
     if( m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" ||
             m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
         AddLineLPvalue( table );
     }
-    if( m_plotSelected == "Omnibus FDR Significant Betas by Properties" )
-    {
-        AddLineBetas( table, true, true, true );
-    }
-    if( m_plotSelected == "Omnibus FDR Significant Betas by Covariates" )
-    {
-        AddLineBetas( table, true, false, true );
-    }
     if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
     {
         AddLineLConfidenceBands( table );
     }
-    if( m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
-    {
-        AddLineBetas( table, true, true, false );
-    }
-    if( m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
-    {
-        AddLineBetas( table, true, false, false );
-    }
 }
 
 
-QList< double > Plot::GetyMinMax()
+void Plot::GetyMinMax()
 {
-    QList< double > yMinMax;
     double yMin = m_yMin.first ? m_yMin.second : 1000;
     double yMax = m_yMax.first ? m_yMax.second : -1000;
-    foreach( QList< double > rowData, m_ordinate )
-    {
-        foreach( double data, rowData )
-        {
-            if( !m_yMin.first && data < yMin && data != QString( "inf" ).toDouble() )
-            {
-                yMin = data;
-            }
 
-            if( !m_yMax.first && data > yMax && data != QString( "inf" ).toDouble() )
+    for( int i = 0; i < m_ordinate.size(); i++ )
+    {
+        QList< double > rowData = m_ordinate.at( i );
+
+        if( ( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" )
+                || ( !( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" ) && m_selectionToDisplay.value( i ).second.first ) )
+        {
+            foreach( double data, rowData )
             {
-                yMax = data;
+                if( !m_yMin.first && data < yMin && data != QString( "inf" ).toDouble() )
+                {
+                    yMin = data;
+                }
+
+                if( !m_yMax.first && data > yMax && data != QString( "inf" ).toDouble() )
+                {
+                    yMax = data;
+                }
             }
         }
     }
-    yMinMax.append( yMin );
-    yMinMax.append( yMax );
-    return yMinMax;
+
+    m_yMinMax[ 0 ] = yMin;
+    m_yMinMax[ 1 ] = yMax;
 }
 
-void Plot::SetyMinMax()
+void Plot::SetAbscissaProperties( double xMin, double xMax )
 {
-//    QList< double > yMinMax = GetyMinMax();
-
-//    double yMin = yMinMax.first();
-//    double yMax = yMinMax.at( 1 );
-
-//    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin );
-//    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax );
-//    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
-
-//    m_chart->GetAxis( vtkAxis::LEFT )->NiceMinMax( yMin, yMax, 5, 5 );
-
-////    m_chart->GetAxis( vtkAxis::LEFT )->RecalculateTickSpacing();
-//    m_chart->GetAxis( vtkAxis::LEFT )->SetNotation( vtkAxis::SCIENTIFIC_NOTATION );
-//    m_chart->GetAxis( vtkAxis::LEFT )->SetBehavior( vtkAxis::AUTO );
-
-
-////    m_chart->GetAxis( vtkAxis::LEFT )->GenerateTickLabels( 5.0 );
-
-
-////    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMinMax.first(), yMinMax.at( 1 ) );
-////    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMinMax.first() );
-////    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMinMax.at( 1 ) );
-}
-
-void Plot::SetChartProperties()
-{
-
-    double xMin = m_abscissa.first();
-    double xMax = m_abscissa.last();
-
-
-//    double range;
-    int min, max;
-    vtkSmartPointer< vtkDoubleArray > tickPosition;
-    QList< float > listTickPosition;
-
-
-//    m_chart->GetAxis( vtkAxis::BOTTOM )->GetRange( range );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetMargins( min, max );
-    tickPosition = m_chart->GetAxis( vtkAxis::BOTTOM )->GetTickPositions();
-    for( int i = 0; i < tickPosition->GetSize(); i++  )
-    {
-        listTickPosition.append( tickPosition->GetValue( i ) );
-    }
-
-    qDebug() << endl << "margin: min:" << min << "| max:" << max;
-//    qDebug() << "range:" << range;
-    qDebug() << "nbr ticks: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetNumberOfTicks();
-    qDebug() << "tick positions: " << listTickPosition;
-    qDebug() << "scaling factor: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetScalingFactor();
-    qDebug() << "shift: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetShift();
-
-
-
-
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
-
-        m_chart->GetAxis( vtkAxis::BOTTOM )->NiceMinMax( xMin, xMax, 5, 5 );
-
-        m_chart->GetAxis( vtkAxis::BOTTOM )->RecalculateTickSpacing();
-//        m_chart->GetAxis( vtkAxis::BOTTOM )->SetBehavior( vtkAxis::AUTO );
-
-
-
-
-    m_chart->GetAxis( vtkAxis::BOTTOM )->Update();
-
-
-//    double range_Bis;
-    int min_Bis, max_Bis;
-    vtkSmartPointer< vtkDoubleArray > tickPosition_Bis;
-    QList< float > listTickPosition_Bis;
-
-//    m_chart->GetAxis( vtkAxis::BOTTOM )->GetRange( range_Bis );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetMargins( min_Bis, max_Bis );
-    tickPosition_Bis = m_chart->GetAxis( vtkAxis::BOTTOM )->GetTickPositions();
-    for( int i = 0; i < tickPosition_Bis->GetSize(); i++  )
-    {
-        listTickPosition_Bis.append( tickPosition_Bis->GetValue( i ) );
-    }
-
-    qDebug() << endl << "margin: min:" << min_Bis << "| max:" << max_Bis;
-//    qDebug() << "range:" << range_Bis;
-    qDebug() << "nbr ticks: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetNumberOfTicks();
-    qDebug() << "tick positions: " << listTickPosition_Bis;
-    qDebug() << "scaling factor: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetScalingFactor();
-    qDebug() << "shift: " << m_chart->GetAxis( vtkAxis::BOTTOM )->GetShift();
-
-
-
-
-    SetyMinMax();
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
 
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetWidth( 0.25 );
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
+}
+
+void Plot::SetOrdinateProperties( double yMin, double yMax )
+{
+    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetNotation( vtkAxis::SCIENTIFIC_NOTATION );
+
     m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetWidth( 0.25 );
     m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
+}
 
-
-
-
-    vtkSmartPointer< vtkCallbackCommand > callback_RightButton = vtkSmartPointer< vtkCallbackCommand >::New();
-    callback_RightButton->SetCallback( CallbackUpdateSelectedLines );
-    callback_RightButton->SetClientData( this );
-    m_chart->AddObserver( vtkCommand::SelectionChangedEvent, callback_RightButton );
-
-    for( int i = 0; i < m_line.size(); i++ )
+void Plot::SetAxisProperties()
+{
+    if( !m_abscissa.isEmpty() )
     {
-        vtkSmartPointer< vtkPlot > currentLine = m_line.value( i );
+        SetAbscissaProperties( m_abscissa.first(), m_abscissa.last() );
+    }
 
+    GetyMinMax();
+    SetOrdinateProperties( m_yMinMax[ 0 ], m_yMinMax[ 1 ] );
+}
+
+
+int Plot::LineAlreadySelected( vtkSmartPointer< vtkPlot > line )
+{
+    int index = -1;
+
+    QMap< int, struct_selectedLine >::ConstIterator iterPreviousSelectedLine = m_previousSelectedLines.selectedLines.cbegin();
+    while( iterPreviousSelectedLine != m_previousSelectedLines.selectedLines.cend() )
+    {
+        if( iterPreviousSelectedLine.value().line == line )
+        {
+            return iterPreviousSelectedLine.key();
+        }
+        ++iterPreviousSelectedLine;
+    }
+
+    return index;
+}
+
+double* Plot::GetSelectedLineColor()
+{
+    return m_selectedLineColor;
+}
+
+double Plot::GetLineWidth() const
+{
+    return m_lineWidth;
+}
+
+void Plot::SetObservers()
+{
+    if( m_plotSelected == "Raw Data" )
+    {
         vtkSmartPointer< vtkCallbackCommand > callback_LeftButton = vtkSmartPointer< vtkCallbackCommand >::New();
         callback_LeftButton->SetCallback( CallbackAddSelectedLine );
         callback_LeftButton->SetClientData( this );
+        for( int i = 0; i < m_chart->GetNumberOfPlots(); i++ )
+        {
+            m_chart->GetPlot( i )->AddObserver( vtkContextMouseEvent::LEFT_BUTTON, callback_LeftButton );
+        }
 
-        currentLine->AddObserver( vtkContextMouseEvent::LEFT_BUTTON, callback_LeftButton );
+        vtkSmartPointer< vtkCallbackCommand > callback_RightButton = vtkSmartPointer< vtkCallbackCommand >::New();
+        callback_RightButton->SetCallback( CallbackUpdateSelectedLines );
+        callback_RightButton->SetClientData( this );
+        m_chart->AddObserver( vtkCommand::SelectionChangedEvent, callback_RightButton );
     }
 
-
-    vtkSmartPointer< vtkCallbackCommand > callback_MiddleButton = vtkSmartPointer< vtkCallbackCommand >::New();
-    callback_MiddleButton->SetCallback( CallbackAddZoomOut );
-    callback_MiddleButton->SetClientData( this );
-    m_chart->AddObserver( vtkCommand::MiddleButtonPressEvent, callback_MiddleButton );
-
-
     m_chart->SetSelectionMethod( vtkChartXY::SELECTION_COLUMNS );
-    m_chart->SetActionToButton( vtkChart::SELECT, vtkContextMouseEvent::LEFT_BUTTON );
+    m_chart->SetActionToButton( vtkChart::SELECT , vtkContextMouseEvent::LEFT_BUTTON );
+    m_chart->SetActionToButton( vtkChart::PAN , vtkContextMouseEvent::MIDDLE_BUTTON );
     m_chart->SetActionToButton( vtkChart::ZOOM, vtkContextMouseEvent::RIGHT_BUTTON );
 }
 
@@ -1665,10 +1847,33 @@ void Plot::SavePlot( QString filePath )
     vtkSmartPointer< vtkGL2PSExporter > writer = vtkSmartPointer< vtkGL2PSExporter >::New();
     writer->SetRenderWindow( m_view->GetRenderWindow() );
     writer->SetFilePrefix( filePath.split( "." ).first().toStdString().c_str() );
-    writer->SetFileFormat( vtkGL2PSExporter::PDF_FILE );
+    writer->SetFileFormat( vtkGL2PSExporter::EPS_FILE );
+    writer->SetSortToBSP();
+    writer->SetLineWidthFactor( 1.0 );
     writer->CompressOff();
     writer->LandscapeOff();
-    writer->DrawBackgroundOn();
-    writer->SetSortToBSP();
     writer->Write();
+}
+
+
+void Plot::ZoomOut()
+{
+    SetAxisProperties();
+}
+
+
+/***************************************************************/
+/************************ Private slots ************************/
+/***************************************************************/
+void Plot::OnMouseEvent( QMouseEvent* event )
+{
+    if( event->type() == QMouseEvent::MouseButtonDblClick && event->button() == Qt::LeftButton )
+    {
+        UpdateLineSelection();
+    }
+
+    if( event->type() == QMouseEvent::MouseButtonDblClick && event->button() == Qt::RightButton )
+    {
+        ZoomOut();
+    }
 }

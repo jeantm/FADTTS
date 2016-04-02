@@ -47,7 +47,7 @@ $confidenceBandsThreshold$
 
 disp('Loading covariate file...')
 $matlabSubMatrixInputFile$
-designdata = [ ones( size( data2, 1 ), 1 ) data2 ]; % intercept + covariates
+designdata = [ ones( size( dataSubmatrix, 1 ), 1 ) dataSubmatrix ]; % intercept + covariates
 
 Cnames = cell( nbrCovariates, 1 );
 $covariates$
@@ -59,7 +59,7 @@ $diffusionProperties$
 disp('Processing arclength...')
 % ARCLENGTH
 % Get arclength from input file
-arclength = dataFiber1All( :, 1 ); % take first column => arclength from dtiCC_statCLP fiber file
+arclength = dataFiber1( :, 1 ); % take first column => arclength from dtiCC_statCLP fiber file
 
 % Creating (x,y,z) coordinates
 CC_data = [ arclength zeros( size( arclength, 1 ), 1 ) zeros( size( arclength, 1 ), 1 ) ];

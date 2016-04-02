@@ -3,6 +3,7 @@
 
 #include "FADTTSWindowConfig.h"
 #include "EditInputDialog.h"
+#include "QCThresholdDialog.h"
 #include "Data.h"
 #include "Processing.h"
 #include "MatlabThread.h"
@@ -12,7 +13,7 @@
 #include <QFileSystemWatcher>
 #include <QScrollBar>
 #include <QProgressBar>
-#include <QDebug>
+
 
 class FADTTSWindow : public FADTTSWindowConfig
 {
@@ -43,18 +44,18 @@ private slots:
 
 
     /**************** Input  Tab ****************/
-    void OnSettingInputFile( const int& diffusionPropertyID ); // Tested
+    void OnSettingInputFile( int diffusionPropertyID ); // Tested
 
     void OnAddInputFiles(); // Not Directly Tested
 
-    void OnAddInputFile( const int& diffusionPropertyID ); // Not Directly Tested
+    void OnAddInputFile( int diffusionPropertyID ); // Not Directly Tested
 
-    void OnEditInputFile( const int& diffusionPropertyID ); /// Not tested
+    void OnEditInputFile( int diffusionPropertyID ); /// Not tested
 
 
     void OnUpdatingInputFile( const int &diffusionPropertyIndex, const QString& newFilePath ); // Tested
 
-    void OnUpdatingSubjectColumnID( const int& newSubjectColumnID ); // Tested
+    void OnUpdatingSubjectColumnID( int newSubjectColumnID ); // Tested
 
 
     /********* Subjects/Covariates Tab *********/
@@ -71,7 +72,7 @@ private slots:
 
     void OnInputToggled(); // Tested
 
-    void OnSetCaseSensitivityToggled( const bool& checked ); // Tested
+    void OnSetCaseSensitivityToggled( bool checked ); // Tested
 
 
     void OnSubjectClicked( QListWidgetItem *item ); // Tested
@@ -106,7 +107,7 @@ private slots:
     void OnSettingMatlabExe( const QString& executable ); // Not Directly Tested
 
 
-    void OnRunMatlabToggled( const bool& choice ); // Not Directly Tested
+    void OnRunMatlabToggled( bool choice ); // Not Directly Tested
 
 
     void OnRun(); /// Not tested
@@ -122,6 +123,13 @@ private slots:
 
 
     /************** Plotting  Tab **************/
+    void OnBrowsingPlotDir();
+
+    void OnSettingPlotDir( const QString& path );
+
+    void OnSettingPlotFibername( const QString& fibername );
+
+
     void OnSettingPlotsUsed( const QStringList& plotsAvailable ); // Tested
 
     void OnSettingAllPropertiesUsed( const QMap< int, QString >& allPropertiesUsed ); // Tested
@@ -150,14 +158,41 @@ private slots:
     void OnUncheckAllToDisplay(); // Tested
 
 
-    void OnUseCustomizedTitle( const bool& checkState );
-
-    void OnUseCustomizedAxis( const bool& checkState );
+    void OnSettingLinesSelected( const QStringList& linesSelected ); /*** WRITE TEST ***/
 
 
-    void OnYMinToggled( const bool& checkState ); /** /!\ PB WITH TEST /!\ **/
+    void OnUseCustomizedTitle( bool checkState ); /*** WRITE TEST ***/
 
-    void OnYMaxToggled( const bool& checkState ); /** /!\ PB WITH TEST /!\ **/
+    void OnUpdatingPlotTitle(); /*** WRITE TEST ***/
+
+
+    void OnUpdatingPlotGrid( bool checkState ); /*** WRITE TEST ***/
+
+    void OnUseCustomizedAxis( bool checkState ); /*** WRITE TEST ***/
+
+    void OnYMinToggled( bool checkState ); /** /!\ PB WITH TEST /!\ **/
+
+    void OnYMaxToggled( bool checkState ); /** /!\ PB WITH TEST /!\ **/
+
+    void OnYMinValueChanged( double yMinValue ); /*** WRITE TEST ***/
+
+    void OnYMaxValueChanged( double yMaxValue ); /*** WRITE TEST ***/
+
+    void OnUpdatingPlotAxis(); /*** WRITE TEST ***/
+
+
+    void OnUpdatingLegend( const QString& legendPosition ); /*** WRITE TEST ***/
+
+
+    void OnUpdatingPvalueThreshold( double pvalueThreshold ); /*** WRITE TEST ***/
+
+    void OnUpdatingLineWidth( double lineWidth ); /*** WRITE TEST ***/
+
+    void OnUpdatingSelectedColorLine( const QString& color ); /*** WRITE TEST ***/
+
+    void OnUpdatingMarkerType( const QString& markerType ); /*** WRITE TEST ***/
+
+    void OnUpdatingMarkerSize( double markerSize ); /*** WRITE TEST ***/
 
 
     void OnDisplayPlot(); // Not Directly Tested
@@ -247,7 +282,7 @@ private:
 
     Plot *m_plot;
 
-    QListWidget *m_plotListWidget;
+    QListWidget *m_lineDisplayedListWidget, *m_lineSelectedListWidget;
 
     displayMapType m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
 
@@ -257,9 +292,9 @@ private:
 
     QComboBox *m_plotComboBox, *m_propertyComboBox, *m_covariateComboBox;
 
-    QString m_previousPlotSelected;
+    QString m_plotSelected;
 
-    bool m_areLinesForDisplayProperties;
+    bool m_isPlotReady, m_areLinesForDisplayProperties;
 
 
 
@@ -364,14 +399,22 @@ private:
     void SetCovariatesForDisplay( const QMap< int, QString >& covariatesForDisplay ); // Tested
 
 
-    void SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable,
-                         bool covariateSelectionAvailable, bool lineSelectionAvailable ); /** /!\ PB WITH TEST /!\ **/
+    void SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable ); /** /!\ PB WITH TEST /!\ **/
 
     void AddLinesForDisplay( bool isSelectionProperties ); // Tested
 
     void SetCheckStateLinesToDisplay( Qt::CheckState checkState ); // Tested
 
+    void SetSelectionLinesDisplayedVisible( bool visible ); /*** WRITE TEST ***/
+
     void EditCovariatesNames(); // Tested
+
+
+    void UpdatePlotAxis(); /*** WRITE TEST ***/
+
+    void UpdatePlotTitle(); /*** WRITE TEST ***/
+
+    void UpdatePlot(); /*** WRITE TEST ***/
 
 
     void ResetPlotTab(); // Tested
@@ -381,10 +424,6 @@ private:
     void LoadPlotSettings( QString filePath ); // Tested
 
     void SavePlotSettings( QString filePath ); // Tested
-
-
-
-    void HideLegendBinaryCovariate( bool hideLegend ); /// Not tested
 };
 
 #endif // FADTTSWINDOW_H

@@ -36,6 +36,7 @@ FADTTSter.cxx
 FADTTSWindowConfig.cxx
 FADTTSWindow.cxx
 EditInputDialog.cxx
+QCThresholdDialog.cxx
 Data.cxx
 Processing.cxx
 MatlabThread.cxx
@@ -46,6 +47,7 @@ set(FADTTS_moc
 FADTTSWindowConfig.h
 FADTTSWindow.h
 EditInputDialog.h
+QCThresholdDialog.h
 Processing.h
 MatlabThread.h
 Plot.h
@@ -54,6 +56,7 @@ Plot.h
 set(FADTTS_ui
 FADTTSWindow.ui
 EditInputDialog.ui
+QCThresholdDialog.ui
 )
 
 set(FADTTS_rcc

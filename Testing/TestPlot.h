@@ -71,11 +71,11 @@ public:
     bool Test_SetSelectedPlot( QString dataDir );
 
 
-    bool Test_SetTitle();
+    bool Test_SetCustomizedTitle();
 
     bool Test_SetDefaultTitle();
 
-    bool Test_SetAxis();
+    bool Test_SetCustomizedAxis();
 
     bool Test_SetDefaultAxis();
 
@@ -94,7 +94,7 @@ public:
 
     bool Test_ProcessRawStats();
 
-    bool Test_UpdateOrdinate( QString omnibusLpvalueFilePath );
+    bool Test_SetSelectionToDisplayProperties( QString omnibusLpvalueFilePath );
 
     bool Test_Tolog10();
 
@@ -122,7 +122,7 @@ public:
 
     bool Test_AddEntriesByPropertiesOrCovariates();
 
-    bool Test_AddEntriesCovariatesBands();
+    bool Test_AddEntriesConfidenceBands();
 
 
     bool Test_SetData();
@@ -137,13 +137,8 @@ public:
 
     bool Test_GetyMinMax();
 
-    bool Test_SetyMinMax(); /** /!\ WRITE TEST /!\ **/
 
-    bool Test_SetChartProperties(); /** /!\ WRITE TEST /!\ **/
-
-
-    bool Test_SavePlot( QString plotPath , QString dataDir, QString tempoDir ); /** /!\ WRITE TEST /!\ **/
-
+    bool Test_SavePlot( QString plotPath , QString dataDir, QString tempoDir ); /** /!\ PB WITH TEST /!\ --> Exeption segm **/
 
 
 

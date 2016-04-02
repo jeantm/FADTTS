@@ -6,42 +6,34 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMouseEvent>
 
 #include <QVTKWidget.h>
 
 #include <vtkVersion.h>
-#include <vtkSmartPointer.h>
-#include <vtkContextScene.h>
 #include <vtkContextView.h>
+#include <vtkContextScene.h>
 #include <vtkRenderWindow.h>
+#include <vtkSmartPointer.h>
 #include <vtkChartXY.h>
 #include <vtkTable.h>
-#include <vtkFloatArray.h>
 #include <vtkPlotPoints.h>
 #include <vtkAxis.h>
-#include <vtkTextProperty.h>
-#include <vtkWindowToImageFilter.h>
-#include <vtkPNGWriter.h>
-#include <vtkTIFFWriter.h>
-#include <vtkGL2PSExporter.h>
-#include <vtkPen.h>
 #include <vtkChartLegend.h>
-
+#include <vtkGL2PSExporter.h>
+#include <vtkTextProperty.h>
+#include <vtkBrush.h>
+#include <vtkPen.h>
 #include <vtkCommand.h>
 #include <vtkCallbackCommand.h>
 #include <vtkContextMouseEvent.h>
-
 #include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 
 
+void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); // Not Directly Tested
 
-
-
-void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /** /!\ WRITE TEST /!\ **/
-
-void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /** /!\ WRITE TEST /!\ **/
-
-void CallbackAddZoomOut( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /** /!\ WRITE TEST /!\ **/
+void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); // Not Directly Tested
 
 
 class Plot : public QObject
@@ -60,63 +52,66 @@ public:
 
     bool InitPlot( QString directory, QString fibername ); // Tested
 
+    bool DisplayVTKPlot(); // Not Directly Tested
+
     void ResetPlotData(); // Tested
 
     void ClearPlot(); // Tested
 
 
+    QString& SetFibername();
+
     void SetSelectedPlot( QString plotSelected ); // Tested
 
-    QString&  SetSelectedProperty(); // Tested
+    QString& SetSelectedProperty(); // Tested
 
     QString& SetSelectedCovariate(); // Tested
 
     QMap< int, QPair< QString, QPair< bool, QString > > >& SetSelectionToDisPlay(); // Tested
 
+    void UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay );
 
-    void SetTitle( QString title, bool isBold, bool isItalic, double fontSize ); // Tested
 
     void SetDefaultTitle(); // Tested
 
+    void SetCustomizedTitle( QString title, bool isBold, bool isItalic, double fontSize ); // Tested
+
     bool& SetGrid(); // Not Directly Tested
 
-    void SetAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
+    void UpdateGrid( bool checkState );
 
     void SetDefaultAxis(); // Tested
+
+    void SetCustomizedAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
 
     void SetLegend( QString position ); // Tested
 
 
     double& SetPvalueThreshold(); // Tested
 
+    void UpdatePvalueThresold( bool customizedTitle );
+
     double& SetLineWidth(); // Tested
+
+    void UpdateLineWidth();
+
+    void SetSelectedLineColor( QString color ); /// Not tested
+
+    void UpdateSelectedLineColor( QString color );
 
     void SetMarkerType( QString markerType ); // Tested
 
     double& SetMarkerSize(); // Tested
 
+    void UpdateMarker();
+
 
     void UpdateCovariatesNames( const QMap< int, QString >& newCovariatesNames ); // Tested
 
 
+    void AddSelectedLine( vtkSmartPointer< vtkPlot > newLine ); /// Not tested
 
-
-    void SetSelectedLineColor( QString color ); /** /!\ WRITE TEST /!\ **/
-
-    double* GetSelectedLineColor(); /** /!\ WRITE TEST /!\ **/
-
-    double  GetLineWidth() const; /** /!\ WRITE TEST /!\ **/
-
-    void AddSelectedLine (vtkSmartPointer< vtkPlot > newLine, double* newRGB, float newLineWidth, QString newLabel ); /** /!\ WRITE TEST /!\ **/
-
-    void UpdateLineSelection(); /** /!\ WRITE TEST /!\ **/
-
-    int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /** /!\ WRITE TEST /!\ **/
-
-
-
-
-    bool DisplayVTKPlot(); // Not Directly Tested
+    void UpdateLineSelection(); /// Not tested
 
 
 public slots:
@@ -131,6 +126,8 @@ signals:
     void AllCovariatesUsed( const QMap< int, QString >& );
 
     void CovariatesAvailableForPlotting( const QMap< int, QString >& );
+
+    void LinesSelected( const QStringList& );
 
 
 private:
@@ -156,7 +153,7 @@ private:
         newColorMap.insert( "Mint", QList< int >() << 0 << 255 << 128 );
         newColorMap.insert( "Pink", QList< int >() << 255 << 0 << 128 );
         newColorMap.insert( "Brown", QList< int >() << 139 << 69 << 19 );
-        newColorMap.insert( "Black", QList< int >() <<  0 << 0 << 0 );
+        newColorMap.insert( "Black", QList< int >() << 0 << 0 << 0 );
 
         return newColorMap;
     }
@@ -174,7 +171,7 @@ private:
     typedef struct
     {
         vtkSmartPointer< vtkPlot > line;
-        double color[3];
+        double color[ 3 ];
         double lineWidth;
     } struct_selectedLine;
     struct_selectedLine m_selectedLine;
@@ -199,7 +196,7 @@ private:
 
     QList< QList< double > > m_dataOmnibusLpvalue, m_dataOmnibusFDRLpvalue, m_ordinate;
 
-    QList< double > m_abscissa;
+    QList< double > m_abscissa, m_selectedLineIndex;
 
     QPair< bool, double > m_yMin, m_yMax;
 
@@ -209,11 +206,9 @@ private:
     QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
     m_fibername;
 
-    double m_selectedLineColor[3];
+    double m_selectedLineColor[ 3 ], m_yMinMax[ 2 ], m_pvalueThreshold, m_lineWidth, m_markerSize;
 
-    double m_pvalueThreshold, m_lineWidth, m_markerSize;
-
-    int m_nbrPlot, m_nbrPoint, m_markerType;
+    int m_nbrPlots, m_nbrPoints, m_markerType;
 
     bool m_isBinaryCovariatesSent, m_isAllCovariatesSent, m_isCovariatesNoInterceptSent, m_gridOn;
 
@@ -270,7 +265,7 @@ private:
 
     void ProcessRawStats( const QList< QList< double > >& tempBin, QList< double >& tempBinMean, QList< double >& tempBinUp, QList< double >& tempBinDown ); // Tested
 
-    void UpdateOrdinate( QList< QList< double > >& ordinate ); // Tested
+    void SetSelectionToDisplayProperties(); // Tested
 
     QList< QList< double > > ToLog10( const QList< QList< double > >& data ); // Tested
 
@@ -298,7 +293,7 @@ private:
 
     void AddEntriesByPropertiesOrCovariates( vtkSmartPointer< vtkTable >& table ); // Tested
 
-    void AddEntriesCovariatesBands( vtkSmartPointer< vtkTable >& table ); // Tested
+    void AddEntriesConfidenceBands( vtkSmartPointer< vtkTable >& table ); // Tested
 
     void AddEntries( vtkSmartPointer< vtkTable >& table ); // Tested
 
@@ -316,7 +311,7 @@ private:
 
     void AddLineRawStats( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddLineBetas( const vtkSmartPointer< vtkTable >& table, bool isSigBeta, bool betaDisplayedByProperties, bool isOmnibus ); // Not Directly Tested
+    void AddLineBetas( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
     void AddLineLPvalue( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
@@ -325,14 +320,32 @@ private:
     void AddLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
 
-    QList< double > GetyMinMax(); // Tested
+    void GetyMinMax(); // Tested
 
-    void SetyMinMax(); /** /!\ PB WITH TEST /!\ **/
+    void SetAbscissaProperties( double xMin, double xMax ); /// Not tested
 
-    void SetChartProperties(); /** /!\ PB WITH TEST /!\ **/
+    void SetOrdinateProperties( double yMin, double yMax ); /// Not tested
+
+    void SetAxisProperties(); // Not Directly Tested
+
+
+    int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /// Not tested
+
+    double* GetSelectedLineColor(); /// Not tested
+
+    double GetLineWidth() const; /// Not tested
+
+    void SetObservers(); /// Not tested
 
 
     void SavePlot( QString filePath ); /** /!\ PB WITH TEST /!\ **/
+
+
+    void ZoomOut(); // Not Directly Tested
+
+
+private slots:
+    void OnMouseEvent( QMouseEvent* event );
 };
 
 #endif // PLOT_H

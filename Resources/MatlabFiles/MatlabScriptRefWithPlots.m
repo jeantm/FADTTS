@@ -99,7 +99,7 @@ color{20}=black;
 
 disp('Loading covariate file...')
 $subMatrixData$
-designdata = [ ones( size( data2, 1 ), 1 ) data2 ]; % intercept + covariates
+designdata = [ ones( size( dataSubmatrix, 1 ), 1 ) dataSubmatrix ]; % intercept + covariates
 
 Cnames = cell( nbrCovariates, 1 );
 $listCovariates$
@@ -109,7 +109,7 @@ $diffusionData$
 $listDiffusionProperties$
 
 disp('Processing arclength...')
-arclength = dataFiber1All( :, 1 );
+arclength = dataFiber1( :, 1 );
 
 % Creating (x,y,z) coordinates
 CC_data = [ arclength zeros( size( arclength, 1 ), 1 ) zeros( size( arclength, 1 ), 1 ) ];

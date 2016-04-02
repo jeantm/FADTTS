@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+
 TestMatlabThread::TestMatlabThread()
 {
 }
@@ -224,14 +225,20 @@ bool TestMatlabThread::Test_SetDiffusionProperties()
     QString expectedDiffusionPropertiesString;
     foreach ( QString prefID, selectedPrefixes )
     {
-        expectedDiffusionPropertiesString.append( prefID.toUpper() + " = '" + prefID.toUpper() + "';\n" );
+        if( prefID != "SUBMATRIX" )
+        {
+            expectedDiffusionPropertiesString.append( prefID.toUpper() + " = '" + prefID.toUpper() + "';\n" );
+        }
     }
     QString expectedListDiffusionPropertiesString = "Dnames = cell( " + QString::number( selectedPrefixes.size() ) + ", 1 );\n";
     int i = 1;
     foreach ( QString prefID, selectedPrefixes )
     {
-        expectedListDiffusionPropertiesString.append( "Dnames{ " + QString::number( i ) + " } = " + prefID.toUpper() + ";\n" );
-        i++;
+        if( prefID != "SUBMATRIX" )
+        {
+            expectedListDiffusionPropertiesString.append( "Dnames{ " + QString::number( i ) + " } = " + prefID.toUpper() + ";\n" );
+            i++;
+        }
     }
     QString diffusionPropertiesString;
     QString listDiffusionPropertiesString;
@@ -280,17 +287,17 @@ bool TestMatlabThread::Test_SetInputFiles()
     matlabInputFiles.insert( 1, "./path/input_RD_File.csv" );
     matlabInputFiles.insert( 4, "./path/input_submatrix_File.csv" );
     QString expectedSubMatrixFileString = "input_submatrix_File = strcat( loadingFolder, '/input_submatrix_File.csv' );";
-    QString expectedSubMatrixDataString = "data2 = dlmread( input_submatrix_File, ',', 1, 1);";
+    QString expectedSubMatrixDataString = "dataSubmatrix = dlmread( input_submatrix_File, ',', 1, 1);";
     QString expectedDiffusionFilesString
             = "input_AD_File = strcat( loadingFolder, '/input_AD_File.csv' );\n"
             "input_RD_File = strcat( loadingFolder, '/input_RD_File.csv' );\n";
     QString expectedDiffusionDataString
             =
             "diffusionFiles = cell( " + QString::number( matlabInputFiles.size() - 1 ) + ", 1 );\n"
-            "dataFiber1All = dlmread( input_AD_File, ',', 1, 0 );\n"
-            "diffusionFiles{ 1 } = dataFiber1All( :, 2:end );\n"
-            "dataFiber2All = dlmread( input_RD_File, ',', 1, 0 );\n"
-            "diffusionFiles{ 2 } = dataFiber2All( :, 2:end );\n";
+            "dataFiber1 = dlmread( input_AD_File, ',', 1, 0 );\n"
+            "diffusionFiles{ 1 } = dataFiber1( :, 2:end );\n"
+            "dataFiber2 = dlmread( input_RD_File, ',', 1, 0 );\n"
+            "diffusionFiles{ 2 } = dataFiber2( :, 2:end );\n";
     QString subMatrixFileString;
     QString subMatrixDataString;
     QString diffusionFilesString;
@@ -322,30 +329,30 @@ bool TestMatlabThread::Test_SetInputFiles()
     if( !testSetInputFiles_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SetInputFiles() FAILED /!\\ /!\\";
-//        std::cerr << std::endl << "\t+ pb with SetInputFiles( QMap< int, QString > matlabInputFiles )" << std::endl;
-//        if( !testSubMatrixFile )
-//        {
-//            std::cerr << "\t  - When setting $subMatrixFile$:" << std::endl;
-//            std::cerr << "\t    expected string:" << std::endl;
-//            std::cerr << QString( "\t      " + expectedSubMatrixFileString ).toStdString() << std::endl;
-//            std::cerr << "\t    expected string:" << std::endl;
-//            std::cerr << QString( "\t      " + subMatrixFileString ).toStdString() << std::endl;
-//        }
-//        if( !testSubMatrixData )
-//        {
-//            std::cerr << "\n\t  - When setting $subMatrixData$:" << std::endl;
-//            DisplayError( expectedSubMatrixDataString, subMatrixDataString );
-//        }
-//        if( !testDiffusionFiles )
-//        {
-//            std::cerr << "\n\t  - When setting $diffusionFiles$:" << std::endl;
-//            DisplayError( expectedDiffusionFilesString, diffusionFilesString );
-//        }
-//        if( !testDiffusionData )
-//        {
-//            std::cerr << "\n\t  - When setting $diffusionData$:" << std::endl;
-//            DisplayError( expectedDiffusionDataString, diffusionDataString );
-//        }
+        std::cerr << std::endl << "\t+ pb with SetInputFiles( QMap< int, QString > matlabInputFiles )" << std::endl;
+        if( !testSubMatrixFile )
+        {
+            std::cerr << "\t  - When setting $subMatrixFile$:" << std::endl;
+            std::cerr << "\t    expected string:" << std::endl;
+            std::cerr << QString( "\t      " + expectedSubMatrixFileString ).toStdString() << std::endl;
+            std::cerr << "\t    expected string:" << std::endl;
+            std::cerr << QString( "\t      " + subMatrixFileString ).toStdString() << std::endl;
+        }
+        if( !testSubMatrixData )
+        {
+            std::cerr << "\n\t  - When setting $subMatrixData$:" << std::endl;
+            DisplayError( expectedSubMatrixDataString, subMatrixDataString );
+        }
+        if( !testDiffusionFiles )
+        {
+            std::cerr << "\n\t  - When setting $diffusionFiles$:" << std::endl;
+            DisplayError( expectedDiffusionFilesString, diffusionFilesString );
+        }
+        if( !testDiffusionData )
+        {
+            std::cerr << "\n\t  - When setting $diffusionData$:" << std::endl;
+            DisplayError( expectedDiffusionDataString, diffusionDataString );
+        }
     }
     else
     {

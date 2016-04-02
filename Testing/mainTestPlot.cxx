@@ -219,7 +219,7 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetTitle() )
+    if( testPlot.Test_SetCustomizedTitle() )
     {
         nbrTestsPassed++;
     }
@@ -233,7 +233,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetAxis() )
+    if( testPlot.Test_SetCustomizedAxis() )
     {
         nbrTestsPassed++;
     }
@@ -295,7 +295,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_UpdateOrdinate( argv[9] ) )
+    if( testPlot.Test_SetSelectionToDisplayProperties( argv[9] ) )
     {
         nbrTestsPassed++;
     }
@@ -384,7 +384,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_AddEntriesCovariatesBands() )
+    if( testPlot.Test_AddEntriesConfidenceBands() )
     {
         nbrTestsPassed++;
     }
@@ -422,24 +422,10 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl;
-    /************* Set Plot Option *************/
-    std::cerr << std::endl << "/************* Set Plot Option *************/";
+    /**************** Set  Axis ****************/
+    std::cerr << std::endl << "/**************** Set  Axis ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_GetyMinMax() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetyMinMax() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetChartProperties() )
     {
         nbrTestsPassed++;
     }
@@ -462,11 +448,11 @@ int main( int argc, char *argv[] )
     app->exit();
     std::cerr << std::endl << std::endl << std::endl << std::endl << std::endl;
     std::cerr << "                   Tests Summary                " << std::endl;
-    std::cerr << "*************************************************" << std::endl;
+    std::cerr << "************************************************" << std::endl;
     std::cerr << "* " << 100*nbrTestsPassed/nbrTests << "% tests passed, " <<
                  ( nbrTests - nbrTestsPassed ) << " test(s) failed out of " <<
                  nbrTests << " *" << std::endl;
-    std::cerr << "*************************************************";
+    std::cerr << "************************************************";
     std::cerr << std::endl << std::endl << std::endl;
 
     if( nbrTestsPassed == nbrTests )

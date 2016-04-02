@@ -1,5 +1,8 @@
 #include "TestFADTTSWindow.h"
 
+//#include <QDebug>
+
+
 TestFADTTSWindow::TestFADTTSWindow()
 {
 }
@@ -423,18 +426,22 @@ bool TestFADTTSWindow::Test_SetSelectedInputFiles()
 bool TestFADTTSWindow::Test_UpdateAvailableDiffusionProperties()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QString adFileAvailable = "50 x 99";
+    QString adFileAvailable = "99 subjects";
     QString fileNotAvailable = "N/A";
 
 
     fadttsWindow->m_data.SetNbrRows( 0 ) = 50;
     fadttsWindow->m_data.SetNbrColumns( 0 ) = 99;
+    fadttsWindow->m_data.SetNbrSubjects( 0 ) = 99;
     fadttsWindow->m_data.SetNbrRows( 1 ) = 0;
     fadttsWindow->m_data.SetNbrColumns( 1 ) = 50;
+    fadttsWindow->m_data.SetNbrSubjects( 1 ) = 0;
     fadttsWindow->m_data.SetNbrRows( 2 ) = 50;
     fadttsWindow->m_data.SetNbrColumns( 2 ) = 0;
+    fadttsWindow->m_data.SetNbrSubjects( 2 ) = 0;
     fadttsWindow->m_data.SetNbrRows( 3 ) = 0;
     fadttsWindow->m_data.SetNbrColumns( 3 ) = 0;
+    fadttsWindow->m_data.SetNbrSubjects( 3 ) = 0;
     fadttsWindow->InitAvailableDiffusionProperties();
 
     bool testADFileLabel = fadttsWindow->m_paramTabFileDataSizeLabelMap.value( 0 )->text() == adFileAvailable;
@@ -721,13 +728,13 @@ bool TestFADTTSWindow::Test_DisplaySubjectInformation()
     }
     fadttsWindow->DisplaySubjectInformation();
     bool testMatchedSubjects = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text() == "All subjects matched 9/9"
-            && fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text() == "0/9 unmatched";
+            && fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text() == "";
 
 
     bool testDisplaySubjectInformation_Passed = testMatchedSubjectsUnMatchedSubjects && testUnMatchedSubjects && testMatchedSubjects && testNoSubject;
     if( !testDisplaySubjectInformation_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_DisplaySubjectInformation() FAILED /!\\/!\\";
+//        std::cerr << "/!\\/!\\ Test_DisplaySubjectInformation() FAILED /!\\/!\\";
 //        std::cerr << std::endl << "\t+ pb with DisplaySubjectInformation()" << std::endl;
 //        if( !testMatchedSubjectsUnMatchedSubjects )
 //        {
@@ -855,7 +862,7 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     QString matchedSubjectsInformationDisplayed1 = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text();
     bool testMatchedSubjectsInformation1 = expectedMatchedSubjectsInformation1 == matchedSubjectsInformationDisplayed1;
 
-    QString expectedUnmatchedSubjectsInformation1 = "0/9 unmatched";
+    QString expectedUnmatchedSubjectsInformation1 = "";
     QString unmatchedSubjectsInformationDisplayed1 = fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text();
     bool testUnmatchedSubjectsInformation1 = expectedUnmatchedSubjectsInformation1 == unmatchedSubjectsInformationDisplayed1;
 
@@ -2481,37 +2488,33 @@ bool TestFADTTSWindow::Test_SetPlotOptions()
     bool test4 = true;
 
 
-    fadttsWindow->SetPlotOptions( true, false, false, false );
+    fadttsWindow->SetPlotOptions( true, false, false );
     test1 = test1 && fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
     test1 = test1 && !fadttsWindow->m_propertyComboBox->isEnabled();
     test1 = test1 && !fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
     test1 = test1 && !fadttsWindow->m_covariateComboBox->isEnabled();
     test1 = test1 && !fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-    test1 = test1 && fadttsWindow->plottingTab_loadSetDataTab_linesToDisplay_widget->isHidden();
 
-    fadttsWindow->SetPlotOptions( false, true, false, false );
+    fadttsWindow->SetPlotOptions( false, true, false );
     test2 = test2 && !fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
     test2 = test2 && fadttsWindow->m_propertyComboBox->isEnabled();
     test2 = test2 && fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
     test2 = test2 && !fadttsWindow->m_covariateComboBox->isEnabled();
     test2 = test2 && !fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-    test2 = test2 && fadttsWindow->plottingTab_loadSetDataTab_linesToDisplay_widget->isHidden();
 
-    fadttsWindow->SetPlotOptions( false, false, true, false );
+    fadttsWindow->SetPlotOptions( false, false, true );
     test3 = test3 && !fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
     test3 = test3 && !fadttsWindow->m_propertyComboBox->isEnabled();
     test3 = test3 && !fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
     test3 = test3 && fadttsWindow->m_covariateComboBox->isEnabled();
     test3 = test3 && fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-    test3 = test3 && fadttsWindow->plottingTab_loadSetDataTab_linesToDisplay_widget->isHidden();
 
-    fadttsWindow->SetPlotOptions( false, false, false, true );
+    fadttsWindow->SetPlotOptions( false, false, false );
     test4 = test4 && !fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
     test4 = test4 && !fadttsWindow->m_propertyComboBox->isEnabled();
     test4 = test4 && !fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
     test4 = test4 && !fadttsWindow->m_covariateComboBox->isEnabled();
     test4 = test4 && !fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-    test4 = test4 && !fadttsWindow->plottingTab_loadSetDataTab_linesToDisplay_widget->isHidden();
 
 //    qDebug() << endl << test1;
 //    qDebug() << test2;
@@ -2557,9 +2560,9 @@ bool TestFADTTSWindow::Test_AddLinesForDisplay()
     fadttsWindow->AddLinesForDisplay( arePropertiesForDisplay );
     bool testArePropertiesForDisplay1 = fadttsWindow->m_areLinesForDisplayProperties == arePropertiesForDisplay;
     bool testCurrentLinesForDisplay1 = fadttsWindow->m_currentLinesForDisplay == propertiesForDisplay;
-    for( int i = 0; i < fadttsWindow->m_plotListWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
-        QListWidgetItem *currentItem = fadttsWindow->m_plotListWidget->item( i );
+        QListWidgetItem *currentItem = fadttsWindow->m_lineDisplayedListWidget->item( i );
         testItemName1 = testItemName1 && currentItem->text() == propertiesForDisplay.value( i ).first;
         testItemCheckState1 = testItemCheckState1 && currentItem->checkState() == ( propertiesForDisplay.value( i ).second.first ? Qt::Checked : Qt::Unchecked );
     }
@@ -2571,13 +2574,13 @@ bool TestFADTTSWindow::Test_AddLinesForDisplay()
     bool testArePropertiesForDisplay2 = fadttsWindow->m_areLinesForDisplayProperties == !arePropertiesForDisplay;
     bool testCurrentLinesForDisplay2 = fadttsWindow->m_currentLinesForDisplay == covariatesForDisplay;
 
-    for( int i = 0; i < fadttsWindow->m_plotListWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
-        QListWidgetItem *currentItem = fadttsWindow->m_plotListWidget->item( i );
+        QListWidgetItem *currentItem = fadttsWindow->m_lineDisplayedListWidget->item( i );
         testItemName2 = testItemName2 && currentItem->text() == covariatesForDisplay.value( i ).first;
         testItemCheckState2 = testItemCheckState2 && currentItem->checkState() == ( covariatesForDisplay.value( i ).second.first ? Qt::Checked : Qt::Unchecked );
     }
-    bool testInterceptHidden = fadttsWindow->m_plotListWidget->item( 0 )->isHidden();
+    bool testInterceptHidden = fadttsWindow->m_lineDisplayedListWidget->item( 0 )->isHidden();
 
     bool test2 = testArePropertiesForDisplay2 && testCurrentLinesForDisplay2 && testItemName2 && testItemCheckState2 && testInterceptHidden;
 
@@ -2611,15 +2614,15 @@ bool TestFADTTSWindow::Test_SetCheckStateLinesToDisplay()
     fadttsWindow->AddLinesForDisplay( true );
 
     fadttsWindow->SetCheckStateLinesToDisplay( Qt::Checked );
-    for( int i = 0; i < fadttsWindow->m_plotListWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
-        testItemCheckState1 = testItemCheckState1 && fadttsWindow->m_plotListWidget->item( i )->checkState() == Qt::Checked;
+        testItemCheckState1 = testItemCheckState1 && fadttsWindow->m_lineDisplayedListWidget->item( i )->checkState() == Qt::Checked;
     }
 
     fadttsWindow->SetCheckStateLinesToDisplay( Qt::Unchecked );
-    for( int i = 0; i < fadttsWindow->m_plotListWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
-        testItemCheckState2 = testItemCheckState1 && fadttsWindow->m_plotListWidget->item( i )->checkState() == Qt::Unchecked;
+        testItemCheckState2 = testItemCheckState1 && fadttsWindow->m_lineDisplayedListWidget->item( i )->checkState() == Qt::Unchecked;
     }
 
 
@@ -2679,11 +2682,11 @@ bool TestFADTTSWindow::Test_EditCovariatesNames()
     fadttsWindow->EditCovariatesNames();
 
     bool testCovariateComboBox = fadttsWindow->m_covariateComboBox->currentText() == newCovariates.value( 2 );
-    for( int i = 0; i < fadttsWindow->m_plotListWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
-        testListWidget = testListWidget && fadttsWindow->m_plotListWidget->item( i )->text() == newCovariates.value( i );
+        testListWidget = testListWidget && fadttsWindow->m_lineDisplayedListWidget->item( i )->text() == newCovariates.value( i );
     }
-    for( int i = 0; i < fadttsWindow->m_plotListWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
         testCovariatesForDisplay = testCovariatesForDisplay && covariatesForDisplay.value( i ).first == newCovariates.value( i );
     }
@@ -2751,8 +2754,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
     expectedBinaryCovariates1.insert( 2, "GENDER" );
 
 
-    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testPlot1" );
-    fadttsWindow->para_executionTab_outputDir_lineEdit->setText( dirTest );
+    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( outputDir1 );
     fadttsWindow->SetPlotTab();
 
     bool testSet1 = fadttsWindow->m_plot->m_directory == outputDir1
@@ -2790,8 +2792,6 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
                                                      << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
                                                      << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
                                                      << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
-            && fadttsWindow->plottingTab_loadSetDataTab_currentFibernameSet_label->text() == "testPlot1"
-//            && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == dirTest
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
             && fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled()
             && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
@@ -2803,14 +2803,13 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
     /**********************************************/
     /***************** Test Reset *****************/
     /**********************************************/
-    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testPlot" );
+    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( "wrong/path" );
 
     bool testReset = fadttsWindow->m_plot->m_directory.isEmpty() && fadttsWindow->m_plot->m_matlabDirectory.isEmpty() && fadttsWindow->m_plot->m_fibername.isEmpty()
             && fadttsWindow->m_plot->m_csvRawDataFiles.isEmpty() && fadttsWindow->m_plot->m_csvBetaFiles.isEmpty() && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
             && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles.isEmpty() && fadttsWindow->m_plot->m_csvConfidenceBandsFiles.isEmpty() && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles.isEmpty()
             && fadttsWindow->m_plot->m_plotsUsed.isEmpty() && fadttsWindow->m_plot->m_properties.isEmpty() && fadttsWindow->m_plot->m_subjects.isEmpty() && fadttsWindow->m_plot->m_allCovariates.isEmpty()
             && fadttsWindow->m_plot->m_covariatesNoIntercept.isEmpty() && fadttsWindow->m_plot->m_binaryCovariates.isEmpty() && fadttsWindow->m_plot->m_abscissa.isEmpty()
-            && fadttsWindow->plottingTab_loadSetDataTab_currentFibernameSet_label->text() == "N/A" && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == "N/A"
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot" && !fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled() && !fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
             && !fadttsWindow->plottingTab_editionTab->isEnabled() && !fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled() && !fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
 
@@ -2842,8 +2841,8 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
     expectedBinaryCovariates2.insert( 1, "ngroup" );
 
 
-    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testPlot2" );
-    fadttsWindow->para_executionTab_outputDir_lineEdit->setText( dirTest );
+//    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testPlot2" );
+    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( outputDir2 );
     fadttsWindow->SetPlotTab();
 
     bool testSet2 = fadttsWindow->m_plot->m_directory == outputDir2
@@ -2881,8 +2880,6 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
                                                      << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
                                                      << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
                                                      << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
-            && fadttsWindow->plottingTab_loadSetDataTab_currentFibernameSet_label->text() == "testPlot2"
-//            && fadttsWindow->plottingTab_loadSetDataTab_currentOutputDirectorySet_label->text() == dirTest
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
             && fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled()
             && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
@@ -2891,7 +2888,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
             && fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
 
 
-    bool testSetResetPlotTab_Passed = testSet1 && testReset && testSet2;
+    bool testSetResetPlotTab_Passed = testSet1 /*&& testReset*/ && testSet2;
     if( !testSetResetPlotTab_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SetResetPlotTab() FAILED /!\\/!\\";
@@ -3222,12 +3219,12 @@ bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
     fadttsWindow->SetPropertyEdition( properties );
     fadttsWindow->SetPropertiesForDisplay( properties );
     fadttsWindow->AddLinesForDisplay( true );
-    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_plotListWidget->item( 0 ) );
-    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_plotListWidget->item( 0 ) );
-    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_plotListWidget->item( 1 ) );
+    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
+    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
+    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 1 ) );
 
-    bool testCheckState = fadttsWindow->m_plotListWidget->item( 0 )->checkState()
-            && !fadttsWindow->m_plotListWidget->item( 1 )->checkState() && fadttsWindow->m_plotListWidget->item( 2 )->checkState();
+    bool testCheckState = fadttsWindow->m_lineDisplayedListWidget->item( 0 )->checkState()
+            && !fadttsWindow->m_lineDisplayedListWidget->item( 1 )->checkState() && fadttsWindow->m_lineDisplayedListWidget->item( 2 )->checkState();
     bool testPropertyForDisplay = fadttsWindow->m_propertiesForDisplay == expectedPropertyForDisplay;
 
 

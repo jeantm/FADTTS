@@ -1,6 +1,6 @@
 #include "EditInputDialog.h"
 #include "ui_EditInputDialog.h"
-#include <QDebug>
+
 const QString EditInputDialog::m_csvSeparator = QLocale().groupSeparator();
 
 EditInputDialog::EditInputDialog( QWidget *parent ) :

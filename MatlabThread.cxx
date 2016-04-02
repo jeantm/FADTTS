@@ -1,5 +1,6 @@
 #include "MatlabThread.h"
 
+
 const QString MatlabThread::m_csvSeparator = QLocale().groupSeparator();
 
 MatlabThread::MatlabThread(QObject *parent) :
@@ -69,10 +70,13 @@ void MatlabThread::SetDiffusionProperties( QStringList selectedPrefixes )
     int i = 1;
     foreach ( QString prefID, selectedPrefixes )
     {
-        diffusionProperties.append( prefID.toUpper() + " = \'" + prefID.toUpper() + "\';\n" );
+        if( !prefID.contains( "submatrix", Qt::CaseInsensitive ) )
+        {
+            diffusionProperties.append( prefID.toUpper() + " = \'" + prefID.toUpper() + "\';\n" );
 
-        listDiffusionProperties.append( "Dnames{ " + QString::number( i ) + " } = " + prefID.toUpper() + ";\n" );
-        i++;
+            listDiffusionProperties.append( "Dnames{ " + QString::number( i ) + " } = " + prefID.toUpper() + ";\n" );
+            i++;
+        }
     }
 
     m_matlabScript.replace( "$diffusionProperties$", diffusionProperties );
@@ -91,18 +95,18 @@ void MatlabThread::SetInputFiles( const QMap< int, QString >& csvInputFiles )
     while( iterMatlabInputFile != csvInputFiles.cend() )
     {
         QString filename = QFileInfo( QFile( iterMatlabInputFile.value() ) ).fileName();
-        if( !filename.contains( "_subMatrix_", Qt::CaseInsensitive ) )
+        if( !( filename.contains( "_subMatrix_", Qt::CaseInsensitive ) || filename.contains( "_subMatrix.csv", Qt::CaseInsensitive ) ) )
         {
             diffusionFiles.append( filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );\n" );
-            diffusionData.append( "dataFiber" + QString::number( i ) + "All = dlmread( " + filename.split( "." ).first() +
+            diffusionData.append( "dataFiber" + QString::number( i ) + " = dlmread( " + filename.split( "." ).first() +
                                    ", \'" + m_csvSeparator + "\', 1, 0 );\n" );
-            diffusionData.append( "diffusionFiles{ " + QString::number( i ) + " } = dataFiber" + QString::number( i ) + "All( :, 2:end );\n" );
+            diffusionData.append( "diffusionFiles{ " + QString::number( i ) + " } = dataFiber" + QString::number( i ) + "( :, 2:end );\n" );
             i++;
         }
         else
         {
             m_matlabScript.replace( "$subMatrixFile$", filename.split( "." ).first() + " = strcat( loadingFolder, \'/" + filename + "\' );" );
-            m_matlabScript.replace( "$subMatrixData$", "data2 = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
+            m_matlabScript.replace( "$subMatrixData$", "dataSubmatrix = dlmread( " + filename.split( "." ).first() + ", \'" + m_csvSeparator + "\', 1, 1);" );
         }
         ++iterMatlabInputFile;
     }

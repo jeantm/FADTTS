@@ -80,7 +80,7 @@ set(faBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_FA.csv})
 set(omnibusFDRLpvaluesPath2 DATA{${SOURCE_DIR}/testPlot2_Omnibus_FDR_Local_pvalues.csv})
 
 set(plotSettingsPath DATA{${SOURCE_DIR}/plotSettings.csv})
-set(plotPath DATA{${SOURCE_DIR}/test_Betas_FA.pdf})
+set(plotPath DATA{${SOURCE_DIR}/test_Betas_FA.eps})
 
 
 

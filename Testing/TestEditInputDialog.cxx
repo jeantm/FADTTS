@@ -1,5 +1,5 @@
 #include "TestEditInputDialog.h"
-#include <QDebug>
+
 TestEditInputDialog::TestEditInputDialog()
 {
 }
