@@ -33,17 +33,14 @@ public:
     bool Test_OnLoadSaveSoftSettings( QString softFilePath, QString noSoftFilePath, QString dataDir, QString tempoDir );
 
 
+    /************** Subjects  Tab ***************/
+    bool Test_OnApplyingQCThreshold();
 
-    /********* Subjects/Covariates Tab *********/
     bool Test_SetSelectedInputFiles();
 
     bool Test_UpdateAvailableDiffusionProperties();
 
     bool Test_GetDiffusionPropertiesCheckState();
-
-    bool Test_SetSelectedCovariates();
-
-    bool Test_SetCheckStateAllCovariates();
 
     bool Test_DisplaySubjectInformation();
 
@@ -57,11 +54,11 @@ public:
 
     bool Test_SaveCheckedSubjects( QString dataDir, QString tempoDir );
 
+    bool Test_GetCheckedMatchedSubjects();
+
+    bool Test_GetPropertyRawData();
 
 
-    bool Test_OnCovariateFileToggled();
-
-    bool Test_OnCovariateClicked();
 
     bool Test_OnInputToggled();
 
@@ -74,6 +71,10 @@ public:
 
 
     /**************** Input  Tab ****************/
+    bool Test_SetSelectedCovariates();
+
+    bool Test_SetCheckStateAllCovariates();
+
     bool Test_GetDisplayInputFileInformation();
 
     bool Test_DisplayInputLineEditIcon( QString dataDir );
@@ -92,6 +93,8 @@ public:
 
     bool Test_OnUpdatingSubjectColumnID( QString subMatrixRawDataPath );
 
+    bool Test_OnCovariateClicked();
+
 
 
     /************** Plotting  Tab **************/
@@ -102,8 +105,6 @@ public:
     bool Test_SetCovariates();
 
     bool Test_SetCovariatesForDisplay();
-
-    bool Test_SetPlotOptions(); /** /!\ PB WITH TEST /!\ **/
 
     bool Test_AddLinesForDisplay();
 
@@ -135,14 +136,16 @@ public:
 
     bool Test_OnLineForDisplayClicked();
 
-    bool Test_OnYMinToggled(); /** /!\ PB WITH TEST /!\ **/
+    bool Test_OnSettingLinesSelected();
 
-    bool Test_OnYMaxToggled(); /** /!\ PB WITH TEST /!\ **/
+    bool Test_OnYChanged();
 
 
 
     /************** Execution Tab **************/
     bool Test_GenerateSelectedSubjectFile( QString subjectListPath , QString tempoDir );
+
+    bool Test_GenerateFailedQCThresholdSubjectFile( QString dataDir, QString tempoDir );
 
 //    bool Test_SetLogDisplay(); /** /!\ WRITE TEST /!\ **/
 

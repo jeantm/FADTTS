@@ -112,9 +112,9 @@ bool TestFADTTSWindow::Test_DisplayIcon( QString dataDir )
     bool testOKPixmap = fadttsWindow->m_inputTabIconLabelMap.value( 0 )->pixmap()->size() == QSize( 12, 12 );
     testOKPixmap = testOKPixmap && !fadttsWindow->m_inputTabIconLabelMap.value( 0 )->pixmap()->isNull();
 
-    fadttsWindow->DisplayIcon( fadttsWindow->subjectCovariateTab_iconLoadSubjectFile_label, koPixmap );
-    bool testKOPixmap = fadttsWindow->subjectCovariateTab_iconLoadSubjectFile_label->pixmap()->size() == QSize( 12, 12 );
-    testKOPixmap = testKOPixmap && !fadttsWindow->subjectCovariateTab_iconLoadSubjectFile_label->pixmap()->isNull();
+    fadttsWindow->DisplayIcon( fadttsWindow->subjectTab_iconLoadSubjectFile_label, koPixmap );
+    bool testKOPixmap = fadttsWindow->subjectTab_iconLoadSubjectFile_label->pixmap()->size() == QSize( 12, 12 );
+    testKOPixmap = testKOPixmap && !fadttsWindow->subjectTab_iconLoadSubjectFile_label->pixmap()->isNull();
 
 
     bool testDisplayIcon_Passed = testOKPixmap && testKOPixmap;
@@ -171,30 +171,25 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     testAllPara == testAllPara && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
     testAllPara == testAllPara && ( fadttsWindow->para_inputTab_faFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_FA_RawData.csv" );
     testAllPara == testAllPara && ( fadttsWindow->para_inputTab_subMatrixFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_SUBMATRIX_RawData.csv" );
-    testAllPara == testAllPara && !fadttsWindow->para_subjectCovariateTab_adFile_checkBox->isChecked();
-    testAllPara == testAllPara && fadttsWindow->para_subjectCovariateTab_rdFile_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectCovariateTab_mdFile_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectCovariateTab_faFile_checkBox->isChecked();
-    testAllPara == testAllPara && fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectCovariateTab_adFile_checkBox->isEnabled();
-    testAllPara == testAllPara && fadttsWindow->para_subjectCovariateTab_rdFile_checkBox->isEnabled();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectCovariateTab_mdFile_checkBox->isEnabled();
-    testAllPara == testAllPara && fadttsWindow->para_subjectCovariateTab_faFile_checkBox->isEnabled();
-    testAllPara == testAllPara && fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->isEnabled();
-    testAllPara == testAllPara && ( fadttsWindow->subjectCovariateTab_adFileInfo_label->text() == "N/A" );
-    testAllPara == testAllPara && ( fadttsWindow->subjectCovariateTab_rdFileInfo_label->text() == "79 x 11" );
-    testAllPara == testAllPara && ( fadttsWindow->subjectCovariateTab_mdFileInfo_label->text() == "79 x 11" );
-    testAllPara == testAllPara && ( fadttsWindow->subjectCovariateTab_faFileInfo_label->text() == "N/A" );
-    testAllPara == testAllPara && ( fadttsWindow->subjectCovariateTab_subMatrixFileInfo_label->text() == "11 x 3" );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->count() == 4 );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 0 )->text() == "Intercept" );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 0 )->checkState() == Qt::Checked );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 1 )->text() == "ngroup" );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 1 )->checkState() == Qt::Unchecked );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 2 )->text() == "GENDER" );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 2 )->checkState() == Qt::Checked );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 3 )->text() == "GestAgeAtBirth" );
-    testAllPara == testAllPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 3 )->checkState() == Qt::Unchecked );
+    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isChecked();
+    testAllPara == testAllPara && fadttsWindow->para_subjectTab_rdFile_checkBox->isChecked();
+    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isChecked();
+    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_faFile_checkBox->isChecked();
+    testAllPara == testAllPara && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isChecked();
+    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isEnabled();
+    testAllPara == testAllPara && fadttsWindow->para_subjectTab_rdFile_checkBox->isEnabled();
+    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isEnabled();
+    testAllPara == testAllPara && fadttsWindow->para_subjectTab_faFile_checkBox->isEnabled();
+    testAllPara == testAllPara && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isEnabled();
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->count() == 4 );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->text() == "Intercept" );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->checkState() == Qt::Checked );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->text() == "ngroup" );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->checkState() == Qt::Unchecked );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->text() == "GENDER" );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->checkState() == Qt::Checked );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->text() == "GestAgeAtBirth" );
+    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->checkState() == Qt::Unchecked );
     testAllPara == testAllPara && ( fadttsWindow->para_executionTab_fiberName_lineEdit->text() == "testLoadSaveSettings" );
     testAllPara == testAllPara && ( fadttsWindow->para_executionTab_nbrPermutations_spinBox->value() == 500 );
     testAllPara == testAllPara && ( fadttsWindow->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() == 0.10 );
@@ -214,22 +209,17 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     testNoPara == testNoPara && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
     testNoPara == testNoPara && fadttsWindow->para_inputTab_faFile_lineEdit->text().isEmpty();
     testNoPara == testNoPara && fadttsWindow->para_inputTab_subMatrixFile_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_adFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_rdFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_mdFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_faFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_adFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_rdFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_mdFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_faFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->isEnabled();
-    testNoPara == testNoPara && ( fadttsWindow->subjectCovariateTab_adFileInfo_label->text() == "N/A" );
-    testNoPara == testNoPara && ( fadttsWindow->subjectCovariateTab_rdFileInfo_label->text() == "N/A" );
-    testNoPara == testNoPara && ( fadttsWindow->subjectCovariateTab_mdFileInfo_label->text() == "N/A" );
-    testNoPara == testNoPara && ( fadttsWindow->subjectCovariateTab_faFileInfo_label->text() == "N/A" );
-    testNoPara == testNoPara && ( fadttsWindow->subjectCovariateTab_subMatrixFileInfo_label->text() == "N/A" );
-    testNoPara == testNoPara && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->count() == 0 );
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isChecked();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_rdFile_checkBox->isChecked();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isChecked();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_faFile_checkBox->isChecked();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isChecked();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isEnabled();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_rdFile_checkBox->isEnabled();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isEnabled();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_faFile_checkBox->isEnabled();
+    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isEnabled();
+    testNoPara == testNoPara && ( fadttsWindow->para_inputTab_covariates_listWidget->count() == 0 );
     testNoPara == testNoPara && fadttsWindow->para_executionTab_fiberName_lineEdit->text().isEmpty();
     testNoPara == testNoPara && ( fadttsWindow->para_executionTab_nbrPermutations_spinBox->value() == 100 );
     testNoPara == testNoPara && ( fadttsWindow->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() == 0.05 );
@@ -246,30 +236,25 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     testParaAfterSave == testParaAfterSave && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_faFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_FA_RawData.csv" );
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_subMatrixFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_SUBMATRIX_RawData.csv" );
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectCovariateTab_adFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectCovariateTab_rdFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectCovariateTab_mdFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectCovariateTab_faFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectCovariateTab_adFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectCovariateTab_rdFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectCovariateTab_mdFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectCovariateTab_faFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->subjectCovariateTab_adFileInfo_label->text() == "N/A" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->subjectCovariateTab_rdFileInfo_label->text() == "79 x 11" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->subjectCovariateTab_mdFileInfo_label->text() == "79 x 11" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->subjectCovariateTab_faFileInfo_label->text() == "N/A" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->subjectCovariateTab_subMatrixFileInfo_label->text() == "11 x 3" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->count() == 4 );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 0 )->text() == "Intercept" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 0 )->checkState() == Qt::Checked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 1 )->text() == "ngroup" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 1 )->checkState() == Qt::Unchecked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 2 )->text() == "GENDER" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 2 )->checkState() == Qt::Checked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 3 )->text() == "GestAgeAtBirth" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( 3 )->checkState() == Qt::Unchecked );
+    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_adFile_checkBox->isChecked();
+    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_rdFile_checkBox->isChecked();
+    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_mdFile_checkBox->isChecked();
+    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_faFile_checkBox->isChecked();
+    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isChecked();
+    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_adFile_checkBox->isEnabled();
+    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_rdFile_checkBox->isEnabled();
+    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_mdFile_checkBox->isEnabled();
+    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_faFile_checkBox->isEnabled();
+    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isEnabled();
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->count() == 4 );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->text() == "Intercept" );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->checkState() == Qt::Checked );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->text() == "ngroup" );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->checkState() == Qt::Unchecked );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->text() == "GENDER" );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->checkState() == Qt::Checked );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->text() == "GestAgeAtBirth" );
+    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->checkState() == Qt::Unchecked );
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_fiberName_lineEdit->text() == "testLoadSaveSettings" );
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_nbrPermutations_spinBox->value() == 500 );
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() == 0.10 );
@@ -368,9 +353,63 @@ bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QStrin
 
 
 
+/************** Subjects  Tab ***************/
+bool TestFADTTSWindow::Test_OnApplyingQCThreshold()
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QStringList matchedSubjectList = QStringList() << "Marcus Paige" << "Brice Johnson" << "Joel Berry II" << "Kennedy Meeks" << "Justin Jackson";
+    QStringList subjectsCorrelated = QStringList() << "Marcus Paige" << "Brice Johnson";
+    QStringList subjectsNotCorrelated = QStringList() << "Joel Berry II" << "Kennedy Meeks" << "Justin Jackson";
+    QStringList checkedMatchedSubjects;
+    double qcThreshold = 0.74;
 
 
-/********* Subjects/Covariates Tab *********/
+    fadttsWindow->DisplaySortedSubjects( matchedSubjectList, QMap< QString, QList< int > >() );
+    fadttsWindow->OnApplyingQCThreshold( subjectsCorrelated, subjectsNotCorrelated, qcThreshold );
+
+    bool testFailedQCThresholdSubjects = fadttsWindow->m_failedQCThresholdSubjects == subjectsNotCorrelated;
+
+    for( int i = 0; i < fadttsWindow->m_matchedSubjectListWidget->count(); i++ )
+    {
+        QListWidgetItem *currentItem = fadttsWindow->m_matchedSubjectListWidget->item( i );
+        if( currentItem->checkState() == Qt::Checked )
+        {
+            checkedMatchedSubjects.append( currentItem->text() );
+        }
+    }
+    bool testCheckedMatchedSubjects = checkedMatchedSubjects == subjectsCorrelated;
+
+    bool testQCThreshold = fadttsWindow->m_qcThreshold == qcThreshold;
+
+
+    bool testOnApplyingQCThreshold_Passed = testFailedQCThresholdSubjects && testCheckedMatchedSubjects && testQCThreshold;
+    if( !testOnApplyingQCThreshold_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_OnApplyingQCThreshold() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with OnApplyingQCThreshold( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold )" << std::endl;
+//        if( testFailedQCThresholdSubjects )
+//        {
+//            std::cerr << "\t  wrong m_failedQCThresholdSubjects" << std::endl;
+//            DisplayError_QStringList( subjectsNotCorrelated, fadttsWindow->m_failedQCThresholdSubjects, "subjects who failed the qc threshold" );
+//        }
+//        if( testCheckedMatchedSubjects )
+//        {
+//            std::cerr << "\t  wrong checked subjects" << std::endl;
+//            DisplayError_QStringList( subjectsCorrelated, checkedMatchedSubjects, "checked subjects" );
+//        }
+//        if( testQCThreshold )
+//        {
+//            std::cerr << "\t  wrong m_qcThreshold" << std::endl;
+//        }
+    }
+    else
+    {
+        std::cerr << "Test_OnApplyingQCThreshold() PASSED";
+    }
+
+    return testOnApplyingQCThreshold_Passed;
+}
+
 bool TestFADTTSWindow::Test_SetSelectedInputFiles()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
@@ -426,8 +465,6 @@ bool TestFADTTSWindow::Test_SetSelectedInputFiles()
 bool TestFADTTSWindow::Test_UpdateAvailableDiffusionProperties()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QString adFileAvailable = "99 subjects";
-    QString fileNotAvailable = "N/A";
 
 
     fadttsWindow->m_data.SetNbrRows( 0 ) = 50;
@@ -444,22 +481,15 @@ bool TestFADTTSWindow::Test_UpdateAvailableDiffusionProperties()
     fadttsWindow->m_data.SetNbrSubjects( 3 ) = 0;
     fadttsWindow->InitAvailableDiffusionProperties();
 
-    bool testADFileLabel = fadttsWindow->m_paramTabFileDataSizeLabelMap.value( 0 )->text() == adFileAvailable;
     bool testADFileCheckState = fadttsWindow->m_paramTabFileCheckBoxMap.value( 0 )->isChecked();
-    bool testRDFileLabel = fadttsWindow->m_paramTabFileDataSizeLabelMap.value( 1 )->text() == fileNotAvailable;
     bool testRDFileCheckState = !fadttsWindow->m_paramTabFileCheckBoxMap.value( 1 )->isChecked();
-    bool testMDFileLabel = fadttsWindow->m_paramTabFileDataSizeLabelMap.value( 2 )->text() == fileNotAvailable;
     bool testMDFileCheckState = !fadttsWindow->m_paramTabFileCheckBoxMap.value( 2 )->isChecked();
-    bool testFAFileLabel = fadttsWindow->m_paramTabFileDataSizeLabelMap.value( 3 )->text() == fileNotAvailable;
     bool testFAFileCheckState = !fadttsWindow->m_paramTabFileCheckBoxMap.value( 3 )->isChecked();
-    bool testSubMatrixFileLabel = fadttsWindow->m_paramTabFileDataSizeLabelMap.value( 4 )->text() == fileNotAvailable;
     bool testSubMatrixFileCheckState = !fadttsWindow->m_paramTabFileCheckBoxMap.value( 4 )->isChecked();
 
 
-    bool testUpdateAvailableDiffusionProperties_Passed = testADFileLabel && testADFileCheckState && testRDFileLabel && testRDFileCheckState
-            && testMDFileLabel && testMDFileCheckState
-            && testFAFileLabel && testFAFileCheckState
-            && testSubMatrixFileLabel && testSubMatrixFileCheckState;
+    bool testUpdateAvailableDiffusionProperties_Passed = testADFileCheckState && testRDFileCheckState && testMDFileCheckState
+            && testFAFileCheckState && testSubMatrixFileCheckState;
     if( !testUpdateAvailableDiffusionProperties_Passed )
     {
         std::cerr << "/!\\/!\\ Test_UpdateAvailableDiffusionProperties() FAILED /!\\/!\\";
@@ -576,120 +606,6 @@ bool TestFADTTSWindow::Test_GetDiffusionPropertiesCheckState()
     return testGetDiffusionPropertiesCheckState_Passed;
 }
 
-bool TestFADTTSWindow::Test_SetSelectedCovariates()
-{
-    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QMap< int, QString > covariates;
-    covariates.insert( -1, "Intercept" );
-    covariates.insert( 0, "ICV" );
-    covariates.insert( 1, "ngroup" );
-    covariates.insert( 2, "GENDER" );
-    covariates.insert( 3, "Scanner" );
-    covariates.insert( 4, "Twin" );
-    covariates.insert( 5, "Direction" );
-    QMap< int, QString > expectedSelectedCovariates;
-    expectedSelectedCovariates.insert( -1, "Intercept" );
-    expectedSelectedCovariates.insert( 0, "ICV" );
-    expectedSelectedCovariates.insert( 3, "Scanner" );
-    expectedSelectedCovariates.insert( 5, "Direction" );
-
-
-    fadttsWindow->m_data.SetCovariates() = covariates;
-
-    QMap< int, QString >::ConstIterator iterCovariate = covariates.begin();
-    while( iterCovariate != covariates.end() )
-    {
-        QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), fadttsWindow->m_covariateListWidget );
-        covariateItem->setCheckState( Qt::Checked );
-        covariateItem->setFlags( Qt::ItemIsEnabled );
-        fadttsWindow->m_covariateListWidget->addItem( covariateItem );
-        ++iterCovariate;
-    }
-    fadttsWindow->m_covariateListWidget->item( 2 )->setCheckState( Qt::Unchecked );
-    fadttsWindow->m_covariateListWidget->item( 3 )->setCheckState( Qt::Unchecked );
-    fadttsWindow->m_covariateListWidget->item( 5 )->setCheckState( Qt::Unchecked );
-
-    fadttsWindow->SetSelectedCovariates();
-
-
-    bool testSetSelectedCovariates_Passed = expectedSelectedCovariates == fadttsWindow->m_selectedCovariates;
-    if( !testSetSelectedCovariates_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_SetSelectedCovariates() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with SetSelectedCovariates()" << std::endl;
-//        std::cerr << "\t    Wrong properties selected" << std::endl;
-//        DisplayError_QMapIntQString( expectedSelectedCovariates, fadttsWindow->m_selectedCovariates, "m_selectedCovariates" );
-    }
-    else
-    {
-        std::cerr << "Test_SetSelectedCovariates() PASSED";
-    }
-
-    return testSetSelectedCovariates_Passed;
-}
-
-bool TestFADTTSWindow::Test_SetCheckStateAllCovariates()
-{
-    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QMap< int, QString > covariates;
-    covariates.insert( -1, "Intercept" );
-    covariates.insert( 0, "ICV" );
-    covariates.insert( 1, "ngroup" );
-    covariates.insert( 2, "GENDER" );
-    covariates.insert( 3, "Scanner" );
-    covariates.insert( 4, "Twin" );
-    covariates.insert( 5, "Direction" );
-    QMap< int, QString > expectedSelectedCovariates;
-    expectedSelectedCovariates.insert( -1, "Intercept" );
-    QMap< int, QString > selectedCovariatesCheckAll;
-    QMap< int, QString > selectedCovariatesUncheckAll;
-
-
-    fadttsWindow->m_data.SetCovariates() = covariates;
-
-    QMap< int, QString >::ConstIterator iterCovariate = covariates.begin();
-    while( iterCovariate != covariates.end() )
-    {
-        QListWidgetItem *covariateItem = new QListWidgetItem( iterCovariate.value(), fadttsWindow->m_covariateListWidget );
-        covariateItem->setCheckState( Qt::Checked );
-        covariateItem->setFlags( Qt::ItemIsEnabled );
-        fadttsWindow->m_covariateListWidget->addItem( covariateItem );
-        ++iterCovariate;
-    }
-
-    fadttsWindow->SetCheckStateAllCovariates( Qt::Unchecked );
-    selectedCovariatesUncheckAll = fadttsWindow->m_selectedCovariates;
-    bool testCheckNone = selectedCovariatesUncheckAll == expectedSelectedCovariates;
-
-    fadttsWindow->SetCheckStateAllCovariates( Qt::Checked );
-    selectedCovariatesCheckAll = fadttsWindow->m_selectedCovariates;
-    bool testCheckAll = selectedCovariatesCheckAll == covariates;
-
-
-    bool testSetCheckStateAllCovariates_Passed = testCheckNone && testCheckAll;
-    if( !testSetCheckStateAllCovariates_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_SetCheckStateAllCovariates() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with SetCheckStateAllCovariates( Qt::CheckState checkState )" << std::endl;
-//        if( !testCheckNone )
-//        {
-//            std::cerr << "\t    When uncheck all" << std::endl;
-//            DisplayError_QMapIntQString( expectedSelectedCovariates, selectedCovariatesUncheckAll, "m_selectedCovariates" );
-//        }
-//        if( !testCheckAll )
-//        {
-//            std::cerr << "\t    When check all" << std::endl;
-//            DisplayError_QMapIntQString( covariates, selectedCovariatesCheckAll, "m_selectedCovariates" );
-//        }
-    }
-    else
-    {
-        std::cerr << "Test_SetCheckStateAllCovariates() PASSED";
-    }
-
-    return testSetCheckStateAllCovariates_Passed;
-}
-
 bool TestFADTTSWindow::Test_DisplaySubjectInformation()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
@@ -708,18 +624,18 @@ bool TestFADTTSWindow::Test_DisplaySubjectInformation()
         fadttsWindow->m_matchedSubjectListWidget->addItem( item );
     }
     fadttsWindow->DisplaySubjectInformation();
-    bool testMatchedSubjectsUnMatchedSubjects = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text() == "9/18 matched"
-            && fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text() == "9/18 unmatched";
+    bool testMatchedSubjectsUnMatchedSubjects = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text() == "9/18 matched"
+            && fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text() == "9/18 unmatched";
 
     fadttsWindow->m_matchedSubjectListWidget->clear();
     fadttsWindow->DisplaySubjectInformation();
-    bool testUnMatchedSubjects = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text() == "WARNING No matched! 0/9"
-            && fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text() == "9/9 unmatched";
+    bool testUnMatchedSubjects = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text() == "WARNING No matched! 0/9"
+            && fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text() == "9/9 unmatched";
 
     fadttsWindow->m_unmatchedSubjectListWidget->clear();
     fadttsWindow->DisplaySubjectInformation();
-    bool testNoSubject = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text().isEmpty()
-            && fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text().isEmpty();
+    bool testNoSubject = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text().isEmpty()
+            && fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text().isEmpty();
 
     foreach( QString subject, matchedSubjects )
     {
@@ -727,8 +643,8 @@ bool TestFADTTSWindow::Test_DisplaySubjectInformation()
         fadttsWindow->m_matchedSubjectListWidget->addItem( item );
     }
     fadttsWindow->DisplaySubjectInformation();
-    bool testMatchedSubjects = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text() == "All subjects matched 9/9"
-            && fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text() == "";
+    bool testMatchedSubjects = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text() == "All subjects matched 9/9"
+            && fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text() == "";
 
 
     bool testDisplaySubjectInformation_Passed = testMatchedSubjectsUnMatchedSubjects && testUnMatchedSubjects && testMatchedSubjects && testNoSubject;
@@ -774,14 +690,14 @@ bool TestFADTTSWindow::Test_DisplayNbrSubjectSelected()
         fadttsWindow->m_matchedSubjectListWidget->addItem( item );
     }
     fadttsWindow->DisplayNbrSubjectSelected();
-    bool testAllSubjects = fadttsWindow->subjectCovariateTab_checkedSubjectsInformation_label->text() == "9 subjects selected";
+    bool testAllSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text() == "9 subjects selected";
 
     fadttsWindow->m_matchedSubjectListWidget->item( 1 )->setCheckState( Qt::Unchecked );
-    bool testSubjects = fadttsWindow->subjectCovariateTab_checkedSubjectsInformation_label->text() == "8 subjects selected";
+    bool testSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text() == "8 subjects selected";
 
     fadttsWindow->m_matchedSubjectListWidget->clear();
     fadttsWindow->DisplayNbrSubjectSelected();
-    bool testNoSubjects = fadttsWindow->subjectCovariateTab_checkedSubjectsInformation_label->text().isEmpty();
+    bool testNoSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text().isEmpty();
 
 
     bool testDisplayNbrSubjectSelected_Passed = testAllSubjects && testAllSubjects && testNoSubjects;
@@ -859,11 +775,11 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     }
 
     QString expectedMatchedSubjectsInformation1 = "All subjects matched 9/9";
-    QString matchedSubjectsInformationDisplayed1 = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text();
+    QString matchedSubjectsInformationDisplayed1 = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text();
     bool testMatchedSubjectsInformation1 = expectedMatchedSubjectsInformation1 == matchedSubjectsInformationDisplayed1;
 
     QString expectedUnmatchedSubjectsInformation1 = "";
-    QString unmatchedSubjectsInformationDisplayed1 = fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text();
+    QString unmatchedSubjectsInformationDisplayed1 = fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text();
     bool testUnmatchedSubjectsInformation1 = expectedUnmatchedSubjectsInformation1 == unmatchedSubjectsInformationDisplayed1;
 
 
@@ -927,11 +843,11 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     }
 
     QString expectedMatchedSubjectsInformation2 = "9/14 matched";
-    QString matchedSubjectsInformationDisplayed2 = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text();
+    QString matchedSubjectsInformationDisplayed2 = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text();
     bool testMatchedSubjectsInformation2 = expectedMatchedSubjectsInformation2 == matchedSubjectsInformationDisplayed2;
 
     QString expectedUnmatchedSubjectsInformation2 = "5/14 unmatched";
-    QString unmatchedSubjectsInformationDisplayed2 = fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text();
+    QString unmatchedSubjectsInformationDisplayed2 = fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text();
     bool testUnmatchedSubjectsInformation2 = expectedUnmatchedSubjectsInformation2 == unmatchedSubjectsInformationDisplayed2;
 
 
@@ -975,11 +891,11 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     }
 
     QString expectedMatchedSubjectsInformation3 = "WARNING No matched! 0/5";
-    QString matchedSubjectsInformationDisplayed3 = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text();
+    QString matchedSubjectsInformationDisplayed3 = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text();
     bool testMatchedSubjectsInformation3 = expectedMatchedSubjectsInformation3 == matchedSubjectsInformationDisplayed3;
 
     QString expectedUnmatchedSubjectsInformation3 = "5/5 unmatched";
-    QString unmatchedSubjectsInformationDisplayed3 = fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text();
+    QString unmatchedSubjectsInformationDisplayed3 = fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text();
     bool testUnmatchedSubjectsInformation3 = expectedUnmatchedSubjectsInformation3 == unmatchedSubjectsInformationDisplayed3;
 
 
@@ -998,11 +914,11 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     nbrUnmatchedSubjects4 = fadttsWindow->m_unmatchedSubjectListWidget->count();
     bool testSizeListWidgetUnmatchedSubjects4 = nbrUnmatchedSubjects4 == 0;
 
-    QString matchedSubjectsInformationDisplayed4 = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text();
-    bool testMatchedSubjectsInformation4 = fadttsWindow->subjectCovariateTab_matchedSubjectsInformation_label->text().isEmpty();
+    QString matchedSubjectsInformationDisplayed4 = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text();
+    bool testMatchedSubjectsInformation4 = fadttsWindow->subjectTab_matchedSubjectsInformation_label->text().isEmpty();
 
-    QString unmatchedSubjectsInformationDisplayed4 = fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text();
-    bool testUnmatchedSubjectsInformation4 = fadttsWindow->subjectCovariateTab_unmatchedSubjectsInformation_label->text().isEmpty();
+    QString unmatchedSubjectsInformationDisplayed4 = fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text();
+    bool testUnmatchedSubjectsInformation4 = fadttsWindow->subjectTab_unmatchedSubjectsInformation_label->text().isEmpty();
 
 
     bool testDisplaySortedSubjects_Passed = testSizeListWidgetMatchedSubjects1 && testSizeListWidgetUnmatchedSubjects1 && testCheckState1 && testBackgroundColorSubjectsMatched1 && testFlagsSubjectsMatched1
@@ -1162,10 +1078,10 @@ bool TestFADTTSWindow::Test_SetCheckStateAllVisibleSubjects()
     fadttsWindow->DisplaySortedSubjects( matchedSubjects, QMap< QString, QList< int > >() );
 
     fadttsWindow->m_caseSensitivity = Qt::CaseInsensitive;
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "tan" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "tan" );
     fadttsWindow->OnSearch();
     fadttsWindow->SetCheckStateAllVisibleSubjects( Qt::Unchecked );
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "" );
     fadttsWindow->OnSearch();
     for( int i = 0; i < fadttsWindow->m_matchedSubjectListWidget->count(); i++ )
     {
@@ -1181,10 +1097,10 @@ bool TestFADTTSWindow::Test_SetCheckStateAllVisibleSubjects()
     }
 
     fadttsWindow->SetCheckStateAllVisibleSubjects( Qt::Unchecked );
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "tan" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "tan" );
     fadttsWindow->OnSearch();
     fadttsWindow->SetCheckStateAllVisibleSubjects( Qt::Checked );
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "" );
     fadttsWindow->OnSearch();
     for( int i = 0; i < fadttsWindow->m_matchedSubjectListWidget->count(); i++ )
     {
@@ -1261,33 +1177,33 @@ bool TestFADTTSWindow::Test_SearchSubjects()
     fadttsWindow->DisplaySortedSubjects( matchedSubjects, unMatchedSubjects );
 
     fadttsWindow->m_caseSensitivity = Qt::CaseInsensitive;
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "tan" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "tan" );
     fadttsWindow->OnSearch();
     QString expectedInfo1 = "found 4";
-    bool testInfo1 = fadttsWindow->subjectCovariateTab_nbrFound_label->text() == expectedInfo1;
+    bool testInfo1 = fadttsWindow->subjectTab_nbrFound_label->text() == expectedInfo1;
 
     fadttsWindow->m_caseSensitivity = Qt::CaseSensitive;
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "Stan" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "Stan" );
     fadttsWindow->OnSearch();
     QString expectedInfo2 = "found 3";
-    bool testInfo2 = fadttsWindow->subjectCovariateTab_nbrFound_label->text() == expectedInfo2;
+    bool testInfo2 = fadttsWindow->subjectTab_nbrFound_label->text() == expectedInfo2;
 
     fadttsWindow->m_caseSensitivity = Qt::CaseInsensitive;
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "R2D2" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "R2D2" );
     fadttsWindow->OnSearch();
     QString expectedInfo3 = "found 1";
-    bool testInfo3 = fadttsWindow->subjectCovariateTab_nbrFound_label->text() == expectedInfo3;
+    bool testInfo3 = fadttsWindow->subjectTab_nbrFound_label->text() == expectedInfo3;
 
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "Pip" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "Pip" );
     fadttsWindow->OnSearch();
     QString expectedInfo4 = "found 1";
-    bool testInfo4 = fadttsWindow->subjectCovariateTab_nbrFound_label->text() == expectedInfo4;
+    bool testInfo4 = fadttsWindow->subjectTab_nbrFound_label->text() == expectedInfo4;
 
     fadttsWindow->m_caseSensitivity = Qt::CaseSensitive;
-    fadttsWindow->subjectCovariateTab_search_lineEdit->setText( "pip" );
+    fadttsWindow->subjectTab_search_lineEdit->setText( "pip" );
     fadttsWindow->OnSearch();
     QString expectedInfo5 = "found 0";
-    bool testInfo5 = fadttsWindow->subjectCovariateTab_nbrFound_label->text() == expectedInfo5;
+    bool testInfo5 = fadttsWindow->subjectTab_nbrFound_label->text() == expectedInfo5;
 
 
     bool testSearchSubjects_Passed = testInfo1 && testInfo2 && testInfo3 && testInfo4 && testInfo5;
@@ -1329,178 +1245,71 @@ bool TestFADTTSWindow::Test_SaveCheckedSubjects( QString dataDir, QString tempoD
     return testSaveCheckedSubjects_Passed;
 }
 
-
-
-bool TestFADTTSWindow::Test_OnCovariateFileToggled()
+bool TestFADTTSWindow::Test_GetCheckedMatchedSubjects()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QMap< int, QString > covariates;
-    covariates.insert( -1, "Intercept" );
-    covariates.insert( 0, "ngroup" );
-    covariates.insert( 1, "GENDER" );
-    covariates.insert( 2, "Twin" );
-    covariates.insert( 3, "Scanner" );
-    QMap< int, QString > covariatesDisplayed1;
-    QMap< int, QString > covariatesDisplayed2;
-    QMap< int, QString > covariatesDisplayed3;
-    bool testCovariateText = true;
-    bool testCovariateCheckState = true;
+    QStringList subjects;
+    QStringList subjectsExpected = QStringList() << "Marcus Paige" << "Joel James" << "Nate Britt" << "Joel Berry II" << "Kennedy Meeks" << "Brice Johnson" << "Justin Jackson";
 
 
-    fadttsWindow->m_data.SetCovariates() = covariates;
-    fadttsWindow->OnCovariateFileToggled();
-    covariatesDisplayed1 = fadttsWindow->m_selectedCovariates;
+    fadttsWindow->DisplaySortedSubjects( subjectsExpected, QMap< QString, QList< int > >() );
+    fadttsWindow->m_matchedSubjectListWidget->item( 0 )->setCheckState( Qt::Unchecked );
+    subjectsExpected.removeFirst();
+    subjects = fadttsWindow->GetCheckedMatchedSubjects();
 
-    bool testCovariateListWidget1 = fadttsWindow->m_covariateListWidget->count() == 0;
-    bool testCovariatesInformation1 = fadttsWindow->subjectCovariateTab_covariatesInformation_label->isHidden();
-    bool testSelectedCovariates1 = covariatesDisplayed1.isEmpty();
-
-
-    fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->setChecked( true );
-    fadttsWindow->OnCovariateFileToggled();
-    QMap< int, QString >::ConstIterator iterCovariate = covariates.cbegin();
-    for( int i = 0; i < fadttsWindow->m_covariateListWidget->count(); i++ )
+    bool testGetCheckedMatchedSubjects_Passed = subjects == subjectsExpected;
+    if( !testGetCheckedMatchedSubjects_Passed )
     {
-        QListWidgetItem *item = fadttsWindow->m_covariateListWidget->item( i );
-        testCovariateText = testCovariateText && ( item->text() == iterCovariate.value() );
-        testCovariateCheckState = testCovariateCheckState && ( item->checkState() == Qt::Checked );
-        ++iterCovariate;
-    }
-    covariatesDisplayed2 = fadttsWindow->m_selectedCovariates;
-
-    bool testCovariateListWidget2 = testCovariateText && testCovariateCheckState;
-    bool testCovariatesInformation2 = !fadttsWindow->subjectCovariateTab_covariatesInformation_label->isHidden();
-    bool testSelectedCovariates2 = covariatesDisplayed2 == covariates;
-
-
-    fadttsWindow->m_data.SetCovariates().clear();
-    fadttsWindow->OnCovariateFileToggled();
-    covariatesDisplayed3 = fadttsWindow->m_selectedCovariates;
-
-    bool testCovariateListWidget3 = fadttsWindow->m_covariateListWidget->count() == 0;
-    bool testCovariatesInformation3 = fadttsWindow->subjectCovariateTab_covariatesInformation_label->isHidden();
-    bool testSelectedCovariates3 = covariatesDisplayed3.isEmpty();
-
-
-    bool testOnCovariateFileToggled_Passed = testCovariateListWidget1 && testCovariatesInformation1 && testSelectedCovariates1
-            && testCovariateListWidget2 && testCovariatesInformation2 && testSelectedCovariates2
-            && testCovariateListWidget3 && testCovariatesInformation3 && testSelectedCovariates3;
-    if( !testOnCovariateFileToggled_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_OnCovariateFileToggled() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnCovariateFileToggled()" << std::endl;
-//        if( !testCovariateListWidget1 || !testCovariatesInformation1 || !testSelectedCovariates1 )
-//        {
-//            std::cerr << "\tWhen covariates are provided and subMatrix file is not checked" << std::endl;
-//            if( !testCovariateListWidget1 )
-//            {
-//                std::cerr << "\t  m_covariateListWidget should be empty" << std::endl;
-//            }
-//            if( !testCovariatesInformation1 )
-//            {
-//                std::cerr << "\t  subjectCovariateTab_covariatesInformation_label should be hidden" << std::endl;
-//            }
-//            if( !testSelectedCovariates1 )
-//            {
-//                std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
-//                DisplayError_QMapIntQString( QMap< int, QString >(), covariatesDisplayed1, "m_selectedCovariates" );
-//            }
-//        }
-//        if( !testCovariateListWidget3 || !testCovariatesInformation3 || !testSelectedCovariates3 )
-//        {
-//            std::cerr << "\n\tWhen covariates are not provided and subMatrix file is checked" << std::endl;
-//            if( !testCovariateListWidget3 )
-//            {
-//                std::cerr << "\t  m_covariateListWidget should be empty" << std::endl;
-//            }
-//            if( !testCovariatesInformation3 )
-//            {
-//                std::cerr << "\t  subjectCovariateTab_covariatesInformation_label should be hidden" << std::endl;
-//            }
-//            if( !testSelectedCovariates3 )
-//            {
-//                std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
-//                DisplayError_QMapIntQString( QMap< int, QString >(), covariatesDisplayed3, "m_selectedCovariates" );
-//            }
-//        }
-//        if( !testCovariateListWidget2 || !testCovariatesInformation2 || !testSelectedCovariates2 )
-//        {
-//            std::cerr << "\n\tWhen covariates are provided and subMatrix file is checked" << std::endl;
-//            if( !testCovariateListWidget2 )
-//            {
-//                std::cerr << "\t  m_covariateListWidget should be empty" << std::endl;
-//            }
-//            if( !testCovariatesInformation2 )
-//            {
-//                std::cerr << "\t  subjectCovariateTab_covariatesInformation_label should not be hidden" << std::endl;
-//            }
-//            if( !testSelectedCovariates2 )
-//            {
-//                std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
-//                DisplayError_QMapIntQString( covariates, covariatesDisplayed2, "m_selectedCovariates" );
-//            }
-//        }
+        std::cerr << "/!\\/!\\ Test_GetCheckedMatchedSubjects() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetCheckedMatchedSubjects()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_OnCovariateFileToggled() PASSED";
+        std::cerr << "Test_GetCheckedMatchedSubjects() PASSED";
     }
 
-    return testOnCovariateFileToggled_Passed;
+    return testGetCheckedMatchedSubjects_Passed;
 }
 
-bool TestFADTTSWindow::Test_OnCovariateClicked()
+bool TestFADTTSWindow::Test_GetPropertyRawData()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QMap< int, QString > covariates;
-    covariates.insert( -1, "Intercept" );
-    covariates.insert( 0, "ngroup" );
-    covariates.insert( 1, "GENDER" );
-    covariates.insert( 2, "Twin" );
-    QMap< int, QString > expectedSelectedCovariates;
-    expectedSelectedCovariates.insert( -1, "Intercept" );
-    expectedSelectedCovariates.insert( 2, "Twin" );
-    bool testCovariateCheckState= true;
+    QMap< QString, QList< QStringList > > fileDataExpected, fileData;
+    fileDataExpected.insert( "AD", QList< QStringList >() << ( QStringList() << "AD1" << "AD2" << "AD3" << "AD4" ) );
+    fileDataExpected.insert( "RD", QList< QStringList >() << ( QStringList() << "RD1" << "RD2" << "RD3" << "RD4" ) );
+    fileDataExpected.insert( "MD", QList< QStringList >() << ( QStringList() << "MD1" << "MD2" << "MD3" << "MD4" ) );
+    fileDataExpected.insert( "FA", QList< QStringList >() << ( QStringList() << "FA1" << "FA2" << "FA3" << "FA4" ) );
+    fileDataExpected.insert( "submatrix", QList< QStringList >() << ( QStringList() << "submatrix1" << "submatrix2" << "submatrix3" << "submatrix4" ) );
 
 
-    fadttsWindow->m_data.SetCovariates() = covariates;
-    fadttsWindow->para_subjectCovariateTab_subMatrixFile_checkBox->setChecked( true );
-    fadttsWindow->OnCovariateFileToggled();
-    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 1 ) );
-    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 2 ) );
-    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 3 ) );
-    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 3 ) );
-
-    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 0 )->checkState() == Qt::Checked );
-    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 1 )->checkState() == Qt::Unchecked );
-    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 2 )->checkState() == Qt::Unchecked );
-    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 3 )->checkState() == Qt::Checked );
-
-    bool testSelectedCovariates = fadttsWindow->m_selectedCovariates == expectedSelectedCovariates;
+    fadttsWindow->m_propertySelected.insert( 1, "RD" );
+    fadttsWindow->m_propertySelected.insert( 2, "MD" );
+    fadttsWindow->m_propertySelected.insert( 3, "FA" );
+    fadttsWindow->m_data.SetFileData( 0 ) = fileDataExpected.value( "AD" );
+    fadttsWindow->m_data.SetFileData( 1 ) = fileDataExpected.value( "RD" );
+    fadttsWindow->m_data.SetFileData( 2 ) = fileDataExpected.value( "MD" );
+    fadttsWindow->m_data.SetFileData( 3 ) = fileDataExpected.value( "FA" );
+    fadttsWindow->m_data.SetFileData( 4 ) = fileDataExpected.value( "submatrix" );
+    fileData = fadttsWindow->GetPropertyRawData();
+    fileDataExpected.remove( "AD" );
+    fileDataExpected.remove( "submatrix" );
 
 
-    bool testOnCovariateClicked_Passed = testCovariateCheckState && testSelectedCovariates;
-    if( !testOnCovariateClicked_Passed )
+    bool testGetPropertyRawData_Passed = fileData == fileDataExpected;
+    if( !testGetPropertyRawData_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_OnCovariateClicked() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnCovariateClicked( QListWidgetItem *item )" << std::endl;
-//        if( !testCovariateCheckState )
-//        {
-//            std::cerr << "\t  wrong m_covariateListWidget item check state" << std::endl;
-//        }
-//        if( !testSelectedCovariates )
-//        {
-//            std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
-//            DisplayError_QMapIntQString( expectedSelectedCovariates, fadttsWindow->m_selectedCovariates, "m_selectedCovariates" );
-//        }
+        std::cerr << "/!\\/!\\ Test_GetPropertyRawData() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetPropertyRawData()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_OnCovariateClicked() PASSED";
+        std::cerr << "Test_GetPropertyRawData() PASSED";
     }
 
-    return testOnCovariateClicked_Passed;
+    return testGetPropertyRawData_Passed;
 }
+
+
 
 bool TestFADTTSWindow::Test_OnInputToggled()
 {
@@ -1693,11 +1502,11 @@ bool TestFADTTSWindow::Test_OnSettingSubjectList( QString subjectListPath )
 //        }
 //        if( !testMatchedSubjects1 || !testLoadedSubjects1 || !testSubjectsLoaded1 )
 //        {
-//            std::cerr << "\t  when para_subjectCovariateTab_subjectFile_lineEdit not correctly set" << std::endl;
+//            std::cerr << "\t  when para_subjectTab_subjectFile_lineEdit not correctly set" << std::endl;
 //        }
 //        if( !testMatchedSubjects3 || !testLoadedSubjects3 || !testSubjectsLoaded3 )
 //        {
-//            std::cerr << "\t  when para_subjectCovariateTab_subjectFile_lineEdit is empty" << std::endl;
+//            std::cerr << "\t  when para_subjectTab_subjectFile_lineEdit is empty" << std::endl;
 //        }
     }
     else
@@ -1711,13 +1520,111 @@ bool TestFADTTSWindow::Test_OnSettingSubjectList( QString subjectListPath )
 
 
 /**************** Input  Tab ****************/
+bool TestFADTTSWindow::Test_SetSelectedCovariates()
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
+    covariates.insert( -1, "Intercept" );
+    covariates.insert( 0, "ICV" );
+    covariates.insert( 1, "ngroup" );
+    covariates.insert( 2, "GENDER" );
+    covariates.insert( 3, "Scanner" );
+    covariates.insert( 4, "Twin" );
+    covariates.insert( 5, "Direction" );
+    QMap< int, QString > expectedSelectedCovariates;
+    expectedSelectedCovariates.insert( -1, "Intercept" );
+    expectedSelectedCovariates.insert( 0, "ICV" );
+    expectedSelectedCovariates.insert( 3, "Scanner" );
+    expectedSelectedCovariates.insert( 5, "Direction" );
+
+
+    fadttsWindow->para_subjectTab_subMatrixFile_checkBox->setChecked( true );
+    fadttsWindow->m_data.SetCovariates() = covariates;
+    fadttsWindow->SetCovariateListWidget();
+    fadttsWindow->m_covariateListWidget->item( 2 )->setCheckState( Qt::Unchecked );
+    fadttsWindow->m_covariateListWidget->item( 3 )->setCheckState( Qt::Unchecked );
+    fadttsWindow->m_covariateListWidget->item( 5 )->setCheckState( Qt::Unchecked );
+    fadttsWindow->SetSelectedCovariates();
+
+
+    bool testSetSelectedCovariates_Passed = expectedSelectedCovariates == fadttsWindow->m_selectedCovariates;
+    if( !testSetSelectedCovariates_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_SetSelectedCovariates() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetSelectedCovariates()" << std::endl;
+//        std::cerr << "\t    Wrong properties selected" << std::endl;
+//        DisplayError_QMapIntQString( expectedSelectedCovariates, fadttsWindow->m_selectedCovariates, "m_selectedCovariates" );
+    }
+    else
+    {
+        std::cerr << "Test_SetSelectedCovariates() PASSED";
+    }
+
+    return testSetSelectedCovariates_Passed;
+}
+
+bool TestFADTTSWindow::Test_SetCheckStateAllCovariates()
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
+    covariates.insert( -1, "Intercept" );
+    covariates.insert( 0, "ICV" );
+    covariates.insert( 1, "ngroup" );
+    covariates.insert( 2, "GENDER" );
+    covariates.insert( 3, "Scanner" );
+    covariates.insert( 4, "Twin" );
+    covariates.insert( 5, "Direction" );
+    QMap< int, QString > expectedSelectedCovariates;
+    expectedSelectedCovariates.insert( -1, "Intercept" );
+    QMap< int, QString > selectedCovariatesCheckAll;
+    QMap< int, QString > selectedCovariatesUncheckAll;
+
+
+    fadttsWindow->para_subjectTab_subMatrixFile_checkBox->setChecked( true );
+    fadttsWindow->m_data.SetCovariates() = covariates;
+    fadttsWindow->SetCovariateListWidget();
+
+    fadttsWindow->SetCheckStateAllCovariates( Qt::Unchecked );
+    fadttsWindow->SetSelectedCovariates();
+    selectedCovariatesUncheckAll = fadttsWindow->m_selectedCovariates;
+    bool testCheckNone = selectedCovariatesUncheckAll == expectedSelectedCovariates;
+
+    fadttsWindow->SetCheckStateAllCovariates( Qt::Checked );
+    fadttsWindow->SetSelectedCovariates();
+    selectedCovariatesCheckAll = fadttsWindow->m_selectedCovariates;
+    bool testCheckAll = selectedCovariatesCheckAll == covariates;
+
+
+    bool testSetCheckStateAllCovariates_Passed = testCheckNone && testCheckAll;
+    if( !testSetCheckStateAllCovariates_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_SetCheckStateAllCovariates() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with SetCheckStateAllCovariates( Qt::CheckState checkState )" << std::endl;
+//        if( !testCheckNone )
+//        {
+//            std::cerr << "\t    When uncheck all" << std::endl;
+//            DisplayError_QMapIntQString( expectedSelectedCovariates, selectedCovariatesUncheckAll, "m_selectedCovariates" );
+//        }
+//        if( !testCheckAll )
+//        {
+//            std::cerr << "\t    When check all" << std::endl;
+//            DisplayError_QMapIntQString( covariates, selectedCovariatesCheckAll, "m_selectedCovariates" );
+//        }
+    }
+    else
+    {
+        std::cerr << "Test_SetCheckStateAllCovariates() PASSED";
+    }
+
+    return testSetCheckStateAllCovariates_Passed;
+}
+
 bool TestFADTTSWindow::Test_GetDisplayInputFileInformation()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString adInformationExpected = "Filename: <i>adFile.csv</i><br>Number of subjects: <i>10</i><br>Data matrix: <i>94x10</i><br>";
     QString mdInformationExpected = "Filename: <i>mdFile.csv</i><br>Number of subjects: <i>100</i><br>Data matrix: <i>94x100</i><br>";
-    QString subMatrixInformationExpected = "Filename: <i>subMatrixFile.csv</i><br>Number of subjects: <i>1000</i><br>Data matrix: <i>1000x7</i><br>Number of covariates: <i>3</i>"
-            "<br>- <i>GENDER</i><br>- <i>Direction</i><br>- <i>Scanner</i>";
+    QString subMatrixInformationExpected = "Filename: <i>subMatrixFile.csv</i><br>Number of subjects: <i>1000</i><br>Data matrix: <i>1000x7</i><br>Number of covariates: <i>3</i>";
     QString noInformationExpected = "<i>No File Information.<br>Please select a correct data file</i>";
 
 
@@ -2143,9 +2050,9 @@ bool TestFADTTSWindow::Test_OnUpdatingSubjectColumnID( QString subMatrixRawDataP
     }
     bool testSubjects = subjects == expectedSubjects;
 
-    for( int i = 0; i < fadttsWindow->para_subjectCovariateTab_covariates_listWidget->count(); i++ )
+    for( int i = 0; i < fadttsWindow->para_inputTab_covariates_listWidget->count(); i++ )
     {
-        covariates.append( fadttsWindow->para_subjectCovariateTab_covariates_listWidget->item( i )->text() );
+        covariates.append( fadttsWindow->para_inputTab_covariates_listWidget->item( i )->text() );
     }
     bool testCovariates = covariates == expectedCovariates;
 
@@ -2176,6 +2083,60 @@ bool TestFADTTSWindow::Test_OnUpdatingSubjectColumnID( QString subMatrixRawDataP
     }
 
     return testOnUpdatingSubjectColumnID_Passed;
+}
+
+bool TestFADTTSWindow::Test_OnCovariateClicked()
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QMap< int, QString > covariates;
+    covariates.insert( -1, "Intercept" );
+    covariates.insert( 0, "ngroup" );
+    covariates.insert( 1, "GENDER" );
+    covariates.insert( 2, "Twin" );
+    QMap< int, QString > expectedSelectedCovariates;
+    expectedSelectedCovariates.insert( -1, "Intercept" );
+    expectedSelectedCovariates.insert( 2, "Twin" );
+    bool testCovariateCheckState= true;
+
+
+    fadttsWindow->para_subjectTab_subMatrixFile_checkBox->setChecked( true );
+    fadttsWindow->m_data.SetCovariates() = covariates;
+    fadttsWindow->SetCovariateListWidget();
+    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 1 ) );
+    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 2 ) );
+    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 3 ) );
+    fadttsWindow->OnCovariateClicked( fadttsWindow->m_covariateListWidget->item( 3 ) );
+
+    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 0 )->checkState() == Qt::Checked );
+    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 1 )->checkState() == Qt::Unchecked );
+    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 2 )->checkState() == Qt::Unchecked );
+    testCovariateCheckState = testCovariateCheckState && ( fadttsWindow->m_covariateListWidget->item( 3 )->checkState() == Qt::Checked );
+
+    fadttsWindow->SetSelectedCovariates();
+    bool testSelectedCovariates = fadttsWindow->m_selectedCovariates == expectedSelectedCovariates;
+
+
+    bool testOnCovariateClicked_Passed = testCovariateCheckState && testSelectedCovariates;
+    if( !testOnCovariateClicked_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_OnCovariateClicked() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with OnCovariateClicked( QListWidgetItem *item )" << std::endl;
+//        if( !testCovariateCheckState )
+//        {
+//            std::cerr << "\t  wrong m_covariateListWidget item check state" << std::endl;
+//        }
+//        if( !testSelectedCovariates )
+//        {
+//            std::cerr << "\t  wrong m_selectedCovariates" << std::endl;
+//            DisplayError_QMapIntQString( expectedSelectedCovariates, fadttsWindow->m_selectedCovariates, "m_selectedCovariates" );
+//        }
+    }
+    else
+    {
+        std::cerr << "Test_OnCovariateClicked() PASSED";
+    }
+
+    return testOnCovariateClicked_Passed;
 }
 
 
@@ -2313,7 +2274,7 @@ bool TestFADTTSWindow::Test_SetPropertiesForDisplay()
 bool TestFADTTSWindow::Test_SetCovariates()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QStringList colors = QStringList() << "Red" << "Lime" << "Blue" << "Yellow" << "Cyan" << "Magenta"
+    QStringList colors = QStringList() << "Red" << "Lime" << "Blue" << "Carolina Blue" << "Yellow" << "Cyan" << "Magenta"
                                        << "Olive" << "Teal" << "Purple" << "Rosy Brown" << "Dark Sea Green" << "Corn Flower Blue"
                                        << "Maroon" << "Green" << "Navy" << "Orange" << "Mint" << "Pink" << "Brown" << "Black";
     QMap< int, QString > covariates1;
@@ -2449,7 +2410,7 @@ bool TestFADTTSWindow::Test_SetCovariatesForDisplay()
     expectedCovariatesForDisplay1.insert( 0, QPair< QString, QPair< bool, QString > >( "Intercept", QPair< bool, QString >( true, "Red" ) ) );
     expectedCovariatesForDisplay1.insert( 1, QPair< QString, QPair< bool, QString > >( "ICV", QPair< bool, QString >( true, "Lime" ) ) );
     expectedCovariatesForDisplay1.insert( 2, QPair< QString, QPair< bool, QString > >( "Direction", QPair< bool, QString >( true, "Blue" ) ) );
-    expectedCovariatesForDisplay1.insert( 3, QPair< QString, QPair< bool, QString > >( "Scanner", QPair< bool, QString >( true, "Yellow" ) ) );
+    expectedCovariatesForDisplay1.insert( 3, QPair< QString, QPair< bool, QString > >( "Scanner", QPair< bool, QString >( true, "Carolina Blue" ) ) );
     QMap< int, QPair< QString, QPair< bool, QString > > > expectedCovariatesForDisplay2;
     expectedCovariatesForDisplay2.insert( 0, QPair< QString, QPair< bool, QString > >( "Intercept", QPair< bool, QString >( true, "Red" ) ) );
     expectedCovariatesForDisplay2.insert( 1, QPair< QString, QPair< bool, QString > >( "GENDER", QPair< bool, QString >( true, "Lime" ) ) );
@@ -2477,62 +2438,6 @@ bool TestFADTTSWindow::Test_SetCovariatesForDisplay()
     }
 
     return testSetCovariatesForDisplay_Passed;
-}
-
-bool TestFADTTSWindow::Test_SetPlotOptions()
-{
-    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    bool test1 = true;
-    bool test2 = true;
-    bool test3 = true;
-    bool test4 = true;
-
-
-    fadttsWindow->SetPlotOptions( true, false, false );
-    test1 = test1 && fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
-    test1 = test1 && !fadttsWindow->m_propertyComboBox->isEnabled();
-    test1 = test1 && !fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
-    test1 = test1 && !fadttsWindow->m_covariateComboBox->isEnabled();
-    test1 = test1 && !fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-
-    fadttsWindow->SetPlotOptions( false, true, false );
-    test2 = test2 && !fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
-    test2 = test2 && fadttsWindow->m_propertyComboBox->isEnabled();
-    test2 = test2 && fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
-    test2 = test2 && !fadttsWindow->m_covariateComboBox->isEnabled();
-    test2 = test2 && !fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-
-    fadttsWindow->SetPlotOptions( false, false, true );
-    test3 = test3 && !fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
-    test3 = test3 && !fadttsWindow->m_propertyComboBox->isEnabled();
-    test3 = test3 && !fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
-    test3 = test3 && fadttsWindow->m_covariateComboBox->isEnabled();
-    test3 = test3 && fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-
-    fadttsWindow->SetPlotOptions( false, false, false );
-    test4 = test4 && !fadttsWindow->plottingTab_displayPlot_pushButton->isEnabled();
-    test4 = test4 && !fadttsWindow->m_propertyComboBox->isEnabled();
-    test4 = test4 && !fadttsWindow->plottingTab_loadSetDataTab_propertySelection_label->isEnabled();
-    test4 = test4 && !fadttsWindow->m_covariateComboBox->isEnabled();
-    test4 = test4 && !fadttsWindow->plottingTab_loadSetDataTab_covariateSelection_label->isEnabled();
-
-//    qDebug() << endl << test1;
-//    qDebug() << test2;
-//    qDebug() << test3;
-//    qDebug() << test4;
-
-    bool testSetPlotOptions_Passed = false /*test1 && test2 & test3 && test4*/;
-    if( !testSetPlotOptions_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_SetPlotOptions() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable, bool lineSelectionAvailable )" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Test_SetPlotOptions() PASSED";
-    }
-
-    return testSetPlotOptions_Passed;
 }
 
 bool TestFADTTSWindow::Test_AddLinesForDisplay()
@@ -2664,8 +2569,10 @@ bool TestFADTTSWindow::Test_EditCovariatesNames()
     bool testListWidget = true;
     bool testCovariatesForDisplay = true;
 
+
     fadttsWindow->SetCovariateEdition( covariates );
     fadttsWindow->m_covariatesForDisplay = covariatesForDisplay;
+    fadttsWindow->m_areLinesForDisplayProperties = false;
     fadttsWindow->m_covariateComboBox->addItems( covariates.values() );
     fadttsWindow->m_covariateComboBox->setCurrentIndex( 3 );
     fadttsWindow->m_plot->m_allCovariates = covariates;
@@ -2681,6 +2588,7 @@ bool TestFADTTSWindow::Test_EditCovariatesNames()
     fadttsWindow->m_covariatesNameLineEditMap.value( 4 ).second->setText( newCovariates.value( 4 ) );
     fadttsWindow->EditCovariatesNames();
 
+
     bool testCovariateComboBox = fadttsWindow->m_covariateComboBox->currentText() == newCovariates.value( 2 );
     for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
     {
@@ -2691,15 +2599,15 @@ bool TestFADTTSWindow::Test_EditCovariatesNames()
         testCovariatesForDisplay = testCovariatesForDisplay && covariatesForDisplay.value( i ).first == newCovariates.value( i );
     }
 
-    bool testPlotCovatiates = fadttsWindow->m_plot->m_allCovariates == newCovariates;
+    bool testPlotCovariates = fadttsWindow->m_plot->m_allCovariates == newCovariates;
     newCovariates.remove( 0 );
-    testPlotCovatiates = testPlotCovatiates && fadttsWindow->m_plot->m_covariatesNoIntercept == newCovariates;
+    testPlotCovariates = testPlotCovariates && fadttsWindow->m_plot->m_covariatesNoIntercept == newCovariates;
     newCovariates.remove( 1 );
     newCovariates.remove( 4 );
-    testPlotCovatiates = testPlotCovatiates && fadttsWindow->m_plot->m_binaryCovariates == newCovariates;
+    testPlotCovariates = testPlotCovariates && fadttsWindow->m_plot->m_binaryCovariates == newCovariates;
 
 
-    bool testEditCovariatesNames_Passed = testCovariateComboBox && testListWidget && testPlotCovatiates;
+    bool testEditCovariatesNames_Passed = testCovariateComboBox && testListWidget && testPlotCovariates;
     if( !testEditCovariatesNames_Passed )
     {
         std::cerr << "/!\\/!\\ Test_EditCovariatesNames() FAILED /!\\/!\\";
@@ -2793,7 +2701,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
                                                      << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
                                                      << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
-            && fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled()
+            && fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled()
             && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
             && fadttsWindow->plottingTab_editionTab->isEnabled()
             && fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled()
@@ -2810,7 +2718,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
             && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles.isEmpty() && fadttsWindow->m_plot->m_csvConfidenceBandsFiles.isEmpty() && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles.isEmpty()
             && fadttsWindow->m_plot->m_plotsUsed.isEmpty() && fadttsWindow->m_plot->m_properties.isEmpty() && fadttsWindow->m_plot->m_subjects.isEmpty() && fadttsWindow->m_plot->m_allCovariates.isEmpty()
             && fadttsWindow->m_plot->m_covariatesNoIntercept.isEmpty() && fadttsWindow->m_plot->m_binaryCovariates.isEmpty() && fadttsWindow->m_plot->m_abscissa.isEmpty()
-            && fadttsWindow->m_plotComboBox->currentText() == "No Plot" && !fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled() && !fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
+            && fadttsWindow->m_plotComboBox->currentText() == "No Plot" && !fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled() && !fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
             && !fadttsWindow->plottingTab_editionTab->isEnabled() && !fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled() && !fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
 
 
@@ -2881,7 +2789,7 @@ bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
                                                      << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
                                                      << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
             && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
-            && fadttsWindow->plottingTab_loadSetDataTab_load_groupBox->isEnabled()
+            && fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled()
             && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
             && fadttsWindow->plottingTab_editionTab->isEnabled()
             && fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled()
@@ -3138,7 +3046,7 @@ bool TestFADTTSWindow::Test_OnUpdatingCovariatePlotColor()
     expectedCovariateForDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "ngroup", QPair< bool, QString >( true, "Red" ) ) );
     expectedCovariateForDisplay.insert( 2, QPair< QString, QPair< bool, QString > >( "GENDER", QPair< bool, QString >( true, "Lime" ) ) );
 
-
+    fadttsWindow->m_areLinesForDisplayProperties = false;
     fadttsWindow->OnSettingAllCovariatesUsed( covariates );
     fadttsWindow->m_covariatesColorsComboBoxMap.value( 0 ).second->setCurrentText( "Yellow" );
     fadttsWindow->m_covariatesColorsComboBoxMap.value( 1 ).second->setCurrentText( "Red" );
@@ -3205,6 +3113,37 @@ bool TestFADTTSWindow::Test_OnCovariateSelection()
     return testOnCovariateSelection_Passed;
 }
 
+bool TestFADTTSWindow::Test_OnSettingLinesSelected()
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QStringList linesSelected = QStringList() << "Line1" << "Line2" << "Line3" << "Line4" << "Line5" << "Line6";
+    QStringList textExpected = QStringList() << QString( QString::number( linesSelected.size() ) + " line(s) selected:" ) << "- Line1" << "- Line2" << "- Line3" << "- Line4" << "- Line5" << "- Line6";
+    QStringList text;
+
+
+    fadttsWindow->OnSettingLinesSelected( linesSelected );
+    QList< QListWidgetItem * > items = fadttsWindow->m_lineSelectedListWidget->findItems( "*", Qt::MatchWrap | Qt::MatchWildcard );
+    foreach( QListWidgetItem *item, items )
+    {
+        text.append( item->text() );
+    }
+    bool test1 = text == textExpected;
+
+
+    bool testOnSettingLinesSelected_Passed = test1;
+    if( !testOnSettingLinesSelected_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_OnSettingLinesSelected() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with OnSettingLinesSelected( const QStringList& linesSelected )" << std::endl;
+//        DisplayError_QStringList( textExpected, text, "text line selected" );
+    }
+    else
+    {
+        std::cerr << "Test_OnSettingLinesSelected() PASSED";
+    }
+
+    return testOnSettingLinesSelected_Passed;
+}
 
 bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
 {
@@ -3242,72 +3181,32 @@ bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
     return testOnLineForDisplayClicked_Passed;
 }
 
-bool TestFADTTSWindow::Test_OnYMinToggled()
+bool TestFADTTSWindow::Test_OnYChanged()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    double yMinValue = 0.05;
+    double yMaxValue = 0.09;
 
 
-    fadttsWindow->OnYMinToggled( true );
-    bool test1 = fadttsWindow->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->isEnabled();
+    fadttsWindow->OnYMinValueChanged( yMinValue );
+    fadttsWindow->OnYMaxValueChanged( yMaxValue );
 
-    fadttsWindow->OnYMinToggled( false );
-    bool test2 = !fadttsWindow->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->isEnabled();
-
-    fadttsWindow->OnYMinToggled( true );
-    bool test3 = fadttsWindow->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->isEnabled();
+    bool testYMinValueChanged = fadttsWindow->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->minimum() == yMinValue;
+    bool testYMaxValueChanged = fadttsWindow->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->maximum() == yMaxValue;
 
 
-//    qDebug() << test1;
-//    qDebug() << test2;
-//    qDebug() << test3;
-
-
-    bool testOnYMinToggled_Passed = test1 && test2 && test3;
-    if( !testOnYMinToggled_Passed )
+    bool testOnYChanged_Passed = testYMinValueChanged && testYMaxValueChanged;
+    if( !testOnYChanged_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_OnYMinToggled() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnYMinToggled( const bool& checkState )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_OnYChanged() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with OnYMinValueChanged( double yMinValue ) and/or OnYMaxValueChanged( double yMaxValue )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_OnYMinToggled() PASSED";
+        std::cerr << "Test_OnYChanged() PASSED";
     }
 
-    return testOnYMinToggled_Passed;
-}
-
-bool TestFADTTSWindow::Test_OnYMaxToggled()
-{
-    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-
-
-    fadttsWindow->OnYMaxToggled( true );
-    bool test1 = fadttsWindow->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->isEnabled();
-
-    fadttsWindow->OnYMaxToggled( false );
-    bool test2 = !fadttsWindow->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->isEnabled();
-
-    fadttsWindow->OnYMaxToggled( true );
-    bool test3 = fadttsWindow->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->isEnabled();
-
-
-//    qDebug() << test1;
-//    qDebug() << test2;
-//    qDebug() << test3;
-
-
-    bool testOnYMaxToggled_Passed = test1 && test2 && test3;
-    if( !testOnYMaxToggled_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_OnYMaxToggled() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnYMaxToggled( const bool& checkState )" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Test_OnYMaxToggled() PASSED";
-    }
-
-    return testOnYMaxToggled_Passed;
+    return testOnYChanged_Passed;
 }
 
 
@@ -3326,9 +3225,8 @@ bool TestFADTTSWindow::Test_GenerateSelectedSubjectFile( QString subjectListPath
     fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testSubjects" );
     fadttsWindow->GenerateSelectedSubjectFile( testDir );
 
+
     bool testGenerateSelectedSubjectFile_Passed = CompareFile( testDir + "/testSubjects_subjectList.txt", subjectListPath );
-
-
     if( !testGenerateSelectedSubjectFile_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GenerateSelectedSubjectFile() FAILED /!\\/!\\";
@@ -3341,6 +3239,33 @@ bool TestFADTTSWindow::Test_GenerateSelectedSubjectFile( QString subjectListPath
     }
 
     return testGenerateSelectedSubjectFile_Passed;
+}
+
+bool TestFADTTSWindow::Test_GenerateFailedQCThresholdSubjectFile( QString dataDir, QString tempoDir )
+{
+    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+    QString testDir = tempoDir + "/TestFADTTSWindow/Test_GenerateFailedQCThresholdSubjectFile";
+    QDir().mkpath( testDir );
+
+
+    fadttsWindow->m_failedQCThresholdSubjects = QStringList() << "Marcus Paige" << "Joel James" << "Nate Britt" << "Joel Berry II" << "Kennedy Meeks" << "Brice Johnson" << "Justin Jackson";
+    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "test" );
+    fadttsWindow->m_qcThreshold = 0.11;
+    fadttsWindow->GenerateFailedQCThresholdSubjectFile( testDir );
+
+
+    bool testGenerateFailedQCThresholdSubjectFile_Passed = CompareFile( testDir + "/test_failed_QCThreshold_SubjectList.txt", dataDir + "/test_failed_QCThreshold_SubjectList.txt" );
+    if( !testGenerateFailedQCThresholdSubjectFile_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_GenerateFailedQCThresholdSubjectFile() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GenerateFailedQCThresholdSubjectFile( QString outputDir )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_GenerateFailedQCThresholdSubjectFile() PASSED";
+    }
+
+    return testGenerateFailedQCThresholdSubjectFile_Passed;
 }
 
 //bool TestFADTTSWindow::Test_SetLogDisplay()

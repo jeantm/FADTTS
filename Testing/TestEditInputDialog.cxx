@@ -47,7 +47,7 @@ bool TestEditInputDialog::Test_SubjectColumnID()
         std::cerr << "Test_SubjectColumnID() PASSED";
     }
 
-    return ( testSubjectColumnID_Passed );
+    return testSubjectColumnID_Passed;
 }
 
 
@@ -111,7 +111,7 @@ bool TestEditInputDialog::Test_OnDelete( QString adFilePath )
         std::cerr << "Test_OnDelete() PASSED";
     }
 
-    return ( testOnDelete_Passed );
+    return testOnDelete_Passed;
 }
 
 
@@ -244,7 +244,7 @@ bool TestEditInputDialog::Test_LoadDisplayData( QString adFilePath, QString subM
         std::cerr << "Test_LoadDisplayData() PASSED";
     }
 
-    return ( testLoadDisplayData_Passed );
+    return testLoadDisplayData_Passed;
 }
 
 
@@ -296,7 +296,7 @@ bool TestEditInputDialog::Test_SaveFile( QString adFilePath, QString newADFile, 
         std::cerr << "Test_OnSaveFile() PASSED";
     }
 
-    return ( testOnSaveFile_Passed );
+    return testOnSaveFile_Passed;
 }
 
 

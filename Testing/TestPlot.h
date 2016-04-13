@@ -31,8 +31,12 @@ public:
 
     bool Test_TransposeDataInQMap();
 
+    bool Test_RemoveUnmatchedSubjects( QString rdFilePath, QString faFilePath);
+
     bool Test_SetRawData( QString rdFilePath, QString faFilePath, QString subMatrixFilePath,
                           QString rdTransposeFilePath, QString faTransposeFilePath, QString dataDir );
+
+    bool Test_SetRawDataQCThreshold( QString rdFilePath, QString faFilePath );
 
     bool Test_SetBeta( QString rdBetaFilePath, QString faBetaFilePath, QString dataDir );
 
@@ -92,6 +96,8 @@ public:
 
     bool Test_GetMeanAndStdDv();
 
+    bool Test_GetMean();
+
     bool Test_ProcessRawStats();
 
     bool Test_SetSelectionToDisplayProperties( QString omnibusLpvalueFilePath );
@@ -127,6 +133,8 @@ public:
 
     bool Test_SetData();
 
+
+    bool Test_ApplyPearsonCorrelation();
 
     bool Test_InitLines();
 

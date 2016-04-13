@@ -102,10 +102,10 @@ string(REPLACE "<contributor>" "" contributors ${ext})
 string(REPLACE "</contributor>" "" contributors ${contributors})
 add_definitions(-DFADTTS_CONTRIBUTORS="${contributors}")
 
-string(REGEX MATCH "<description>.*</description>" ext "${var}")
-string(REPLACE "<description>" "" description ${ext})
-string(REPLACE "</description>" "" description ${description})
-add_definitions(-DFADTTS_DESCRIPTION="${description}")
+#string(REGEX MATCH "<mainDescription>.*</mainDescription>" ext "${var}")
+#string(REPLACE "<mainDescription>" "" description ${ext})
+#string(REPLACE "</mainDescription>" "" description ${description})
+#add_definitions(-DFADTTS_DESCRIPTION="${description}")
 
 # Tests
 if(BUILD_TESTING)

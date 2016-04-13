@@ -87,10 +87,24 @@ int main( int argc, char *argv[] )
         nbrTestsPassed++;
     }
     nbrTests++;
-    
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_RemoveUnmatchedSubjects( argv[4], argv[5] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_SetRawData( argv[4], argv[5], argv[6], argv[15], argv[16], argv[21] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_SetRawDataQCThreshold( argv[4], argv[5] ) )
     {
         nbrTestsPassed++;
     }
@@ -288,6 +302,13 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_GetMean() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_ProcessRawStats() )
     {
         nbrTestsPassed++;
@@ -398,6 +419,13 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testPlot.Test_ApplyPearsonCorrelation() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_InitLines() )

@@ -31,9 +31,9 @@
 #include <vtkFloatArray.h>
 
 
-void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); // Not Directly Tested
+void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /// Not tested
 
-void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); // Not Directly Tested
+void CallbackUpdateSelectedLines( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData ); /// Not tested
 
 
 class Plot : public QObject
@@ -50,9 +50,13 @@ public:
 
     void SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget ); // Tested
 
-    bool InitPlot( QString directory, QString fibername ); // Tested
+    bool InitPlot( QString directory, QString fibername ); // Not Directly Tested
 
-    bool DisplayVTKPlot(); // Not Directly Tested
+    bool InitQCThresholdPlot( QMap< QString, QList< QStringList > > rawData, QStringList matchedSubjects ); /*** WRITE TEST ***/
+
+    bool DisplayPlot(); // Not Directly Tested
+
+    bool DisplayQCThresholdPlot( QString propertySelected ); // Not Directly Tested
 
     void ResetPlotData(); // Tested
 
@@ -69,7 +73,9 @@ public:
 
     QMap< int, QPair< QString, QPair< bool, QString > > >& SetSelectionToDisPlay(); // Tested
 
-    void UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay );
+    void SetCovariatesProperties( QMap< int, QPair< QString, QPair< bool, QString > > > covariatesProperties ); // Tested
+
+    void UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay ); /*** WRITE TEST ***/
 
 
     void SetDefaultTitle(); // Tested
@@ -78,7 +84,7 @@ public:
 
     bool& SetGrid(); // Not Directly Tested
 
-    void UpdateGrid( bool checkState );
+    void UpdateGrid( bool checkState ); // Not Directly Tested
 
     void SetDefaultAxis(); // Tested
 
@@ -89,29 +95,32 @@ public:
 
     double& SetPvalueThreshold(); // Tested
 
-    void UpdatePvalueThresold( bool customizedTitle );
+    void UpdatePvalueThresold( bool customizedTitle ); /*** WRITE TEST ***/
 
     double& SetLineWidth(); // Tested
 
-    void UpdateLineWidth();
+    void UpdateLineWidth(); /*** WRITE TEST ***/
 
-    void SetSelectedLineColor( QString color ); /// Not tested
+    void SetSelectedLineColor( QString color ); // Tested
 
-    void UpdateSelectedLineColor( QString color );
+    void UpdateSelectedLineColor( QString color ); /*** WRITE TEST ***/
 
     void SetMarkerType( QString markerType ); // Tested
 
     double& SetMarkerSize(); // Tested
 
-    void UpdateMarker();
+    void UpdateMarker(); /*** WRITE TEST ***/
+
+    double& SetQCThreshold(); // Tested
 
 
     void UpdateCovariatesNames( const QMap< int, QString >& newCovariatesNames ); // Tested
 
 
-    void AddSelectedLine( vtkSmartPointer< vtkPlot > newLine ); /// Not tested
+    void AddSelectedLine( vtkSmartPointer< vtkPlot > newLine ); /// Not tested*
 
-    void UpdateLineSelection(); /// Not tested
+    void UpdateLineSelection(); /// Not tested*
+
 
 
 public slots:
@@ -129,6 +138,8 @@ signals:
 
     void LinesSelected( const QStringList& );
 
+    void UpdateSubjectsCorrelated( const QStringList&, const QStringList& );
+
 
 private:
     static QMap< QString, QList< int > > InitColorMap()
@@ -137,6 +148,7 @@ private:
         newColorMap.insert( "Red", QList< int >() << 255 << 0  << 0 );
         newColorMap.insert( "Lime", QList< int >() << 0 << 255 << 0 );
         newColorMap.insert( "Blue", QList< int >() << 0 << 0 << 255 );
+        newColorMap.insert( "Carolina Blue", QList< int >() << 123 << 175 << 212 );
         newColorMap.insert( "Yellow", QList< int >() << 255 << 200 << 0 );
         newColorMap.insert( "Cyan", QList< int >() << 0 << 255 << 255 );
         newColorMap.insert( "Magenta", QList< int >() << 255 << 0 << 255 );
@@ -186,7 +198,7 @@ private:
 
     QMap< QString, QList< QList< double > > > m_dataRawData, m_dataBeta, m_dataConfidenceBands, m_dataPostHocFDRLpvalue;
 
-    QMap< int, QPair< QString, QPair< bool, QString > > > m_selectionToDisplay;
+    QMap< int, QPair< QString, QPair< bool, QString > > > m_selectionToDisplay, m_covariatesProperties;
 
     QMap< int, QString > m_covariatesNoIntercept, m_allCovariates, m_binaryCovariates, m_properties;
 
@@ -201,12 +213,12 @@ private:
     QPair< bool, double > m_yMin, m_yMax;
 
     QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles,
-    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed, m_selectedLineLabels;
+    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed, m_selectedLineLabels, m_matchedSubjects;
 
     QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
     m_fibername;
 
-    double m_selectedLineColor[ 3 ], m_yMinMax[ 2 ], m_pvalueThreshold, m_lineWidth, m_markerSize;
+    double m_selectedLineColor[ 3 ], m_yMinMax[ 2 ], m_pvalueThreshold, m_lineWidth, m_markerSize, m_qcThreshold;
 
     int m_nbrPlots, m_nbrPoints, m_markerType;
 
@@ -223,8 +235,12 @@ private:
 
     void TransposeDataInQMap( QMap< QString, QList< QList< double > > >& data, int firstRow, int firstColumn ); // Tested
 
+    void RemoveUnmatchedSubjects( QMap< QString, QList< QStringList > >& rawData ); // Tested
+
 
     void SetRawData(); // Tested
+
+    bool SetRawDataQCThreshold( QMap<QString, QList<QStringList> >& rawData ); // Tested
 
     void SetBeta(); // Tested
 
@@ -262,6 +278,8 @@ private:
     void SeparateBinary( QList< QList< double > >& temp0Bin, QList< QList< double > >& temp1Bin ); // Tested
 
     void GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< double >& tempMean, QList< double >& tempStdDv ); // Tested
+
+    QList< double > GetMean( const QList< QList< double > >& rawData ); // Tested
 
     void ProcessRawStats( const QList< QList< double > >& tempBin, QList< double >& tempBinMean, QList< double >& tempBinUp, QList< double >& tempBinDown ); // Tested
 
@@ -301,9 +319,13 @@ private:
     void SetData( vtkSmartPointer< vtkTable >& table ); // Tested
 
 
+    double ApplyPearsonCorrelation( int indexLine, QList< double > meanRawData ); // Tested
+
     void InitLines(); // Tested
 
     void AddSignificantLevel( double significantLevel ); // Tested
+
+    void AddMean( QList< double > meanRawData ); // Not Directly Tested
 
     void AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i ); /** /!\ PB WITH TEST /!\ **/
 
@@ -319,21 +341,25 @@ private:
 
     void AddLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
+    void AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
+
 
     void GetyMinMax(); // Tested
 
-    void SetAbscissaProperties( double xMin, double xMax ); /// Not tested
+    void SetAbscissaProperties( double xMin, double xMax ); /// Not tested*
 
-    void SetOrdinateProperties( double yMin, double yMax ); /// Not tested
+    void SetOrdinateProperties( double yMin, double yMax ); /// Not tested*
 
     void SetAxisProperties(); // Not Directly Tested
 
+    void SetQCThresholdAxisProperties();
 
-    int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /// Not tested
 
-    double* GetSelectedLineColor(); /// Not tested
+    int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /// Not tested*
 
-    double GetLineWidth() const; /// Not tested
+    double* GetSelectedLineColor(); // Tested
+
+    double GetLineWidth() const; // Tested
 
     void SetObservers(); /// Not tested
 

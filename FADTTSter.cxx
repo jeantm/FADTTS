@@ -2,6 +2,8 @@
 #include <QApplication>
 #include "FADTTSterCLP.h"
 
+#include <QDebug>
+
 int main( int argc, char *argv[] )
 {
     PARSE_ARGS;
@@ -14,6 +16,7 @@ int main( int argc, char *argv[] )
     soft_Save_FADTTS soft_s;
     soft_Load_FADTTS soft_l;
 
+
     QApplication app( argc , argv );
 
     FADTTSWindow window;
@@ -23,8 +26,49 @@ int main( int argc, char *argv[] )
     window.SetSoftLoad( &soft_l );
     window.SetSoftModel( &soft_m );
     window.SetSoftSave( &soft_s );
-    window.show() ;
+    window.show();
     window.SyncUiToModelStructure();
 
     return app.exec() ;
+
+
+//    if( !software.empty() )
+//    {
+//        soft_l.load( soft_m, software );
+//    }
+//    if( !parameters.empty() )
+//    {
+//        para_l.load( para_m, parameters );
+//    }
+
+//    if( noGUI == false )
+//    {
+//        QApplication app( argc , argv );
+
+//        FADTTSWindow window;
+//        window.SetParaLoad( &para_l );
+//        window.SetParaSave( &para_s );
+//        window.SetParaModel( &para_m );
+//        window.SetSoftLoad( &soft_l );
+//        window.SetSoftModel( &soft_m );
+//        window.SetSoftSave( &soft_s );
+//        window.show();
+
+//        if( !parameters.empty() )
+//        {
+//            window.SyncModelStructureToUi("para");
+//        }
+//        if( !software.empty() )
+//        {
+//            window.SyncModelStructureToUi("soft");
+//        }
+//        window.SyncUiToModelStructure();
+
+//        return app.exec() ;
+//    }
+//    else
+//    {
+//        qDebug() << "Coucou";
+//        return 0;
+//    }
 }

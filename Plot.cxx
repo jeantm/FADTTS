@@ -2,7 +2,7 @@
 
 #include <QVTKWidget.h>
 
-//#include <QDebug>
+#include <QDebug>
 
 
 void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData )
@@ -73,7 +73,29 @@ bool Plot::InitPlot( QString directory, QString fibername )
     return isPlottingEnabled;
 }
 
-bool Plot::DisplayVTKPlot()
+bool Plot::InitQCThresholdPlot( QMap< QString, QList< QStringList > > rawData, QStringList matchedSubjects )
+{
+    ClearPlot();
+    ResetPlotData();
+
+    m_matchedSubjects = matchedSubjects;
+    m_plotSelected = "Raw Data";
+
+    QStringList tempoSubjects = rawData.first().first();
+    tempoSubjects.removeFirst();
+    m_subjects = tempoSubjects;
+
+    bool isPlottingEnabled = SetRawDataQCThreshold( rawData );
+    if( isPlottingEnabled )
+    {
+        SetProperties();
+        SetAbscissa();
+    }
+
+    return isPlottingEnabled;
+}
+
+bool Plot::DisplayPlot()
 {
     // Resetting scene and Observers
     m_view->GetScene()->ClearItems();
@@ -99,6 +121,39 @@ bool Plot::DisplayVTKPlot()
         // Setting axis properties and observers
         SetAxisProperties();
         SetObservers();
+    }
+
+    return dataAvailable;
+}
+
+bool Plot::DisplayQCThresholdPlot( QString propertySelected )
+{
+    m_propertySelected = propertySelected;
+
+    // Resetting scene and Observers
+    m_view->GetScene()->ClearItems();
+    m_view->GetScene()->AddItem( m_chart );
+
+    // Loading data
+    bool dataAvailable = LoadData();
+    if( dataAvailable )
+    {
+        m_nbrPlots = m_ordinate.size();
+
+        // Adding entries
+        vtkSmartPointer< vtkTable > table = vtkSmartPointer< vtkTable >::New();
+        AddEntries( table );
+
+        // Adding data
+        SetData( table );
+
+        // Adding lines
+        AddQCThresholdLines( table );
+
+        // Setting axis properties and observers
+        SetQCThresholdAxisProperties();
+
+        m_chart->SetInteractive( false );
     }
 
     return dataAvailable;
@@ -205,6 +260,11 @@ QString& Plot::SetSelectedCovariate()
 QMap< int, QPair< QString, QPair< bool, QString > > >& Plot::SetSelectionToDisPlay()
 {
     return m_selectionToDisplay;
+}
+
+void Plot::SetCovariatesProperties( QMap< int, QPair< QString, QPair< bool, QString > > > covariatesProperties )
+{
+    m_covariatesProperties = covariatesProperties;
 }
 
 void Plot::UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay )
@@ -315,8 +375,8 @@ bool& Plot::SetGrid()
 void Plot::UpdateGrid( bool checkState )
 {
     m_gridOn = checkState;
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetGridVisible( m_gridOn );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetGridVisible( m_gridOn );
 
     m_view->Render();
 }
@@ -594,6 +654,11 @@ void Plot::UpdateMarker()
     }
 }
 
+double& Plot::SetQCThreshold()
+{
+    return m_qcThreshold;
+}
+
 
 void Plot::UpdateCovariatesNames( const QMap< int, QString >& newCovariateName )
 {
@@ -840,7 +905,8 @@ void Plot::SortFilesByProperties( QString directory, const QStringList& files, Q
             faFound = true;
             index = "FA";
         }
-        if( ( path.contains( "_subMatrix_", Qt::CaseInsensitive ) || path.contains( "_subMatrix.csv", Qt::CaseInsensitive ) ) && !subMatrixFound )
+        if( ( path.contains( "_subMatrix_", Qt::CaseInsensitive ) || path.contains( "_subMatrix.csv", Qt::CaseInsensitive ) ||
+              path.contains( "_comp_", Qt::CaseInsensitive ) || path.contains( "_comp.csv", Qt::CaseInsensitive ) ) && !subMatrixFound )
         {
             subMatrixFound = true;
             m_dataSubMatrix = m_processing.GetDataFromFile( currentPath );
@@ -879,11 +945,57 @@ void Plot::TransposeDataInQMap( QMap< QString, QList< QList< double > > >& data,
     }
 }
 
+void Plot::RemoveUnmatchedSubjects( QMap< QString, QList< QStringList > >& rawData )
+{
+    foreach( QString indexProperty, rawData.keys() )
+    {
+        QList< QStringList > currentRawdata = rawData[ indexProperty ];
+        QStringList currentFirstRow = currentRawdata.first();
+
+        foreach( QString subject, currentFirstRow )
+        {
+            if( !m_matchedSubjects.contains( subject ) && ( subject != currentFirstRow.first() ) )
+            {
+                m_subjects.removeAll( subject );
+
+                int indexSubjectToDelete = currentFirstRow.indexOf( subject );
+                currentFirstRow.removeAt( indexSubjectToDelete );
+                for( int row = 0 ; row < currentRawdata.size(); row++ )
+                {
+                    rawData[ indexProperty ][ row ].removeAt( indexSubjectToDelete );
+                }
+            }
+        }
+    }
+}
+
+
 
 void Plot::SetRawData()
 {
     SortFilesByProperties( m_directory, m_csvRawDataFiles, m_dataRawData );
     TransposeDataInQMap( m_dataRawData, 1, 0 );
+}
+
+bool Plot::SetRawDataQCThreshold( QMap< QString, QList< QStringList > >& rawData )
+{
+    m_dataRawData.clear();
+
+    if( !m_matchedSubjects.isEmpty() )
+    {
+        RemoveUnmatchedSubjects( rawData );
+
+        QMap< QString, QList< QStringList > >::ConstIterator iterRawData = rawData.cbegin();
+        while( iterRawData != rawData.cend() )
+        {
+            m_dataRawData.insert( iterRawData.key(), DataToDouble( iterRawData.value() ) );
+            ++iterRawData;
+        }
+
+        TransposeDataInQMap( m_dataRawData, 1, 0 );
+    }
+
+    return !m_dataRawData.isEmpty();
 }
 
 void Plot::SetBeta()
@@ -923,7 +1035,7 @@ bool Plot::GetRawDataFiles()
 
 void Plot::GetBetaFiles()
 {
-    QStringList nameFilterBeta( "*_Betas_*.csv" );
+    QStringList nameFilterBeta = QStringList() << "*_Betas_*.csv" << "*_Betas.csv";
     m_csvBetaFiles = QDir( m_matlabDirectory ).entryList( nameFilterBeta );
     m_csvBetaFiles.sort();
     SetBeta();
@@ -961,7 +1073,7 @@ void Plot::GetConfidenceBandsFiles()
 
 void Plot::GetPostHocFDRLpvalueFiles()
 {
-    QStringList nameFilterPostHocFDRLpvalue( "*_PostHoc_FDR_Local_pvalues_*.csv" );
+    QStringList nameFilterPostHocFDRLpvalue = QStringList() << "*_PostHoc_FDR_Local_pvalues_*.csv" << "*_PostHoc_FDR_Local_pvalues.csv";
     m_csvPostHocFDRLpvalueFiles = QDir( m_matlabDirectory ).entryList( nameFilterPostHocFDRLpvalue );
     m_csvPostHocFDRLpvalueFiles.sort();
     SetPostHocFDRLpvalue();
@@ -1010,25 +1122,26 @@ void Plot::SetPlots()
 
 void Plot::SetProperties()
 {
-    foreach( QString path, m_csvRawDataFiles )
+    foreach( QString property, m_dataRawData.keys() )
     {
-        if( path.contains( "_ad_", Qt::CaseInsensitive ) || path.contains( "_ad.csv", Qt::CaseInsensitive ) )
+        if( property.contains( "ad", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 0, "AD" );
         }
-        if( path.contains( "_rd_", Qt::CaseInsensitive ) || path.contains( "_rd.csv", Qt::CaseInsensitive ) )
+        if( property.contains( "rd", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 1, "RD" );
         }
-        if( path.contains( "_md_", Qt::CaseInsensitive ) || path.contains( "_md.csv", Qt::CaseInsensitive ) )
+        if( property.contains( "md", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 2, "MD" );
         }
-        if( path.contains( "_fa_", Qt::CaseInsensitive ) || path.contains( "_fa.csv", Qt::CaseInsensitive ) )
+        if( property.contains( "fa", Qt::CaseInsensitive ) )
         {
             m_properties.insert( 3, "FA" );
         }
     }
+
     emit AllPropertiesUsed( m_properties );
 }
 
@@ -1103,6 +1216,26 @@ void Plot::GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< doub
         tempStdDv.append( std::sqrt( currentStdDv / ( nbrSubjects - 1 ) ) );
     }
 }
+
+QList< double > Plot::GetMean( const QList< QList< double > >& rawData )
+{
+    int nbrSubjects = rawData.size();
+    QList< double > mean;
+
+    for( int i = 0; i < m_nbrPoints; i++ )
+    {
+        double currentMean = 0;
+        for( int j = 0; j < nbrSubjects; j++ )
+        {
+            currentMean += rawData.at( j ).at( i );
+        }
+        currentMean = currentMean / nbrSubjects;
+        mean.append( currentMean );
+    }
+
+    return mean;
+}
+
 
 void Plot::ProcessRawStats( const QList< QList< double > >& tempBin, QList< double >& tempBinMean, QList< double >& tempBinUp, QList< double >& tempBinDown )
 {
@@ -1440,6 +1573,53 @@ void Plot::SetData( vtkSmartPointer< vtkTable >& table )
 }
 
 
+double Plot::ApplyPearsonCorrelation( int indexLine, QList< double > meanRawData )
+{
+    double pearsonCorrelation = 1.0;
+
+    if( m_nbrPoints > 1)
+    {
+        QList< double > currentLine = m_dataRawData.value( m_propertySelected ).at( indexLine );
+
+        int indexMax = meanRawData.size();
+
+        double sumMean = 0;
+        for( int i = 0; i < indexMax; i++ )
+        {
+            sumMean += meanRawData.at( i );
+        }
+
+        double sumMeanSquare = 0;
+        for( int i = 0; i < indexMax; i++ )
+        {
+            sumMeanSquare += meanRawData.at( i ) * meanRawData.at( i );
+        }
+
+        double sumCurrentLine = 0;
+        for( int i = 0; i < indexMax; i++ )
+        {
+            sumCurrentLine += currentLine.at( i );
+        }
+
+        double sumCurrentLineSquare = 0;
+        for( int i = 0; i < indexMax; i++ )
+        {
+            sumCurrentLineSquare += currentLine.at( i ) * currentLine.at( i );
+        }
+
+        double meanXcurrentLine = 0;
+        for( int i = 0; i < indexMax; i++ )
+        {
+            meanXcurrentLine += meanRawData.at( i ) * currentLine.at( i );
+        }
+
+        pearsonCorrelation = ( meanXcurrentLine - ( sumMean * sumCurrentLine ) / m_nbrPoints ) /
+                std::sqrt( ( sumMeanSquare - std::pow( sumMean, 2 ) / m_nbrPoints ) * ( sumCurrentLineSquare - std::pow( sumCurrentLine, 2 ) / m_nbrPoints ) );
+    }
+
+    return pearsonCorrelation;
+}
+
 void Plot::InitLines()
 {
     for( int i = 0; i < m_nbrPlots; i++ )
@@ -1473,6 +1653,32 @@ void Plot::AddSignificantLevel( double significantLevel )
     sigLevelLine->SetInputData( tableSigLevel, 0, 1 );
     sigLevelLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
     sigLevelLine->SetWidth( m_lineWidth / 2 );
+}
+
+void Plot::AddMean( QList< double > meanRawData )
+{
+    vtkSmartPointer< vtkDoubleArray > abscissaSigLevel = vtkSmartPointer< vtkDoubleArray >::New();
+    abscissaSigLevel->SetNumberOfComponents( 1 );
+    abscissaSigLevel->SetName( "Abscissa Mean" );
+    vtkSmartPointer< vtkDoubleArray > dataSigLevel = vtkSmartPointer< vtkDoubleArray >::New();
+    dataSigLevel->SetNumberOfComponents( 1 );
+    dataSigLevel->SetName( "Significant Mean" );
+    for( int i = 0; i < m_nbrPoints; i++ )
+    {
+        abscissaSigLevel->InsertNextValue( m_abscissa.at( i ) );
+        dataSigLevel->InsertNextValue( meanRawData.at( i ) );
+    }
+
+    vtkSmartPointer< vtkTable > tableSigLevel = vtkSmartPointer< vtkTable >::New();
+    tableSigLevel->SetNumberOfRows( m_nbrPoints );
+    tableSigLevel->AddColumn( abscissaSigLevel );
+    tableSigLevel->AddColumn( dataSigLevel );
+
+    vtkSmartPointer< vtkPlot > sigLevelLine = m_chart->AddPlot( vtkChart::LINE );
+    sigLevelLine->SetSelectable( false );
+    sigLevelLine->SetInputData( tableSigLevel, 0, 1 );
+    sigLevelLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
+    sigLevelLine->SetWidth( m_lineWidth * 2 );
 }
 
 void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i )
@@ -1553,6 +1759,7 @@ void Plot::AddLineRawData( const vtkSmartPointer< vtkTable >& table )
         vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
 
+
         QList< int > color;
         double currentLineWidth = 0;
         if( m_covariateSelected.isEmpty() )
@@ -1570,7 +1777,7 @@ void Plot::AddLineRawData( const vtkSmartPointer< vtkTable >& table )
             }
             else
             {
-                color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+                color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
                 currentLineWidth = m_lineWidth;
             }
         }
@@ -1603,7 +1810,7 @@ void Plot::AddLineRawStats( const vtkSmartPointer< vtkTable >& table )
                 }
                 else
                 {
-                    color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+                    color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
                 }
             }
             else
@@ -1614,7 +1821,7 @@ void Plot::AddLineRawStats( const vtkSmartPointer< vtkTable >& table )
                 }
                 else
                 {
-                    color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+                    color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
                 }
             }
         }
@@ -1684,7 +1891,7 @@ void Plot::AddLineLConfidenceBands( const vtkSmartPointer< vtkTable >& table )
         currentLine->SetInputData( table, 0, i + 1 );
         if( i%2 )
         {
-            QList< int > color = m_allColors.value( m_selectionToDisplay.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
+            QList< int > color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
             currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
         }
         else
@@ -1723,6 +1930,47 @@ void Plot::AddLines( const vtkSmartPointer< vtkTable >& table )
     {
         AddLineLConfidenceBands( table );
     }
+}
+
+void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table )
+{
+    InitLines();
+
+    QList< QList< double > > tempoRawData = m_dataRawData.value( m_propertySelected );
+    tempoRawData.removeFirst();
+    QList< double > meanRawData = GetMean( tempoRawData );
+    QStringList subjectsCorrelated, subjectsNotCorrelated;
+
+    for( int i = 0; i < m_nbrPlots; i++ )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
+        currentLine->SetInputData( table, 0, i + 1 );
+        QList< int > color;
+
+        double pearsonCorrelation = ApplyPearsonCorrelation( i + 1, meanRawData );
+
+        if( pearsonCorrelation < m_qcThreshold )
+        {
+            subjectsNotCorrelated.append( QString( currentLine->GetLabel() ) );
+
+            color = m_allColors.value( "Red" );
+            currentLine->GetPen()->SetLineType( vtkPen::DASH_LINE );
+        }
+        else
+        {
+            subjectsCorrelated.append( QString( currentLine->GetLabel() ) );
+
+            color = m_allColors.value( "Carolina Blue" );
+            currentLine->GetPen()->SetLineType( vtkPen::SOLID_LINE );
+        }
+
+        currentLine->SetColor(  color.first(), color.at( 1 ), color.at( 2 ), 255 );
+        currentLine->SetWidth( m_lineWidth );
+    }
+
+    AddMean( meanRawData );
+
+    emit UpdateSubjectsCorrelated( subjectsCorrelated, subjectsNotCorrelated );
 }
 
 
@@ -1764,7 +2012,8 @@ void Plot::SetAbscissaProperties( double xMin, double xMax )
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
 
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetWidth( 0.25 );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 128, 128, 128, 255 );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetGridVisible( m_gridOn );
 }
 
 void Plot::SetOrdinateProperties( double yMin, double yMax )
@@ -1775,7 +2024,9 @@ void Plot::SetOrdinateProperties( double yMin, double yMax )
     m_chart->GetAxis( vtkAxis::LEFT )->SetNotation( vtkAxis::SCIENTIFIC_NOTATION );
 
     m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetWidth( 0.25 );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 0, 0, 0, m_gridOn ? 255 : 0 );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 128, 128, 128, 255 );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetGridVisible( m_gridOn );
+
 }
 
 void Plot::SetAxisProperties()
@@ -1787,6 +2038,29 @@ void Plot::SetAxisProperties()
 
     GetyMinMax();
     SetOrdinateProperties( m_yMinMax[ 0 ], m_yMinMax[ 1 ] );
+}
+
+void Plot::SetQCThresholdAxisProperties()
+{
+    if( !m_abscissa.isEmpty() )
+    {
+        double xMin = m_abscissa.first();
+        double xMax = m_abscissa.last();
+        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
+        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
+        m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
+        m_chart->GetAxis( vtkAxis::BOTTOM )->SetLabelsVisible( false );
+        m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
+    }
+
+    GetyMinMax();
+    double yMin = m_yMinMax[ 0 ];
+    double yMax = m_yMinMax[ 1 ];
+    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetLabelsVisible( false );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "" );
 }
 
 

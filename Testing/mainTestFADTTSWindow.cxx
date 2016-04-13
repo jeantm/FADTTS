@@ -31,13 +31,14 @@
  * argv[23] = omnibusFDRLpvaluesPath2
  *
  * argv[24] = plotSettingsPath;
+ * argv[25] = failedQCThreshold;
  *
- * argv[25] = okIcon
- * argv[26] = koIcon
- * argv[27] = warningIcon
+ * argv[26] = okIcon
+ * argv[27] = koIcon
+ * argv[28] = warningIcon
  *
- * argv[28] = dataDir
- * argv[29] = tempoDir
+ * argv[29] = dataDir
+ * argv[30] = tempoDir
  */
 
 int main( int argc, char *argv[] )
@@ -59,14 +60,14 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetDir( argv[1], argv[28], argv[29] ) )
+    if( testFADTTSWindow.Test_SetDir( argv[1], argv[29], argv[30] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_DisplayIcon( argv[28] ) )
+    if( testFADTTSWindow.Test_DisplayIcon( argv[29] ) )
     {
         nbrTestsPassed++;
     }
@@ -75,14 +76,14 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLoadSaveParaSettings( argv[1], argv[2], argv[28], argv[29] ) )
+    if( testFADTTSWindow.Test_OnLoadSaveParaSettings( argv[1], argv[2], argv[29], argv[30] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLoadSaveSoftSettings( argv[3], argv[4], argv[28], argv[29] ) )
+    if( testFADTTSWindow.Test_OnLoadSaveSoftSettings( argv[3], argv[4], argv[29], argv[30] ) )
     {
         nbrTestsPassed++;
     }
@@ -93,6 +94,13 @@ int main( int argc, char *argv[] )
     std::cerr << std::endl;
     /********* Subjects/Covariates Tab *********/
     std::cerr << std::endl << "/********* Subjects/Covariates Tab *********/";
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_OnApplyingQCThreshold() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_SetSelectedInputFiles() )
     {
@@ -109,20 +117,6 @@ int main( int argc, char *argv[] )
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_GetDiffusionPropertiesCheckState() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetSelectedCovariates() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetCheckStateAllCovariates() )
     {
         nbrTestsPassed++;
     }
@@ -164,27 +158,27 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SaveCheckedSubjects( argv[28], argv[29] ) )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnCovariateFileToggled() )
+    if( testFADTTSWindow.Test_SaveCheckedSubjects( argv[29], argv[30] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnCovariateClicked() )
+    if( testFADTTSWindow.Test_GetCheckedMatchedSubjects() )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_GetPropertyRawData() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_OnInputToggled() )
@@ -220,6 +214,20 @@ int main( int argc, char *argv[] )
     /**************** Input Tab ****************/
     std::cerr << std::endl << "/**************** Input Tab ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_SetSelectedCovariates() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_SetCheckStateAllCovariates() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_GetDisplayInputFileInformation() )
     {
         nbrTestsPassed++;
@@ -227,7 +235,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_DisplayInputLineEditIcon( argv[28] ) )
+    if( testFADTTSWindow.Test_DisplayInputLineEditIcon( argv[29] ) )
     {
         nbrTestsPassed++;
     }
@@ -241,7 +249,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_UpdateLineEditsAfterAddingMultipleFiles( argv[28] ) )
+    if( testFADTTSWindow.Test_UpdateLineEditsAfterAddingMultipleFiles( argv[29] ) )
     {
         nbrTestsPassed++;
     }
@@ -272,6 +280,13 @@ int main( int argc, char *argv[] )
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_OnUpdatingSubjectColumnID( argv[7] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_OnCovariateClicked() )
     {
         nbrTestsPassed++;
     }
@@ -311,13 +326,6 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetPlotOptions() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testFADTTSWindow.Test_AddLinesForDisplay() )
     {
         nbrTestsPassed++;
@@ -339,14 +347,14 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_SetResetPlotTab( argv[28], argv[29] ) )
+    if( testFADTTSWindow.Test_SetResetPlotTab( argv[29], argv[30] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_LoadSavePlotSettings( argv[28], argv[29] ) )
+    if( testFADTTSWindow.Test_LoadSavePlotSettings( argv[29], argv[30] ) )
     {
         nbrTestsPassed++;
     }
@@ -411,14 +419,14 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnYMinToggled() )
+    if( testFADTTSWindow.Test_OnSettingLinesSelected() )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnYMaxToggled() )
+    if( testFADTTSWindow.Test_OnYChanged() )
     {
         nbrTestsPassed++;
     }
@@ -430,11 +438,19 @@ int main( int argc, char *argv[] )
     /************** Execution Tab **************/
     std::cerr << std::endl << "/************** Execution Tab **************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_GenerateSelectedSubjectFile( argv[8], argv[29] ) )
+    if( testFADTTSWindow.Test_GenerateSelectedSubjectFile( argv[8], argv[30] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testFADTTSWindow.Test_GenerateFailedQCThresholdSubjectFile( argv[29], argv[30] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
 
 //    std::cerr << std::endl << nbrTests + 1 << "- ";
 //    if( testFADTTSWindow.Test_SetLogDisplay() )

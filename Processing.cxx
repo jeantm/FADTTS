@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QDebug>
+
 
 const QString Processing::m_csvSeparator = QLocale().groupSeparator();
 
@@ -274,7 +276,7 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
     QMap< int, QString >::ConstIterator iterProperty = properties.cbegin();
     while( iterInput != inputs.cend() )
     {
-        QFile matlabInput( outputDir + "/" + fiberName + "_RawData_" + iterProperty.value().toUpper() + ".csv" ); // check if modification works; iterProperty.value().toUpper()
+        QFile matlabInput( outputDir + "/" + fiberName + "_RawData_" + iterProperty.value().toUpper() + ".csv" );
         matlabInput.open( QIODevice::WriteOnly );
         QTextStream tsM( &matlabInput );
 

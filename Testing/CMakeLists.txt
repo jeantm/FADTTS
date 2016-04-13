@@ -82,14 +82,7 @@ set(omnibusFDRLpvaluesPath2 DATA{${SOURCE_DIR}/testPlot2_Omnibus_FDR_Local_pvalu
 set(plotSettingsPath DATA{${SOURCE_DIR}/plotSettings.csv})
 set(plotPath DATA{${SOURCE_DIR}/test_Betas_FA.eps})
 
-
-
-
-
-
-
-
-
+set(failedQCThreshold DATA{${SOURCE_DIR}/test_failed_QCThreshold_SubjectList.txt})
 
 
 include_directories(${CMAKE_SOURCE_DIR})
@@ -112,6 +105,11 @@ file(GLOB SOURCES_TEST_MATLABTHREAD "*MatlabThread.cxx")
 add_executable(FADTTS_Test_MatlabThread ${SOURCES_TEST_MATLABTHREAD})
 target_link_libraries(FADTTS_Test_MatlabThread FADTTSterLib)
 
+# Add the executable for the test(s) of the EditInputDialog class
+file(GLOB SOURCES_TEST_EDITINPUTDIALOG "*EditInputDialog.cxx")
+add_executable(FADTTS_Test_EditInputDialog ${SOURCES_TEST_EDITINPUTDIALOG})
+target_link_libraries(FADTTS_Test_EditInputDialog FADTTSterLib)
+
 # Add the executable for the test(s) of the Plot class
 file(GLOB SOURCES_TEST_PLOT "*Plot.cxx")
 add_executable(FADTTS_Test_Plot ${SOURCES_TEST_PLOT})
@@ -121,11 +119,6 @@ target_link_libraries(FADTTS_Test_Plot FADTTSterLib)
 file(GLOB SOURCES_TEST_FADTTSWINDOW "*FADTTSWindow.cxx")
 add_executable(FADTTS_Test_FADTTSWindow ${SOURCES_TEST_FADTTSWINDOW})
 target_link_libraries(FADTTS_Test_FADTTSWindow FADTTSterLib)
-
-# Add the executable for the test(s) of the EditInputDialog class
-file(GLOB SOURCES_TEST_EDITINPUTDIALOG "*EditInputDialog.cxx")
-add_executable(FADTTS_Test_EditInputDialog ${SOURCES_TEST_EDITINPUTDIALOG})
-target_link_libraries(FADTTS_Test_EditInputDialog FADTTSterLib)
 
 
 
@@ -195,6 +188,8 @@ ExternalData_add_test(
                                                         ${adBetaPath2} ${faBetaPath2} ${omnibusFDRLpvaluesPath2}
 
                                                         ${plotSettingsPath}
+
+                                                        ${failedQCThreshold}
 
                                                         ${okIcon} ${koIcon} ${warningIcon}
 
