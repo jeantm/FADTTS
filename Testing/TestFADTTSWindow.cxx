@@ -149,23 +149,9 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     bool testAllPara = true;
     bool testNoPara = true;
     bool testParaAfterSave = true;
-    para_Model_FADTTS para_m;
-    para_Save_FADTTS para_s;
-    para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
 
-    fadttsWindow->SetParaLoad( &para_l );
-    fadttsWindow->SetParaSave( &para_s );
-    fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
     AddIcon( fadttsWindow, dataDir );
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Load_Parameter_Configuration( paraFilePath.toStdString() );
     testAllPara == testAllPara && fadttsWindow->para_inputTab_adFile_lineEdit->text().isEmpty();
     testAllPara == testAllPara && ( fadttsWindow->para_inputTab_rdFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_RD_RawData.csv" );
     testAllPara == testAllPara && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
@@ -197,13 +183,9 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     testAllPara == testAllPara && fadttsWindow->para_executionTab_omnibus_checkBox->isChecked();
     testAllPara == testAllPara && !fadttsWindow->para_executionTab_postHoc_checkBox->isChecked();
     testAllPara == testAllPara && ( fadttsWindow->para_executionTab_outputDir_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/" );
-    testAllPara == testAllPara && fadttsWindow->para_executionTab_runMatlab_checkBox->isChecked();
+//    testAllPara == testAllPara && fadttsWindow->para_executionTab_matlabExe_checkBox->isChecked();
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Save_Parameter_Configuration( QString( testDir + "/saveSettings.xml" ).toStdString() );
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Load_Parameter_Configuration( noParaFilePath.toStdString() );
     testNoPara == testNoPara && fadttsWindow->para_inputTab_adFile_lineEdit->text().isEmpty();
     testNoPara == testNoPara && fadttsWindow->para_inputTab_rdFile_lineEdit->text().isEmpty();
     testNoPara == testNoPara && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
@@ -227,10 +209,8 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     testNoPara == testNoPara && !fadttsWindow->para_executionTab_omnibus_checkBox->isChecked();
     testNoPara == testNoPara && !fadttsWindow->para_executionTab_postHoc_checkBox->isChecked();
     testNoPara == testNoPara && fadttsWindow->para_executionTab_outputDir_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && !fadttsWindow->para_executionTab_runMatlab_checkBox->isChecked();
+//    testNoPara == testNoPara && !fadttsWindow->para_executionTab_matlabExe_checkBox->isChecked();
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Load_Parameter_Configuration( QString( testDir + "/saveSettings.xml" ).toStdString() );
     testParaAfterSave == testParaAfterSave && fadttsWindow->para_inputTab_adFile_lineEdit->text().isEmpty();
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_rdFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_RD_RawData.csv" );
     testParaAfterSave == testParaAfterSave && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
@@ -262,7 +242,7 @@ bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QStrin
     testParaAfterSave == testParaAfterSave && fadttsWindow->para_executionTab_omnibus_checkBox->isChecked();
     testParaAfterSave == testParaAfterSave && !fadttsWindow->para_executionTab_postHoc_checkBox->isChecked();
     testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_outputDir_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/" );
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_executionTab_runMatlab_checkBox->isChecked();
+//    testParaAfterSave == testParaAfterSave && fadttsWindow->para_executionTab_matlabExe_checkBox->isChecked();
 
 
     bool testOnLoadSaveParaSettings_Passed = testAllPara && testNoPara && testParaAfterSave;
@@ -287,49 +267,27 @@ bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QStrin
     bool testAllSoft = true;
     bool testNoSoft = true;
     bool testSoftAfterSave = true;
-    para_Model_FADTTS para_m;
-    para_Save_FADTTS para_s;
-    para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
 
 
-    fadttsWindow->SetParaLoad( &para_l );
-    fadttsWindow->SetParaSave( &para_s );
-    fadttsWindow->SetParaModel( &para_m );
-    fadttsWindow->SetSoftLoad( &soft_l );
-    fadttsWindow->SetSoftModel( &soft_m );
-    fadttsWindow->SetSoftSave( &soft_s );
-    AddIcon( fadttsWindow, dataDir );
-
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Load_Software_Configuration( softFilePath.toStdString() );
-    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
-    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_runMatlab_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
+//    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
+    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_matlabExe_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
 //    testAllSoft = testAllSoft && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
 //    testAllSoft = testAllSoft && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
     testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 4 );
 //    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
 //    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Save_Software_Configuration( QString( testDir + "/saveSoftSettings.xml" ).toStdString() );
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Load_Software_Configuration( noSoftFilePath.toStdString() );
-    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_mvcm_lineEdit->text().isEmpty();
-    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_runMatlab_lineEdit->text().isEmpty();
+//    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_mvcm_lineEdit->text().isEmpty();
+    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_matlabExe_lineEdit->text().isEmpty();
 //    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
 //    testNoSoft = testNoSoft && !fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
     testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 1 );
 //    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Hour (60 mins)" );
 //    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 4 );
 
-    fadttsWindow->SyncUiToModelStructure();
-    fadttsWindow->Load_Software_Configuration( QString( testDir + "/saveSoftSettings.xml" ).toStdString() );
-    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
-    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_runMatlab_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
+//    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
+    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_matlabExe_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
 //    testSoftAfterSave = testSoftAfterSave && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
 //    testSoftAfterSave = testSoftAfterSave && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
     testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 4 );

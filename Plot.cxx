@@ -1573,7 +1573,7 @@ void Plot::SetData( vtkSmartPointer< vtkTable >& table )
 }
 
 
-double Plot::ApplyPearsonCorrelation( int indexLine, QList< double > meanRawData )
+double Plot::ApplyPearsonCorrelation( int indexLine, const QList< double >& meanRawData )
 {
     double pearsonCorrelation = 1.0;
 
@@ -1939,8 +1939,8 @@ void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table )
     QList< QList< double > > tempoRawData = m_dataRawData.value( m_propertySelected );
     tempoRawData.removeFirst();
     QList< double > meanRawData = GetMean( tempoRawData );
-    QStringList subjectsCorrelated, subjectsNotCorrelated;
 
+    QStringList subjectsCorrelated, subjectsNotCorrelated;
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );

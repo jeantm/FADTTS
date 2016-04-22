@@ -1,6 +1,7 @@
 #include "Processing.h"
 
 #include <iostream>
+#include <cmath>
 
 #include <QDebug>
 
@@ -19,45 +20,47 @@ Processing::Processing( QObject *parent ) :
 QList< QStringList > Processing::GetDataFromFile( QString filePath )
 {
     QFile file( filePath );
-    file.open( QIODevice::ReadOnly );
-    QTextStream ts( &file );
     QList< QStringList > fileData;
-    QStringList  tempRows;
-
-    /** Read all the file line by line **/
-    while( !ts.atEnd() )
+    if( file.open( QIODevice::ReadOnly ) )
     {
-        tempRows.append( ts.readLine() );
-    }
-    file.close();
+        QTextStream ts( &file );
+        QStringList  tempRows;
 
-    /** If only one line read, check for the carriage return character "\r" **/
-    if(  tempRows.size() == 1 )
-    {
-        tempRows =  tempRows.first().split( "\r" );
-    }
-    tempRows.removeAll( "" );
-
-    /** For each line (== row), dispatch data in columns **/
-    foreach( QString dataRow,  tempRows )
-    {
-        QStringList tempRow = dataRow.split( m_csvSeparator );
-        tempRow.removeAll( "" );
-
-        /** remove quotes if needed **/
-        foreach( QString data, tempRow)
+        /** Read all the file line by line **/
+        while( !ts.atEnd() )
         {
-            if( data.endsWith( '"' ) )
-            {
-                data.chop( 1 );
-            }
-            if( data.startsWith( '"' ) )
-            {
-                data.remove( 0, 1 );
-            }
+            tempRows.append( ts.readLine() );
         }
+        file.close();
 
-        fileData.append( tempRow );
+        /** If only one line read, check for the carriage return character "\r" **/
+        if(  tempRows.size() == 1 )
+        {
+            tempRows =  tempRows.first().split( "\r" );
+        }
+        tempRows.removeAll( "" );
+
+        /** For each line (== row), dispatch data in columns **/
+        foreach( QString dataRow,  tempRows )
+        {
+            QStringList tempRow = dataRow.split( m_csvSeparator );
+            tempRow.removeAll( "" );
+
+            /** remove quotes if needed **/
+            foreach( QString data, tempRow)
+            {
+                if( data.endsWith( '"' ) )
+                {
+                    data.chop( 1 );
+                }
+                if( data.startsWith( '"' ) )
+                {
+                    data.remove( 0, 1 );
+                }
+            }
+
+            fileData.append( tempRow );
+        }
     }
 
     return fileData;
@@ -375,3 +378,155 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
 
     return matlabInputs;
 }
+
+
+
+
+QList< QStringList > Processing::Transpose_noGUI( const QList< QStringList >& rawData )
+{
+    QList< QStringList > rawDataTransposed;
+    for( int j = 0; j < rawData.first().size(); j++ )
+    {
+        QStringList rowData;
+        for( int i = 0; i < rawData.size(); i++ )
+        {
+            rowData.append( rawData.at( i ).at( j ) );
+        }
+        rawDataTransposed.append( rowData );
+    }
+
+    return rawDataTransposed;
+}
+
+void Processing::RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, QStringList subjects )
+{
+    for( int i = 1; i < rawDataTransposed.size(); i++ )
+    {
+        QString currentSubject = rawDataTransposed.at( i ).first();
+
+        if( !subjects.contains( currentSubject ) )
+        {
+            rawDataTransposed.removeAt( i );
+        }
+    }
+}
+
+QList< QList< double > > Processing::ToDouble_noGUI( const QList< QStringList >& rawDataTransposed )
+{
+    QList< QList< double > > rawDataDouble;
+    foreach ( QStringList rowData, rawDataTransposed )
+    {
+        QList< double > rowDataDouble;
+        foreach ( QString data, rowData )
+        {
+            rowDataDouble.append( data.toDouble() );
+        }
+
+        rowDataDouble.removeFirst();
+        rawDataDouble.append( rowDataDouble );
+    }
+
+    return rawDataDouble;
+}
+
+QList< double > Processing::GetMean_noGUI( const QList< QList< double > >& rawDataDouble )
+{
+    QList< double > mean;
+    int nbrSubjects = rawDataDouble.size() - 1;
+    int nbrPoints = rawDataDouble.first().size();
+
+
+    for( int i = 0; i < nbrPoints; i++ )
+    {
+        double currentMean = 0;
+        for( int j = 0; j < nbrSubjects; j++ )
+        {
+            currentMean += rawDataDouble.at( j + 1 ).at( i );
+        }
+        currentMean = currentMean / nbrSubjects;
+        mean.append( currentMean );
+    }
+
+    return mean;
+}
+
+double Processing::ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean )
+{
+    double pearsonCorrelation = 1.0;
+    int nbrPoints = rawDataDouble.first().size();
+    QList< double > currentLine = rawDataDouble.at( indexLine );
+
+    int indexMax = mean.size();
+
+    double sumMean = 0;
+    for( int i = 0; i < indexMax; i++ )
+    {
+        sumMean += mean.at( i );
+    }
+
+    double sumMeanSquare = 0;
+    for( int i = 0; i < indexMax; i++ )
+    {
+        sumMeanSquare += mean.at( i ) * mean.at( i );
+    }
+
+    double sumCurrentLine = 0;
+    for( int i = 0; i < indexMax; i++ )
+    {
+        sumCurrentLine += currentLine.at( i );
+    }
+
+    double sumCurrentLineSquare = 0;
+    for( int i = 0; i < indexMax; i++ )
+    {
+        sumCurrentLineSquare += currentLine.at( i ) * currentLine.at( i );
+    }
+
+    double meanXcurrentLine = 0;
+    for( int i = 0; i < indexMax; i++ )
+    {
+        meanXcurrentLine += mean.at( i ) * currentLine.at( i );
+    }
+
+    pearsonCorrelation = ( meanXcurrentLine - ( sumMean * sumCurrentLine ) / nbrPoints ) /
+            std::sqrt( ( sumMeanSquare - std::pow( sumMean, 2 ) / nbrPoints ) * ( sumCurrentLineSquare - std::pow( sumCurrentLine, 2 ) / nbrPoints ) );
+
+    return pearsonCorrelation;
+}
+
+void Processing::ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold )
+{
+    QStringList subjectsCorrelated, subjectsNotCorrelated;
+    QStringList subjects = matchedSubjects;
+
+    /*** Transpose ***/
+    QList< QStringList > rawDataTransposed = Transpose_noGUI( rawData );
+
+    /*** Remove unmatched subjects ***/
+    RemoveUnmatchedSubjects_noGUI( rawDataTransposed, subjects );
+
+    /*** To Double ***/
+    QList< QList< double > > rawDataDouble = ToDouble_noGUI( rawDataTransposed );
+
+    /*** Get Mean ***/
+    QList< double > mean = GetMean_noGUI( rawDataDouble );
+
+    /*** Apply QCThreshold ***/
+    for( int i = 1; i < rawDataDouble.size(); i++ )
+    {
+        double pearsonCorrelation = ApplyPearsonCorrelation_noGUI( i, rawDataDouble, mean );
+
+        if( pearsonCorrelation < qcThreshold )
+        {
+            subjectsNotCorrelated.append( rawDataTransposed.at( i ).first() );
+        }
+        else
+        {
+            subjectsCorrelated.append( rawDataTransposed.at( i ).first() );
+        }
+    }
+
+    matchedSubjects = subjectsCorrelated;
+    qcThresholdFailedSubject = subjectsNotCorrelated;
+}
+

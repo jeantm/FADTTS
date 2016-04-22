@@ -38,7 +38,7 @@ public:
 
 
 signals:
-    void UpdateInputFile( const int&, const QString&  );
+    void UpdateInputFile( const int&, const QString& );
 
     void UpdateSubjectColumnID( const int& );
 

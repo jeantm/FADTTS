@@ -1,4 +1,5 @@
 #include "FADTTSWindow.h"
+#include "FADTTS_noGUI.h"
 #include <QApplication>
 #include "FADTTSterCLP.h"
 
@@ -9,66 +10,84 @@ int main( int argc, char *argv[] )
     PARSE_ARGS;
     Q_INIT_RESOURCE( FADTTS_Resources );
 
-    para_Model_FADTTS para_m;
-    para_Save_FADTTS para_s;
-    para_Load_FADTTS para_l;
-    soft_Model_FADTTS soft_m;
-    soft_Save_FADTTS soft_s;
-    soft_Load_FADTTS soft_l;
+    if( !noGUI )
+    {
+        QApplication app( argc , argv );
+
+        FADTTSWindow fadttsWindow;
+        fadttsWindow.show();
+
+        if( !paraConfig.empty() )
+        {
+            fadttsWindow.LoadParaConfiguration( paraConfig.data() );
+        }
+        if( !softConfig.empty() )
+        {
+            fadttsWindow.LoadSoftConfiguration( softConfig.data() );
+        }
+
+        return app.exec();
+    }
+    else
+    {
+        std::cout << QDate::currentDate().toString( "MM/dd/yyyy" ).toStdString() << std::endl;
+        std::cout << QTime::currentTime().toString( "hh:mm ap" ).toStdString() << std::endl;
+        std::cout << "/***********************************/" << std::endl;
+        std::cout << "/*      FADTTSter version " << FADTTS_VERSION << "      */" << std::endl;
+        std::cout << "/***********************************/" << std::endl << std::endl;
 
 
-    QApplication app( argc , argv );
+        QString text;
+        QFile file( noGUIConfig.data() );
+        if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+        {
+            std::cout << "/!\\ Cannot open " << "'" << noGUIConfig.data() << "'" << std::endl;
+            std::cout << "/!\\ File does not exist or is corrupted" << std::endl << std::endl;
 
-    FADTTSWindow window;
-    window.SetParaLoad( &para_l );
-    window.SetParaSave( &para_s );
-    window.SetParaModel( &para_m );
-    window.SetSoftLoad( &soft_l );
-    window.SetSoftModel( &soft_m );
-    window.SetSoftSave( &soft_s );
-    window.show();
-    window.SyncUiToModelStructure();
+            std::cout << "FADTTSter --noGUI will not be run" << std::endl;
+            std::cout << "/***********************************/" << std::endl;
 
-    return app.exec() ;
+            return EXIT_FAILURE;
+        }
+        else
+        {
+            text = file.readAll();
+            file.close();
 
+            QJsonParseError jsonError;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
+            if( jsonError.error != QJsonParseError::NoError )
+            {
+                std::cout << "/!\\ An error occurred when trying to extract json data from file " << "'" << noGUIConfig.data() << "'"
+                          << std::endl << "/!\\ error: " << jsonError.errorString().toUpper().toStdString() <<  std::endl << std::endl;
 
-//    if( !software.empty() )
-//    {
-//        soft_l.load( soft_m, software );
-//    }
-//    if( !parameters.empty() )
-//    {
-//        para_l.load( para_m, parameters );
-//    }
+                std::cout << "FADTTSter --noGUI will not be run" << std::endl;
+                std::cout << "/***********************************/" << std::endl;
 
-//    if( noGUI == false )
-//    {
-//        QApplication app( argc , argv );
+                return EXIT_FAILURE;
+            }
+            else
+            {
+                std::cout << "FADTTSter --noGUI currently running " << "'" << noGUIConfig.data() << "'..." << std::endl << std::endl;
 
-//        FADTTSWindow window;
-//        window.SetParaLoad( &para_l );
-//        window.SetParaSave( &para_s );
-//        window.SetParaModel( &para_m );
-//        window.SetSoftLoad( &soft_l );
-//        window.SetSoftModel( &soft_m );
-//        window.SetSoftSave( &soft_s );
-//        window.show();
+                FADTTS_noGUI fadtts_noGUI;
+                QJsonObject jsonObject_noGUI = jsonDoc.object().value( "noGUIConfiguration" ).toObject();
 
-//        if( !parameters.empty() )
-//        {
-//            window.SyncModelStructureToUi("para");
-//        }
-//        if( !software.empty() )
-//        {
-//            window.SyncModelStructureToUi("soft");
-//        }
-//        window.SyncUiToModelStructure();
+                if( fadtts_noGUI.RunFADTTSter_noGUI( jsonObject_noGUI ) == EXIT_SUCCESS )
+                {
+                    std::cout << "FADTTSter run SUCCESSFULLY" << std::endl;
+                }
+                else
+                {
+                    std::cout << "FADTTSter FAILED to create expected outputs" << std::endl;
+                    std::cout << "/***********************************/" << std::endl;
 
-//        return app.exec() ;
-//    }
-//    else
-//    {
-//        qDebug() << "Coucou";
-//        return 0;
-//    }
+                    return EXIT_FAILURE;
+                }
+            }
+        }
+        std::cout << "/***********************************/" << std::endl;
+
+        return EXIT_SUCCESS;
+    }
 }

@@ -319,7 +319,7 @@ private:
     void SetData( vtkSmartPointer< vtkTable >& table ); // Tested
 
 
-    double ApplyPearsonCorrelation( int indexLine, QList< double > meanRawData ); // Tested
+    double ApplyPearsonCorrelation( int indexLine, const QList<double>& meanRawData ); // Tested
 
     void InitLines(); // Tested
 

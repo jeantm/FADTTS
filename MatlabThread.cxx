@@ -1,5 +1,6 @@
 #include "MatlabThread.h"
 
+#include <QDebug>
 
 const QString MatlabThread::m_csvSeparator = QLocale().groupSeparator();
 
@@ -19,8 +20,8 @@ void MatlabThread::InitMatlabScript( QString outputDir, QString matlabScriptName
     m_outputDir = outputDir;
     m_matlabScriptName = matlabScriptName;
     m_matlabScript.clear();
-//    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRef.m" );
-    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/MatlabScriptRefWithPlots.m" );
+//    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/matlabScrip.m" );
+    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/matlabScriptWithPlotting.m" );
     QFile matlabScriptRef( resource.absoluteFilePath() );
     if ( !matlabScriptRef.open( QIODevice::ReadOnly | QIODevice::Text ) )
     {
@@ -188,8 +189,8 @@ void MatlabThread::GenerateMyFDR()
 
 QString MatlabThread::GenerateMatlabFiles()
 {
-    QDir().mkpath( m_outputDir + "/MatlabOutputs" );
     m_matlabScriptPath = m_outputDir + "/" + m_matlabScriptName;
+
     QFile matlabScript( m_matlabScriptPath );
     if( matlabScript.open( QIODevice::WriteOnly | QIODevice::Text ) )
     {

@@ -34,6 +34,7 @@ public:
 
     bool InitPlot( const QMap< QString, QList< QStringList > >& rawData, const QStringList& matchedSubjects, double qcThreshold );
 
+
 signals:
     void ApplyQCThreshold( const QStringList&, const QStringList&, double qcThreshold );
 

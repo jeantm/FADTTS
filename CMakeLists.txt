@@ -33,7 +33,8 @@ include(${SlicerExecutionModel_USE_FILE})
 # Qt to c++
 set(FADTTS_src
 FADTTSter.cxx
-FADTTSWindowConfig.cxx
+Log.cxx
+FADTTS_noGUI.cxx
 FADTTSWindow.cxx
 EditInputDialog.cxx
 QCThresholdDialog.cxx
@@ -44,7 +45,8 @@ Plot.cxx
 )
 
 set(FADTTS_moc
-FADTTSWindowConfig.h
+Log.h
+FADTTS_noGUI.h
 FADTTSWindow.h
 EditInputDialog.h
 QCThresholdDialog.h

@@ -1,0 +1,93 @@
+{
+    "paramSettings": {
+        "inputTab": {
+            "inputFiles": [
+                { "index": "AD", "path": "" },
+                { "index": "RD", "path": "" },
+                { "index": "MD", "path": "" },
+                { "index": "FA", "path": "" },
+                { "index": "SUBMATRIX", "path": "", "subjectColumnID": 0 }
+            ],
+            "covariates": [
+                { "name": "Intercept", "checked": true }
+            ]
+        },
+        "subjectTab": {
+            "filesUsed": [
+                { "index": "AD", "used": false },
+                { "index": "RD", "used": false },
+                { "index": "MD", "used": false },
+                { "index": "FA", "used": false },
+                { "index": "SUBMATRIX", "used": false }
+            ],
+            "qcThreshold": 0.85,
+            "pathRefSubjectList": ""
+        },
+        "executionTab": {
+            "settings": {
+                "fiberName": "",
+                "nbrPermutations": 100,
+                "confidenceBandThreshold": 0.05,
+                "pvalueThreshold": 0.05,
+                "omnibus": true,
+                "postHoc": true
+            },
+            "output": {
+                "directory": "",
+            },
+            "matlabSpecifications": {
+                "run": false
+            }
+        },
+        "plottingTab": {
+            "plotdir": "",
+            "fiberName": "",
+        }
+    },
+    "softSettings": {
+        "executionTab": {
+            "matlabSpecifications": {
+                "fadttsDir": "",
+                "matlabExe": "",
+                "nbrCompThreads": 1
+            }
+        }
+    },
+    "noGUI": {
+        "inputFiles": [
+            { "ID": "AD", "index": 0, "path": "" },
+            { "ID": "RD", "index": 1, "path": "" },
+            { "ID": "MD", "index": 2, "path": "" },
+            { "ID": "FA", "index": 3, "path": "" },
+            { "ID": "SUBMATRIX", "index": 4, "path": "", "subjectColumnID": -1 }
+        ],
+        "covariates": [
+            { "name": "Intercept", "index": -1, "selected": true },
+        ],
+        "subjects": {
+            "subjectListPath": "",
+            "qcThreshold": {
+                "value": -1,
+                "ID": ""
+            }
+        },
+        "settings": {
+            "fibername": "",
+            "nbrPermutations": -1,
+            "confidenceBandThreshold": -1,
+            "pvalueThreshold": -1,
+            "omnibus": false,
+            "postHoc": false
+        },
+        "output": {
+            "path": ""
+        },
+        "matlabSpecifications": {
+            "pathFADTTS": "",
+            "run": false,
+            "matlabExe": "",
+            "nbrCompThreads": -1
+        }
+    }
+}
+

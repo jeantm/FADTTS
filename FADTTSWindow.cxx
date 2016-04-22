@@ -1,4 +1,8 @@
 #include "FADTTSWindow.h"
+#include "ui_FADTTSWindow.h"
+
+#include <QDebug>
+
 
 /****************************************************************/
 /******************** Configuration && Events *******************/
@@ -15,11 +19,14 @@ const int FADTTSWindow::m_iconSize = 12;
 
 
 /********************** Public  functions ***********************/
-FADTTSWindow::FADTTSWindow()
+FADTTSWindow::FADTTSWindow( QWidget *parent, Qt::WindowFlags f ) :
+    QMainWindow( parent, f )
 {
-    m_okPixmap = QPixmap( ":/Icons/Resources/Icons/okIconOut.xpm" );
-    m_koPixmap = QPixmap( ":/Icons/Resources/Icons/koIconOut.xpm" );
-    m_warningPixmap = QPixmap( ":/Icons/Resources/Icons/warningIconOut.xpm" );
+    this->setupUi( this );
+
+    m_okPixmap = QPixmap( ":/Icons/Resources/Icons/okIcon.xpm" );
+    m_koPixmap = QPixmap( ":/Icons/Resources/Icons/koIcon.xpm" );
+    m_warningPixmap = QPixmap( ":/Icons/Resources/Icons/warningIcon.xpm" );
 
     InitFADTTSWindow();
 }
@@ -30,58 +37,146 @@ FADTTSWindow::~FADTTSWindow()
 }
 
 
+void FADTTSWindow::LoadParaConfiguration( QString filename )
+{
+    QString text;
+    QFile refJSON( filename );
+    refJSON.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = refJSON.readAll();
+
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
+    if( jsonError.error == QJsonParseError::NoError )
+    {
+        QJsonObject jsonObject_param = jsonDoc.object().value( "paraConfiguration" ).toObject();
+
+        /****** 1st tab: Inputs ******/
+        QJsonObject inputTab = jsonObject_param.value( "inputTab" ).toObject();
+        QJsonObject inputFiles = inputTab.value( "inputFiles" ).toObject();
+        para_inputTab_adFile_lineEdit->setText( inputFiles.value( "AD" ).toString() );
+        para_inputTab_rdFile_lineEdit->setText( inputFiles.value( "RD" ).toString() );
+        para_inputTab_mdFile_lineEdit->setText( inputFiles.value( "MD" ).toString() );
+        para_inputTab_faFile_lineEdit->setText( inputFiles.value( "FA" ).toString() );
+        para_inputTab_subMatrixFile_lineEdit->setText( inputFiles.value( "SUBMATRIX" ).toObject().value( "path" ).toString() );
+        OnUpdatingSubjectColumnID( inputFiles.value( "SUBMATRIX" ).toObject().value( "subjectColumnID" ).toInt( 0 ) );
+
+        QJsonObject covariates = inputTab.value( "covariates" ).toObject();
+        for( int i = 0; i < std::min( para_inputTab_covariates_listWidget->count(), covariates.size() ) ; i++ )
+        {
+            QListWidgetItem *currentItem = para_inputTab_covariates_listWidget->item( i );
+            currentItem->setCheckState( covariates.value( currentItem->text() ).toBool() ? Qt::Checked : Qt::Unchecked );
+        }
+
+        /****** 2nd tab: Subjects ******/
+        QJsonObject subjectTab = jsonObject_param.value( "subjectTab" ).toObject();
+        QJsonObject filesUsed = subjectTab.value( "filesUsed" ).toObject();
+        para_subjectTab_adFile_checkBox->setChecked( para_subjectTab_adFile_checkBox->isEnabled() ? filesUsed.value( "AD" ).toBool() : false );
+        para_subjectTab_rdFile_checkBox->setChecked( para_subjectTab_rdFile_checkBox->isEnabled() ? filesUsed.value( "RD" ).toBool() : false );
+        para_subjectTab_mdFile_checkBox->setChecked( para_subjectTab_mdFile_checkBox->isEnabled() ? filesUsed.value( "MD" ).toBool() : false );
+        para_subjectTab_faFile_checkBox->setChecked( para_subjectTab_faFile_checkBox->isEnabled() ? filesUsed.value( "FA" ).toBool() : false );
+        para_subjectTab_subMatrixFile_checkBox->setChecked( para_subjectTab_subMatrixFile_checkBox->isEnabled() ? filesUsed.value( "SUBMATRIX" ).toBool() : false );
+
+        para_subjectTab_qcThreshold_doubleSpinBox->setValue( subjectTab.value( "qcThreshold" ).toDouble( 0.85 ) );
+        para_subjectTab_subjectFile_lineEdit->setText( subjectTab.value( "subjectListPath" ).toString() );
+
+        /****** 3rd tab: Execution ******/
+        QJsonObject executionTab = jsonObject_param.value( "executionTab" ).toObject();
+        QJsonObject settings = executionTab.value( "Configuration" ).toObject();
+        para_executionTab_fiberName_lineEdit->setText( settings.value( "fiberName" ).toString() );
+        para_executionTab_nbrPermutations_spinBox->setValue( settings.value( "nbrPermutations" ).toInt( 100 ) );
+        para_executionTab_confidenceBandsThreshold_doubleSpinBox->setValue( settings.value( "confidenceBandThreshold" ).toDouble( 0.05 ) );
+        para_executionTab_pvalueThreshold_doubleSpinBox->setValue( settings.value( "pvalueThreshold" ).toDouble( 0.05 ) );
+        para_executionTab_omnibus_checkBox->setChecked( settings.value( "omnibus" ).toBool() );
+        para_executionTab_postHoc_checkBox->setChecked( settings.value( "posthoc" ).toBool() );
+
+        para_executionTab_mvcm_lineEdit->setText( executionTab.value( "matlabSpecifications" ).toObject().value( "fadttsDir" ).toString() );
+        para_executionTab_outputDir_lineEdit->setText( executionTab.value( "outputDir" ).toString() );
+
+        /****** 4th tab: Plotting ******/
+        QJsonObject plottingTab = jsonObject_param.value( "plottingTab" ).toObject();
+        para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( plottingTab.value( "plotdir" ).toString() );
+        para_plottingTab_loadSetDataTab_fibername_lineEdit->setText( plottingTab.value( "fiberName" ).toString() );
+    }
+}
+
+void FADTTSWindow::LoadSoftConfiguration( QString filename )
+{
+    QString text;
+    QFile refJSON( filename );
+    refJSON.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = refJSON.readAll();
+
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
+    if( jsonError.error == QJsonParseError::NoError )
+    {
+        QJsonObject jsonObject_soft = jsonDoc.object().value( "softConfiguration" ).toObject();
+
+        /****** 3rd tab: Execution ******/
+        QJsonObject executionTab = jsonObject_soft.value( "executionTab" ).toObject();
+        QJsonObject matlabSpecifications = executionTab.value( "matlabSpecifications" ).toObject();
+
+        soft_executionTab_runMatlab_checkBox->setChecked( matlabSpecifications.value( "run" ).toBool() );
+        soft_executionTab_matlabExe_lineEdit->setText( matlabSpecifications.value( "matlabExe" ).toString() );
+        soft_executionTab_nbrCompThreads_spinBox->setValue( matlabSpecifications.value( "nbrCompThreads" ).toInt( 1 ) );
+
+        //            m_soft_m->setsoft_executionTab_runMatlabSystem_radioButton( soft_executionTab_runMatlabSystem_radioButton->isChecked() );
+        //            m_soft_m->setsoft_executionTab_runMatlabKD_radioButton( soft_executionTab_runMatlabKD_radioButton->isChecked() );
+        //            m_soft_m->setsoft_executionTab_killDevilQueue_comboBox( soft_executionTab_killDevilQueue_comboBox->currentText() );
+        //            m_soft_m->setsoft_executionTab_killDevilAllocatedMemory_spinBox( soft_executionTab_killDevilAllocatedMemory_spinBox->value() );
+    }
+}
+
+
+
 /*********************** Private slots ***********************/
-void FADTTSWindow::OnLoadParaSettings()
+void FADTTSWindow::OnLoadParaConfiguration()
 {
-    SyncUiToModelStructure();
     QString dir;
-    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Param Settings" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
+    QString filename = QFileDialog::getOpenFileName( this, tr( "Load Parameters Configuration" ), dir, tr( ".json( *.json ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
-        QFileInfo fi( filename ) ;
-        dir = fi.dir().absolutePath() ;
-        Load_Parameter_Configuration( filename.toStdString() );
+        LoadParaConfiguration( filename );
     }
 }
 
-void FADTTSWindow::OnSaveParaSettings()
+void FADTTSWindow::OnSaveParaConfiguration()
 {
-    SyncUiToModelStructure();
-    QString dir;
-    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Param Settings" ) ,  "newParaSettings.xml" , tr( ".xml( *.xml ) ;; .*( * )" ) );
-    if( !filename.isEmpty() )
+    QString filename = QFileDialog::getSaveFileName( this, tr( "Save Parameters Configuration" ), "newParamConfiguration.json", tr( ".json( *.json ) ;; .*( * )" ) );
+        if( !filename.isEmpty() )
     {
-        QFileInfo fi( filename ) ;
-        dir = fi.dir().absolutePath() ;
-        Save_Parameter_Configuration( filename.toStdString() );
+        SaveParaConfiguration( filename );
     }
 }
 
-void FADTTSWindow::OnLoadSoftSettings()
+void FADTTSWindow::OnLoadSoftConfiguration()
 {
-    SyncUiToModelStructure();
     QString dir;
-    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Soft Settings" ) , dir , tr( ".xml( *.xml ) ;; .*( * )" ) );
+    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Software Configuration" ) , dir , tr( ".json( *.json ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
-        QFileInfo fi( filename ) ;
-        dir = fi.dir().absolutePath() ;
-        Load_Software_Configuration( filename.toStdString() );
+        LoadSoftConfiguration( filename );
     }
 }
 
-void FADTTSWindow::OnSaveSoftSettings()
+void FADTTSWindow::OnSaveSoftConfiguration()
 {
-    SyncUiToModelStructure();
-    QString dir;
-    QString filename = QFileDialog::getSaveFileName( this , tr( "Save Soft Settings" ) ,  "newSoftSettings.xml" , tr( ".xml( *.xml ) ;; .*( * )" ) );
-    if( !filename.isEmpty() )
+    QString filename = QFileDialog::getSaveFileName( this, tr( "Save Software Configuration" ), "newSoftConfiguration.json", tr( ".json( *.json ) ;; .*( * )" ) );
+        if( !filename.isEmpty() )
     {
-        QFileInfo fi( filename ) ;
-        dir = fi.dir().absolutePath() ;
-        Save_Software_Configuration( filename.toStdString() );
+        SaveSoftConfiguration( filename );
     }
 }
+
+void FADTTSWindow::OnSaveNoGUIConfiguration()
+{
+    QString filename = QFileDialog::getSaveFileName( this, tr( "Save noGUI Configuration" ), "newNoGUIConfiguration.json", tr( ".json( *.json ) ;; .*( * )" ) );
+        if( !filename.isEmpty() )
+    {
+        SaveNoGUIConfiguration( filename );
+    }
+}
+
 
 void FADTTSWindow::OnDisplayAbout()
 {
@@ -108,7 +203,9 @@ void FADTTSWindow::closeEvent(QCloseEvent *event)
             break;
         case QMessageBox::Yes:
         {
+            m_log->AddText( "\nWarning! Thread terminated by user before completed matlab script.\n" );
             m_matlabThread->terminate();
+            m_log->CloseLogFile();
             event->accept();
             break;
         }
@@ -121,17 +218,237 @@ void FADTTSWindow::closeEvent(QCloseEvent *event)
 
 
 /*********************** Private function **********************/
+void FADTTSWindow::SaveParaConfiguration( QString filename )
+{
+    QString text;
+    QFile refJSON( QString( ":/ConfigurationFiles/Resources/ConfigurationFiles/paramConfiguration.json" ) );
+    refJSON.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = refJSON.readAll();
+
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
+    if( jsonError.error == QJsonParseError::NoError )
+    {
+        QJsonObject jsonObject = jsonDoc.object();
+        QJsonObject jsonObject_param = jsonObject[ "paraConfiguration" ].toObject();
+        QJsonObject inputTab = jsonObject_param[ "inputTab" ].toObject();
+        QJsonObject subjectTab = jsonObject_param[ "subjectTab" ].toObject();
+        QJsonObject executionTab = jsonObject_param[ "executionTab" ].toObject();
+        QJsonObject plottingTab = jsonObject_param[ "plottingTab" ].toObject();
+
+        /****** 1st tab: Inputs ******/
+        QJsonObject inputFiles = inputTab[ "inputFiles" ].toObject();
+        inputFiles[ "AD" ] = para_inputTab_adFile_lineEdit->text();
+        inputFiles[ "RD" ] = para_inputTab_rdFile_lineEdit->text();
+        inputFiles[ "MD" ] = para_inputTab_mdFile_lineEdit->text();
+        inputFiles[ "FA" ] = para_inputTab_faFile_lineEdit->text();
+        QJsonObject submatrixFile = inputFiles[ "SUBMATRIX" ].toObject();
+        submatrixFile[ "path" ] = para_inputTab_subMatrixFile_lineEdit->text();
+        submatrixFile[ "subjectColumnID" ] = m_data.GetSubjectColumnID();
+        inputFiles[ "SUBMATRIX" ] = submatrixFile;
+        inputTab[ "inputFiles" ] = inputFiles;
+
+        QJsonObject covariates;
+        for( int i = 0; i < m_covariateListWidget->count(); i++ )
+        {
+            covariates.insert( m_covariateListWidget->item( i )->text(), ( m_covariateListWidget->item( i )->checkState() == Qt::Checked ) ? true : false );
+        }
+        inputTab[ "covariates" ] = covariates;
+
+        /****** 2nd tab: Subjects ******/
+        QJsonObject filesUsed = subjectTab[ "filesUsed" ].toObject();
+        filesUsed[ "AD" ] = para_subjectTab_adFile_checkBox->isChecked();
+        filesUsed[ "RD" ] = para_subjectTab_rdFile_checkBox->isChecked();
+        filesUsed[ "MD" ] = para_subjectTab_mdFile_checkBox->isChecked();
+        filesUsed[ "FA" ] = para_subjectTab_faFile_checkBox->isChecked();
+        filesUsed[ "SUBMATRIX" ] = para_subjectTab_subMatrixFile_checkBox->isChecked();
+        subjectTab[ "filesUsed" ] = filesUsed;
+
+        subjectTab[ "qcThreshold" ] = para_subjectTab_qcThreshold_doubleSpinBox->value();
+        subjectTab[ "subjectListPath" ] = para_subjectTab_subjectFile_lineEdit->text();
+
+        /****** 3rd tab: Execution ******/
+        QJsonObject settings = executionTab[ "settings" ].toObject();
+        settings[ "fiberName" ] = para_executionTab_fiberName_lineEdit->text();
+        settings[ "nbrPermutations" ] = para_executionTab_nbrPermutations_spinBox->value();
+        settings[ "confidenceBandThreshold" ] = para_executionTab_confidenceBandsThreshold_doubleSpinBox->value();
+        settings[ "pvalueThreshold" ] = para_executionTab_pvalueThreshold_doubleSpinBox->value();
+        settings[ "omnibus" ] = para_executionTab_omnibus_checkBox->isChecked();
+        settings[ "posthoc" ] = para_executionTab_postHoc_checkBox->isChecked();
+        executionTab[ "settings" ] = settings;
+
+        QJsonObject matlabSpecifications = executionTab[ "matlabSpecifications" ].toObject();
+        matlabSpecifications[ "fadttsDir" ] = para_executionTab_mvcm_lineEdit->text();
+        executionTab[ "matlabSpecifications" ] = matlabSpecifications;
+
+        executionTab[ "outputDir" ] = para_executionTab_outputDir_lineEdit->text();
+
+        /****** 4th tab: Plotting ******/
+        plottingTab[ "plotdir" ] = para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->text();
+        plottingTab[ "fiberName" ] = para_plottingTab_loadSetDataTab_fibername_lineEdit->text();
+
+
+        jsonObject_param[ "inputTab" ] = inputTab;
+        jsonObject_param[ "subjectTab" ] = subjectTab;
+        jsonObject_param[ "executionTab" ] = executionTab;
+        jsonObject_param[ "plottingTab" ] = plottingTab;
+        jsonObject[ "paramSettings" ] = jsonObject_param;
+
+        jsonDoc.setObject( jsonObject );
+        QFile exportedJSON( filename );
+        exportedJSON.open( QIODevice::WriteOnly | QIODevice::Text );
+        exportedJSON.write( jsonDoc.toJson( QJsonDocument::Indented ) );
+        exportedJSON.flush();
+        exportedJSON.close();
+    }
+}
+
+void FADTTSWindow::SaveSoftConfiguration( QString filename )
+{
+    QString text;
+    QFile refJSON( QString( ":/ConfigurationFiles/Resources/ConfigurationFiles/softConfiguration.json" ) );
+    refJSON.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = refJSON.readAll();
+
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
+    if( jsonError.error == QJsonParseError::NoError )
+    {
+        QJsonObject jsonObject = jsonDoc.object();
+        QJsonObject jsonObject_soft = jsonObject[ "softConfiguration" ].toObject();
+        QJsonObject executionTab = jsonObject_soft[ "executionTab" ].toObject();
+
+        /****** 3rd tab: Execution ******/
+        QJsonObject matlabSpecifications = executionTab[ "matlabSpecifications" ].toObject();
+        matlabSpecifications[ "runMatlab" ] = soft_executionTab_runMatlab_checkBox->isChecked();
+        matlabSpecifications[ "matlabExe" ] = soft_executionTab_matlabExe_lineEdit->text();
+        matlabSpecifications[ "nbrCompThreads" ] = soft_executionTab_nbrCompThreads_spinBox->value();
+        executionTab[ "matlabSpecifications" ] = matlabSpecifications;
+
+
+        jsonObject_soft[ "executionTab" ] = executionTab;
+        jsonObject[ "softSettings" ] = jsonObject_soft;
+
+        jsonDoc.setObject( jsonObject );
+        QFile exportedJSON( filename );
+        exportedJSON.open( QIODevice::WriteOnly | QIODevice::Text );
+        exportedJSON.write( jsonDoc.toJson( QJsonDocument::Indented ) );
+        exportedJSON.flush();
+        exportedJSON.close();
+    }
+}
+
+void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
+{
+    QString text;
+    QFile refJSON( QString( ":/ConfigurationFiles/Resources/ConfigurationFiles/noGUIConfiguration.json" ) );
+    refJSON.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = refJSON.readAll();
+
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
+    if( jsonError.error == QJsonParseError::NoError )
+    {
+        QJsonObject jsonObject = jsonDoc.object();
+        QJsonObject jsonObject_noGUI = jsonObject[ "noGUIConfiguration" ].toObject();
+        QJsonObject inputFiles = jsonObject_noGUI[ "inputFiles" ].toObject();
+        QJsonObject covariates = jsonObject_noGUI[ "covariates" ].toObject();
+        QJsonObject subjects = jsonObject_noGUI[ "subjects" ].toObject();
+        QJsonObject settings = jsonObject_noGUI[ "settings" ].toObject();
+        QJsonObject matlabSpecifications = jsonObject_noGUI[ "matlabSpecifications" ].toObject();
+
+
+        /****** Input Files ******/
+        foreach( QString key, inputFiles.keys() )
+        {
+            QJsonObject currentPropertyObject = inputFiles[ key ].toObject();
+            int currentPropertyIndex = currentPropertyObject.value( "index" ).toInt();
+            bool isFileSelected = m_paramTabFileCheckBoxMap.value( currentPropertyIndex )->isChecked()
+                    && m_paramTabFileCheckBoxMap.value( currentPropertyIndex )->isEnabled();
+            currentPropertyObject[ "path" ] = isFileSelected ? m_inputTabInputFileLineEditMap.value( currentPropertyIndex )->text() : false;
+            if( key == "SUBMATRIX" )
+            {
+                currentPropertyObject[ "subjectColumnID" ] = m_data.GetSubjectColumnID();
+            }
+            inputFiles[ key ] = currentPropertyObject;
+        }
+
+
+        /******  Covariates  ******/
+        for( int i = 0; i < m_covariateListWidget->count(); i++ )
+        {
+            QListWidgetItem *currentItem = m_covariateListWidget->item( i );
+            QString currentCovariateName = currentItem->text();
+            bool currentCovariateSelected = currentItem->checkState() == Qt::Checked ? true : false;
+            int currentCovariateIndex = m_data.GetCovariates().key( currentCovariateName );
+
+            QJsonObject currentCovariateObject;
+            currentCovariateObject.insert( "index", currentCovariateIndex );
+            currentCovariateObject.insert( "selected", currentCovariateSelected );
+
+            covariates.insert( currentCovariateName, currentCovariateObject );
+        }
+
+        /******   Subjects   ******/
+        subjects[ "subjectListPath" ] = para_subjectTab_subjectFile_lineEdit->text();
+
+        QJsonObject qcThreshold = subjects[ "qcThreshold" ].toObject();
+        qcThreshold[ "apply" ] = !m_failedQCThresholdSubjects.isEmpty();
+        qcThreshold[ "value" ] = para_subjectTab_qcThreshold_doubleSpinBox->value();
+        qcThreshold[ "propertyRefID" ] = "FA" ;
+        subjects[ "qcThreshold" ] = qcThreshold;
+
+        /******   Settings   ******/
+        settings[ "fiberName" ] = para_executionTab_fiberName_lineEdit->text();
+        settings[ "nbrPermutations" ] = para_executionTab_nbrPermutations_spinBox->value();
+        settings[ "confidenceBandThreshold" ] = para_executionTab_confidenceBandsThreshold_doubleSpinBox->value();
+        settings[ "pvalueThreshold" ] = para_executionTab_pvalueThreshold_doubleSpinBox->value();
+        settings[ "omnibus" ] = para_executionTab_omnibus_checkBox->isChecked();
+        settings[ "posthoc" ] = para_executionTab_postHoc_checkBox->isChecked();
+
+        /******  Output Dir  ******/
+        jsonObject_noGUI[ "outputDir" ] = para_executionTab_outputDir_lineEdit->text();
+
+        /* Matlab  Specifications */
+        matlabSpecifications[ "fadttsDir" ] = para_executionTab_mvcm_lineEdit->text();
+        matlabSpecifications[ "runMatlab" ] = soft_executionTab_runMatlab_checkBox->isChecked();
+        matlabSpecifications[ "matlabExe" ] = soft_executionTab_matlabExe_lineEdit->text();
+        matlabSpecifications[ "nbrCompThreads" ] = soft_executionTab_nbrCompThreads_spinBox->value();
+
+
+        jsonObject_noGUI[ "inputFiles" ] = inputFiles;
+        jsonObject_noGUI[ "covariates" ] = covariates;
+        jsonObject_noGUI[ "subjects" ] = subjects;
+        jsonObject_noGUI[ "settings" ] = settings;
+        jsonObject_noGUI[ "matlabSpecifications" ] = matlabSpecifications;
+        jsonObject[ "noGUI" ] = jsonObject_noGUI;
+
+        jsonDoc.setObject( jsonObject );
+        QFile exportedJSON( filename );
+        exportedJSON.open( QIODevice::WriteOnly | QIODevice::Text );
+        exportedJSON.write( jsonDoc.toJson( QJsonDocument::Indented ) );
+        exportedJSON.flush();
+        exportedJSON.close();
+    }
+}
+
+
+
 void FADTTSWindow::InitMenuBar()
 {
-    /** Load parameters (para_) from a .xml file into the GUI interface **/
-    connect( this->actionLoad_Param_Settings, SIGNAL( triggered() ), SLOT( OnLoadParaSettings() ) );
-    /** Save parameters (para_) from the GUI interface into a .xml file **/
-    connect( this->actionSave_Param_Settings, SIGNAL( triggered() ), SLOT( OnSaveParaSettings() ) );
+    /** Load parameters (para_) from a .json file into the GUI interface **/
+    connect( this->actionLoad_Para_Configuration, SIGNAL( triggered() ), SLOT( OnLoadParaConfiguration() ) );
+    /** Save parameters (para_) from the GUI interface into a .json file **/
+    connect( this->actionSave_Para_Configuration, SIGNAL( triggered() ), SLOT( OnSaveParaConfiguration() ) );
 
-    /** Load software parameters (soft_) from a .xml file into the GUI interface **/
-    connect( this->actionLoad_Soft_Settings, SIGNAL( triggered() ), SLOT( OnLoadSoftSettings() ) );
-    /** Save software parameters (soft_) from the GUI interface into a .xml file **/
-    connect( this->actionSave_Soft_Settings, SIGNAL( triggered() ), SLOT( OnSaveSoftSettings() ) );
+    /** Load software parameters (soft_) from a .json file into the GUI interface **/
+    connect( this->actionLoad_Soft_Configuration, SIGNAL( triggered() ), SLOT( OnLoadSoftConfiguration() ) );
+    /** Save software parameters (soft_) from the GUI interface into a .json file **/
+    connect( this->actionSave_Soft_Configuration, SIGNAL( triggered() ), SLOT( OnSaveSoftConfiguration() ) );
+
+    /** Save parameters (para_) and software parameters (soft_) from the GUI interface into a .json file for the FADTTSter --noGUI mode**/
+    connect( this->actionSave_noGUI_Configuration, SIGNAL( triggered() ), SLOT( OnSaveNoGUIConfiguration() ) );
+
 
     connect( this->actionAbout, SIGNAL( triggered() ), SLOT( OnDisplayAbout() ) );
 }
@@ -232,13 +549,6 @@ void FADTTSWindow::InitSubjectCovariateTab()
         signalMapperSelectFile->setMapping( m_paramTabFileCheckBoxMap[ m_data.GetDiffusionPropertiesIndices().at( i ) ], m_data.GetDiffusionPropertiesIndices().at( i ) );
     }
 
-    /** Map of Labels displaying the matrix data size of the files that have been chosen **/
-//    m_paramTabFileDataSizeLabelMap.insert( m_data.GetAxialDiffusivityIndex(), this->subjectTab_adFileInfo_label );
-//    m_paramTabFileDataSizeLabelMap.insert( m_data.GetRadialDiffusivityIndex(),this->subjectTab_rdFileInfo_label );
-//    m_paramTabFileDataSizeLabelMap.insert( m_data.GetMeanDiffusivityIndex(), this->subjectTab_mdFileInfo_label );
-//    m_paramTabFileDataSizeLabelMap.insert( m_data.GetFractionalAnisotropyIndex(), this->subjectTab_faFileInfo_label );
-//    m_paramTabFileDataSizeLabelMap.insert( m_data.GetSubMatrixIndex(), this->subjectTab_subMatrixFileInfo_label );
-
     /*** QC Threshold ***/
     m_qcThresholdDialog = QSharedPointer< QCThresholdDialog >( new QCThresholdDialog( this ) );
     connect( this->subjectTab_applyQCThreshold_pushButton, SIGNAL( clicked() ), this, SLOT( OnApplyQCThreshold() ) );
@@ -268,6 +578,14 @@ void FADTTSWindow::InitSubjectCovariateTab()
     connect( this->subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
     connect( this->subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
     connect( this->subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
+
+    /** ATLAS QCTHRESHOLD **/
+//    para_subjectTab_qcThresoldOnAtlas_radioButton->setDisabled( true );
+    para_subjectTab_qcThresoldOnPopulation_radioButton->setDisabled( true );
+    subjectTab_addQCThresholdAtlas_PushButton->setDisabled( true );
+    para_subjectTab_qcThresoldAtlas_lineEdit->setDisabled( true );
+    subjectTab_iconQCThresoldAltlas_label->setDisabled( true );
+
 }
 
 void FADTTSWindow::InitExecutionTab()
@@ -283,11 +601,11 @@ void FADTTSWindow::InitExecutionTab()
     m_isMatlabExeFound = false;
 
     connect( this->executionTab_mvcm_pushButton, SIGNAL( clicked() ), this, SLOT( OnBrowsingMVCMPath() ) );
-    connect( this->soft_executionTab_mvcm_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingMVCMPath( const QString& ) ) );
+    connect( this->para_executionTab_mvcm_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingMVCMPath( const QString& ) ) );
 
-    connect( this->para_executionTab_runMatlab_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnRunMatlabToggled( bool ) ) );
-    connect( this->executionTab_runMatlab_pushButton, SIGNAL( clicked() ), this, SLOT( OnBrowsingMatlabExe() ) );
-    connect( this->soft_executionTab_runMatlab_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingMatlabExe( const QString& ) ) );
+    connect( this->soft_executionTab_runMatlab_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnRunMatlabToggled( bool ) ) );
+    connect( this->executionTab_matlabExe_pushButton, SIGNAL( clicked() ), this, SLOT( OnBrowsingMatlabExe() ) );
+    connect( this->soft_executionTab_matlabExe_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingMatlabExe( const QString& ) ) );
 
     this->soft_executionTab_nbrCompThreads_spinBox->setMaximum( QThread::idealThreadCount() );
 
@@ -307,6 +625,10 @@ void FADTTSWindow::InitExecutionTab()
     this->executionTab_stop_pushButton->setEnabled( false );
 
     /*** Log ***/
+    m_log = new Log;
+    m_log->SetMatlabScript( m_matlabThread );
+    connect( m_log, SIGNAL( UpdateLogActivity( const QString& ) ), this, SLOT( OnUpdatingLogActivity( const QString& ) ) );
+
     m_logWindow = new QTextEdit();
     m_logWindow = this->executionTab_log_textEdit;
     m_logWindow->setReadOnly( true );
@@ -315,6 +637,15 @@ void FADTTSWindow::InitExecutionTab()
 
 
     OnRunMatlabToggled( false );
+
+
+    /** Run on KD **/
+    soft_executionTab_runMatlabKillDevil_radioButton->setDisabled( true );
+    executionTab_killDevilQueue_label->setDisabled( true );
+    soft_executionTab_killDevilQueue_comboBox->setDisabled( true );
+    executionTab_killDevilAllocatedMemory_label->setDisabled( true );
+    soft_executionTab_killDevilAllocatedMemory_spinBox->setDisabled( true );
+    executionTab_killDevilAllocatedMemoryInfo_label->setDisabled( true );
 }
 
 void FADTTSWindow::InitPlottingTab()
@@ -665,7 +996,7 @@ QString FADTTSWindow::GetInputFileInformation( int diffusionPropertyIndex ) cons
         fileInformation.append( tr( qPrintable( "Data matrix: <i>" + QString::number(  m_data.GetNbrRows( diffusionPropertyIndex ) ) + "x" + QString::number( m_data.GetNbrColumns( diffusionPropertyIndex ) )  + "</i><br>" ) ) );
         if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
         {
-            fileInformation.append( tr( qPrintable( "Number of covariates: <i>" + QString::number( m_data.GetCovariates().size()-1 )  + "</i>" ) ) );
+            fileInformation.append( tr( qPrintable( "Number of covariates: <i>" + QString::number( m_data.GetCovariates().size()-1 )  + " ( + Intercept )</i>" ) ) );
         }
     }
     else
@@ -797,13 +1128,16 @@ void FADTTSWindow::OnApplyQCThreshold()
     QStringList matchedSubjects = GetCheckedMatchedSubjects();
     QMap< QString, QList< QStringList > > rawData = GetPropertyRawData();
 
-    bool initDiaolog = m_qcThresholdDialog->InitPlot( rawData, matchedSubjects, this->para_subjectTab_qcThreshold_doubleSpinBox->value() );
-
-    if( initDiaolog )
+    if( !matchedSubjects.isEmpty() )
     {
-        m_qcThresholdDialog->setModal( true );
-        m_qcThresholdDialog->setWindowTitle( tr( "Apply QC Threshold" ) );
-        m_qcThresholdDialog->exec();
+        bool initDiaolog = m_qcThresholdDialog->InitPlot( rawData, matchedSubjects, this->para_subjectTab_qcThreshold_doubleSpinBox->value() );
+
+        if( initDiaolog )
+        {
+            m_qcThresholdDialog->setModal( true );
+            m_qcThresholdDialog->setWindowTitle( tr( "Apply QC Threshold" ) );
+            m_qcThresholdDialog->exec();
+        }
     }
 }
 
@@ -946,17 +1280,17 @@ void FADTTSWindow::SetSelectedInputFiles()
 
 void FADTTSWindow::UpdateAvailableDiffusionProperties( int diffusionPropertyIndex )
 {
-//    QLabel *currentLabel = m_paramTabFileDataSizeLabelMap.value( diffusionPropertyIndex );
+    //    QLabel *currentLabel = m_paramTabFileDataSizeLabelMap.value( diffusionPropertyIndex );
     QCheckBox *currentCheckBox = m_paramTabFileCheckBoxMap.value( diffusionPropertyIndex );
     int nbrRows = m_data.GetNbrSubjects( diffusionPropertyIndex );
     int nbrColumns = m_data.GetNbrColumns( diffusionPropertyIndex );
     int nbrSubjects = m_data.GetNbrSubjects( diffusionPropertyIndex );
 
     bool isDefine = !( ( nbrRows == 0 ) | ( nbrColumns == 0 ) | ( nbrSubjects == 0 ) );
-//    QString text = isDefine ? tr( qPrintable( QString::number( m_data.GetNbrSubjects( diffusionPropertyIndex ) ) + " subjects" ) ) :
-//                              tr( "N/A" );
-//    currentLabel->setEnabled( isDefine );
-//    currentLabel->setText( text );
+    //    QString text = isDefine ? tr( qPrintable( QString::number( m_data.GetNbrSubjects( diffusionPropertyIndex ) ) + " subjects" ) ) :
+    //                              tr( "N/A" );
+    //    currentLabel->setEnabled( isDefine );
+    //    currentLabel->setText( text );
     currentCheckBox->setEnabled( isDefine );
     currentCheckBox->setChecked( isDefine );
 }
@@ -1104,11 +1438,6 @@ void FADTTSWindow::UpdateSubjectList()
     }
 
     QStringList allSubjectsList = m_processing.GetAllSubjects( allSubjects );
-    if( m_areSubjectsLoaded )
-    {
-        allSubjectsList.append( m_loadedSubjects );
-        allSubjectsList.removeDuplicates();
-    }
 
     QMap< QString, QMap< int, bool > > sortedSubjects = m_processing.SortSubjects( allSubjectsList, allSubjects );
 
@@ -1284,7 +1613,7 @@ void FADTTSWindow::OnSettingOutputDir( const QString& path )
 
 void FADTTSWindow::OnBrowsingMVCMPath()
 {
-    QLineEdit *lineEdit = this->soft_executionTab_mvcm_lineEdit;
+    QLineEdit *lineEdit = this->para_executionTab_mvcm_lineEdit;
     QString filePath = lineEdit->text();
     QDir dir = filePath;
 
@@ -1318,7 +1647,7 @@ void FADTTSWindow::OnSettingMVCMPath( const QString& path )
 
 void FADTTSWindow::OnBrowsingMatlabExe()
 {
-    QLineEdit *lineEdit = this->soft_executionTab_runMatlab_lineEdit;
+    QLineEdit *lineEdit = this->soft_executionTab_matlabExe_lineEdit;
     QString filePath = lineEdit->text();
     QString file;
     QDir dir;
@@ -1336,7 +1665,7 @@ void FADTTSWindow::OnBrowsingMatlabExe()
 void FADTTSWindow::OnSettingMatlabExe( const QString& executable )
 {
     QFile matlabExe( executable );
-    QLabel *label = this->executionTab_iconMatlab_label;
+    QLabel *label = this->executionTab_iconMatlabExe_label;
     if( executable.isEmpty() )
     {
         label->clear();
@@ -1364,9 +1693,9 @@ void FADTTSWindow::OnSettingMatlabExe( const QString& executable )
 
 void FADTTSWindow::OnRunMatlabToggled( bool choice )
 {
-    this->executionTab_runMatlab_pushButton->setEnabled( choice );
-    this->soft_executionTab_runMatlab_lineEdit->setEnabled( choice );
-    this->executionTab_iconMatlab_label->setEnabled( choice );
+    this->executionTab_matlabExe_pushButton->setEnabled( choice );
+    this->soft_executionTab_matlabExe_lineEdit->setEnabled( choice );
+    this->executionTab_iconMatlabExe_label->setEnabled( choice );
     this->executionTab_nbrCompThreads_label->setEnabled( choice );
     this->soft_executionTab_nbrCompThreads_spinBox->setEnabled( choice );
 
@@ -1376,12 +1705,10 @@ void FADTTSWindow::OnRunMatlabToggled( bool choice )
 
 void FADTTSWindow::OnRun()
 { 
-    SyncUiToModelStructure();
-
     SetSelectedCovariates();
     SetFibername();
 
-    if( IsFADTTSReadyToBeRun() )
+    if( canFADTTSterBeRun() )
     {
         this->executionTab_run_pushButton->setEnabled( false );
         this->executionTab_stop_pushButton->setEnabled( true );
@@ -1391,7 +1718,7 @@ void FADTTSWindow::OnRun()
 
         m_matlabThread->start();
 
-        *m_textStreamLog << endl << "File generation completed..." << endl;
+        m_log->AddText( "\nFile generation completed...\n" );
     }
 }
 
@@ -1408,7 +1735,7 @@ void FADTTSWindow::OnStop()
             break;
         case QMessageBox::Yes:
         {
-            *m_textStreamLog << "Warning! Thread terminated by user before completed matlab script." << endl;
+            m_log->AddText( "\nWarning! Thread terminated by user before completed matlab script.\n" );
             m_matlabThread->terminate();
             m_logWindow->insertPlainText( "Warning! Thread terminated by user before completed matlab script.\n");
             break;
@@ -1419,13 +1746,10 @@ void FADTTSWindow::OnStop()
     }
 }
 
-void FADTTSWindow::OnDisplayLog()
+void FADTTSWindow::OnUpdatingLogActivity( const QString& LogActivity )
 {
     QScrollBar *scrollBar = m_logWindow->verticalScrollBar();
-
-    QString line = m_textStreamLog->readAll();
-    m_logWindow->insertPlainText( line );
-
+    m_logWindow->insertPlainText( LogActivity );
     scrollBar->setValue( scrollBar->maximum() );
     //    if( scrollBar->value() == scrollBar->maximum() )
     //    {
@@ -1448,8 +1772,7 @@ void FADTTSWindow::OnMatlabThreadFinished()
 {
     this->executionTab_run_pushButton->setEnabled( true );
     this->executionTab_stop_pushButton->setEnabled( false );
-    m_logFile->flush();
-    m_logFile->close();
+    m_log->CloseLogFile();
     m_progressBar->hide();
 }
 
@@ -1534,7 +1857,7 @@ void FADTTSWindow::SetFibername()
     m_fibername = this->para_executionTab_fiberName_lineEdit->text();
 }
 
-bool FADTTSWindow::IsFADTTSReadyToBeRun()
+bool FADTTSWindow::canFADTTSterBeRun()
 {
     bool atLeastOneDiffusionPropertyEnabled = ( m_paramTabFileCheckBoxMap.value( m_data.GetAxialDiffusivityIndex() )->isEnabled() ||
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetRadialDiffusivityIndex() )->isEnabled() ||
@@ -1552,8 +1875,8 @@ bool FADTTSWindow::IsFADTTSReadyToBeRun()
 
     bool fiberNameProvided = !m_fibername.isEmpty();
 
-    bool mvcmPathSpecified = !this->soft_executionTab_mvcm_lineEdit->text().isEmpty();
-    bool matlabExeSpecified = !this->para_executionTab_runMatlab_checkBox->isChecked() ? true : m_isMatlabExeFound;
+    bool mvcmPathSpecified = !this->para_executionTab_mvcm_lineEdit->text().isEmpty();
+    bool matlabExeSpecified = !this->soft_executionTab_runMatlab_checkBox->isChecked() ? true : m_isMatlabExeFound;
 
     if( !atLeastOneDiffusionPropertyEnabled || !subMatrixEnabled ||
             !atLeastOneDiffusionPropertyChecked || !subMatrixChecked ||
@@ -1621,90 +1944,6 @@ bool FADTTSWindow::IsFADTTSReadyToBeRun()
     }
 }
 
-void FADTTSWindow::SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap< int, QString >& selectedCovariates )
-{
-    m_logWindow->clear();
-
-    // Log File
-    m_logFile = new::QFile( outputDir + "/" + m_fibername + ".log" );
-    m_logFile->open( QIODevice::ReadWrite );
-    m_matlabThread->SetLogFile( m_logFile );
-    m_textStreamLog = new QTextStream( m_logFile );
-
-    // QFileSystemWatcher
-    QFileSystemWatcher* log_watcher = new QFileSystemWatcher( this );
-    log_watcher->addPath( m_logFile->fileName() );
-    connect( log_watcher, SIGNAL( fileChanged( QString ) ), this, SLOT( OnDisplayLog() ) );
-
-    // Init log file
-    *m_textStreamLog << QDate::currentDate().toString( "MM/dd/yyyy" ) <<
-                        " " << QTime::currentTime().toString( "hh:mmap" ) << endl;
-    *m_textStreamLog << "FADTTSter: " << QString( FADTTS_VERSION ).prepend( "V" ) << endl;
-    *m_textStreamLog << "/****************************************************************/" << endl;
-    *m_textStreamLog << "/********************** FADTTSter LOG FILE **********************/" << endl;
-    *m_textStreamLog << "/****************************************************************/" << endl << endl;
-
-    *m_textStreamLog << "/**********************       Inputs       **********************/" << endl;
-    *m_textStreamLog << "- input files: ";
-    QStringList files;
-    QMap< int, QString >::ConstIterator iterMatlabInputFiles = matlabInputFiles.cbegin();
-    while( iterMatlabInputFiles != matlabInputFiles.cend() )
-    {
-        files.append( QFileInfo( QFile( iterMatlabInputFiles.value() ) ).fileName() );
-        ++iterMatlabInputFiles;
-    }
-    *m_textStreamLog << files.join( ", " ) << endl;
-    *m_textStreamLog << "- nbr covariates: " << QString::number( selectedCovariates.size() ) << endl;
-    *m_textStreamLog << "- covariates: ";
-    QStringList covariates;
-    QMap< int, QString >::ConstIterator iterCovariates = selectedCovariates.cbegin();
-    while( iterCovariates != selectedCovariates.cend() )
-    {
-        covariates.append( iterCovariates.value() );
-        ++iterCovariates;
-    }
-    *m_textStreamLog << covariates.join( ", " ) << endl;
-    if( !m_loadedSubjects.isEmpty() )
-    {
-        *m_textStreamLog << "- subject file: " << m_subjectFileLineEdit->text() << endl;
-    }
-    *m_textStreamLog << "- nbr subjects: " << QString::number( m_nbrSelectedSubjects ) << endl;
-    if( !m_failedQCThresholdSubjects.isEmpty() )
-    {
-        *m_textStreamLog << "/!\\ That number INCLUDE the " << QString::number( m_failedQCThresholdSubjects.size() ) << " subject(s) that was/were removed from the study after failing the QC Threshold set at " << QString::number( m_qcThreshold ) << endl << endl;
-    }
-
-    *m_textStreamLog << "/**********************      Settings      **********************/" << endl;
-    *m_textStreamLog << "- fiber name: " << m_fibername << endl;
-    *m_textStreamLog << "- nbr permutations: " << QString::number( this->para_executionTab_nbrPermutations_spinBox->value() ) << endl;
-    *m_textStreamLog << "- confidence band threshold: " << QString::number( this->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() ) << endl;
-    *m_textStreamLog << "- pvalue threshold: " << QString::number( this->para_executionTab_pvalueThreshold_doubleSpinBox->value() ) << endl;
-    *m_textStreamLog << QString( this->para_executionTab_omnibus_checkBox->isChecked() ? "- omnibus: true" : "- omnibus: false" ) << endl;
-    *m_textStreamLog << QString( this->para_executionTab_postHoc_checkBox->isChecked() ? "- post hoc: true" : "- post hoc: false" ) << endl << endl;
-
-    *m_textStreamLog << "/**********************       Output       **********************/" << endl;
-    *m_textStreamLog << "- output directory: " << outputDir << endl << endl;
-
-    *m_textStreamLog << "/********************* Matlab Specification *********************/" << endl;
-    *m_textStreamLog << "- FADTTS directory: " << this->soft_executionTab_mvcm_lineEdit->text() << endl << endl;
-    if( this->para_executionTab_runMatlab_checkBox->isChecked() )
-    {
-        *m_textStreamLog << "Matlab will be run after file generation" << endl;
-        *m_textStreamLog << "- matlab executable: " << this->soft_executionTab_runMatlab_lineEdit->text() << endl;
-        *m_textStreamLog << "- nbr computational threads: " << soft_executionTab_nbrCompThreads_spinBox->value() << endl;
-    }
-    else
-    {
-        *m_textStreamLog << "/!\\ Matlab will not be run after file generation (user choice)" << endl;
-    }
-    *m_textStreamLog << endl << endl << endl;
-
-    *m_textStreamLog << "/**********************       Process      **********************/" << endl;
-    *m_textStreamLog << "Thread starts running..." << endl;
-
-    m_logFile->flush();
-}
-
 void FADTTSWindow::SetMatlabScript()
 {
     QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + m_fibername;
@@ -1715,8 +1954,8 @@ void FADTTSWindow::SetMatlabScript()
 
     m_matlabThread->InitMatlabScript( outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( this->para_executionTab_nbrPermutations_spinBox->value() ) + "perm.m" );
     m_matlabThread->SetHeader();
-    m_matlabThread->SetNbrCompThreads( this->para_executionTab_runMatlab_checkBox->isChecked(), this->soft_executionTab_nbrCompThreads_spinBox->value() );
-    m_matlabThread->SetMVCMPath( this->soft_executionTab_mvcm_lineEdit->text() );
+    m_matlabThread->SetNbrCompThreads( this->soft_executionTab_runMatlab_checkBox->isChecked(), this->soft_executionTab_nbrCompThreads_spinBox->value() );
+    m_matlabThread->SetMVCMPath( this->para_executionTab_mvcm_lineEdit->text() );
     m_matlabThread->SetFiberName( m_fibername );
     m_matlabThread->SetDiffusionProperties( m_propertySelected.values() );
     m_matlabThread->SetNbrPermutation( this->para_executionTab_nbrPermutations_spinBox->value() );
@@ -1727,7 +1966,13 @@ void FADTTSWindow::SetMatlabScript()
     m_matlabThread->SetConfidenceBandsThreshold( this->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() );
     m_matlabThread->SetPvalueThreshold( this->para_executionTab_pvalueThreshold_doubleSpinBox->value() );
 
-    SetLogDisplay( outputDir, matlabInputFiles, m_selectedCovariates );
+    m_log->SetLogFile( outputDir, m_fibername );
+    m_log->SetFileWatcher();
+    m_log->InitLog( outputDir, m_fibername, matlabInputFiles, m_selectedCovariates, m_loadedSubjects, m_subjectFileLineEdit->text(), m_nbrSelectedSubjects,
+                    m_failedQCThresholdSubjects, m_qcThreshold, this->para_executionTab_nbrPermutations_spinBox->value(), this->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value(),
+                    this->para_executionTab_pvalueThreshold_doubleSpinBox->value(), this->para_executionTab_omnibus_checkBox->isChecked(), this->para_executionTab_postHoc_checkBox->isChecked(),
+                    this->para_executionTab_mvcm_lineEdit->text(), this->soft_executionTab_runMatlab_checkBox->isChecked(), this->soft_executionTab_matlabExe_lineEdit->text(),
+                    soft_executionTab_nbrCompThreads_spinBox->value() );
 }
 
 
@@ -2191,16 +2436,17 @@ void FADTTSWindow::OnResetPlot()
 
 void FADTTSWindow::OnLoadPlotSettings()
 {
-    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Plot Settings" ) , "" , tr( ".csv( *.csv ) ;; .*( * )" ) );
+    QString filename = QFileDialog::getOpenFileName( this , tr( "Load Plot Configuration" ) , "" , tr( ".json( *.json ) ;; .*( * )" ) );
     if( !filename.isEmpty() )
     {
         LoadPlotSettings( filename );
+        EditCovariatesNames();
     }
 }
 
 void FADTTSWindow::OnSavePlotSettings()
 {
-    QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save Plot Settings as ..." ) ), "newPlotSettings.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
+    QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save Plot Settings as ..." ) ), "newPlotConfiguration.json", tr( ".json( *.json ) ;; .*( * )" ) );
     if( !filePath.isEmpty() )
     {
         SavePlotSettings( filePath );
@@ -2553,7 +2799,7 @@ void FADTTSWindow::ResetPlotTab()
     this->plottingTab_savePlot_pushButton->setEnabled( false );
 
     this->plottingTab_loadPlotSettings_pushButton->setEnabled( false );
-    this->plottingTab_savePlotSettings_pushButton->setEnabled( false );    
+    this->plottingTab_savePlotSettings_pushButton->setEnabled( false );
 }
 
 void FADTTSWindow::SetPlotTab()
@@ -2604,159 +2850,180 @@ void FADTTSWindow::SetPlotTab()
 
 void FADTTSWindow::LoadPlotSettings( QString filePath )
 {
-    QList< QStringList > plotSettings = m_processing.GetDataFromFile( filePath );
-    int nbrFixedSettings = 20;
+    QString text;
+    QFile file( filePath );
+    file.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = file.readAll();
+    file.close();
 
-    qDebug() << endl << plotSettings;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8() );
+    QJsonObject jsonObject = jsonDoc.object();
 
-    if( plotSettings.size() == ( nbrFixedSettings + m_propertiesColorsComboBoxMap.size() + 2*m_covariatesColorsComboBoxMap.size() ) )
+    /*** Title/Axis/Legend Data Tab ***/
+    QJsonObject title = jsonObject.value( "title" ).toObject();
+    this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( title.value( "customizedTitle" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_titleBold_checkBox->setChecked( title.value( "bold" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->setChecked( title.value( "italic" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setValue( title.value( "size" ).toDouble() );
+
+    QJsonObject axis = jsonObject.value( "axis" ).toObject();
+    this->plottingTab_titleAxisLegendTab_gridOn_checkBox->setChecked( axis.value( "showGrid" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( axis.value( "customizedAxis" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_xName_lineEdit->setText( axis.value( "xName" ).toString() );
+    this->plottingTab_titleAxisLegendTab_yName_lineEdit->setText( axis.value( "yName" ).toString() );
+    this->plottingTab_titleAxisLegendTab_axisBold_checkBox->setChecked( axis.value( "bold" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->setChecked( axis.value( "italic" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_yMin_checkBox->setChecked( axis.value( "yMin" ).toObject().value( "set" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setValue( axis.value( "yMin" ).toObject().value( "value" ).toDouble() );
+    this->plottingTab_titleAxisLegendTab_yMax_checkBox->setChecked( axis.value( "yMax" ).toObject().value( "set" ).toBool() );
+    this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setValue( axis.value( "yMax" ).toObject().value( "value" ).toDouble() );
+
+    QJsonObject legend = jsonObject.value( "legend" ).toObject();
+    this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->setCurrentText( legend.value( "position" ).toString() );
+
+    /*** Edition Tab ***/
+    QJsonObject pvalueThreshold = jsonObject.value( "pvalueThreshold" ).toObject();
+    this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->setValue( pvalueThreshold.value( "value" ).toDouble() );
+
+    QJsonObject line = jsonObject.value( "line" ).toObject();
+    this->plottingTab_editionTab_lineWidth_doubleSpinBox->setValue( line.value( "lineWidth" ).toDouble() );
+    this->plottingTab_editionTab_selectedLineColor_comboBox->setCurrentText( line.value( "colorSelection" ).toString() );
+
+    QJsonObject marker = jsonObject.value( "marker" ).toObject();
+    this->plottingTab_editionTab_markerType_comboBox->setCurrentText( marker.value( "type" ).toString() );
+    this->plottingTab_editionTab_markerSize_doubleSpinBox->setValue( marker.value( "size" ).toDouble() );
+
+    /*** properties Edition ***/
+    QJsonArray propertiesEdition = jsonObject.value( "propertiesEdition" ).toArray();
+    QMap< int, QString > properties;
+    for( int i = 0; i < m_propertiesColorsComboBoxMap.size(); i++ )
     {
-        int index = 0;
+        QString currentProperty = m_propertiesColorsComboBoxMap.value( i ).first;
+        properties.insert( i, currentProperty );
+    }
 
-        /*** Title/Axis/Legend Data Tab ***/
-        this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_titleBold_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_titleAxisLegendTab_gridOn_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        if( plotSettings.at( index ).size() == 1 )
+    for( int i = 0; i < propertiesEdition.size(); i++ )
+    {
+        QJsonObject currentPropertyObject = propertiesEdition.at( i ).toObject();
+        QString currentProperty = currentPropertyObject.value( "name" ).toString();
+        if( properties.values().contains( currentProperty ) )
         {
-            this->plottingTab_titleAxisLegendTab_xName_lineEdit->clear();
+            m_propertiesColorsComboBoxMap.value( properties.key( currentProperty ) ).second->setCurrentText( currentPropertyObject.value( "color" ).toString() );
         }
-        else
+    }
+
+    /*** covariates Edition ***/
+    QJsonArray covariatesEdition = jsonObject.value( "covariatesEdition" ).toArray();
+    QMap< int, QString > covariates;
+    for( int i = 0; i < m_covariatesColorsComboBoxMap.size(); i++ )
+    {
+        QString currentCovariate = m_covariatesColorsComboBoxMap.value( i ).first;
+        covariates.insert( i, currentCovariate );
+    }
+
+    for( int i = 0; i < covariatesEdition.size(); i++ )
+    {
+        QJsonObject currentCovariateObject = covariatesEdition.at( i ).toObject();
+        QString currentCovariate = currentCovariateObject.value( "name" ).toString();
+        if( covariates.values().contains( currentCovariate ) )
         {
-            this->plottingTab_titleAxisLegendTab_xName_lineEdit->setText( plotSettings.at( index ).at( 1 ) );
+            m_covariatesColorsComboBoxMap.value( covariates.key( currentCovariate ) ).second->setCurrentText( currentCovariateObject.value( "color" ).toString() );
+            m_covariatesNameLineEditMap.value( covariates.key( currentCovariate ) ).second->setText( currentCovariateObject.value( "newName" ).toString() );
         }
-        index++;
-        if( plotSettings.at( index ).size() == 1 )
-        {
-            this->plottingTab_titleAxisLegendTab_yName_lineEdit->clear();
-        }
-        else
-        {
-            this->plottingTab_titleAxisLegendTab_yName_lineEdit->setText( plotSettings.at( index ).at( 1 ) );
-        }
-        index++;
-        this->plottingTab_titleAxisLegendTab_axisBold_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMin_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMax_checkBox->setChecked( plotSettings.at( index ).at( 1 ).toInt() == 0 ? false : true );
-        index++;
-        this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
-        index++;
-
-        /*** Edition Tab ***/
-        this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        this->plottingTab_editionTab_lineWidth_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-        this->plottingTab_editionTab_selectedLineColor_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
-        index++;
-
-        this->plottingTab_editionTab_markerType_comboBox->setCurrentText( plotSettings.at( index ).at( 1 ) );
-        index++;
-        this->plottingTab_editionTab_markerSize_doubleSpinBox->setValue( plotSettings.at( index ).at( 1 ).toDouble() );
-        index++;
-
-        comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
-        while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
-        {
-            iterPropertyColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
-            index++;
-            ++iterPropertyColor;
-        }
-
-        comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
-        covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
-        while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
-        {
-            iterCovariateColor.value().second->setCurrentText( plotSettings.at( index ).at( 1 ) );
-            index++;
-            if( plotSettings.at( index ).size() == 1 )
-            {
-                iterCovariateName.value().second->clear();
-            }
-            else
-            {
-                iterCovariateName.value().second->setText( plotSettings.at( index ).at( 1 ) );
-            }
-            index++;
-            ++iterCovariateColor;
-            ++iterCovariateName;
-        }
-
-        EditCovariatesNames();
     }
 }
 
 void FADTTSWindow::SavePlotSettings( QString filePath )
 {
-    QFile exportedCSV( filePath );
-    exportedCSV.open( QIODevice::WriteOnly );
-    QTextStream ts( &exportedCSV );
+    QString text;
+    QFile refJSON( QString( ":/ConfigurationFiles/Resources/ConfigurationFiles/plotConfiguration.json" ) );
+    refJSON.open( QIODevice::ReadOnly | QIODevice::Text );
+    text = refJSON.readAll();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8() );
+    QJsonObject jsonObject = jsonDoc.object();
+
 
     /*** Title/Axis/Legend Data Tab ***/
-    ts << ( QStringList() << "setTitle_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "titleBold_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "titleItalic_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "titleSize_value" << QString::number( this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+    QJsonObject title = jsonObject[ "title" ].toObject();
+    title[ "customizedTitle" ] = this->plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked();
+    title[ "bold" ] = this->plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked();
+    title[ "italic" ] = this->plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked();
+    title[ "size" ] = this->plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value();
+    jsonObject[ "title" ] = title;
 
-    ts << ( QStringList() << "grid" << QString::number( this->plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "setAxis_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "xAxis_name" << this->plottingTab_titleAxisLegendTab_xName_lineEdit->text() ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "yAxis_name" << this->plottingTab_titleAxisLegendTab_yName_lineEdit->text() ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "axisBold_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "axisItalic_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "yMin_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "yMin_value" << QString::number( this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "yMax_checkState" << QString::number( this->plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "yMax_value" << QString::number( this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+    QJsonObject axis = jsonObject[ "axis" ].toObject();
+    axis[ "showGrid" ] = this->plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked();
+    axis[ "customizedAxis" ] = this->plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked();
+    axis[ "xName" ] = this->plottingTab_titleAxisLegendTab_xName_lineEdit->text();
+    axis[ "yName" ] = this->plottingTab_titleAxisLegendTab_yName_lineEdit->text();
+    axis[ "bold" ] = this->plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked();
+    axis[ "italic" ] = this->plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked();
+    axis[ "yMin" ].toObject()[ "set" ] = this->plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked();
+    axis[ "yMin" ].toObject()[ "value" ] = this->plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value();
+    axis[ "yMax" ].toObject()[ "set" ] = this->plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked();
+    axis[ "yMax" ].toObject()[ "value" ] = this->plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value();
+    jsonObject[ "axis" ] = axis;
 
-    ts << ( QStringList() << "legend_position" << this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->currentText() ).join( m_csvSeparator ) << endl;
+    QJsonObject legend = jsonObject[ "legend" ].toObject();
+    legend[ "position" ] = this->plottingTab_titleAxisLegendTab_legendPosition_comboBox->currentText();
+    jsonObject[ "legend" ] = legend;
 
     /*** Edition Tab ***/
-    ts << ( QStringList() << "alpha_value" << QString::number( this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+    QJsonObject pvalueThreshold = jsonObject[ "pvalueThreshold" ].toObject();
+    pvalueThreshold[ "value" ] = this->plottingTab_editionTab_pvalueThreshold_doubleSpinBox->value();
+    jsonObject[ "pvalueThreshold" ] = pvalueThreshold;
 
-    ts << ( QStringList() << "lineWidth" << QString::number( this->plottingTab_editionTab_lineWidth_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "selectedLine_color" << this->plottingTab_editionTab_selectedLineColor_comboBox->currentText() ).join( m_csvSeparator ) << endl;
+    QJsonObject line = jsonObject[ "line" ].toObject();
+    line[ "lineWidth" ] = this->plottingTab_editionTab_lineWidth_doubleSpinBox->value();
+    line[ "colorSelection" ] = this->plottingTab_editionTab_selectedLineColor_comboBox->currentText();
+    jsonObject[ "line" ] = line;
 
-    ts << ( QStringList() << "markerType" << this->plottingTab_editionTab_markerType_comboBox->currentText() ).join( m_csvSeparator ) << endl;
-    ts << ( QStringList() << "markerSize" << QString::number( this->plottingTab_editionTab_markerSize_doubleSpinBox->value() ) ).join( m_csvSeparator ) << endl;
+    QJsonObject marker = jsonObject[ "marker" ].toObject();
+    marker[ "type" ] = this->plottingTab_editionTab_markerType_comboBox->currentText();
+    marker[ "size" ] = this->plottingTab_editionTab_markerSize_doubleSpinBox->value();
+    jsonObject[ "marker" ] = marker;
+
+    /*** properties Edition ***/
+    QJsonArray propertiesEdition = jsonObject[ "propertiesEdition" ].toArray();
 
     comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
     while( iterPropertyColor != m_propertiesColorsComboBoxMap.cend() )
     {
-        ts << ( QStringList() << ( iterPropertyColor.value().first  + "_color" ) << iterPropertyColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
+        QJsonObject currentProperty;
+        currentProperty.insert( "name", iterPropertyColor.value().first );
+        currentProperty.insert( "color", iterPropertyColor.value().second->currentText() );
+
+        propertiesEdition.append( currentProperty );
+
         ++iterPropertyColor;
     }
+    jsonObject[ "propertiesEdition" ] = propertiesEdition;
+
+    /*** covariates Edition ***/
+    QJsonArray covariatesEdition = jsonObject[ "covariatesEdition" ].toArray();
 
     comboBoxMapType::ConstIterator iterCovariateColor = m_covariatesColorsComboBoxMap.cbegin();
     covariateNameLineEditMapType::ConstIterator iterCovariateName = m_covariatesNameLineEditMap.cbegin();
     while( iterCovariateColor != m_covariatesColorsComboBoxMap.cend() )
     {
-        ts << ( QStringList() << ( iterCovariateColor.value().first + "_color" ) << iterCovariateColor.value().second->currentText() ).join( m_csvSeparator ) << endl;
-        ts << ( QStringList() << ( iterCovariateColor.value().first + "_newName" ) << iterCovariateName.value().second->text() ).join( m_csvSeparator ) << endl;
+        QJsonObject currentCovariate;
+        currentCovariate.insert( "name", iterCovariateColor.value().first );
+        currentCovariate.insert( "color", iterCovariateColor.value().second->currentText() );
+        currentCovariate.insert( "newName", iterCovariateName.value().second->text() );
+
+        covariatesEdition.append( currentCovariate );
+
         ++iterCovariateColor;
         ++iterCovariateName;
     }
+    jsonObject[ "covariatesEdition" ] = covariatesEdition;
 
-    exportedCSV.flush();
-    exportedCSV.close();
+
+    jsonDoc.setObject( jsonObject );
+    QFile exportedJSON( filePath );
+    exportedJSON.open( QIODevice::WriteOnly | QIODevice::Text );
+    exportedJSON.write( jsonDoc.toJson( QJsonDocument::Indented ) );
+    exportedJSON.flush();
+    exportedJSON.close();
 }

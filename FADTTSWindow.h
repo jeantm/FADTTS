@@ -8,34 +8,42 @@
 #include "Processing.h"
 #include "MatlabThread.h"
 #include "Plot.h"
+#include "Log.h"
 
+#include <QMainWindow>
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
 #include <QScrollBar>
 #include <QProgressBar>
 
 
-class FADTTSWindow : public FADTTSWindowConfig
+class FADTTSWindow : public QMainWindow, public Ui::FADTTSWindow
 {
     friend class TestFADTTSWindow; /** For unit tests **/
 
     Q_OBJECT
 
 public:
-    FADTTSWindow();
+    explicit FADTTSWindow( QWidget *parent = 0, Qt::WindowFlags f = 0 );
 
     ~FADTTSWindow();
+
+    void LoadParaConfiguration( QString filename );
+
+    void LoadSoftConfiguration( QString filename );
 
 
 private slots:
     /********** Configuration & Events **********/
-    void OnLoadParaSettings(); // Tested
+    void OnLoadParaConfiguration(); // Tested
 
-    void OnSaveParaSettings(); // Tested
+    void OnSaveParaConfiguration(); // Tested
 
-    void OnLoadSoftSettings(); // Tested
+    void OnLoadSoftConfiguration(); // Tested
 
-    void OnSaveSoftSettings(); // Tested
+    void OnSaveSoftConfiguration(); // Tested
+
+    void OnSaveNoGUIConfiguration();
 
     void OnDisplayAbout(); /// Not tested
 
@@ -115,7 +123,7 @@ private slots:
 
     void OnStop(); /// Not tested*
 
-    void OnDisplayLog(); /// Not tested*
+    void OnUpdatingLogActivity( const QString& LogActivity ); /// Not tested*
 
     void OnClearLog(); /// Not tested*
 
@@ -205,6 +213,9 @@ private slots:
     void OnSavePlotSettings(); // Tested
 
 
+    /***************** No  GUI *****************/
+
+
 private:
     static const QColor m_green;
     static const QColor m_red;
@@ -263,11 +274,10 @@ private:
 
 
     /************** Execution Tab **************/
+    Log *m_log;
     MatlabThread *m_matlabThread;
 
     QTextEdit *m_logWindow;
-    QTextStream* m_textStreamLog;
-    QFile *m_logFile;
 
     QProgressBar *m_progressBar;
 
@@ -306,6 +316,13 @@ private:
 
 
     /********** Configuration & Events **********/
+    void SaveParaConfiguration( QString filename );
+
+    void SaveSoftConfiguration( QString filename );
+
+    void SaveNoGUIConfiguration( QString filename );
+
+
     void InitMenuBar(); // Not Directly Tested
 
     void InitInputTab(); // Not Directly Tested
@@ -395,9 +412,7 @@ private:
 
     void SetFibername(); // Tested
 
-    bool IsFADTTSReadyToBeRun(); /// Not tested
-
-    void SetLogDisplay( QString outputDir, const QMap< int, QString >& matlabInputFiles, const QMap< int, QString >& selectedCovariates ); /// Not tested*
+    bool canFADTTSterBeRun(); /// Not tested
 
     void SetMatlabScript(); // Not Directly Tested
 

@@ -1,12 +1,19 @@
 <RCC>
     <qresource prefix="/Icons">
-        <file>Resources/Icons/koIconOut.xpm</file>
-        <file>Resources/Icons/okIconOut.xpm</file>
-        <file>Resources/Icons/warningIconOut.xpm</file>
+        <file>Resources/Icons/koIcon.xpm</file>
+        <file>Resources/Icons/okIcon.xpm</file>
+        <file>Resources/Icons/warningIcon.xpm</file>
     </qresource>
     <qresource prefix="/MatlabFiles">
-        <file>Resources/MatlabFiles/MatlabScriptRef.m</file>
-        <file>Resources/MatlabFiles/MatlabScriptRefWithPlots.m</file>
+        <file>Resources/MatlabFiles/matlabScript.m</file>
+        <file>Resources/MatlabFiles/matlabScriptWithPlotting.m</file>
         <file>Resources/MatlabFiles/myFDR.m</file>
+    </qresource>
+    <qresource prefix="/ConfigurationFiles">
+        <file>Resources/ConfigurationFiles/plotSettings.json</file>
+        <file>Resources/ConfigurationFiles/noGUISettings.json</file>
+        <file>Resources/ConfigurationFiles/paramSettings.json</file>
+        <file>Resources/ConfigurationFiles/softSettings.json</file>
+        <file>Resources/ConfigurationFiles/fadttsSettings.json</file>
     </qresource>
 </RCC>

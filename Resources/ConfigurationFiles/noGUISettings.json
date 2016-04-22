@@ -1,0 +1,37 @@
+{
+    "noGUIConfiguration": {
+        "inputFiles": {
+            "AD": { "index": 0, "path": "" },
+            "RD": { "index": 1, "path": "" },
+            "MD": { "index": 2, "path": "" },
+            "FA": { "index": 3, "path": "" },
+            "SUBMATRIX": { "property": "SUBMATRIX", "index": 4, "path": "", "subjectColumnID": -1 }
+        },
+        "covariates": {
+            "Intercept": { "index": -1, "selected": true }
+        },
+        "subjects": {
+            "subjectListPath": "",
+            "qcThreshold": {
+                "apply": true,
+                "value": -1,
+                "propertyRefID": ""
+            }
+        },
+        "settings": {
+            "fiberName": "",
+            "nbrPermutations": -1,
+            "confidenceBandThreshold": -1,
+            "pvalueThreshold": -1,
+            "omnibus": false,
+            "posthoc": false
+        },
+        "outputDir": "",
+        "matlabSpecifications": {
+            "fadttsDir": "",
+            "runMatlab": false,
+            "matlabExe": "",
+            "nbrCompThreads": -1
+        }
+    }
+}

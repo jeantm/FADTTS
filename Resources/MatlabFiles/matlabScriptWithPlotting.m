@@ -24,6 +24,7 @@ disp('Setting inputs...')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Loading Folder
 [ loadingFolder, loadingName, loadingExt ] = fileparts( mfilename( 'fullpath' ) );
+mkdir( loadingFolder, '/MatlabOutputs' );
 
 % Saving Folder
 savingFolder = strcat( loadingFolder, '/MatlabOutputs' );

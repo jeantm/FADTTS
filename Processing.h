@@ -50,8 +50,23 @@ public:
                                                const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects); // Tested
 
 
+
+    void ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold );
+
+    QList< QStringList > Transpose_noGUI( const QList< QStringList >& rawData );
+
+    void RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, QStringList subjects );
+
+    QList< QList< double > > ToDouble_noGUI( const QList< QStringList >& rawDataTransposed );
+
+    QList< double > GetMean_noGUI( const QList< QList< double > >& rawDataDouble );
+
+    double ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean );
+
+
 private:
     static const QString m_csvSeparator;
+
 };
 
 #endif // PROCESSING_H
