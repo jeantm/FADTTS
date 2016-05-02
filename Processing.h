@@ -51,17 +51,17 @@ public:
 
 
 
-    void ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold );
+    QList< QStringList > Transpose_noGUI( const QList< QStringList >& rawData ); // Tested
 
-    QList< QStringList > Transpose_noGUI( const QList< QStringList >& rawData );
+    void RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, const QStringList& subjects ); // Tested
 
-    void RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, QStringList subjects );
+    QList< QList< double > > ToDouble_noGUI( const QList< QStringList >& rawDataTransposed ); // Tested
 
-    QList< QList< double > > ToDouble_noGUI( const QList< QStringList >& rawDataTransposed );
+    QList< double > GetMean_noGUI( const QList< QList< double > >& rawDataDouble ); // Tested
 
-    QList< double > GetMean_noGUI( const QList< QList< double > >& rawDataDouble );
+    double ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean ); // Tested
 
-    double ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean );
+    void ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, bool useAtlas, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold ); // Not Directly Tested
 
 
 private:

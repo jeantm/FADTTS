@@ -32,7 +32,7 @@ public:
     void InitLog( QString outputDir, QString fibername, const QMap< int, QString >& matlabInputFiles, const QMap< int, QString >& selectedCovariates,
                   QStringList loadedSubjects, QString subjectFile, int nbrSelectedSubjects, QStringList failedQCThresholdSubjects, double qcThreshold,
                   int nbrPermutations, double confidenceBandsThreshold, double pvalueThreshold, bool omnibus, bool posthoc, QString mvcmDir,
-                  bool runMatlab, QString matlabExe, int nbrCompThreads );
+                  bool runMatlab, QString matlabExe );
 
 
     void AddText( QString text );
@@ -52,6 +52,8 @@ private:
     QTextStream* m_textStreamLog;
 
     QFile *m_logFile;
+
+    QFileSystemWatcher* m_logWatcher;
 };
 
 #endif // LOG_H

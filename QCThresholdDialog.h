@@ -32,7 +32,7 @@ public:
     ~QCThresholdDialog();
 
 
-    bool InitPlot( const QMap< QString, QList< QStringList > >& rawData, const QStringList& matchedSubjects, double qcThreshold );
+    bool InitPlot( const QList< QStringList >& rawData, const QStringList& atlas, const QStringList& matchedSubjects, double qcThreshold ); // Not Directly Tested
 
 
 signals:
@@ -40,13 +40,9 @@ signals:
 
 
 private slots:
-    void OnSettingAllPropertiesUsed( const QMap< int, QString >& allPropertiesUsed );
+    void OnUpdatingSubjectsCorrelated( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated ); // Not Directly Tested
 
-    void OnUpdatingSubjectsCorrelated( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated );
-
-    void OnPropertySelection( const QString& propertySelected );
-
-    void OnUpdatingQCThreshold( double qcThreshold );
+    void OnUpdatingQCThreshold( double qcThreshold ); // Not Directly Tested
 
 
 private:
@@ -58,14 +54,14 @@ private:
 
     QDoubleSpinBox *m_qcThresholdDoubleSpinBox;
 
-    QMap< QString, QList< QStringList > > m_rawData;
+    QList< QStringList > m_rawData;
 
-    QStringList m_matchedSubjects, m_subjectsCorrelated, m_subjectsNotCorrelated;
+    QStringList m_matchedSubjects, m_subjectsCorrelated, m_subjectsNotCorrelated, m_atlas;
 
 
-    void InitQCThresholdDialog();
+    void InitQCThresholdDialog();  // Not Directly Tested
 
-    void DisplayQCThresholdPlot( double qcThreshold, QString property );
+    void DisplayQCThresholdPlot( double qcThreshold, QStringList atlas ); // Not Directly Tested
 
 
     void closeEvent( QCloseEvent *event );

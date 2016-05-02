@@ -1,6 +1,6 @@
 #include "MatlabThread.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 const QString MatlabThread::m_csvSeparator = QLocale().groupSeparator();
 
@@ -20,7 +20,6 @@ void MatlabThread::InitMatlabScript( QString outputDir, QString matlabScriptName
     m_outputDir = outputDir;
     m_matlabScriptName = matlabScriptName;
     m_matlabScript.clear();
-//    QResource resource( ":/MatlabFiles/Resources/MatlabFiles/matlabScrip.m" );
     QResource resource( ":/MatlabFiles/Resources/MatlabFiles/matlabScriptWithPlotting.m" );
     QFile matlabScriptRef( resource.absoluteFilePath() );
     if ( !matlabScriptRef.open( QIODevice::ReadOnly | QIODevice::Text ) )
@@ -45,11 +44,6 @@ void MatlabThread::SetHeader()
     m_matlabScript.replace( "$time$", QTime::currentTime().toString( "hh:mm ap" ) );
 }
 
-
-void MatlabThread::SetNbrCompThreads( bool isRunOnSystem, int nbrComp )
-{
-    m_matlabScript.replace( "$nbrCompThreads$", isRunOnSystem ? "maxNumCompThreads( " + QString::number( nbrComp ) + " );" : "% Option ignored");
-}
 
 void MatlabThread::SetMVCMPath( QString mvcmPath )
 {
@@ -230,8 +224,7 @@ bool& MatlabThread::SetRunMatlab()
 
 void MatlabThread::terminate()
 {
-    m_process->terminate();
-    QThread::terminate();
+    m_process->kill();
 }
 
 
@@ -247,11 +240,11 @@ void MatlabThread::RunScript()
 {
     QStringList arguments;
     QString mScript = "run('" + m_matlabScriptPath + "')";
-    std::cout << mScript.toStdString() << std::endl;
-    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" ) << "-logfile matlabLog.out";
+
+    arguments << "-nosplash" << "-nodesktop" << "-noFigureWindows" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" ) << "-logfile matlabLog.out";
 
     m_process->start( m_matlabExe, arguments );
-    m_process->waitForFinished();
+    m_process->waitForFinished( -1 );
 }
 
 
@@ -259,6 +252,7 @@ void MatlabThread::run()
 {
     m_matlabScriptPath.clear();
     GenerateMatlabFiles();
+
     if( m_runMatlab )
     {
         RedirectOutput();

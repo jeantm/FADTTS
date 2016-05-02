@@ -1,7 +1,8 @@
 #include "FADTTSWindow.h"
 #include "FADTTS_noGUI.h"
-#include <QApplication>
 #include "FADTTSterCLP.h"
+
+#include <QApplication>
 
 #include <QDebug>
 
@@ -10,25 +11,17 @@ int main( int argc, char *argv[] )
     PARSE_ARGS;
     Q_INIT_RESOURCE( FADTTS_Resources );
 
-    if( !noGUI )
-    {
-        QApplication app( argc , argv );
+    QString dir = QString( directory.data() ).isEmpty() ? QDir::currentPath() : directory.data();
 
-        FADTTSWindow fadttsWindow;
-        fadttsWindow.show();
+    QString defaultParaConfigurationFile = QFile( QString( dir + "/defaultConfiguration_para.json" ) ).exists() ? QString( dir + "/defaultConfiguration_para.json" ) : QString();
+    QString defaultSoftConfigurationFile = QFile( QString( dir + "/defaultConfiguration_soft.json" ) ).exists() ? QString( dir + "/defaultConfiguration_soft.json" ) : QString();
+    QString defaultNoGUIConfigurationFile = QFile( QString( dir + "/defaultConfiguration_noGUI.json" ) ).exists() ? QString( dir + "/defaultConfiguration_noGUI.json" ) : QString();
 
-        if( !paraConfig.empty() )
-        {
-            fadttsWindow.LoadParaConfiguration( paraConfig.data() );
-        }
-        if( !softConfig.empty() )
-        {
-            fadttsWindow.LoadSoftConfiguration( softConfig.data() );
-        }
+    QString paraConfigurationFile = QString( paraConfig.data() ).isEmpty() ? defaultParaConfigurationFile : paraConfig.data();
+    QString softConfigurationFile = QString( softConfig.data() ).isEmpty() ? defaultSoftConfigurationFile : softConfig.data();
+    QString noGUIConfigurationFile = QString( noGUIConfig.data() ).isEmpty() ? defaultNoGUIConfigurationFile : noGUIConfig.data();
 
-        return app.exec();
-    }
-    else
+    if( noGUI )
     {
         std::cout << QDate::currentDate().toString( "MM/dd/yyyy" ).toStdString() << std::endl;
         std::cout << QTime::currentTime().toString( "hh:mm ap" ).toStdString() << std::endl;
@@ -38,10 +31,10 @@ int main( int argc, char *argv[] )
 
 
         QString text;
-        QFile file( noGUIConfig.data() );
+        QFile file( noGUIConfigurationFile );
         if( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
         {
-            std::cout << "/!\\ Cannot open " << "'" << noGUIConfig.data() << "'" << std::endl;
+            std::cout << "/!\\ Cannot open " << "'" << noGUIConfigurationFile.toStdString() << "'" << std::endl;
             std::cout << "/!\\ File does not exist or is corrupted" << std::endl << std::endl;
 
             std::cout << "FADTTSter --noGUI will not be run" << std::endl;
@@ -58,7 +51,7 @@ int main( int argc, char *argv[] )
             QJsonDocument jsonDoc = QJsonDocument::fromJson( text.toUtf8(), &jsonError );
             if( jsonError.error != QJsonParseError::NoError )
             {
-                std::cout << "/!\\ An error occurred when trying to extract json data from file " << "'" << noGUIConfig.data() << "'"
+                std::cout << "/!\\ An error occurred when trying to extract json data from file " << "'" << noGUIConfigurationFile.toStdString() << "'"
                           << std::endl << "/!\\ error: " << jsonError.errorString().toUpper().toStdString() <<  std::endl << std::endl;
 
                 std::cout << "FADTTSter --noGUI will not be run" << std::endl;
@@ -68,7 +61,7 @@ int main( int argc, char *argv[] )
             }
             else
             {
-                std::cout << "FADTTSter --noGUI currently running " << "'" << noGUIConfig.data() << "'..." << std::endl << std::endl;
+                std::cout << "FADTTSter --noGUI currently running " << "'" << noGUIConfigurationFile.toStdString() << "'..." << std::endl << std::endl;
 
                 FADTTS_noGUI fadtts_noGUI;
                 QJsonObject jsonObject_noGUI = jsonDoc.object().value( "noGUIConfiguration" ).toObject();
@@ -89,5 +82,23 @@ int main( int argc, char *argv[] )
         std::cout << "/***********************************/" << std::endl;
 
         return EXIT_SUCCESS;
+    }
+    else
+    {
+        QApplication app( argc , argv );
+
+        FADTTSWindow fadttsWindow;
+        fadttsWindow.show();
+
+        if( !paraConfigurationFile.isEmpty() )
+        {
+            fadttsWindow.LoadParaConfiguration( paraConfigurationFile );
+        }
+        if( !softConfigurationFile.isEmpty() )
+        {
+            fadttsWindow.LoadSoftConfiguration( softConfigurationFile );
+        }
+
+        return app.exec();
     }
 }

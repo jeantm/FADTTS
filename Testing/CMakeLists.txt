@@ -53,10 +53,11 @@ set(transposedOmnibusLpvaluesPath DATA{${SOURCE_DIR}/testOmnibusLpvaluesTranspos
 set(transposedRDPostHocFDRPath DATA{${SOURCE_DIR}/testRDPostHocFDRTransposed.csv})
 set(transposedFAPostHocFDRPath DATA{${SOURCE_DIR}/testFAPostHocFDRTransposed.csv})
 
-set(testParaSettings DATA{${SOURCE_DIR}/testParaSettings.xml})
-set(testParaNoSettings DATA{${SOURCE_DIR}/testParaNoSettings.xml})
-set(testSoftSettings DATA{${SOURCE_DIR}/testSoftSettings.xml})
-set(testSoftNoSettings DATA{${SOURCE_DIR}/testSoftNoSettings.xml})
+set(testParaConfiguration DATA{${SOURCE_DIR}/testParaConfiguration.json})
+set(testParaNoConfiguration DATA{${SOURCE_DIR}/testParaNoConfiguration.json})
+set(testSoftConfiguration DATA{${SOURCE_DIR}/testSoftConfiguration.json})
+set(testSoftNoConfiguration DATA{${SOURCE_DIR}/testSoftNoConfiguration.json})
+set(testNoGUIConfiguration DATA{${SOURCE_DIR}/testNoGUIConfiguration.json})
 
 set(okIcon DATA{${SOURCE_DIR}/okIconOut.xpm})
 set(koIcon DATA{${SOURCE_DIR}/koIconOut.xpm})
@@ -79,7 +80,7 @@ set(adBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_AD.csv})
 set(faBetaPath2 DATA{${SOURCE_DIR}/testPlot2_Betas_FA.csv})
 set(omnibusFDRLpvaluesPath2 DATA{${SOURCE_DIR}/testPlot2_Omnibus_FDR_Local_pvalues.csv})
 
-set(plotSettingsPath DATA{${SOURCE_DIR}/plotSettings.csv})
+set(plotSettingsPath DATA{${SOURCE_DIR}/plotSettings.json})
 set(plotPath DATA{${SOURCE_DIR}/test_Betas_FA.eps})
 
 set(failedQCThreshold DATA{${SOURCE_DIR}/test_failed_QCThreshold_SubjectList.txt})
@@ -177,7 +178,7 @@ ExternalData_add_test(
 ExternalData_add_test(
         MY_DATA
         NAME TestFADTTSWindow
-        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${testParaSettings} ${testParaNoSettings} ${testSoftSettings} ${testSoftNoSettings}
+        COMMAND $<TARGET_FILE:FADTTS_Test_FADTTSWindow> ${testParaConfiguration} ${testParaNoConfiguration} ${testSoftConfiguration} ${testSoftNoConfiguration}
                                                         ${rdRawDataPath} ${faRawDataPath} ${subMatrixRawDataPath} ${subjectsListFilePath}
 
                                                         ${mdRawDataPath1} ${rdRawDataPath1} ${subMatrixRawDataPath1}
@@ -195,6 +196,7 @@ ExternalData_add_test(
 
                                                         ${DATA_DIR} ${TEMP_DIR}
 )
+
 
 # Test for the command --help
 add_test(

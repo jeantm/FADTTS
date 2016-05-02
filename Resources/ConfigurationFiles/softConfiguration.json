@@ -3,8 +3,7 @@
         "executionTab": {
             "matlabSpecifications": {
                 "runMatlab": false,
-                "matlabExe": "",
-                "nbrCompThreads": 1
+                "matlabExe": ""
             }
         }
     }

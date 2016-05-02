@@ -116,51 +116,6 @@ bool TestMatlabThread::Test_SetHeader()
 }
 
 
-bool TestMatlabThread::Test_SetNbrCompThreads()
-{
-    MatlabThread matlabThread;
-    int nbrComp = 5;
-    QString expectedNbrCompThreadsString1 = "maxNumCompThreads( " + QString::number( nbrComp ) + " );";
-    QString expectedNbrCompThreadsString2 = "% Option ignored";
-    QString nbrCompThreadsString1;
-    QString nbrCompThreadsString2;
-
-
-    matlabThread.m_matlabScript = "$nbrCompThreads$";
-    matlabThread.SetNbrCompThreads( true, nbrComp );
-    nbrCompThreadsString1 = matlabThread.m_matlabScript;
-    bool testnbrCompThreadsString1 = nbrCompThreadsString1 == expectedNbrCompThreadsString1;
-
-    matlabThread.m_matlabScript = "$nbrCompThreads$";
-    matlabThread.SetNbrCompThreads( false, nbrComp );
-    nbrCompThreadsString2 = matlabThread.m_matlabScript;
-    bool testnbrCompThreadsString2 = nbrCompThreadsString2 == expectedNbrCompThreadsString2;
-
-
-    bool testSetNbrCompThread_Passed = testnbrCompThreadsString1 && testnbrCompThreadsString2;
-    if( !testSetNbrCompThread_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_SetNbrCompThreads() FAILED /!\\ /!\\";
-//        std::cerr << std::endl << "\t+ pb with SetNbrCompThreads( bool isRunOnSystem, int nbrComp )" << std::endl;
-//        if( !testnbrCompThreadsString1 )
-//        {
-//            std::cerr << "\t  - When Matlab is run on the system:" << std::endl;
-//            std::cerr << "\t    expected string: " << expectedNbrCompThreadsString1.toStdString() << " | string set: " << nbrCompThreadsString1.toStdString() << std::endl;
-//        }
-//        if( !testnbrCompThreadsString2 )
-//        {
-//            std::cerr << "\n\t  - When Matlab is not run on the system:" << std::endl;
-//            std::cerr << "\t    expected string: " << expectedNbrCompThreadsString2.toStdString() << " | string set: " << nbrCompThreadsString2.toStdString() << std::endl;
-//        }
-    }
-    else
-    {
-        std::cerr << "Test_SetNbrCompThreads() PASSED";
-    }
-
-    return testSetNbrCompThread_Passed;
-}
-
 bool TestMatlabThread::Test_SetMVCMPath()
 {
     MatlabThread matlabThread;
@@ -589,7 +544,6 @@ bool TestMatlabThread::Test_GenerateMFiles( QString myFDR, QString outputDir )
 
     matlabThread.GenerateMatlabFiles();
 
-    bool testMatlabOutputDir = QDir( dirTest + "/MatlabOutputs" ).exists();
     bool testMatlabScript = QFile( dirTest + "/TestMFileGeneration.m" ).exists();
 
     QString myFDRData;
@@ -603,15 +557,11 @@ bool TestMatlabThread::Test_GenerateMFiles( QString myFDR, QString outputDir )
     bool testMyFDRData = myFDRData == expectedMyFDRData;
 
 
-    bool testGenerateMFiles_Passed = testMatlabOutputDir && testMatlabScript && testMyFDRFile && testMyFDRData;
+    bool testGenerateMFiles_Passed = testMatlabScript && testMyFDRFile && testMyFDRData;
     if( !testGenerateMFiles_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GenerateMFiles() FAILED /!\\ /!\\";
 //        std::cerr << std::endl << "\t+ pb with GenerateMatlabFiles() and/or GenerateMyFDR()" << std::endl;
-//        if( !testMatlabOutputDir )
-//        {
-//            std::cerr << "\t  Matlab output directory not created" << std::endl;
-//        }
 //        if( !testMatlabScript )
 //        {
 //            std::cerr << "\t  Matlab script not generated" << std::endl;

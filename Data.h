@@ -35,6 +35,8 @@ public:
 
     QList< QStringList > GetFileData( int diffusionPropertyIndex ) const; // Tested
 
+    QStringList GetAtlas() const; // Tested
+
     int GetNbrRows( int diffusionPropertyIndex ) const; // Tested
 
     int GetNbrColumns( int diffusionPropertyIndex ) const; // Tested
@@ -53,17 +55,19 @@ public:
 
 
     /*************** Setters ***************/
-    QString& SetFilename( int diffusionPropertyIndexID ); // Tested
+    QString& SetFilename( int diffusionPropertyIndex ); // Tested
 
-    QList< QStringList >& SetFileData( int diffusionPropertyIndexID ); // Tested
+    QList< QStringList >& SetFileData( int diffusionPropertyIndex ); // Tested
 
-    int& SetNbrRows( int diffusionPropertyIndexID ); // Tested
+    QStringList& SetAtlas(); // Tested
 
-    int& SetNbrColumns( int diffusionPropertyIndexID ); // Tested
+    int& SetNbrRows( int diffusionPropertyIndex ); // Tested
 
-    QStringList& SetSubjects( int diffusionPropertyIndexID ); // Tested
+    int& SetNbrColumns( int diffusionPropertyIndex ); // Tested
 
-    int& SetNbrSubjects( int diffusionPropertyIndexID ); // Tested
+    QStringList& SetSubjects( int diffusionPropertyIndex ); // Tested
+
+    int& SetNbrSubjects( int diffusionPropertyIndex ); // Tested
 
 
     QMap< int, QString >& SetCovariates(); // Tested
@@ -74,9 +78,9 @@ public:
 
 
 
-    void ClearData( int diffusionPropertyIndexID ); // Tested
+    void ClearData( int diffusionPropertyIndex ); // Tested
 
-    void ClearSubjects( int diffusionPropertyIndexID ); // Tested
+    void ClearSubjects( int diffusionPropertyIndex ); // Tested
 
     void ClearCovariates(); // Not Directly Tested
 
@@ -85,7 +89,7 @@ public:
 
 
 private:
-    enum diffusionProperties { AD, RD, MD, FA, SubMatrix } m_diffusionProperties;
+    enum diffusionProperties { AD, RD, MD, FA, SubMatrix };
 
     QMap< int, QList< QStringList > > m_fileDataMap;
 
@@ -94,6 +98,8 @@ private:
     QMap< int, QString > m_filenameMap, m_covariateMap;
 
     QMap< int, int > m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
+
+    QStringList m_atlas;
 
     QString m_outputDir;
 

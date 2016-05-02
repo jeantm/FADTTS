@@ -30,6 +30,8 @@ public:
 
     bool Test_GetSubjectsFromData( QString adFilePath, QString subMatrixFilePath0, QString subMatrixFilePath3 );
 
+    bool Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString subMatrixFilePath3 );
+
 
     bool Test_GetAllSubjects( QString adFilePath, QString subMatrixFilePath0 );
 
@@ -40,7 +42,15 @@ public:
     bool Test_AssignSortedSubject();
 
 
-    bool Test_GetCovariatesFromFileData( QString inputCovariateFileTest1, QString subMatrixFilePath3 );
+    bool Test_Transpose_noGUI();
+
+    bool Test_RemoveUnmatchedSubjects_noGUI();
+
+    bool Test_ToDouble_noGUI();
+
+    bool Test_GetMean_noGUI();
+
+    bool Test_ApplyPearsonCorrelation_noGUI();
 
 
     bool Test_GenerateMatlabInputFiles( QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath, QString adMatlabFilePath,

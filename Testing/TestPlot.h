@@ -31,12 +31,12 @@ public:
 
     bool Test_TransposeDataInQMap();
 
-    bool Test_RemoveUnmatchedSubjects( QString rdFilePath, QString faFilePath);
+    bool Test_RemoveUnmatchedSubjects( QString faFilePath);
 
     bool Test_SetRawData( QString rdFilePath, QString faFilePath, QString subMatrixFilePath,
                           QString rdTransposeFilePath, QString faTransposeFilePath, QString dataDir );
 
-    bool Test_SetRawDataQCThreshold( QString rdFilePath, QString faFilePath );
+    bool Test_SetRawDataQCThreshold( QString faFilePath );
 
     bool Test_SetBeta( QString rdBetaFilePath, QString faBetaFilePath, QString dataDir );
 
@@ -139,8 +139,6 @@ public:
     bool Test_InitLines();
 
     bool Test_AddSignificantLevel();
-
-    bool Test_AddLineSigBetas( QString dataDir, QString tempoDir ); /** /!\ PB WITH TEST /!\ **/
 
 
     bool Test_GetyMinMax();

@@ -6,7 +6,8 @@
                 "RD": "",
                 "MD": "",
                 "FA": "",
-                "SUBMATRIX": { "path": "", "subjectColumnID": 0 }
+                "SUBMATRIX": "",
+                "subjectColumnID": 0
             },
             "covariates": {
                 "Intercept" : true
@@ -20,6 +21,7 @@
                 "FA": false,
                 "SUBMATRIX": false
             },
+            "useAtlas": false,
             "qcThreshold": 0.85,
             "subjectListPath": ""
         },

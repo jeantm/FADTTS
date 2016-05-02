@@ -1,5 +1,7 @@
 #include "Data.h"
 
+//#include <QDebug>
+
 Data::Data()
 {
 }
@@ -59,15 +61,15 @@ QString Data::GetDiffusionPropertyName( int diffusionPropertyIndex ) const
     switch( diffusionPropertyIndex )
     {
     case AD:
-        return "ad";
+        return "AD";
     case RD:
-        return "rd";
+        return "RD";
     case MD:
-        return "md";
+        return "MD";
     case FA:
-        return "fa";
+        return "FA";
     case SubMatrix:
-        return "subMatrix";
+        return "SUBMATRIX";
     default:
         return "No valid diffussion property";
     }
@@ -82,6 +84,11 @@ QString Data::GetFilename( int diffusionPropertyIndex ) const
 QList< QStringList > Data::GetFileData( int diffusionPropertyIndex ) const
 {
     return m_fileDataMap[ diffusionPropertyIndex ];
+}
+
+QStringList Data::GetAtlas() const
+{
+    return m_atlas;
 }
 
 int Data::GetNbrRows( int diffusionPropertyIndex ) const
@@ -133,6 +140,11 @@ QList< QStringList >& Data::SetFileData( int diffusionPropertyIndex )
     return m_fileDataMap[ diffusionPropertyIndex ];
 }
 
+QStringList& Data::SetAtlas()
+{
+    return m_atlas;
+}
+
 int& Data::SetNbrRows( int diffusionPropertyIndex )
 {
     return m_nbrRowsMap[ diffusionPropertyIndex ];
@@ -180,7 +192,10 @@ void Data::ClearData( int diffusionPropertyIndex )
     m_subjectMap[ diffusionPropertyIndex ].clear();
     m_nbrSubjectsMap[ diffusionPropertyIndex ] = 0;
 
-
+    if( diffusionPropertyIndex == FA )
+    {
+        m_atlas.clear();
+    }
     if( diffusionPropertyIndex == SubMatrix )
     {
         ClearCovariates();

@@ -24,8 +24,6 @@ public:
     bool Test_SetHeader();
 
 
-    bool Test_SetNbrCompThreads();
-
     bool Test_SetMVCMPath();
 
 

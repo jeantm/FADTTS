@@ -76,14 +76,14 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLoadSaveParaSettings( argv[1], argv[2], argv[29], argv[30] ) )
+    if( testFADTTSWindow.Test_OnLoadSaveParaConfiguration( argv[1], argv[2], argv[30] ) )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLoadSaveSoftSettings( argv[3], argv[4], argv[29], argv[30] ) )
+    if( testFADTTSWindow.Test_OnLoadSaveSoftConfiguration( argv[3], argv[4], argv[30] ) )
     {
         nbrTestsPassed++;
     }

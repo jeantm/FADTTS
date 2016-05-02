@@ -46,6 +46,12 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
     std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testData.Test_GetSetAtlas() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testData.Test_GetSetNbrRows() )
     {
         nbrTestsPassed++;

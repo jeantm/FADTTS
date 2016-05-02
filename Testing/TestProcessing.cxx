@@ -1,5 +1,7 @@
 #include "TestProcessing.h"
 
+#include <QDebug>
+
 TestProcessing::TestProcessing()
 {
 }
@@ -12,7 +14,7 @@ bool TestProcessing::Test_GetDataFromFile( QString file_N_Path, QString file_R_P
     Processing processing;
     QStringList dataReference_row = QStringList() << "a" << "b" << "c" << "d" << "e" << "f";
     QList< QStringList > dataReference = QList< QStringList >() << dataReference_row << dataReference_row <<
-                                                               dataReference_row << dataReference_row;
+                                                                   dataReference_row << dataReference_row;
 
 
     bool testGetDataFromFile_N = processing.GetDataFromFile( file_N_Path ) == dataReference;
@@ -24,23 +26,23 @@ bool TestProcessing::Test_GetDataFromFile( QString file_N_Path, QString file_R_P
     if( !testGetDataFromFile_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetDataFromFile() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetDataFromFile( QString filePath )" << std::endl;
-        if( !testGetDataFromFile_N )
-        {
-            std::cerr << "\t  not reading line feed character '\\n' (Used as a new line character in Unix/Mac OS X)" << std::endl;
-        }
-        if( !testGetDataFromfile_R_Path )
-        {
-            std::cerr << "\t  not reading carriage return character '\\r' (Used as a new line character in Mac OS before X)" << std::endl;
-        }
-        if( !testGetDataFromFile_RN )
-        {
-            std::cerr << "\t  not reading carriage return line feed character '\\r\\n' (Used as a new line character in Windows)" << std::endl;
-        }
-        std::cerr << std::endl;
-        std::cerr << "/!\\ WARNING /!\\ As many functions from many classes heavly rely on GetDataFromFile( QString filePath ),\n"
-                     "/!\\ WARNING /!\\ tests from every classes may not be accurate as long as Test_GetDataFromFile() remains failed" << std::endl;
-        std::cerr << std::endl;
+        //        std::cerr << "\t+ pb with GetDataFromFile( QString filePath )" << std::endl;
+        //        if( !testGetDataFromFile_N )
+        //        {
+        //            std::cerr << "\t  not reading line feed character '\\n' (Used as a new line character in Unix/Mac OS X)" << std::endl;
+        //        }
+        //        if( !testGetDataFromfile_R_Path )
+        //        {
+        //            std::cerr << "\t  not reading carriage return character '\\r' (Used as a new line character in Mac OS before X)" << std::endl;
+        //        }
+        //        if( !testGetDataFromFile_RN )
+        //        {
+        //            std::cerr << "\t  not reading carriage return line feed character '\\r\\n' (Used as a new line character in Windows)" << std::endl;
+        //        }
+        //        std::cerr << std::endl;
+        //        std::cerr << "/!\\ WARNING /!\\ As many functions from many classes heavly rely on GetDataFromFile( QString filePath ),\n"
+        //                     "/!\\ WARNING /!\\ tests from every classes may not be accurate as long as Test_GetDataFromFile() remains failed" << std::endl;
+        //        std::cerr << std::endl;
     }
     else
     {
@@ -69,15 +71,15 @@ bool TestProcessing::Test_IsMatrixDimensionOK( QString adFilePath )
     if( !testIsMatrixDimensionOK_Passed )
     {
         std::cerr << "/!\\/!\\ Test_IsMatrixDimensionOK() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with IsMatrixDimensionOK( const QList< QStringList > data )" << std::endl;
-        if( !testMatrixDimensionOK )
-        {
-            std::cerr << "\t  data do not have the same number of columns for each row when it should" << std::endl;
-        }
-        if( !testMatrixDimensionKO )
-        {
-            std::cerr << "\t  data have the same number of columns for each row when it should not" << std::endl;
-        }
+        //        std::cerr << "\t+ pb with IsMatrixDimensionOK( const QList< QStringList > data )" << std::endl;
+        //        if( !testMatrixDimensionOK )
+        //        {
+        //            std::cerr << "\t  data do not have the same number of columns for each row when it should" << std::endl;
+        //        }
+        //        if( !testMatrixDimensionKO )
+        //        {
+        //            std::cerr << "\t  data have the same number of columns for each row when it should not" << std::endl;
+        //        }
     }
     else
     {
@@ -122,15 +124,15 @@ bool TestProcessing::Test_IsSubMatrix()
     if( !testIsSubMatrix_Passed )
     {
         std::cerr << "/!\\/!\\ Test_IsSubMatrix() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with IsSubMatrix( const QStringList dataSecondRow )" << std::endl;
-        if( !testFileIsNotSubMatrix )
-        {
-            std::cerr << "\t  subMatrix file is detected when it should not be" << std::endl;
-        }
-        if( !testFileIsSubMatrix )
-        {
-            std::cerr << "\t  subMatrix file is not detected when it should be" << std::endl;
-        }
+        //        std::cerr << "\t+ pb with IsSubMatrix( const QStringList dataSecondRow )" << std::endl;
+        //        if( !testFileIsNotSubMatrix )
+        //        {
+        //            std::cerr << "\t  subMatrix file is detected when it should not be" << std::endl;
+        //        }
+        //        if( !testFileIsSubMatrix )
+        //        {
+        //            std::cerr << "\t  subMatrix file is not detected when it should be" << std::endl;
+        //        }
     }
     else
     {
@@ -154,8 +156,8 @@ bool TestProcessing::Test_GetSubjectsFromFile( QString subjectFilePath )
     if( !testGetSubjectsFromFile_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetSubjectsFromFile() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetSubjectsFromFile( QString filePath )" << std::endl;
-        DisplayError_GetSubjects( subjectsExpected, subjectsDisplayed );
+        //        std::cerr << "\t+ pb with GetSubjectsFromFile( QString filePath )" << std::endl;
+        //        DisplayError_GetSubjects( subjectsExpected, subjectsDisplayed );
     }
     else
     {
@@ -214,22 +216,22 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
     if( !testGetSubjectsFromData_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetSubjectsFromData() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetSubjectsFromData( QList< QStringList > data, int subjectColumnID )" << std::endl;
-        if( !testADSubjects )
-        {
-            std::cerr << "\t+ Incorrect subjects generated from AD, RD, MD or FA file" << std::endl;
-            DisplayError_GetSubjects( expectedADSubjects, adSubjects );
-        }
-        if( !testSubMatrix0Subjects )
-        {
-            std::cerr << "\t+ Incorrect subjects generated from subMatrix file when subjects on 1st column" << std::endl;
-            DisplayError_GetSubjects( expectedSubMatrix0Subjects, subMatrix0Subjects );
-        }
-        if( !testSubMatrix3Subjects )
-        {
-            std::cerr << "\t+ Incorrect subjects generated from subMatrix file when subjects not on 1st column" << std::endl;
-            DisplayError_GetSubjects( expectedSubMatrix3Subjects, subMatrix3Subjects );
-        }
+        //        std::cerr << "\t+ pb with GetSubjectsFromData( QList< QStringList > data, int subjectColumnID )" << std::endl;
+        //        if( !testADSubjects )
+        //        {
+        //            std::cerr << "\t+ Incorrect subjects generated from AD, RD, MD or FA file" << std::endl;
+        //            DisplayError_GetSubjects( expectedADSubjects, adSubjects );
+        //        }
+        //        if( !testSubMatrix0Subjects )
+        //        {
+        //            std::cerr << "\t+ Incorrect subjects generated from subMatrix file when subjects on 1st column" << std::endl;
+        //            DisplayError_GetSubjects( expectedSubMatrix0Subjects, subMatrix0Subjects );
+        //        }
+        //        if( !testSubMatrix3Subjects )
+        //        {
+        //            std::cerr << "\t+ Incorrect subjects generated from subMatrix file when subjects not on 1st column" << std::endl;
+        //            DisplayError_GetSubjects( expectedSubMatrix3Subjects, subMatrix3Subjects );
+        //        }
     }
     else
     {
@@ -237,6 +239,51 @@ bool TestProcessing::Test_GetSubjectsFromData( QString adFilePath, QString subMa
     }
 
     return testGetSubjectsFromData_Passed;
+}
+
+
+bool TestProcessing::Test_GetCovariatesFromFileData( QString subMatrix0FilePath, QString subMatrix3FilePath )
+{
+    Processing processing;
+
+    QMap< int, QString > covariatesExpected0;
+    covariatesExpected0.insert( 1, "COMP" );
+    covariatesExpected0.insert( 2, "Gender" );
+    covariatesExpected0.insert( 3, "GestAgeBirth" );
+    QMap< int, QString > covariatesExpected3;
+    covariatesExpected3.insert( 0, "COMP" );
+    covariatesExpected3.insert( 1, "Gender" );
+    covariatesExpected3.insert( 2, "GestAgeBirth" );
+    QMap< int, QString > covariates0 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix0FilePath ), 0 );
+    QMap< int, QString > covariates3 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix3FilePath ), 3 );
+
+
+    bool resultTest1 = covariates0 == covariatesExpected0;
+    bool resultTest2 = covariates3 == covariatesExpected3;
+
+
+    bool testGetCovariatesFromFileData_Passed = resultTest1 && resultTest2;
+    if( !testGetCovariatesFromFileData_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_GetCovariatesFromFileData() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with GetCovariatesFromData( QList< QStringList > data, int subjectColumnID )" << std::endl;
+        //        if( !resultTest1 )
+        //        {
+        //            std::cerr << "\t+ Covariates retrieved when subjects are in the 1st row are not the ones expected" <<std::endl;
+        //            DisplayError_GetCovariates( covariatesExpected0, covariates0 );
+        //        }
+        //        if( !resultTest2 )
+        //        {
+        //            std::cerr << "\t+ Covariates retrieved when subjects are not in the 1st row are not the ones expected" <<std::endl;
+        //            DisplayError_GetCovariates( covariatesExpected3, covariates3 );
+        //        }
+    }
+    else
+    {
+        std::cerr << "Test_GetCovariatesFromFileData() PASSED";
+    }
+
+    return testGetCovariatesFromFileData_Passed;
 }
 
 
@@ -267,9 +314,9 @@ bool TestProcessing::Test_GetAllSubjects( QString adFilePath, QString subMatrix0
     if( !testGetAllSubjects_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetAllSubjects() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetAllSubjects( QMap< int, QStringList > subjectsMap )" << std::endl;
-        std::cerr << "\t+ Wrong list of subjects extracted:" << std::endl;
-        DisplayError_GetSubjects( expectedSubjects, extractedSubjectList );
+        //        std::cerr << "\t+ pb with GetAllSubjects( QMap< int, QStringList > subjectsMap )" << std::endl;
+        //        std::cerr << "\t+ Wrong list of subjects extracted:" << std::endl;
+        //        DisplayError_GetSubjects( expectedSubjects, extractedSubjectList );
     }
     else
     {
@@ -328,11 +375,11 @@ bool TestProcessing::Test_GetSubjectsFromSelectedFiles()
     if( !testGetSubjectsFromSelectedFiles_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GetSubjectsFromSelectedFiles() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetSubjectsFromSelectedFiles( const QMap< int, bool > diffusionPropertiesCheckState,"
-                     " const QMap< int, QStringList > subjectsMap )" << std::endl;
-        std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
-        std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
-        DisplayError_GetSubjectsFromSelectedFiles( expectedSubjects, selectedSubjects );
+        //        std::cerr << "\t+ pb with GetSubjectsFromSelectedFiles( const QMap< int, bool > diffusionPropertiesCheckState,"
+        //                     " const QMap< int, QStringList > subjectsMap )" << std::endl;
+        //        std::cerr << "\t+ Incorrect subject list from selected input files" << std::endl;
+        //        std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
+        //        DisplayError_GetSubjectsFromSelectedFiles( expectedSubjects, selectedSubjects );
     }
     else
     {
@@ -382,10 +429,10 @@ bool TestProcessing::Test_SortSubjects()
     if( !testSortSubjects_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SortSubjects() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with SortSubjects( const QStringList subjects, const QMap< int, QStringList > subjectsMap )" << std::endl;
-        std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
-        std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
-        DisplayError_SortedSubjects( expectedSortedSubjects, sortedSubjects );
+        //        std::cerr << "\t+ pb with SortSubjects( const QStringList subjects, const QMap< int, QStringList > subjectsMap )" << std::endl;
+        //        std::cerr << "\t+ Incorrect sorted subject list generated" << std::endl;
+        //        std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
+        //        DisplayError_SortedSubjects( expectedSortedSubjects, sortedSubjects );
     }
     else
     {
@@ -467,19 +514,19 @@ bool TestProcessing::Test_AssignSortedSubject()
     if( !testAssignSortedSubject_Passed )
     {
         std::cerr << "/!\\/!\\ Test_AssignSortedSubject() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with AssignSortedSubject( const QMap< QString, QMap< int, bool > > sortedSubjects,"
-                     " QStringList& matchedSubjects, QMap< QString, QList< int > >& unMatchedSubjects )" << std::endl;
-        if( !testMatchedSubjects )
-        {
-            std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
-            DisplayError_GetSubjects( expectedMatchedSubjects, matchedSubjects );
-        }
-        if( !testUnMatchedSubjects )
-        {
-            std::cerr << "\t+ UnMatched subjects not correctly assigned" << std::endl;
-            std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
-            DisplayError_UnMatchedSubjects( expectedUnMatchedSubjects, unMatchedSubjects );
-        }
+        //        std::cerr << "\t+ pb with AssignSortedSubject( const QMap< QString, QMap< int, bool > > sortedSubjects,"
+        //                     " QStringList& matchedSubjects, QMap< QString, QList< int > >& unMatchedSubjects )" << std::endl;
+        //        if( !testMatchedSubjects )
+        //        {
+        //            std::cerr << "\t+ Matched subjects not correctly assigned" << std::endl;
+        //            DisplayError_GetSubjects( expectedMatchedSubjects, matchedSubjects );
+        //        }
+        //        if( !testUnMatchedSubjects )
+        //        {
+        //            std::cerr << "\t+ UnMatched subjects not correctly assigned" << std::endl;
+        //            std::cerr << "\t  Diffusion property (index: ad <-> 0, rd <-> 1, md <-> 2, fa <-> 3, subMatrix <-> 4)" << std::endl;
+        //            DisplayError_UnMatchedSubjects( expectedUnMatchedSubjects, unMatchedSubjects );
+        //        }
     }
     else
     {
@@ -490,49 +537,158 @@ bool TestProcessing::Test_AssignSortedSubject()
 }
 
 
-bool TestProcessing::Test_GetCovariatesFromFileData( QString subMatrix0FilePath, QString subMatrix3FilePath )
+bool TestProcessing::Test_Transpose_noGUI()
 {
     Processing processing;
-
-    QMap< int, QString > covariatesExpected0;
-    covariatesExpected0.insert( 1, "COMP" );
-    covariatesExpected0.insert( 2, "Gender" );
-    covariatesExpected0.insert( 3, "GestAgeBirth" );
-    QMap< int, QString > covariatesExpected3;
-    covariatesExpected3.insert( 0, "COMP" );
-    covariatesExpected3.insert( 1, "Gender" );
-    covariatesExpected3.insert( 2, "GestAgeBirth" );
-    QMap< int, QString > covariates0 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix0FilePath ), 0 );
-    QMap< int, QString > covariates3 = processing.GetCovariatesFromData( processing.GetDataFromFile( subMatrix3FilePath ), 3 );
+    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
+                                                       << ( QStringList() << "d" << "e" << "f" );
+    QList< QStringList > expectedTransposeData = QList< QStringList >() << ( QStringList() << "a" << "d" )
+                                                                        << ( QStringList() << "b" << "e" )
+                                                                        << ( QStringList() << "c" << "f" );
 
 
-    bool resultTest1 = covariates0 == covariatesExpected0;
-    bool resultTest2 = covariates3 == covariatesExpected3;
-
-
-    bool testGetCovariatesFromFileData_Passed = resultTest1 && resultTest2;
-    if( !testGetCovariatesFromFileData_Passed )
+    bool testTranspose_noGUI_Passed = processing.Transpose_noGUI( data ) == expectedTransposeData;
+    if( !testTranspose_noGUI_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_GetCovariatesFromFileData() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GetCovariatesFromData( QList< QStringList > data, int subjectColumnID )" << std::endl;
-        if( !resultTest1 )
-        {
-            std::cerr << "\t+ Covariates retrieved when subjects are in the 1st row are not the ones expected" <<std::endl;
-            DisplayError_GetCovariates( covariatesExpected0, covariates0 );
-        }
-        if( !resultTest2 )
-        {
-            std::cerr << "\t+ Covariates retrieved when subjects are not in the 1st row are not the ones expected" <<std::endl;
-            DisplayError_GetCovariates( covariatesExpected3, covariates3 );
-        }
+        std::cerr << "/!\\/!\\ Test_Transpose_noGUI() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with Transpose_noGUI( const QList< QStringList >& rawData )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetCovariatesFromFileData() PASSED";
+        std::cerr << "Test_Transpose_noGUI() PASSED";
     }
 
-    return testGetCovariatesFromFileData_Passed;
+    return testTranspose_noGUI_Passed;
 }
+
+bool TestProcessing::Test_RemoveUnmatchedSubjects_noGUI()
+{
+    Processing processing;
+    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
+                                                       << ( QStringList() << "d" << "e" << "f" );
+    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
+    QList< QStringList > expectedData = QList< QStringList >() << ( QStringList() << "a" << "d" )
+                                                               << ( QStringList() << "c" << "f" );
+    QStringList subjects = QStringList() << "c";
+
+
+    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
+
+
+    bool testRemoveUnmatchedSubjects_noGUI_Passed = transposeData == expectedData;
+    if( !testRemoveUnmatchedSubjects_noGUI_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_RemoveUnmatchedSubjects_noGUI() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, QStringList subjects )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_RemoveUnmatchedSubjects_noGUI() PASSED";
+    }
+
+    return testRemoveUnmatchedSubjects_noGUI_Passed;
+}
+
+bool TestProcessing::Test_ToDouble_noGUI()
+{
+    Processing processing;
+    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
+                                                       << ( QStringList() << "1" << "2" << "3" )
+                                                       << ( QStringList() << "4" << "5" << "6" );
+    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
+    QStringList subjects = QStringList() << "c";
+    QList< QList< double > > expectedDoubleData = QList< QList< double > >() << ( QList< double >() << 1 << 4 )
+                                                                             << ( QList< double >() << 3 << 6 );
+
+
+    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
+
+
+    bool testToDouble_noGUI_Passed = processing.ToDouble_noGUI( transposeData ) == expectedDoubleData;
+    if( !testToDouble_noGUI_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_ToDouble_noGUI() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with ToDouble_noGUI( const QList< QStringList >& rawDataTransposed )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_ToDouble_noGUI() PASSED";
+    }
+
+    return testToDouble_noGUI_Passed;
+}
+
+bool TestProcessing::Test_GetMean_noGUI()
+{
+    Processing processing;
+    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
+                                                       << ( QStringList() << "1" << "2" << "3" )
+                                                       << ( QStringList() << "4" << "5" << "6" );
+    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
+    QStringList subjects = QStringList()  << "b" << "c";
+    QList< double > expectedMean = QList< double >() << QList< double >() << 2.5 << 5.5;
+
+
+    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
+
+
+    bool testGetMean_noGUI_Passed = processing.GetMean_noGUI( processing.ToDouble_noGUI( transposeData ) ) == expectedMean;
+    if( !testGetMean_noGUI_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_GetMean_noGUI() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with GetMean_noGUI( const QList< QList< double > >& rawDataDouble )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_GetMean_noGUI() PASSED";
+    }
+
+    return testGetMean_noGUI_Passed;
+}
+
+bool TestProcessing::Test_ApplyPearsonCorrelation_noGUI()
+{
+    Processing processing;
+    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" << "d" << "e" << "f" )
+                                                       << ( QStringList() << "1" << "2" << "3" << "4" << "5" << "6" )
+                                                       << ( QStringList() << "-7" << "-8" << "-9" << "-10" << "-11" << "-12" )
+                                                       << ( QStringList() << "-13" << "-14" << "-15" << "-16" << "-17" << "-18" )
+                                                       << ( QStringList() << "-19" << "-20" << "-21" << "-22" << "-23" << "24" );
+    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
+    QList< QList< double > > dataDouble = processing.ToDouble_noGUI( transposeData );
+    QStringList subjects = QStringList()  << "b" << "c" << "e" << "f";
+    QList< double > correlation = QList< double >() << 0.876725 << 0.896259 << 0.910908 << 0.92205 << 0.269711;
+    QList< double > expectedCorrelation;
+    QList< double > mean;
+    bool testCorrelation = true;
+
+
+    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
+    mean = processing.GetMean_noGUI( dataDouble );
+    for( int i = 1; i < dataDouble.size(); i++ )
+    {
+        expectedCorrelation.append( processing.ApplyPearsonCorrelation_noGUI( i, dataDouble, mean ) );
+    }
+    for( int i = 1; i < correlation.size(); i++ )
+    {
+        testCorrelation = testCorrelation && ( ( correlation.at( i ) - expectedCorrelation.at( i ) ) < 0.0001 );
+    }
+
+
+    bool testApplyPearsonCorrelation_noGUI_Passed = testCorrelation;
+    if( !testApplyPearsonCorrelation_noGUI_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_ApplyPearsonCorrelation_noGUI() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_ApplyPearsonCorrelation_noGUI() PASSED";
+    }
+
+    return testApplyPearsonCorrelation_noGUI_Passed;
+}
+
 
 
 bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString subMatrix0FilePath, QString subMatrix3FilePath, QString adMatlabFilePath,
@@ -630,21 +786,21 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     if( !testGenerateMatlabInputs_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GenerateMatlabInputs() FAILED /!\\/!\\";
-        std::cerr << "\t+ pb with GenerateMatlabInputs( QString outputDir, QString fiberName,"
-                     " QMap< int, QString > inputs, QMap< int, QString > properties,"
-                     " QMap< int, QString > covariates, int subjectColumnID, QStringList subjects);" << std::endl;
-        if( !adFilesMatched )
-        {
-            std::cerr << "\t  matlab input for AD, RD, MD or FA file not generated correctly" << std::endl;
-        }
-        if( !subMatrix0FileFilesMatched )
-        {
-            std::cerr << "\t  matlab input for subMatrix file not generated correctly when subjects on 1st column" << std::endl;
-        }
-        if( !subMatrix3FileFilesMatched )
-        {
-            std::cerr << "\t  batlab input for subMatrix file not generated correctly when subjects not on 1st column" << std::endl;
-        }
+        //        std::cerr << "\t+ pb with GenerateMatlabInputs( QString outputDir, QString fiberName,"
+        //                     " QMap< int, QString > inputs, QMap< int, QString > properties,"
+        //                     " QMap< int, QString > covariates, int subjectColumnID, QStringList subjects);" << std::endl;
+        //        if( !adFilesMatched )
+        //        {
+        //            std::cerr << "\t  matlab input for AD, RD, MD or FA file not generated correctly" << std::endl;
+        //        }
+        //        if( !subMatrix0FileFilesMatched )
+        //        {
+        //            std::cerr << "\t  matlab input for subMatrix file not generated correctly when subjects on 1st column" << std::endl;
+        //        }
+        //        if( !subMatrix3FileFilesMatched )
+        //        {
+        //            std::cerr << "\t  batlab input for subMatrix file not generated correctly when subjects not on 1st column" << std::endl;
+        //        }
     }
     else
     {

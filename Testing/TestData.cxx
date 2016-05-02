@@ -106,11 +106,11 @@ bool TestData::Test_GetDiffusionPropertyName()
     Data mData;
 
 
-    bool resultTest1 = mData.GetDiffusionPropertyName( 0 ) == "ad";
-    bool resultTest2 = mData.GetDiffusionPropertyName( 1 ) == "rd";
-    bool resultTest3 = mData.GetDiffusionPropertyName( 2 ) == "md";
-    bool resultTest4 = mData.GetDiffusionPropertyName( 3 ) == "fa";
-    bool resultTest5 = mData.GetDiffusionPropertyName( 4 ) == "subMatrix";
+    bool resultTest1 = mData.GetDiffusionPropertyName( 0 ) == "AD";
+    bool resultTest2 = mData.GetDiffusionPropertyName( 1 ) == "RD";
+    bool resultTest3 = mData.GetDiffusionPropertyName( 2 ) == "MD";
+    bool resultTest4 = mData.GetDiffusionPropertyName( 3 ) == "FA";
+    bool resultTest5 = mData.GetDiffusionPropertyName( 4 ) == "SUBMATRIX";
     bool resultTest6 = mData.GetDiffusionPropertyName( 5 ) == "No valid diffussion property";
 
 
@@ -243,6 +243,29 @@ bool TestData::Test_GetSetFileData()
     }
 
     return testGetSetFileData_Passed;
+}
+
+bool TestData::Test_GetSetAtlas()
+{
+    Data mData;
+    QStringList atlas = QStringList() << "a" << "b" << "c" << "d" << "e" << "f";
+
+
+    mData.SetAtlas() = atlas;
+    bool testGetSetAtlas_Passed = mData.GetAtlas() == atlas;
+
+
+    if( !testGetSetAtlas_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_GetSetAtlas() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with GetAtlas() and/or SetAtlas()" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_GetSetAtlas() PASSED";
+    }
+
+    return testGetSetAtlas_Passed;
 }
 
 bool TestData::Test_GetSetNbrRows()

@@ -24,6 +24,8 @@ public:
 
     bool Test_GetSetFileData();
 
+    bool Test_GetSetAtlas();
+
     bool Test_GetSetNbrRows();
 
     bool Test_GetSetNbrColumns();

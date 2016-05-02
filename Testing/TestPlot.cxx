@@ -264,29 +264,21 @@ bool TestPlot::Test_TransposeDataInQMap()
     return testTransposeDataInQMap_Passed;
 }
 
-bool TestPlot::Test_RemoveUnmatchedSubjects( QString rdFilePath, QString faFilePath )
+bool TestPlot::Test_RemoveUnmatchedSubjects( QString faFilePath )
 {
     Plot plot;
     Processing processing;
-    QMap< QString, QList< QStringList > > rawData;
-    rawData.insert( "RD", processing.GetDataFromFile( rdFilePath ) );
-    rawData.insert( "FA", processing.GetDataFromFile( faFilePath ) );
-    QList< QStringList > rdRawData, faRawData;
-    for( int i = 0; i < rawData.value( "RD" ).size(); i++ )
+    QList< QStringList > rawData = processing.GetDataFromFile( faFilePath );
+    QList< QStringList > rawDataExpected;
+    for( int i = 0; i < rawData.size(); i++ )
     {
-        QStringList tempoRDrow = QStringList() << rawData.value( "RD" ).value( i ).first() << rawData.value( "RD" ).value( i ).at( 1 );
-        rdRawData.append( tempoRDrow );
-
-        QStringList tempoFArow = QStringList() << rawData.value( "FA" ).value( i ).first() << rawData.value( "FA" ).value( i ).at( 1 );
-        faRawData.append( tempoFArow );
+        QStringList tempoFArow = QStringList() << rawData.value( i ).first() << rawData.value( i ).at( 1 );
+        rawDataExpected.append( tempoFArow );
     }
-    QMap< QString, QList< QStringList > > rawDataExpected;
-    rawDataExpected.insert( "RD", rdRawData );
-    rawDataExpected.insert( "FA", faRawData );
 
 
-    plot.m_matchedSubjects = QStringList() << processing.GetSubjectsFromData( rawData.value( "RD" ), -1 ).first();
-    plot.m_subjects = processing.GetSubjectsFromData( rawData.value( "RD" ), -1 );
+    plot.m_matchedSubjects = QStringList() << processing.GetSubjectsFromData( rawData, -1 ).first();
+    plot.m_subjects = processing.GetSubjectsFromData( rawData, -1 );
     plot.RemoveUnmatchedSubjects( rawData );
 
     bool testSubjects = plot.m_subjects == plot.m_matchedSubjects;
@@ -297,16 +289,16 @@ bool TestPlot::Test_RemoveUnmatchedSubjects( QString rdFilePath, QString faFileP
     if( !testRemoveUnmatchedSubjects_Passed )
     {
         std::cerr << "/!\\/!\\ Test_RemoveUnmatchedSubjects() FAILED /!\\/!\\";
-        //        std::cerr << std::endl << "\t+ pb with RemoveUnmatchedSubjects( QMap< QString, QList< QStringList > >& rawData )" << std::endl;
-        //        if( !testSubjects )
-        //        {
-        //            std::cerr << "\t+ wrong subjects kept" << std::endl;
-        //            DisplayError_QStringList( plot.m_matchedSubjects, plot.m_subjects, "files" );
-        //        }
-        //        if( !testData )
-        //        {
-        //            std::cerr << "\t+ wrong raw data values kept" << std::endl;
-        //        }
+//        std::cerr << std::endl << "\t+ pb with RemoveUnmatchedSubjects( QList<QStringList> &rawData )" << std::endl;
+//        if( !testSubjects )
+//        {
+//            std::cerr << "\t+ wrong subjects kept" << std::endl;
+//            DisplayError_QStringList( plot.m_matchedSubjects, plot.m_subjects, "files" );
+//        }
+//        if( !testData )
+//        {
+//            std::cerr << "\t+ wrong raw data values kept" << std::endl;
+//        }
     }
     else
     {
@@ -352,14 +344,12 @@ bool TestPlot::Test_SetRawData( QString rdFilePath, QString faFilePath, QString 
     return testSetRawData_Passed;
 }
 
-bool TestPlot::Test_SetRawDataQCThreshold( QString rdFilePath, QString faFilePath )
+bool TestPlot::Test_SetRawDataQCThreshold( QString faFilePath )
 {
     Plot plot;
     Processing processing;
-    QMap< QString, QList< QStringList > > rawData;
-    rawData.insert( "RD", processing.GetDataFromFile( rdFilePath ) );
-    rawData.insert( "FA", processing.GetDataFromFile( faFilePath ) );
-    QList< QList< double > > rdRawData, faRawData;
+    QList< QStringList > rawData = processing.GetDataFromFile( faFilePath );
+    QList< QList< double > > faRawData;
     faRawData = QList< QList< double > >() << ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846 << -29.1846
                                                 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846 << -19.1846 << -18.1846
                                                 << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846 << -9.18462 << -8.18462 << -7.18462
@@ -375,38 +365,20 @@ bool TestPlot::Test_SetRawDataQCThreshold( QString rdFilePath, QString faFilePat
                                                 << 0.333111 << 0.328198 << 0.325226 << 0.322341 << 0.318701 << 0.313947 << 0.303292 << 0.285643 << 0.267017 << 0.251371 << 0.237579
                                                 << 0.223202 << 0.206765 << 0.189013 << 0.172983 << 0.160959 << 0.153894 << 0.145722 << 0.13097 << 0.114278 << 0.106507 << 0.105277
                                                 << 0.0902092 << 0.056156 );
-    rdRawData = QList< QList< double > >() << ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846 << -29.1846
-                                                << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846 << -19.1846 << -18.1846
-                                                << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846 << -9.18462 << -8.18462 << -7.18462
-                                                << -6.18462 << -5.18462 << -4.18462 << -3.18462 << -2.18462 << -1.18462 << -0.184619 << 0.815381 << 1.81538 << 2.81538 << 3.81538
-                                                << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538 << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154
-                                                << 16.8154 << 17.8154 << 18.8154 << 19.8154 << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154
-                                                << 28.8154 << 29.8154 << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
-                                           << ( QList< double >() << 0.00117111 << 0.00118018 << 0.00119539 << 0.00120302 << 0.00119349 << 0.00117576 << 0.00115573 << 0.00113564 << 0.00111377 << 0.00109088
-                                                << 0.00107074 << 0.00105806 << 0.00105687 << 0.00106791 << 0.00109061 << 0.00112729 << 0.00117767 << 0.00123438 << 0.0012928 << 0.00135719
-                                                << 0.001431 << 0.00150494 << 0.00156633 << 0.00160624 << 0.00161502 << 0.0015922 << 0.00154764 << 0.00148868 << 0.00142704 << 0.00137211
-                                                << 0.00131853 << 0.00126338 << 0.00120723 << 0.00115274 << 0.0011074 << 0.00106543 << 0.00102011 << 0.000972517 << 0.000919804 << 0.000856986
-                                                << 0.000823906 << 0.000819226 << 0.00082419 << 0.000826638 << 0.000825906 << 0.000818669 << 0.000810412 << 0.000806566 << 0.00080266
-                                                << 0.000800781 << 0.000803557 << 0.00080722 << 0.000812096 << 0.000819244 << 0.000826859 << 0.000831124 << 0.0008308 << 0.00082853
-                                                << 0.000824894 << 0.000821244 << 0.000819054 << 0.000819409 << 0.000822406 << 0.000827227 << 0.000833456 << 0.000839625 << 0.000844565
-                                                << 0.000852991 << 0.000868134 << 0.000886305 << 0.000902025 << 0.000909861 << 0.000912131 << 0.000912076 << 0.000915443 << 0.000922792
-                                                << 0.000927799 << 0.000942574 << 0.000955753 );
-    QMap< QString, QList< QList< double > > > rawDataExpected;
-    rawDataExpected.insert( "RD", rdRawData );
-    rawDataExpected.insert( "FA", faRawData );
+    QList< QList< double > > rawDataExpected = faRawData;
 
 
-    plot.m_matchedSubjects = QStringList() << processing.GetSubjectsFromData( rawData.value( "RD" ), -1 ).first();
-    plot.m_subjects = processing.GetSubjectsFromData( rawData.value( "RD" ), -1 );
+    plot.m_matchedSubjects = QStringList() << processing.GetSubjectsFromData( rawData, -1 ).first();
+    plot.m_subjects = processing.GetSubjectsFromData( rawData, -1 );
     plot.SetRawDataQCThreshold( rawData );
 
 
-    bool testSetRawDataQCThreshold_Passed = plot.m_dataRawData == rawDataExpected;
+    bool testSetRawDataQCThreshold_Passed = plot.m_dataRawData.value( "FA" ) == rawDataExpected;
     if( !testSetRawDataQCThreshold_Passed )
     {
         std::cerr << "/!\\/!\\ Test_SetRawDataQCThreshold() FAILED /!\\/!\\";
-        std::cerr << std::endl << "\t+ pb with SetRawDataQCThreshold( QMap< QString, QList< QStringList > >& rawData )" << std::endl;
-        std::cerr << "\t+ wrong raw data" << std::endl;
+//        std::cerr << std::endl << "\t+ pb with SetRawDataQCThreshold( QMap< QString, QList< QStringList > >& rawData )" << std::endl;
+//        std::cerr << "\t+ wrong raw data" << std::endl;
     }
     else
     {
@@ -1246,7 +1218,7 @@ bool TestPlot::Test_SetCustomizedAxis()
 
     plot.SetQVTKWidget( qvtkWidget );
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
-    plot.SetCustomizedAxis( xName, yName, bold, italic, yMinSet, yMin, yMaxSet, yMax );
+    plot.SetCustomizedAxis( 12, xName, yName, 12, bold, italic, yMinSet, yMin, yMaxSet, yMax );
 
     bool testXName = xName == plot.m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitle();
     bool testYName = yName == plot.m_chart->GetAxis( vtkAxis::LEFT )->GetTitle();
@@ -1388,18 +1360,18 @@ bool TestPlot::Test_SetLegend()
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
 
     plot.m_plotSelected = "Raw Data";
-    plot.SetLegend( "Top Left" );
+    plot.SetLegend( true, "Top Left" );
     bool testLegendAlignment1 = ( plot.m_chart->GetLegend()->GetVerticalAlignment() == vtkChartLegend::TOP
                                   && plot.m_chart->GetLegend()->GetHorizontalAlignment() == vtkChartLegend::LEFT );
     bool testLegendHidden1  = plot.m_chart->GetShowLegend() == false;
 
     plot.m_plotSelected = "Omnibus Local pvalues";
-    plot.SetLegend( "Middle Center" );
+    plot.SetLegend( true, "Middle Center" );
     bool testLegendAlignment2 = ( plot.m_chart->GetLegend()->GetVerticalAlignment() == vtkChartLegend::CENTER
                                   && plot.m_chart->GetLegend()->GetHorizontalAlignment() == vtkChartLegend::CENTER );
     bool testLegendHidden2  = plot.m_chart->GetShowLegend() == true;
 
-    plot.SetLegend( "Bottom Right" );
+    plot.SetLegend( true, "Bottom Right" );
     bool testLegendAlignment3 = ( plot.m_chart->GetLegend()->GetVerticalAlignment() == vtkChartLegend::BOTTOM
                                   && plot.m_chart->GetLegend()->GetHorizontalAlignment() == vtkChartLegend::RIGHT );
 
@@ -2452,229 +2424,6 @@ bool TestPlot::Test_AddSignificantLevel()
     return testAddSignificantLevel_Passed;
 }
 
-bool TestPlot::Test_AddLineSigBetas( QString dataDir, QString tempoDir )
-{
-    Plot plot;
-    QString dirTest = tempoDir + "/TestPlot/Test_AddLineSigBetas/FADTTSter_test";
-    QString matlabDir = dirTest + "/MatlabOutputs";
-    QDir().mkpath( dirTest );
-    QDir().mkpath( matlabDir );
-    QFile::copy( dataDir + "/test_RawData_FA.csv", dirTest + "/test_RawData_FA.csv" );
-    QFile::copy( dataDir + "/test_RawData_RD.csv", dirTest + "/test_RawData_RD.csv" );
-    QFile::copy( dataDir + "/test_RawData_SUBMATRIX.csv", dirTest + "/test_RawData_SUBMATRIX.csv" );
-    QFile::copy( dataDir + "/test_Betas_FA.csv", matlabDir + "/test_Betas_FA.csv" );
-    QFile::copy( dataDir + "/test_Betas_RD.csv", matlabDir + "/test_Betas_RD.csv" );
-    QFile::copy( dataDir + "/test_Omnibus_FDR_Local_pvalues.csv", matlabDir + "/test_Omnibus_FDR_Local_pvalues.csv" );
-    QFile::copy( dataDir + "/test_PostHoc_FDR_Local_pvalues_FA.csv", matlabDir + "/test_PostHoc_FDR_Local_pvalues_FA.csv" );
-    QFile::copy( dataDir + "/test_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir + "/test_PostHoc_FDR_Local_pvalues_RD.csv" );
-    QMap<int, QPair< QString, QPair< bool, QString > > > propertiesToDisplay;
-    propertiesToDisplay.insert( 0, QPair< QString, QPair< bool, QString > >( "RD", QPair< bool, QString >( true, "Red" ) ) );
-    propertiesToDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "FA", QPair< bool, QString >( true, "Lime" ) ) );
-    QMap<int, QPair< QString, QPair< bool, QString > > > covariatesToDisplay;
-    covariatesToDisplay.insert( 0, QPair< QString, QPair< bool, QString > >( "Intercept", QPair< bool, QString >( true, "Red" ) ) );
-    covariatesToDisplay.insert( 1, QPair< QString, QPair< bool, QString > >( "ngroup", QPair< bool, QString >( true, "Lime" ) ) );
-    covariatesToDisplay.insert( 2, QPair< QString, QPair< bool, QString > >( "GENDER", QPair< bool, QString >( true, "Blue" ) ) );
-    covariatesToDisplay.insert( 3, QPair< QString, QPair< bool, QString > >( "GestAgeAtBirth", QPair< bool, QString >( true, "Yellow" ) ) );
-    QList< QList< double > > expectedDataTable1 = QList< QList< double > >()
-            << ( QList< double >() << -37.1846 << -21.1846 << -20.1846 << -19.1846 << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462 )
-            << ( QList< double >() << 0.0066412 << 0.0019112 << 0.0034908 << 0.0048857 << 0.011975 << 0.010896 << 0.0085982 << 0.0055898 << 0.0026212 << 0.00024992 << -0.0014404 );
-    QList< QList< double > > expectedDataTable2 = QList< QList< double > >()
-            << ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846 << -29.1846
-                 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846 << -19.1846 << -18.1846 << -17.1846 << -16.1846
-                 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846 << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462
-                 << -2.18462 << -1.18462 << -0.184619 << 0.815381 << 1.81538 << 2.81538 << 3.81538 << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538 << 10.8154
-                 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154 << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154
-                 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154 << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
-            << ( QList< double >() << 0.05691 << 0.060803 << 0.06531 << 0.070412 << 0.076043 << 0.082126 << 0.088623 << 0.095532 << 0.10283 << 0.11034 << 0.11774 << 0.12448
-                 << 0.13002 << 0.13382 << 0.13549 << 0.13481 << 0.13175 << 0.1265 << 0.11944 << 0.11116 << 0.10241 << 0.094048 << 0.086846 << 0.081379 << 0.077899 << 0.076351
-                 << 0.076481 << 0.07796 << 0.080441 << 0.083556 << 0.08693 << 0.09029 << 0.09366 << 0.097488 << 0.10259 << 0.10981 << 0.11963 << 0.1317 << 0.14488 << 0.15758
-                 << 0.16838 << 0.1766 << 0.18248 << 0.18686 << 0.19069 << 0.19462 << 0.19879 << 0.20295 << 0.20667 << 0.20951 << 0.21109 << 0.21111 << 0.20949 << 0.20635
-                 << 0.2021 << 0.19723 << 0.19216 << 0.18702 << 0.18159 << 0.17546 << 0.16828 << 0.16009 << 0.15129 << 0.14252 << 0.1343 << 0.12683 << 0.12 << 0.11352 << 0.10714
-                 << 0.10076 << 0.094387 << 0.088147 << 0.082266 << 0.077046 << 0.072797 << 0.06971 << 0.067772 << 0.066745 << 0.06624 );
-
-
-    plot.SetPvalueThreshold() = 0.05;
-    plot.SetLineWidth() = 20;
-    plot.SetSelectedProperty() = "FA";
-    plot.SetSelectedCovariate() = "GENDER";
-    plot.m_markerType = vtkPlotPoints::CROSS;
-    plot.SetMarkerSize() = 10;
-    plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
-
-    /***********************/
-    /******* Tests 1 *******/
-    /***********************/
-    // Omnibus FDR SigBetas by Prop
-    vtkSmartPointer< vtkTable > table1 = vtkSmartPointer< vtkTable >::New();
-    vtkSmartPointer< vtkFloatArray > abscissa1 = vtkSmartPointer< vtkFloatArray >::New();
-    abscissa1->SetName( "Arc Length" );
-    table1->AddColumn( abscissa1 );
-    bool betaDisplayedByProperties1 = true;
-    bool isOmnibus1 = true;
-
-    plot.InitPlot( dirTest, "test" );
-    plot.SetSelectionToDisPlay() = covariatesToDisplay;
-    plot.m_ordinate = plot.LoadBetas();
-    plot.m_nbrPlots = plot.m_ordinate.size();
-    plot.AddEntriesByPropertiesOrCovariates( table1 );
-    plot.SetData( table1 );
-    plot.AddLineSigBetas( table1, betaDisplayedByProperties1, isOmnibus1, 2 );
-
-    int indexLastPlot1;
-    QList< QList< double > > dataTable1;
-    indexLastPlot1 = plot.m_chart->GetNumberOfPlots() - 1;
-    for( int i = 0; i < plot.m_chart->GetPlot( indexLastPlot1 )->GetInput()->GetNumberOfColumns(); i++ )
-    {
-        QList< double > currentDataRow;
-        for( int j = 0; j < plot.m_chart->GetPlot( indexLastPlot1 )->GetInput()->GetNumberOfRows(); j++ )
-        {
-            currentDataRow.append( plot.m_chart->GetPlot( indexLastPlot1 )->GetInput()->GetValue( j, i ).ToDouble() );
-        }
-        dataTable1.append( currentDataRow );
-    }
-
-    bool test1 = dataTable1 == expectedDataTable1;
-    //    qDebug() << endl << "dataTable1: " << endl << dataTable1;
-    //    qDebug() << endl << "expectedDataTable1: " << endl << expectedDataTable1;
-
-
-    /***********************/
-    /******* Tests 2 *******/
-    /***********************/
-    // Omnibus FDR SigBetas by Cov
-    vtkSmartPointer< vtkTable > table2 = vtkSmartPointer< vtkTable >::New();
-    vtkSmartPointer< vtkFloatArray > abscissa2 = vtkSmartPointer< vtkFloatArray >::New();
-    abscissa2->SetName( "Arc Length" );
-    table2->AddColumn( abscissa2 );
-    bool betaDisplayedByProperties2 = false;
-    bool isOmnibus2 = true;
-
-    plot.ResetPlotData();
-    plot.ClearPlot();
-    plot.InitPlot( dirTest, "test" );
-    plot.SetSelectionToDisPlay() = propertiesToDisplay;
-    plot.m_ordinate = plot.LoadBetaByCovariate();
-    plot.m_nbrPlots = plot.m_ordinate.size();
-    plot.AddEntriesByPropertiesOrCovariates( table2 );
-    plot.SetData( table2 );
-    plot.AddLineSigBetas( table2, betaDisplayedByProperties2, isOmnibus2, 1 );
-
-    int indexLastPlot2;
-    QList< QList< double > > dataTable2;
-    indexLastPlot2 = plot.m_chart->GetNumberOfPlots() - 1;
-    for( int i = 0; i < plot.m_chart->GetPlot( indexLastPlot2 )->GetInput()->GetNumberOfColumns(); i++ )
-    {
-        QList< double > currentDataRow;
-        for( int j = 0; j < plot.m_chart->GetPlot( indexLastPlot2 )->GetInput()->GetNumberOfRows(); j++ )
-        {
-            currentDataRow.append( plot.m_chart->GetPlot( indexLastPlot2 )->GetInput()->GetValue( j, i ).ToDouble() );
-        }
-        dataTable2.append( currentDataRow );
-    }
-
-    bool test2 = dataTable2 == expectedDataTable1;
-    //    qDebug() << endl << "dataTable2: " << endl << dataTable2;
-    //    qDebug() << endl << "expectedDataTable1: " << endl << expectedDataTable1;
-
-
-    /***********************/
-    /******* Tests 3 *******/
-    /***********************/
-    // Post-Hoc FDR SigBetas by Prop
-    plot.SetSelectedCovariate() = "ngroup";
-    vtkSmartPointer< vtkTable > table3 = vtkSmartPointer< vtkTable >::New();
-    vtkSmartPointer< vtkFloatArray > abscissa3 = vtkSmartPointer< vtkFloatArray >::New();
-    abscissa3->SetName( "Arc Length" );
-    table3->AddColumn( abscissa3 );
-    bool betaDisplayedByProperties3 = true;
-    bool isOmnibus3 = false;
-
-    plot.ResetPlotData();
-    plot.ClearPlot();
-    plot.InitPlot( dirTest, "test" );
-    plot.SetSelectionToDisPlay() = covariatesToDisplay;
-    plot.m_ordinate = plot.LoadBetas();
-    plot.m_nbrPlots = plot.m_ordinate.size();
-    plot.AddEntriesByPropertiesOrCovariates( table3 );
-    plot.SetData( table3 );
-    plot.AddLineSigBetas( table3, betaDisplayedByProperties3, isOmnibus3, 1 );
-
-    int indexLastPlot3;
-    QList< QList< double > > dataTable3;
-    indexLastPlot3 = plot.m_chart->GetNumberOfPlots() - 1;
-    for( int i = 0; i < plot.m_chart->GetPlot( indexLastPlot3 )->GetInput()->GetNumberOfColumns(); i++ )
-    {
-        QList< double > currentDataRow;
-        for( int j = 0; j < plot.m_chart->GetPlot( indexLastPlot3 )->GetInput()->GetNumberOfRows(); j++ )
-        {
-            currentDataRow.append( plot.m_chart->GetPlot( indexLastPlot3 )->GetInput()->GetValue( j, i ).ToDouble() );
-        }
-        dataTable3.append( currentDataRow );
-    }
-
-    bool test3 = dataTable3 == expectedDataTable2;
-    //    qDebug() << endl << "dataTable3: " << endl << dataTable3;
-    //    qDebug() << endl << "expectedDataTable2: " << endl << expectedDataTable2;
-
-
-    /***********************/
-    /******* Tests 4 *******/
-    /***********************/
-    // Post-Hoc FDR SigBetas by Cov
-    vtkSmartPointer< vtkTable > table4 = vtkSmartPointer< vtkTable >::New();
-    vtkSmartPointer< vtkFloatArray > abscissa4 = vtkSmartPointer< vtkFloatArray >::New();
-    abscissa4->SetName( "Arc Length" );
-    table4->AddColumn( abscissa4 );
-    bool betaDisplayedByProperties4 = false;
-    bool isOmnibus4 = false;
-
-    plot.ResetPlotData();
-    plot.ClearPlot();
-    plot.InitPlot( dirTest, "test" );
-    plot.SetSelectionToDisPlay() = propertiesToDisplay;
-    plot.m_ordinate = plot.LoadBetaByCovariate();
-    plot.m_nbrPlots = plot.m_ordinate.size();
-    plot.AddEntriesByPropertiesOrCovariates( table4 );
-    plot.SetData( table4 );
-    plot.AddLineSigBetas( table4, betaDisplayedByProperties4, isOmnibus4, 1 );
-
-    int indexLastPlot4;
-    QList< QList< double > > dataTable4;
-    indexLastPlot4 = plot.m_chart->GetNumberOfPlots() - 1;
-    for( int i = 0; i < plot.m_chart->GetPlot( indexLastPlot4 )->GetInput()->GetNumberOfColumns(); i++ )
-    {
-        QList< double > currentDataRow;
-        for( int j = 0; j < plot.m_chart->GetPlot( indexLastPlot4 )->GetInput()->GetNumberOfRows(); j++ )
-        {
-            currentDataRow.append( plot.m_chart->GetPlot( indexLastPlot4 )->GetInput()->GetValue( j, i ).ToDouble() );
-        }
-        dataTable4.append( currentDataRow );
-    }
-
-    bool test4 = dataTable4 == expectedDataTable2;
-    //    qDebug() << endl << "dataTable4: " << endl << dataTable4;
-    //    qDebug() << endl << "expectedDataTable2: " << endl << expectedDataTable2;
-
-
-    //    qDebug() << endl << test1;
-    //    qDebug() << test2;
-    //    qDebug() << test3;
-    //    qDebug() << test4;
-
-
-    bool testAddLineSigBetas_Passed = test1 && test2 && test3 && test4;
-    if( !testAddLineSigBetas_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_AddLineSigBetas() FAILED /!\\/!\\";
-        //        std::cerr << std::endl << "\t+ pb with AddLineSigBetas( vtkSmartPointer< vtkTable > table, bool betaDisplayedByProperties, bool isOmnibus, int i )" << std::endl;
-        //    }
-        //    else
-        //    {
-        //        std::cerr << "Test_AddLineSigBetas() PASSED";
-    }
-    return testAddLineSigBetas_Passed;
-}
-
 
 
 bool TestPlot::Test_GetyMinMax()
@@ -2744,7 +2493,7 @@ bool TestPlot::Test_SavePlot( QString plotPath, QString dataDir, QString tempoDi
     plot.SetSelectionToDisPlay() = linesToDisplay;
     plot.SetDefaultTitle();
     plot.SetDefaultAxis();
-    plot.SetLegend( "Top Right" );
+    plot.SetLegend( true, "Top Right" );
     plot.SetPvalueThreshold() = 0.05;
     plot.SetLineWidth() = 1.50;
     plot.SetMarkerType( "Circle" );

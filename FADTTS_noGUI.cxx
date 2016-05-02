@@ -17,7 +17,6 @@ FADTTS_noGUI::FADTTS_noGUI( QObject *parent ) :
 
     connect( QThread::currentThread(), SIGNAL( finished() ), this, SLOT( OnKillFADTTSter() ) );
 
-
     InitFADTTS_noGUI();
 }
 
@@ -26,38 +25,22 @@ int FADTTS_noGUI::RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI )
 {
     QJsonObject inputFiles = jsonObject_noGUI.value( "inputFiles" ).toObject();
     GetInputFiles( inputFiles );
-//        qDebug() << endl << "m_inputs:" << endl << m_inputs;
-//        qDebug() << endl << "m_properties:" << endl << m_properties;
-//        qDebug() << endl << "m_subjectColumnID:" << m_subjectColumnID;
 
     QJsonObject covariates = jsonObject_noGUI.value( "covariates" ).toObject();
     GetCovariates( covariates );
-//        qDebug() << "m_covariates:" << endl << m_covariates;
 
     QJsonObject subjects = jsonObject_noGUI.value( "subjects" ).toObject();
     GetSubjects( subjects );
-//        qDebug() << endl << "m_subjects:" << endl << m_subjects;
 
     QJsonObject settings = jsonObject_noGUI.value( "settings" ).toObject();
     GetSettings( settings );
-//        qDebug() << endl << "m_fibername:" << m_fibername;
-//        qDebug() << endl << "m_nbrPermutations:" << m_nbrPermutations;
-//        qDebug() << endl << "m_confidenceBandThreshold:" << m_confidenceBandThreshold;
-//        qDebug() << endl << "m_pvalueThreshold:" << m_pvalueThreshold;
-//        qDebug() << endl << "m_omnibus:" << m_omnibus;
-//        qDebug() << endl << "m_posthoc:" << m_posthoc;
 
     QJsonObject matlabSpecifications = jsonObject_noGUI.value( "matlabSpecifications" ).toObject();
     GetMatlabSpecifications( matlabSpecifications );
-//        qDebug() << endl << "fadttsDir:" << m_mvmcDir;
-//        qDebug() << endl << "m_matlabExe:" << m_matlabExe;
-//        qDebug() << endl << "m_runMatlab:" << m_runMatlab;
-//        qDebug() << endl << "m_nbrCompThreads:" << m_nbrCompThreads;
 
     GetOutput( jsonObject_noGUI.value( "outputDir" ).toString() );
-//        qDebug() << endl << "m_outputDir:" << m_outputDir;
 
-    if( canFADTTSterBeRun() )
+    if( CanFADTTSterBeRun() )
     {
         SetMatlabScript();
 
@@ -134,7 +117,6 @@ void FADTTS_noGUI::InitFADTTS_noGUI()
     m_mvmcDir.clear();
     m_runMatlab = false;
     m_matlabExe.clear();
-    m_nbrCompThreads = -1;
 }
 
 
@@ -212,12 +194,13 @@ void FADTTS_noGUI::SetQCThreshold( const QJsonObject& qcThresholdObject )
     if( qcThresholdObject.value( "apply" ).toBool() )
     {
         double qcThreshold = qcThresholdObject.value( "value" ).toDouble();
-        QList< QStringList > rawData = m_processing.GetDataFromFile( m_inputs.value( m_properties.key( qcThresholdObject.value( "propertyRefID" ).toString() ) ) );
+        QList< QStringList > rawData = m_processing.GetDataFromFile( m_inputs.value( m_properties.key( "FA" ) ) );
 
         if( ( qcThreshold >= 0 ) && ( qcThreshold <= 1 ) && !rawData.isEmpty() )
         {
+            bool useAtlas = qcThresholdObject.value( "useAtlas" ).toBool();
             m_qcThreshold = qcThreshold;
-            m_processing.ApplyQCThreshold_noGUI( rawData, m_subjects, m_failedQCThresholdSubjects, m_qcThreshold );
+            m_processing.ApplyQCThreshold_noGUI( rawData, useAtlas, m_subjects, m_failedQCThresholdSubjects, m_qcThreshold );
         }
         else
         {
@@ -278,8 +261,6 @@ void FADTTS_noGUI::GetMatlabSpecifications( const QJsonObject& matlabSpecificati
 
     m_runMatlab = matlabSpecifications.value( "runMatlab" ).toBool();
     m_matlabThread->SetRunMatlab() = m_runMatlab;
-
-    m_nbrCompThreads = matlabSpecifications.value( "nbrCompThreads" ).toInt();
 }
 
 void FADTTS_noGUI::GetOutput( QString outputDir )
@@ -289,7 +270,7 @@ void FADTTS_noGUI::GetOutput( QString outputDir )
 
 
 
-bool FADTTS_noGUI::canFADTTSterBeRun()
+bool FADTTS_noGUI::CanFADTTSterBeRun()
 {
     /*** Inputs ***/
     bool atLeastOneDiffusionPropertyFileIsProvided = m_properties.size() > 1;
@@ -312,13 +293,12 @@ bool FADTTS_noGUI::canFADTTSterBeRun()
     /*** Matlab Specifications ***/
     bool mvcmPathIsProvided = !m_mvmcDir.isEmpty() && QDir( m_mvmcDir ).exists();
     bool matlabExeIsProvided = m_runMatlab ? ( !m_matlabExe.isEmpty() && QFile( m_matlabExe ).exists() ) : true;
-    bool nbrCompThreadsIsProvided = m_runMatlab ? m_nbrCompThreads > 0 : true;
 
     bool matlabCanBeRun = atLeastOneDiffusionPropertyFileIsProvided && subMatrixFileIsProvided &&
             atLeastOneCovariateIsProvided && subjectColumnIDIsProvided && subjectsAreProvided &&
             fiberNameIsProvided && nbrPermutationsIsProvided && confidenceBandThresholdIsProvided &&
             pvalueThresholdIsProvided && outputDirIsProvided && mvcmPathIsProvided
-            && matlabExeIsProvided && nbrCompThreadsIsProvided;
+            && matlabExeIsProvided;
 
     if( !matlabCanBeRun )
     {
@@ -373,10 +353,6 @@ bool FADTTS_noGUI::canFADTTSterBeRun()
         {
             std::cout << "/!\\ matlab executable not provided." << std::endl;
         }
-        if( !nbrCompThreadsIsProvided )
-        {
-            std::cout << "/!\\ nbrCompThreads not set. ( must be >= 0 ) Usually between 1 and 4." << std::endl;
-        }
 
         std::cout << std::endl;
     }
@@ -427,7 +403,6 @@ void FADTTS_noGUI::SetMatlabScript()
 
     m_matlabThread->InitMatlabScript( m_outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( m_nbrPermutations ) + "perm.m" );
     m_matlabThread->SetHeader();
-    m_matlabThread->SetNbrCompThreads( m_runMatlab, m_nbrCompThreads );
     m_matlabThread->SetMVCMPath( m_mvmcDir );
     m_matlabThread->SetFiberName( m_fibername );
     m_matlabThread->SetDiffusionProperties( m_properties.values() );
@@ -442,5 +417,5 @@ void FADTTS_noGUI::SetMatlabScript()
     m_log->SetLogFile( m_outputDir, m_fibername );
     m_log->InitLog( m_outputDir, m_fibername, matlabInputFiles, m_covariates, m_loadedSubjects, m_subjectFile, m_nbrSelectedSubjects,
                     m_failedQCThresholdSubjects, m_qcThreshold, m_nbrPermutations, m_confidenceBandThreshold, m_pvalueThreshold,
-                    m_omnibus, m_posthoc, m_mvmcDir, m_runMatlab, m_matlabExe, m_nbrCompThreads );
+                    m_omnibus, m_posthoc, m_mvmcDir, m_runMatlab, m_matlabExe );
 }

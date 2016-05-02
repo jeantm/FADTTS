@@ -3,7 +3,6 @@
   <category>PROJECT</category>
   <title>FADTTSter</title>
   <version>3.0</version>
-  <description>This interface simplifies data processing when working with FADTTS. This interface enables the user not only to customize the data to process ( row data, subjects, covariates, ... ) but also to plot the outputs.</description>
   <contributor>Jean Noel</contributor>
   <parameters>
     <boolean>
@@ -15,21 +14,27 @@
     </boolean>
     <file>
       <name>softConfig</name>
-      <description>Path of the .json file containing the softwares configuration</description>
+      <description>Path to the .json file containing the software configuration</description>
       <longflag>softConfig</longflag>
       <label>.json file</label>
     </file>
     <file>
       <name>paraConfig</name>
-      <description>Path of the .json file containing the parameters configuration</description>
+      <description>Path to the .json file containing the parameters configuration</description>
       <longflag>paraConfig</longflag>
       <label>.json file</label>
     </file>
     <file>
       <name>noGUIConfig</name>	
-      <description>Path of the .json file containing the configuration to run FADTTSter without the GUI interface</description>
+      <description>Path to the .json file containing the configuration to run FADTTSter without the GUI interface</description>
       <longflag>noGUIConfig</longflag>
       <label>.json file</label>
     </file>
+    <directory>
+      <name>directory</name>
+      <description>Path to the directory where to find the configuration files</description>
+      <flag>d</flag>
+      <label>directory</label>
+    </directory>
   </parameters>
 </executable>

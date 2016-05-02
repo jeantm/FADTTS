@@ -36,12 +36,7 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testMatlabThread.Test_SetNbrCompThreads() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
+
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testMatlabThread.Test_SetMVCMPath() )
     {

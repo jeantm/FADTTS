@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-#include <QDebug>
+//#include <QDebug>
 
 
 const QString Processing::m_csvSeparator = QLocale().groupSeparator();
@@ -381,7 +381,6 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
 
 
 
-
 QList< QStringList > Processing::Transpose_noGUI( const QList< QStringList >& rawData )
 {
     QList< QStringList > rawDataTransposed;
@@ -398,7 +397,7 @@ QList< QStringList > Processing::Transpose_noGUI( const QList< QStringList >& ra
     return rawDataTransposed;
 }
 
-void Processing::RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, QStringList subjects )
+void Processing::RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, const QStringList& subjects )
 {
     for( int i = 1; i < rawDataTransposed.size(); i++ )
     {
@@ -494,7 +493,7 @@ double Processing::ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QL
     return pearsonCorrelation;
 }
 
-void Processing::ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold )
+void Processing::ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, bool useAtlas, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold )
 {
     QStringList subjectsCorrelated, subjectsNotCorrelated;
     QStringList subjects = matchedSubjects;
@@ -509,7 +508,21 @@ void Processing::ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, QS
     QList< QList< double > > rawDataDouble = ToDouble_noGUI( rawDataTransposed );
 
     /*** Get Mean ***/
-    QList< double > mean = GetMean_noGUI( rawDataDouble );
+    QList< double > mean;
+    if( useAtlas )
+    {
+        if( rawData.first().last().contains( "atlas", Qt::CaseInsensitive ) )
+        {
+            for( int i = 1; i < rawData.size(); i++ )
+            {
+                mean.append( rawData.at( i ).last().toDouble() );
+            }
+        }
+    }
+    else
+    {
+        mean = GetMean_noGUI( rawDataDouble );
+    }
 
     /*** Apply QCThreshold ***/
     for( int i = 1; i < rawDataDouble.size(); i++ )

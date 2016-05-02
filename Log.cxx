@@ -1,5 +1,7 @@
 #include "Log.h"
 
+#include <QDebug>
+
 Log::Log(QObject *parent) :
     QObject(parent)
 {
@@ -35,15 +37,15 @@ void Log::SetLogFile( QString outputDir, QString fibername )
 
 void Log::SetFileWatcher()
 {
-    QFileSystemWatcher* log_watcher = new QFileSystemWatcher( this );
-    log_watcher->addPath( m_logFile->fileName() );
-    connect( log_watcher, SIGNAL( fileChanged( QString ) ), this, SLOT( OnLogFileChange() ) );
+    m_logWatcher = new QFileSystemWatcher( this );
+    m_logWatcher->addPath( m_logFile->fileName() );
+    connect( m_logWatcher, SIGNAL( fileChanged( QString ) ), this, SLOT( OnLogFileChange() ) );
 }
 
 void Log::InitLog( QString outputDir, QString fibername, const QMap< int, QString >& matlabInputFiles, const QMap< int, QString >& selectedCovariates,
                          QStringList loadedSubjects, QString subjectFile, int nbrSelectedSubjects, QStringList failedQCThresholdSubjects, double qcThreshold,
                          int nbrPermutations, double confidenceBandsThreshold, double pvalueThreshold, bool omnibus, bool posthoc, QString mvcmDir,
-                         bool runMatlab, QString matlabExe, int nbrCompThreads )
+                         bool runMatlab, QString matlabExe )
 {
     *m_textStreamLog << QDate::currentDate().toString( "MM/dd/yyyy" ) <<
                         " " << QTime::currentTime().toString( "hh:mmap" ) << endl;
@@ -99,11 +101,9 @@ void Log::InitLog( QString outputDir, QString fibername, const QMap< int, QStrin
     {
         *m_textStreamLog << "Matlab will be run after file generation" << endl;
         *m_textStreamLog << "- matlab executable: " << matlabExe << endl;
-        *m_textStreamLog << "- nbr computational threads: " << nbrCompThreads << endl;
 
         *m_textStreamLog << endl << endl << endl;
-        *m_textStreamLog << "/**********************       Process      **********************/" << endl;
-        *m_textStreamLog << "Thread starts running..." << endl;
+        *m_textStreamLog << "/**********************     Run Matlab     **********************/" << endl << endl;
     }
     else
     {
@@ -126,6 +126,8 @@ QString Log::GetTextStream() const
 
 void Log::CloseLogFile()
 {
+    disconnect( m_logWatcher, SIGNAL( fileChanged( QString ) ), this, SLOT( OnLogFileChange() ) );
+
     m_logFile->flush();
     m_logFile->close();
 }

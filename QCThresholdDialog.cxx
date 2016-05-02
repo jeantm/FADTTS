@@ -26,25 +26,16 @@ QCThresholdDialog::~QCThresholdDialog()
 /***************************************************************/
 /********************** Public functions ***********************/
 /***************************************************************/
-bool QCThresholdDialog::InitPlot( const QMap< QString, QList< QStringList > >& rawData, const QStringList& matchedSubjects, double qcThreshold )
+bool QCThresholdDialog::InitPlot( const QList< QStringList >& rawData, const QStringList& atlas, const QStringList& matchedSubjects, double qcThreshold )
 {
-    m_rawData.clear();
-    m_matchedSubjects.clear();
-
     m_rawData = rawData;
     m_matchedSubjects = matchedSubjects;
+    m_atlas = atlas;
 
     m_qcThresholdDoubleSpinBox->setValue( qcThreshold );
 
     bool qcThresholdDialogReady = m_qcThresholdPlot->InitQCThresholdPlot( m_rawData, m_matchedSubjects );
-    if( rawData.keys().contains( "FA" ) )
-    {
-        ui->QCThresholdDialog_properies_comboBox->setCurrentText( "FA" );
-    }
-    else
-    {
-        DisplayQCThresholdPlot( m_qcThresholdDoubleSpinBox->value(), ui->QCThresholdDialog_properies_comboBox->currentText() );
-    }
+    DisplayQCThresholdPlot( m_qcThresholdDoubleSpinBox->value(), m_atlas );
 
     return qcThresholdDialogReady;
 }
@@ -54,15 +45,6 @@ bool QCThresholdDialog::InitPlot( const QMap< QString, QList< QStringList > >& r
 /***************************************************************/
 /************************ Private slots ************************/
 /***************************************************************/
-void QCThresholdDialog::OnSettingAllPropertiesUsed( const QMap< int, QString >& allPropertiesUsed )
-{
-    if( !allPropertiesUsed.isEmpty() )
-    {
-        ui->QCThresholdDialog_properies_comboBox->clear();
-        ui->QCThresholdDialog_properies_comboBox->addItems( allPropertiesUsed.values() );
-    }
-}
-
 void QCThresholdDialog::OnUpdatingSubjectsCorrelated( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated )
 {
     m_subjectsCorrelated = subjectsCorrelated;
@@ -72,14 +54,9 @@ void QCThresholdDialog::OnUpdatingSubjectsCorrelated( const QStringList& subject
     ui->QCThresholdDialog_info_label->setText( tr( qPrintable( info ) ) );
 }
 
-void QCThresholdDialog::OnPropertySelection( const QString& propertySelected )
-{
-    DisplayQCThresholdPlot( m_qcThresholdDoubleSpinBox->value(), propertySelected );
-}
-
 void QCThresholdDialog::OnUpdatingQCThreshold( double qcThreshold )
 {
-    DisplayQCThresholdPlot( qcThreshold, ui->QCThresholdDialog_properies_comboBox->currentText() );
+    DisplayQCThresholdPlot( qcThreshold, m_atlas );
 }
 
 void QCThresholdDialog::OnApplyQCThreshold()
@@ -102,10 +79,7 @@ void QCThresholdDialog::InitQCThresholdDialog()
 
     m_qcThresholdPlot = new Plot();
     m_qcThresholdPlot->SetQVTKWidget( m_qvtkWidget );
-    connect( m_qcThresholdPlot, SIGNAL( AllPropertiesUsed( const QMap< int, QString >& ) ), this, SLOT( OnSettingAllPropertiesUsed( const QMap< int, QString >& ) ) );
     connect( m_qcThresholdPlot, SIGNAL( UpdateSubjectsCorrelated( const QStringList&, const QStringList& ) ), this, SLOT( OnUpdatingSubjectsCorrelated( const QStringList&, const QStringList& ) ) );
-
-    connect( ui->QCThresholdDialog_properies_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( OnPropertySelection( const QString& ) ) );
 
     m_qcThresholdDoubleSpinBox = new QDoubleSpinBox;
     m_qcThresholdDoubleSpinBox = ui->QCThresholdDialog_qcThreshold_doubleSpinBox;
@@ -115,12 +89,13 @@ void QCThresholdDialog::InitQCThresholdDialog()
 }
 
 
-void QCThresholdDialog::DisplayQCThresholdPlot( double qcThreshold, QString property )
+void QCThresholdDialog::DisplayQCThresholdPlot( double qcThreshold, QStringList altas )
 {
     m_qcThresholdPlot->ClearPlot();
 
     m_qcThresholdPlot->SetQCThreshold() = qcThreshold;
-    m_qcThresholdPlot->DisplayQCThresholdPlot( property );
+    m_qcThresholdPlot->SetAtlasQCThreshold() = altas;
+    m_qcThresholdPlot->DisplayQCThresholdPlot();
 }
 
 void QCThresholdDialog::closeEvent( QCloseEvent *event )

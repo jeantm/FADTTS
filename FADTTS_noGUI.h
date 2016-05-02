@@ -15,20 +15,21 @@
 
 class FADTTS_noGUI : public QObject
 {
+    friend class TestFADTTS_noGUI; /** For unit tests **/
     Q_OBJECT
 
 public:
     FADTTS_noGUI( QObject *parent = 0 );
 
 
-int RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI );
+int RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI ); // Not Directly Tested
 
 
 private slots:
 
-void OnMatlabThreadFinished();
+void OnMatlabThreadFinished(); /// Not Tested
 
-void OnKillFADTTSter();
+void OnKillFADTTSter(); /// Not Tested
 
 
 private:
@@ -66,7 +67,6 @@ QString m_outputDir;
 QString m_mvmcDir;
 bool m_runMatlab;
 QString m_matlabExe;
-int m_nbrCompThreads;
 
 
 void InitFADTTS_noGUI();
@@ -89,7 +89,7 @@ void GetMatlabSpecifications( const QJsonObject& matlabSpecifications );
 void GetOutput( QString outputDir );
 
 
-bool canFADTTSterBeRun();
+bool CanFADTTSterBeRun();
 
 void GenerateSubjectFile();
 

@@ -141,172 +141,68 @@ bool TestFADTTSWindow::Test_DisplayIcon( QString dataDir )
 
 
 
-bool TestFADTTSWindow::Test_OnLoadSaveParaSettings( QString paraFilePath, QString noParaFilePath, QString dataDir, QString tempoDir )
+bool TestFADTTSWindow::Test_OnLoadSaveParaConfiguration( QString paraFilePath, QString noParaFilePath, QString tempoDir )
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QString testDir = tempoDir + "/TestFADTTSWindow/Test_OnLoadSaveSoftSettings";
+    QString testDir = tempoDir + "/TestFADTTSWindow/Test_OnLoadSaveParaConfiguration";
     QDir().mkpath( testDir );
-    bool testAllPara = true;
-    bool testNoPara = true;
-    bool testParaAfterSave = true;
-
-    AddIcon( fadttsWindow, dataDir );
-
-    testAllPara == testAllPara && fadttsWindow->para_inputTab_adFile_lineEdit->text().isEmpty();
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_rdFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_RD_RawData.csv" );
-    testAllPara == testAllPara && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_faFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_FA_RawData.csv" );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_subMatrixFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_SUBMATRIX_RawData.csv" );
-    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isChecked();
-    testAllPara == testAllPara && fadttsWindow->para_subjectTab_rdFile_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_faFile_checkBox->isChecked();
-    testAllPara == testAllPara && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isEnabled();
-    testAllPara == testAllPara && fadttsWindow->para_subjectTab_rdFile_checkBox->isEnabled();
-    testAllPara == testAllPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isEnabled();
-    testAllPara == testAllPara && fadttsWindow->para_subjectTab_faFile_checkBox->isEnabled();
-    testAllPara == testAllPara && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isEnabled();
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->count() == 4 );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->text() == "Intercept" );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->checkState() == Qt::Checked );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->text() == "ngroup" );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->checkState() == Qt::Unchecked );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->text() == "GENDER" );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->checkState() == Qt::Checked );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->text() == "GestAgeAtBirth" );
-    testAllPara == testAllPara && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->checkState() == Qt::Unchecked );
-    testAllPara == testAllPara && ( fadttsWindow->para_executionTab_fiberName_lineEdit->text() == "testLoadSaveSettings" );
-    testAllPara == testAllPara && ( fadttsWindow->para_executionTab_nbrPermutations_spinBox->value() == 500 );
-    testAllPara == testAllPara && ( fadttsWindow->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() == 0.10 );
-    testAllPara == testAllPara && ( fadttsWindow->para_executionTab_pvalueThreshold_doubleSpinBox->value() == 0.04 );
-    testAllPara == testAllPara && fadttsWindow->para_executionTab_omnibus_checkBox->isChecked();
-    testAllPara == testAllPara && !fadttsWindow->para_executionTab_postHoc_checkBox->isChecked();
-    testAllPara == testAllPara && ( fadttsWindow->para_executionTab_outputDir_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/" );
-//    testAllPara == testAllPara && fadttsWindow->para_executionTab_matlabExe_checkBox->isChecked();
+    bool testPara = false;
+    bool testNoPara = false;
 
 
-    testNoPara == testNoPara && fadttsWindow->para_inputTab_adFile_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && fadttsWindow->para_inputTab_rdFile_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && fadttsWindow->para_inputTab_faFile_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && fadttsWindow->para_inputTab_subMatrixFile_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_rdFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_faFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_adFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_rdFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_mdFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_faFile_checkBox->isEnabled();
-    testNoPara == testNoPara && !fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isEnabled();
-    testNoPara == testNoPara && ( fadttsWindow->para_inputTab_covariates_listWidget->count() == 0 );
-    testNoPara == testNoPara && fadttsWindow->para_executionTab_fiberName_lineEdit->text().isEmpty();
-    testNoPara == testNoPara && ( fadttsWindow->para_executionTab_nbrPermutations_spinBox->value() == 100 );
-    testNoPara == testNoPara && ( fadttsWindow->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() == 0.05 );
-    testNoPara == testNoPara && ( fadttsWindow->para_executionTab_pvalueThreshold_doubleSpinBox->value() == 0.05 );
-    testNoPara == testNoPara && !fadttsWindow->para_executionTab_omnibus_checkBox->isChecked();
-    testNoPara == testNoPara && !fadttsWindow->para_executionTab_postHoc_checkBox->isChecked();
-    testNoPara == testNoPara && fadttsWindow->para_executionTab_outputDir_lineEdit->text().isEmpty();
-//    testNoPara == testNoPara && !fadttsWindow->para_executionTab_matlabExe_checkBox->isChecked();
+    fadttsWindow->LoadParaConfiguration( paraFilePath );
+    fadttsWindow->SaveParaConfiguration( QString( testDir + "/testParaConfiguration.json" ) );
+    testPara = CompareFile( paraFilePath, QString( testDir + "/testParaConfiguration.json" ) );
 
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_inputTab_adFile_lineEdit->text().isEmpty();
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_rdFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_RD_RawData.csv" );
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_inputTab_mdFile_lineEdit->text().isEmpty();
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_faFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_FA_RawData.csv" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_subMatrixFile_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/test_SUBMATRIX_RawData.csv" );
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_adFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_rdFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_mdFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_faFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_adFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_rdFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_subjectTab_mdFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_faFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_subjectTab_subMatrixFile_checkBox->isEnabled();
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->count() == 4 );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->text() == "Intercept" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 0 )->checkState() == Qt::Checked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->text() == "ngroup" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 1 )->checkState() == Qt::Unchecked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->text() == "GENDER" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 2 )->checkState() == Qt::Checked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->text() == "GestAgeAtBirth" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_inputTab_covariates_listWidget->item( 3 )->checkState() == Qt::Unchecked );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_fiberName_lineEdit->text() == "testLoadSaveSettings" );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_nbrPermutations_spinBox->value() == 500 );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() == 0.10 );
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_pvalueThreshold_doubleSpinBox->value() == 0.04 );
-    testParaAfterSave == testParaAfterSave && fadttsWindow->para_executionTab_omnibus_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && !fadttsWindow->para_executionTab_postHoc_checkBox->isChecked();
-    testParaAfterSave == testParaAfterSave && ( fadttsWindow->para_executionTab_outputDir_lineEdit->text() == "/NIRAL/work/jeantm/Project/FADTTS-build/data/" );
-//    testParaAfterSave == testParaAfterSave && fadttsWindow->para_executionTab_matlabExe_checkBox->isChecked();
+    fadttsWindow->LoadParaConfiguration( noParaFilePath );
+    fadttsWindow->SaveParaConfiguration( QString( testDir + "/testParaNoConfiguration.json" ) );
+    testNoPara = CompareFile( noParaFilePath, QString( testDir + "/testParaNoConfiguration.json" ) );
 
 
-    bool testOnLoadSaveParaSettings_Passed = testAllPara && testNoPara && testParaAfterSave;
-    if( !testOnLoadSaveParaSettings_Passed )
+    bool testOnLoadSaveParaConfiguration_Passed = testPara && testNoPara;
+    if( !testOnLoadSaveParaConfiguration_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_OnLoadSaveParaSettings() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnLoadParaSettings() and/or OnSaveParaSettings()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_OnLoadSaveParaConfiguration() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadParaConfiguration() and/or SaveParaConfiguration()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_OnLoadSaveParaSettings() PASSED";
+        std::cerr << "Test_OnLoadSaveParaConfiguration() PASSED";
     }
 
-    return testOnLoadSaveParaSettings_Passed;
+    return testOnLoadSaveParaConfiguration_Passed;
 }
 
-bool TestFADTTSWindow::Test_OnLoadSaveSoftSettings( QString softFilePath, QString noSoftFilePath, QString dataDir, QString tempoDir )
+bool TestFADTTSWindow::Test_OnLoadSaveSoftConfiguration( QString softFilePath, QString noSoftFilePath, QString tempoDir )
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QString testDir = tempoDir + "/TestFADTTSWindow/Test_OnLoadSaveSoftSettings";
+    QString testDir = tempoDir + "/TestFADTTSWindow/Test_OnLoadSaveSoftConfiguration";
     QDir().mkpath( testDir );
-    bool testAllSoft = true;
-    bool testNoSoft = true;
-    bool testSoftAfterSave = true;
+    bool testSoft = false;
+    bool testNoSoft = false;
 
 
-//    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
-    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_matlabExe_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
-//    testAllSoft = testAllSoft && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
-//    testAllSoft = testAllSoft && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
-    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 4 );
-//    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
-//    testAllSoft = testAllSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
+    fadttsWindow->LoadSoftConfiguration( softFilePath );
+    fadttsWindow->SaveSoftConfiguration( QString( testDir + "/testSoftConfiguration.json" ) );
+    testSoft = CompareFile( softFilePath, QString( testDir + "/testSoftConfiguration.json" ) );
+
+    fadttsWindow->LoadSoftConfiguration( noSoftFilePath );
+    fadttsWindow->SaveSoftConfiguration( QString( testDir + "/testSoftNoConfiguration.json" ) );
+    testNoSoft = CompareFile( noSoftFilePath, QString( testDir + "/testSoftNoConfiguration.json" ) );
 
 
-//    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_mvcm_lineEdit->text().isEmpty();
-    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_matlabExe_lineEdit->text().isEmpty();
-//    testNoSoft = testNoSoft && fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
-//    testNoSoft = testNoSoft && !fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
-    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 1 );
-//    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Hour (60 mins)" );
-//    testNoSoft = testNoSoft && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 4 );
-
-//    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_mvcm_lineEdit->text() == "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS" );
-    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_matlabExe_lineEdit->text() == "/NIRAL/tools/matlab7p4_linux64/bin/matlab" );
-//    testSoftAfterSave = testSoftAfterSave && !fadttsWindow->soft_executionTab_runMatlabSystem_radioButton->isChecked();
-//    testSoftAfterSave = testSoftAfterSave && fadttsWindow->soft_executionTab_runMatlabKD_radioButton->isChecked();
-    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_nbrCompThreads_spinBox->value() == 4 );
-//    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_killDevilQueue_comboBox->currentText() == "Week (7 days)" );
-//    testSoftAfterSave = testSoftAfterSave && ( fadttsWindow->soft_executionTab_killDevilAllocatedMemory_spinBox->value() == 9 );
-
-
-    bool testOnLoadSaveSoftSettings_Passed = testAllSoft && testNoSoft && testSoftAfterSave;
-    if( !testOnLoadSaveSoftSettings_Passed )
+    bool testOnLoadSaveSoftConfiguration_Passed = testSoft && testNoSoft;
+    if( !testOnLoadSaveSoftConfiguration_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_OnLoadSaveSoftSettings() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnLoadSoftSettings() and/or OnSaveSoftSettings()" << std::endl;
+        std::cerr << "/!\\/!\\ Test_OnLoadSaveSoftConfiguration() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with LoadParaConfiguration() and/or SaveParaConfiguration()" << std::endl;
     }
     else
     {
-        std::cerr << "Test_OnLoadSaveSoftSettings() PASSED";
+        std::cerr << "Test_OnLoadSaveSoftConfiguration() PASSED";
     }
 
-    return testOnLoadSaveSoftSettings_Passed;
+    return testOnLoadSaveSoftConfiguration_Passed;
 }
 
 
@@ -372,9 +268,9 @@ bool TestFADTTSWindow::Test_SetSelectedInputFiles()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QMap< int, QString > expectedPropertySelected;
-    expectedPropertySelected.insert( 0, "ad" );
-    expectedPropertySelected.insert( 2, "md" );
-    expectedPropertySelected.insert( 4, "subMatrix" );
+    expectedPropertySelected.insert( 0, "AD" );
+    expectedPropertySelected.insert( 2, "MD" );
+    expectedPropertySelected.insert( 4, "SUBMATRIX" );
     QMap< int, QString > expectedSelectedFiles;
     expectedSelectedFiles.insert( 0, "/path/adFile.csv" );
     expectedSelectedFiles.insert( 2, "/path/mdFile.csv" );
@@ -688,11 +584,11 @@ bool TestFADTTSWindow::Test_DisplaySortedSubjects()
     unMatchedSubjects.insert( "Luke", inLuke );
     unMatchedSubjects.insert( "Yoda", inYoda );
     QList< QStringList > expectedTextUnmatchedSubjects = QList< QStringList >()
-            << ( QStringList() << "ad" )
-            << ( QStringList() << "loaded subjects" << "rd" << "md" )
-            << ( QStringList() << "ad" << "rd" )
-            << ( QStringList() << "ad" << "rd" << "md" << "fa" )
-            << ( QStringList() << "loaded subjects" << "rd" << "md" << "fa" << "subMatrix" );
+            << ( QStringList() << "AD" )
+            << ( QStringList() << "loaded subjects" << "RD" << "MD" )
+            << ( QStringList() << "AD" << "RD" )
+            << ( QStringList() << "AD" << "RD" << "MD" << "FA" )
+            << ( QStringList() << "loaded subjects" << "RD" << "MD" << "FA" << "SUBMATRIX" );
     int expectedNbrUnmatchedSubjects = unMatchedSubjects.size();
     int expectedNbrMatchedSubjects = matchedSubjects.size();
 
@@ -1237,7 +1133,7 @@ bool TestFADTTSWindow::Test_GetPropertyRawData()
     fileDataExpected.insert( "RD", QList< QStringList >() << ( QStringList() << "RD1" << "RD2" << "RD3" << "RD4" ) );
     fileDataExpected.insert( "MD", QList< QStringList >() << ( QStringList() << "MD1" << "MD2" << "MD3" << "MD4" ) );
     fileDataExpected.insert( "FA", QList< QStringList >() << ( QStringList() << "FA1" << "FA2" << "FA3" << "FA4" ) );
-    fileDataExpected.insert( "submatrix", QList< QStringList >() << ( QStringList() << "submatrix1" << "submatrix2" << "submatrix3" << "submatrix4" ) );
+    fileDataExpected.insert( "SUBMATRIX", QList< QStringList >() << ( QStringList() << "submatrix1" << "submatrix2" << "submatrix3" << "submatrix4" ) );
 
 
     fadttsWindow->m_propertySelected.insert( 1, "RD" );
@@ -1247,10 +1143,10 @@ bool TestFADTTSWindow::Test_GetPropertyRawData()
     fadttsWindow->m_data.SetFileData( 1 ) = fileDataExpected.value( "RD" );
     fadttsWindow->m_data.SetFileData( 2 ) = fileDataExpected.value( "MD" );
     fadttsWindow->m_data.SetFileData( 3 ) = fileDataExpected.value( "FA" );
-    fadttsWindow->m_data.SetFileData( 4 ) = fileDataExpected.value( "submatrix" );
+    fadttsWindow->m_data.SetFileData( 4 ) = fileDataExpected.value( "SUBMATRIX" );
     fileData = fadttsWindow->GetPropertyRawData();
     fileDataExpected.remove( "AD" );
-    fileDataExpected.remove( "submatrix" );
+    fileDataExpected.remove( "SUBMATRIX" );
 
 
     bool testGetPropertyRawData_Passed = fileData == fileDataExpected;
@@ -1279,9 +1175,9 @@ bool TestFADTTSWindow::Test_OnInputToggled()
     QStringList subMatrixSujects = QStringList() << "Stan" << "Kyle" << "Kenny" << "Cartman" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "Pip";
     QStringList subjectList = QStringList() << "Stan" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" << "Chef" << "Butters" << "Wendy" << "Craig" << "Pip" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed";
     QStringList expectedMatchedSubjects = QStringList() << "Stan" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed";
-    QStringList expectedUnmatchedSubjects = QStringList() << "Butters --> loaded subjects, rd" << "Cartman --> rd, md, subMatrix" << "Chef --> loaded subjects" << "Craig --> loaded subjects"
-                                                          << "Kenny --> rd, md, subMatrix" << "Kyle --> rd, md, subMatrix" << "Pip --> loaded subjects, subMatrix"
-                                                          << "Wendy --> loaded subjects, md" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed --> loaded subjects";
+    QStringList expectedUnmatchedSubjects = QStringList() << "Butters --> loaded subjects, RD" << "Cartman --> RD, MD, SUBMATRIX" << "Chef --> loaded subjects" << "Craig --> loaded subjects"
+                                                          << "Kenny --> RD, MD, SUBMATRIX" << "Kyle --> RD, MD, SUBMATRIX" << "Pip --> loaded subjects, SUBMATRIX"
+                                                          << "Wendy --> loaded subjects, MD" << "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed --> loaded subjects";
     QStringList matchedSubjects;
     QStringList unmatchedSubjects;
 
@@ -1582,7 +1478,7 @@ bool TestFADTTSWindow::Test_GetDisplayInputFileInformation()
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QString adInformationExpected = "Filename: <i>adFile.csv</i><br>Number of subjects: <i>10</i><br>Data matrix: <i>94x10</i><br>";
     QString mdInformationExpected = "Filename: <i>mdFile.csv</i><br>Number of subjects: <i>100</i><br>Data matrix: <i>94x100</i><br>";
-    QString subMatrixInformationExpected = "Filename: <i>subMatrixFile.csv</i><br>Number of subjects: <i>1000</i><br>Data matrix: <i>1000x7</i><br>Number of covariates: <i>3</i>";
+    QString subMatrixInformationExpected = "Filename: <i>subMatrixFile.csv</i><br>Number of subjects: <i>1000</i><br>Data matrix: <i>1000x7</i><br>Number of covariates: <i>3 ( + Intercept )</i>";
     QString noInformationExpected = "<i>No File Information.<br>Please select a correct data file</i>";
 
 
@@ -2420,7 +2316,8 @@ bool TestFADTTSWindow::Test_AddLinesForDisplay()
     fadttsWindow->m_propertiesForDisplay = propertiesForDisplay;
     fadttsWindow->m_covariatesForDisplay = covariatesForDisplay;
 
-    fadttsWindow->AddLinesForDisplay( arePropertiesForDisplay );
+    fadttsWindow->m_areLinesForDisplayProperties = arePropertiesForDisplay;
+    fadttsWindow->AddLinesForDisplay();
     bool testArePropertiesForDisplay1 = fadttsWindow->m_areLinesForDisplayProperties == arePropertiesForDisplay;
     bool testCurrentLinesForDisplay1 = fadttsWindow->m_currentLinesForDisplay == propertiesForDisplay;
     for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
@@ -2433,7 +2330,8 @@ bool TestFADTTSWindow::Test_AddLinesForDisplay()
     bool test1 = testArePropertiesForDisplay1 && testCurrentLinesForDisplay1 && testItemName1 && testItemCheckState1;
 
     fadttsWindow->m_plotComboBox->addItem( "Omnibus Local pvalues" );
-    fadttsWindow->AddLinesForDisplay( !arePropertiesForDisplay );
+    fadttsWindow->m_areLinesForDisplayProperties = !arePropertiesForDisplay;
+    fadttsWindow->AddLinesForDisplay();
     bool testArePropertiesForDisplay2 = fadttsWindow->m_areLinesForDisplayProperties == !arePropertiesForDisplay;
     bool testCurrentLinesForDisplay2 = fadttsWindow->m_currentLinesForDisplay == covariatesForDisplay;
 
@@ -2474,7 +2372,8 @@ bool TestFADTTSWindow::Test_SetCheckStateLinesToDisplay()
 
 
     fadttsWindow->m_propertiesForDisplay = propertiesForDisplay;
-    fadttsWindow->AddLinesForDisplay( true );
+    fadttsWindow->m_areLinesForDisplayProperties = true;
+    fadttsWindow->AddLinesForDisplay();
 
     fadttsWindow->SetCheckStateLinesToDisplay( Qt::Checked );
     for( int i = 0; i < fadttsWindow->m_lineDisplayedListWidget->count(); i++ )
@@ -2806,11 +2705,11 @@ bool TestFADTTSWindow::Test_LoadSavePlotSettings( QString dataDir, QString tempo
 
 
     fadttsWindow->m_plot->InitPlot( outputDir, "testPlotSettings" );
-    fadttsWindow->LoadPlotSettings( dataDir + "/plotSettings.csv" );
-    fadttsWindow->SavePlotSettings( dirTest + "/plotSettings.csv" );
+    fadttsWindow->LoadPlotSettings( dataDir + "/plotSettings.json" );
+    fadttsWindow->SavePlotSettings( dirTest + "/plotSettings.json" );
 
 
-    bool testLoadSavePlotSettings_Passed = CompareFile( dataDir + "/plotSettings.csv", dirTest + "/plotSettings.csv" );
+    bool testLoadSavePlotSettings_Passed = CompareFile( dataDir + "/plotSettings.json", dirTest + "/plotSettings.json" );
     if( !testLoadSavePlotSettings_Passed )
     {
         std::cerr << "/!\\/!\\ Test_LoadSavePlotSettings() FAILED /!\\/!\\";
@@ -3115,7 +3014,8 @@ bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
 
     fadttsWindow->SetPropertyEdition( properties );
     fadttsWindow->SetPropertiesForDisplay( properties );
-    fadttsWindow->AddLinesForDisplay( true );
+    fadttsWindow->m_areLinesForDisplayProperties = true;
+    fadttsWindow->AddLinesForDisplay();
     fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
     fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
     fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 1 ) );

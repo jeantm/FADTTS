@@ -98,6 +98,46 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl;
+    /************* noGUI Functions *************/
+    std::cerr << std::endl << "/************* noGUI Functions *************/";
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_Transpose_noGUI() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_RemoveUnmatchedSubjects_noGUI() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_ToDouble_noGUI() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_GetMean_noGUI() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_ApplyPearsonCorrelation_noGUI() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+
+
+
+
+
+
+    std::cerr << std::endl;
     /***************** Others ******************/
     std::cerr << std::endl << "/***************** Others ******************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";

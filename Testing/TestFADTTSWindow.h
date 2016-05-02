@@ -28,9 +28,9 @@ public:
 
 
 
-    bool Test_OnLoadSaveParaSettings( QString paraFilePath, QString noParaFilePath, QString dataDir, QString tempoDir );
+    bool Test_OnLoadSaveParaConfiguration( QString paraFilePath, QString noParaFilePath, QString tempoDir );
 
-    bool Test_OnLoadSaveSoftSettings( QString softFilePath, QString noSoftFilePath, QString dataDir, QString tempoDir );
+    bool Test_OnLoadSaveSoftConfiguration( QString softFilePath, QString noSoftFilePath, QString tempoDir );
 
 
     /************** Subjects  Tab ***************/

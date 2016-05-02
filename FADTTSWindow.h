@@ -1,7 +1,8 @@
 #ifndef FADTTSWINDOW_H
 #define FADTTSWINDOW_H
 
-#include "FADTTSWindowConfig.h"
+#include "ui_FADTTSWindow.h"
+
 #include "EditInputDialog.h"
 #include "QCThresholdDialog.h"
 #include "Data.h"
@@ -16,6 +17,12 @@
 #include <QScrollBar>
 #include <QProgressBar>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+
+
 
 class FADTTSWindow : public QMainWindow, public Ui::FADTTSWindow
 {
@@ -24,13 +31,14 @@ class FADTTSWindow : public QMainWindow, public Ui::FADTTSWindow
     Q_OBJECT
 
 public:
+
     explicit FADTTSWindow( QWidget *parent = 0, Qt::WindowFlags f = 0 );
 
     ~FADTTSWindow();
 
-    void LoadParaConfiguration( QString filename );
+    void LoadParaConfiguration( QString filename ); // Tested
 
-    void LoadSoftConfiguration( QString filename );
+    void LoadSoftConfiguration( QString filename ); // Tested
 
 
 private slots:
@@ -44,6 +52,8 @@ private slots:
     void OnSaveSoftConfiguration(); // Tested
 
     void OnSaveNoGUIConfiguration();
+
+    void OnDisplayUserGuide();
 
     void OnDisplayAbout(); /// Not tested
 
@@ -116,8 +126,7 @@ private slots:
     void OnSettingMatlabExe( const QString& executable ); // Not Directly Tested
 
 
-    void OnRunMatlabToggled( bool choice ); // Not Directly Tested
-
+    void OnRunMatlabToggled( bool isChecked ); // Not Directly Tested
 
     void OnRun(); /// Not tested*
 
@@ -177,6 +186,8 @@ private slots:
 
     void OnUpdatingPlotGrid( bool checkState ); // Not Directly Tested
 
+    void OnUpdatingAbscissaNotation( bool checkState );
+
     void OnUseCustomizedAxis( bool checkState ); /// Not tested
 
     void OnYMinToggled( bool checkState ); /// Not tested
@@ -189,6 +200,8 @@ private slots:
 
     void OnUpdatingPlotAxis(); // Not Directly Tested
 
+
+    void OnUsingLegend( bool checkState );
 
     void OnUpdatingLegend( const QString& legendPosition ); // Not Directly Tested
 
@@ -211,9 +224,6 @@ private slots:
     void OnLoadPlotSettings(); // Tested
 
     void OnSavePlotSettings(); // Tested
-
-
-    /***************** No  GUI *****************/
 
 
 private:
@@ -316,11 +326,11 @@ private:
 
 
     /********** Configuration & Events **********/
-    void SaveParaConfiguration( QString filename );
+    void SaveParaConfiguration( QString filename ); // Tested
 
-    void SaveSoftConfiguration( QString filename );
+    void SaveSoftConfiguration( QString filename ); // Tested
 
-    void SaveNoGUIConfiguration( QString filename );
+    void SaveNoGUIConfiguration( QString filename ); // Tested
 
 
     void InitMenuBar(); // Not Directly Tested
@@ -354,6 +364,8 @@ private:
     void SetCovariateListWidget(); // Tested
 
     QString GetInputFileInformation( int diffusionPropertyID ) const; // Tested
+
+    void AddAtlas( const QList< QStringList >& fileData ); /// Not tested*
 
     void DisplayFileInformation(); // Tested
 
@@ -435,7 +447,7 @@ private:
 
     void SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable ); /// Not tested
 
-    void AddLinesForDisplay( bool isSelectionProperties ); // Tested
+    void AddLinesForDisplay(); // Tested
 
     void SetCheckStateLinesToDisplay( Qt::CheckState checkState ); // Tested
 

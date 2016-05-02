@@ -8,9 +8,6 @@ clc
 
 disp('Running matlab script without plotting...')
 
-% Number of thread used to run the script
-$nbrCompThreads$
-
 % Path to access FADTTS functions
 addpath '$addMVCMPath$';
 

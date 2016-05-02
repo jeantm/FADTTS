@@ -52,11 +52,11 @@ public:
 
     bool InitPlot( QString directory, QString fibername ); // Not Directly Tested
 
-    bool InitQCThresholdPlot( QMap< QString, QList< QStringList > > rawData, QStringList matchedSubjects ); /*** WRITE TEST ***/
+    bool InitQCThresholdPlot( QList< QStringList > rawData, QStringList matchedSubjects ); // Not Directly Tested
 
     bool DisplayPlot(); // Not Directly Tested
 
-    bool DisplayQCThresholdPlot( QString propertySelected ); // Not Directly Tested
+    bool DisplayQCThresholdPlot(); // Not Directly Tested
 
     void ResetPlotData(); // Tested
 
@@ -75,7 +75,7 @@ public:
 
     void SetCovariatesProperties( QMap< int, QPair< QString, QPair< bool, QString > > > covariatesProperties ); // Tested
 
-    void UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay ); /*** WRITE TEST ***/
+    void UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay ); /// Not tested*
 
 
     void SetDefaultTitle(); // Tested
@@ -86,32 +86,38 @@ public:
 
     void UpdateGrid( bool checkState ); // Not Directly Tested
 
+    void SetAbscissaNotation( bool checkState );
+
+    void UpdateAbscissaNotation( bool checkState );
+
     void SetDefaultAxis(); // Tested
 
-    void SetCustomizedAxis( QString xName, QString yName, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
+    void SetCustomizedAxis( double labelSize, QString xName, QString yName, double NameSize, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
 
-    void SetLegend( QString position ); // Tested
+    void SetLegend( bool showLegend, QString position ); // Tested
 
 
     double& SetPvalueThreshold(); // Tested
 
-    void UpdatePvalueThresold( bool customizedTitle ); /*** WRITE TEST ***/
+    void UpdatePvalueThresold( bool customizedTitle ); /// Not tested*
 
     double& SetLineWidth(); // Tested
 
-    void UpdateLineWidth(); /*** WRITE TEST ***/
+    void UpdateLineWidth(); /// Not tested*
 
     void SetSelectedLineColor( QString color ); // Tested
 
-    void UpdateSelectedLineColor( QString color ); /*** WRITE TEST ***/
+    void UpdateSelectedLineColor( QString color ); /// Not tested*
 
     void SetMarkerType( QString markerType ); // Tested
 
     double& SetMarkerSize(); // Tested
 
-    void UpdateMarker(); /*** WRITE TEST ***/
+    void UpdateMarker(); /// Not tested*
 
     double& SetQCThreshold(); // Tested
+
+    QStringList& SetAtlasQCThreshold(); /// Not tested*
 
 
     void UpdateCovariatesNames( const QMap< int, QString >& newCovariatesNames ); // Tested
@@ -213,14 +219,14 @@ private:
     QPair< bool, double > m_yMin, m_yMax;
 
     QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles,
-    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed, m_selectedLineLabels, m_matchedSubjects;
+    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed, m_selectedLineLabels, m_matchedSubjects, m_atlasQCThreshold;
 
     QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
     m_fibername;
 
     double m_selectedLineColor[ 3 ], m_yMinMax[ 2 ], m_pvalueThreshold, m_lineWidth, m_markerSize, m_qcThreshold;
 
-    int m_nbrPlots, m_nbrPoints, m_markerType;
+    int m_nbrPlots, m_nbrPoints, m_markerType, m_abscissaNotation;
 
     bool m_isBinaryCovariatesSent, m_isAllCovariatesSent, m_isCovariatesNoInterceptSent, m_gridOn;
 
@@ -235,12 +241,12 @@ private:
 
     void TransposeDataInQMap( QMap< QString, QList< QList< double > > >& data, int firstRow, int firstColumn ); // Tested
 
-    void RemoveUnmatchedSubjects( QMap< QString, QList< QStringList > >& rawData ); // Tested
+    void RemoveUnmatchedSubjects( QList<QStringList> &rawData ); // Tested
 
 
     void SetRawData(); // Tested
 
-    bool SetRawDataQCThreshold( QMap<QString, QList<QStringList> >& rawData ); // Tested
+    bool SetRawDataQCThreshold( QList<QStringList> &rawData ); // Tested
 
     void SetBeta(); // Tested
 
@@ -292,6 +298,8 @@ private:
 
     QList< QList< double > > LoadRawStats(); // Tested
 
+    QList< QList< double > > LoadSigBetasOnAverageRawData(); /// Not Tested*
+
     QList< QList< double > > LoadBetas(); // Tested
 
     QList< QList< double > > LoadBetaByCovariate(); // Tested
@@ -308,6 +316,8 @@ private:
     void AddEntriesRawData( vtkSmartPointer< vtkTable >& table ); // Tested
 
     void AddEntriesRawStats( vtkSmartPointer< vtkTable >& table ); // Tested
+
+    void AddEntriesSigBetasOnAverageRawData( vtkSmartPointer< vtkTable >& table ); /// Not Tested*
 
     void AddEntriesByPropertiesOrCovariates( vtkSmartPointer< vtkTable >& table ); // Tested
 
@@ -327,11 +337,13 @@ private:
 
     void AddMean( QList< double > meanRawData ); // Not Directly Tested
 
-    void AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i ); /** /!\ PB WITH TEST /!\ **/
+    void AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i ); // Not Directly Tested
 
     void AddLineRawData( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
     void AddLineRawStats( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
+
+    void AddLineSigBetasOnAverageRawData( const vtkSmartPointer< vtkTable >& table ); /// Not tested*
 
     void AddLineBetas( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
@@ -341,7 +353,7 @@ private:
 
     void AddLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
+    void AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table, const QList< double >& atlas ); // Not Directly Tested
 
 
     void GetyMinMax(); // Tested
@@ -352,7 +364,7 @@ private:
 
     void SetAxisProperties(); // Not Directly Tested
 
-    void SetQCThresholdAxisProperties();
+    void SetQCThresholdAxisProperties(); /// Not tested*
 
 
     int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /// Not tested*

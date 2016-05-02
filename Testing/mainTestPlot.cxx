@@ -89,7 +89,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_RemoveUnmatchedSubjects( argv[4], argv[5] ) )
+    if( testPlot.Test_RemoveUnmatchedSubjects( argv[5] ) )
     {
         nbrTestsPassed++;
     }
@@ -104,7 +104,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetRawDataQCThreshold( argv[4], argv[5] ) )
+    if( testPlot.Test_SetRawDataQCThreshold( argv[5] ) )
     {
         nbrTestsPassed++;
     }
@@ -436,13 +436,6 @@ int main( int argc, char *argv[] )
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_AddSignificantLevel() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_AddLineSigBetas( argv[21], argv[22] ) )
     {
         nbrTestsPassed++;
     }
