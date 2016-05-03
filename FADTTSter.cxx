@@ -4,7 +4,7 @@
 
 #include <QApplication>
 
-#include <QDebug>
+//#include <QDebug>
 
 int main( int argc, char *argv[] )
 {
@@ -12,10 +12,19 @@ int main( int argc, char *argv[] )
     Q_INIT_RESOURCE( FADTTS_Resources );
 
     QString dir = QString( directory.data() ).isEmpty() ? QDir::currentPath() : directory.data();
+    QStringList paraFilter = QStringList() << "*para*.json" << "*Para*.json";
+    QStringList softFilter = QStringList() << "*soft*.json" << "*Soft*.json";
+    QStringList noGUIFilter = QStringList() << "*noGUI*.json" << "*NoGUI*.json";
 
-    QString defaultParaConfigurationFile = QFile( QString( dir + "/defaultConfiguration_para.json" ) ).exists() ? QString( dir + "/defaultConfiguration_para.json" ) : QString();
-    QString defaultSoftConfigurationFile = QFile( QString( dir + "/defaultConfiguration_soft.json" ) ).exists() ? QString( dir + "/defaultConfiguration_soft.json" ) : QString();
-    QString defaultNoGUIConfigurationFile = QFile( QString( dir + "/defaultConfiguration_noGUI.json" ) ).exists() ? QString( dir + "/defaultConfiguration_noGUI.json" ) : QString();
+    QString defaultParaConfigurationFile = !QDir( dir ).entryList( paraFilter, QDir::Files ).isEmpty() ?
+                QString( dir + "/" + QDir( dir ).entryList( paraFilter, QDir::Files ).first() ) :
+                QString();
+    QString defaultSoftConfigurationFile = !QDir( dir ).entryList( softFilter, QDir::Files ).isEmpty() ?
+                QString( dir + "/" + QDir( dir ).entryList( softFilter, QDir::Files ).first() ) :
+                QString();
+    QString defaultNoGUIConfigurationFile = !QDir( dir ).entryList( noGUIFilter, QDir::Files ).isEmpty() ?
+                QString( dir + "/" + QDir( dir ).entryList( noGUIFilter, QDir::Files ).first() ) :
+                QString();
 
     QString paraConfigurationFile = QString( paraConfig.data() ).isEmpty() ? defaultParaConfigurationFile : paraConfig.data();
     QString softConfigurationFile = QString( softConfig.data() ).isEmpty() ? defaultSoftConfigurationFile : softConfig.data();

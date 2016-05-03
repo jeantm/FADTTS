@@ -1,7 +1,7 @@
 #include "QCThresholdDialog.h"
 #include "ui_QCThresholdDialog.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 QCThresholdDialog::QCThresholdDialog(QWidget *parent) :
     QDialog(parent),

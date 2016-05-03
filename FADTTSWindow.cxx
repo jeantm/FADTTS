@@ -1,6 +1,6 @@
 #include "FADTTSWindow.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 
 /****************************************************************/
@@ -198,7 +198,7 @@ void FADTTSWindow::OnDisplayUserGuide()
         UserGuideText = "No Description found";
     }
 
-    QString messageBoxTitle = "FADTTSter: User Guide" + QString( FADTTS_TITLE );
+    QString messageBoxTitle = QString( FADTTS_TITLE ) + ": User Guide";
     QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( UserGuideText ) ), QMessageBox::Ok );
 }
 
@@ -570,6 +570,8 @@ void FADTTSWindow::InitSubjectCovariateTab()
     connect( subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
     connect( subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
     connect( subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
+
+    OnInputToggled();
 }
 
 void FADTTSWindow::InitExecutionTab()
@@ -966,7 +968,10 @@ void FADTTSWindow::SetCovariateListWidget()
             ++iterCovariate;
         }
 
-        m_covariateListWidget->setMaximumHeight( m_covariateListWidget->sizeHintForRow( 0 ) * ( m_covariateListWidget->count() + 1 ) );
+        if( m_covariateListWidget->count() != 0 )
+        {
+            m_covariateListWidget->setMaximumHeight( m_covariateListWidget->sizeHintForRow( 0 ) * ( m_covariateListWidget->count() + 1 ) );
+        }
     }
 }
 
@@ -2182,7 +2187,7 @@ void FADTTSWindow::OnPlotSelection( const QString& plotSelected )
         SetPlotOptions( true, false, false );
     }
 
-    m_plotSelected = plotSelected; // to remove later
+    m_plotSelected = plotSelected;
 }
 
 void FADTTSWindow::OnPropertySelection( const QString& propertySelected )
@@ -2261,7 +2266,6 @@ void FADTTSWindow::OnSettingLinesSelected( const QStringList& linesSelected )
         }
 
         m_lineSelectedListWidget->setMaximumHeight( m_lineSelectedListWidget->sizeHintForRow( 0 ) * ( m_lineSelectedListWidget->count() + 1 ) );
-
         m_lineSelectedListWidget->show();
     }
 }

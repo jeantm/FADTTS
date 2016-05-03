@@ -1,6 +1,6 @@
 #include "Log.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 Log::Log(QObject *parent) :
     QObject(parent)

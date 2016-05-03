@@ -1,6 +1,6 @@
 #include "FADTTS_noGUI.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 
 /***************************************************************/

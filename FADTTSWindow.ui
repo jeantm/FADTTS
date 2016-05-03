@@ -2160,7 +2160,7 @@
              <item row="0" column="0" colspan="2">
               <widget class="QCheckBox" name="soft_executionTab_runMatlab_checkBox">
                <property name="text">
-                <string>Run matlab on the system after file generation</string>
+                <string>Run matlab after file generation</string>
                </property>
               </widget>
              </item>

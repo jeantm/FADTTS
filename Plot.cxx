@@ -2,7 +2,7 @@
 
 #include <QVTKWidget.h>
 
-#include <QDebug>
+//#include <QDebug>
 
 
 void CallbackAddSelectedLine( vtkObject* caller, long unsigned int eventId, void* clientData, void* callData )
