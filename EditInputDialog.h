@@ -28,35 +28,31 @@ public:
     explicit EditInputDialog( QWidget *parent = 0 );
     ~EditInputDialog();
 
-    void DisplayFileData();
 
-    void SetData( Data *newData );
+    void SetData( Data *newData ); // Tested
 
-    void SetLineEditPrefix( const QString &newLineEditPrefixID );
+    void ResetSubjectColumnID(); // Tested
 
-    void SetInputFile( const QString &newInputFile );
 
-    void SetCurrentInputDir( const QString &newCurrentInputDir );
-
-    void ResetCovariateFileSubjectColumnID();
+    void DisplayDataEdition( int newDiffusionPropertyIndex ); // Tested
 
 
 signals:
-    void FilePathChanged( const QString&, const QString&  );
+    void UpdateInputFile( const int&, const QString& );
 
-    void CovariateMapChanged( const QMap<int, QString>&  );
-
-    void CovariateFileSubjectColumnIDChanged( const int& );
+    void UpdateSubjectColumnID( const int& );
 
 
 private slots:
-    void DeleteRows();
+    void OnDeleteRows(); // Tested
 
-    void DeleteColumns();
+    void OnDeleteColumns(); // Tested
 
-    void ChangeCovariateFileSubjectColumnID( int idColumn );
 
-    void SaveFile();
+    void OnSubjectColumnIDChanged( int columnID ); // Tested
+
+
+    bool OnSaveFile(); // Tested
 
 
 private:
@@ -66,30 +62,28 @@ private:
 
     QTableWidget *m_dataTableWidget;
 
-    QSpinBox *m_covariateFileSubjectColumnIDSpinBox;
-
-    QLabel *m_fileInformationLabel, *m_covariateFileSubjectColumnIDLabel;
+    QSpinBox *m_subjectColumnIDSpinBox;
 
     Data *m_data;
 
-    QString m_lineEditPrefix, m_inputFile, m_currentInputDir;
+    QString m_currentDir;
 
-    int m_covariateFileSubjectColumnID;
+    int m_diffusionPropertyIndex, m_subjectColumnID;
 
-    bool m_rowDeleted, m_columnDeleted, m_isCovariateFile;
+    bool m_rowDeleted, m_columnDeleted;
 
 
-    void InitEditInputDialog();
+    void InitEditInputDialog(); // Not Directly Tested
 
-    void UploadFileData();
+    void LoadData(); // Not Directly Tested
 
-    void RefreshFileInfo();
+    void ResetTableWidget(); // Tested
 
-    bool SaveCSVFile();
 
-    void ResetTableWidget();
+    void SaveFile( QString newFilePath ); // Tested
 
-    void closeEvent( QCloseEvent *event );
+
+    void closeEvent( QCloseEvent *event ); /// Not tested
 };
 
 #endif // SETINPUT_H

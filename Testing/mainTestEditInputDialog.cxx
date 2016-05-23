@@ -1,19 +1,65 @@
+#include "TestEditInputDialog.h"
+
 #include <QApplication>
 
-#include "TestEditInputDialog.h"
+/*
+ * argv[1] = adFilePath
+ * argv[2] = subMatrix0FilePath
+ * argv[3] = adFilePathMofied
+ *
+ * argv[4] = tempDir
+ */
 
 int main( int argc, char *argv[] )
 {
     QApplication *app = new QApplication( argc, argv );
 
     TestEditInputDialog testEditInputDialog;
+    int nbrTests = 0;
+    int nbrTestsPassed = 0;
 
-    bool test1 = testEditInputDialog.Test_UploadFileData( argv[1] );
-    bool test2 = testEditInputDialog.Test_Delete( argv[1] );
-    bool test3 = testEditInputDialog.Test_RefreshFileInfo( argv[1], argv[2] );
+    std::cerr << std::endl << std::endl << std::endl << nbrTests + 1 << "- ";
+    if( testEditInputDialog.Test_SubjectColumnID() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
 
-    std::cout << std::endl;
-    if( test1 && test2 && test3 )
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testEditInputDialog.Test_OnDelete( argv[1] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testEditInputDialog.Test_LoadDisplayData( argv[1], argv[2] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testEditInputDialog.Test_SaveFile( argv[1], argv[3], argv[4] ) )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+
+
+
+    app->exit();
+    std::cerr << std::endl << std::endl << std::endl << std::endl << std::endl;
+    std::cerr << "                   Tests Summary                " << std::endl;
+    std::cerr << "************************************************" << std::endl;
+    std::cerr << "* " << 100*nbrTestsPassed/nbrTests << "% tests passed, " <<
+                 ( nbrTests - nbrTestsPassed ) << " test(s) failed out of " <<
+                 nbrTests << " *" << std::endl;
+    std::cerr << "************************************************";
+    std::cerr << std::endl << std::endl << std::endl;
+
+    if( nbrTestsPassed == nbrTests )
     {
         return 0;
     }

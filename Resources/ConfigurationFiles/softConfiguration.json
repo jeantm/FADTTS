@@ -1,0 +1,10 @@
+{
+    "softConfiguration": {
+        "executionTab": {
+            "matlabSpecifications": {
+                "runMatlab": false,
+                "matlabExe": ""
+            }
+        }
+    }
+}

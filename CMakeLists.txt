@@ -11,10 +11,6 @@ ${${PROJECT_NAME}_BINARY_DIR}/CMake
 ${CMAKE_MODULE_PATH}
 )
 
-# find QtToCppXML headers
-find_package(QtToCppXML REQUIRED)
-include(${QtToCppXML_USE_FILE})
-
 # find VTK headers
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
@@ -32,31 +28,33 @@ include(${SlicerExecutionModel_USE_FILE})
 
 # Qt to c++
 set(FADTTS_src
-FADTTSter.cxx
-FADTTSWindowConfig.cxx
-FADTTSWindow.cxx
-EditInputDialog.cxx
-InfoDialog.cxx
 Data.cxx
 Processing.cxx
-MatlabScript.cxx
 MatlabThread.cxx
 Plot.cxx
+Log.cxx
+FADTTS_noGUI.cxx
+EditInputDialog.cxx
+QCThresholdDialog.cxx
+FADTTSWindow.cxx
+FADTTSter.cxx
 )
 
 set(FADTTS_moc
-FADTTSWindowConfig.h
-FADTTSWindow.h
-EditInputDialog.h
-InfoDialog.h
+Processing.h
 MatlabThread.h
 Plot.h
+Log.h
+FADTTS_noGUI.h
+EditInputDialog.h
+QCThresholdDialog.h
+FADTTSWindow.h
 )
 
 set(FADTTS_ui
-FADTTSWindow.ui
 EditInputDialog.ui
-InfoDialog.ui
+QCThresholdDialog.ui
+FADTTSWindow.ui
 )
 
 set(FADTTS_rcc
@@ -72,7 +70,6 @@ ${FADTTS_generated_moc}
 ${FADTTS_generated_ui}
 ${FADTTS_generated_rcc}
 )
-QtToCppXML(SOURCES FADTTS_src NAME FADTTS UIXML_FILE FADTTSWindow.ui PREFIXES soft_ para_)
 
 # generate FADTTSter executable
 SEMMacroBuildCLI(
@@ -101,11 +98,6 @@ string(REGEX MATCH "<contributor>.*</contributor>" ext "${var}")
 string(REPLACE "<contributor>" "" contributors ${ext})
 string(REPLACE "</contributor>" "" contributors ${contributors})
 add_definitions(-DFADTTS_CONTRIBUTORS="${contributors}")
-
-string(REGEX MATCH "<description>.*</description>" ext "${var}")
-string(REPLACE "<description>" "" description ${ext})
-string(REPLACE "</description>" "" description ${description})
-add_definitions(-DFADTTS_DESCRIPTION="${description}")
 
 # Tests
 if(BUILD_TESTING)

@@ -5,105 +5,105 @@
 
 class Data
 {
+    friend class TestFADTTSWindow; /** For unit tests **/
+
 public:
     explicit Data();
 
-    /***************************************/
+
+    void InitData(); // Tested
+
+
+
     /*************** Getters ***************/
-    /***************************************/
-    QString GetOutputDir() const;
+    QList< int > GetDiffusionPropertiesIndices() const; // Tested
 
-    QStringList GetPrefixList() const;
+    int GetAxialDiffusivityIndex() const; // Tested
 
-    QString GetAxialDiffusivityPrefix() const;
+    int GetRadialDiffusivityIndex() const; // Tested
 
-    QString GetRadialDiffusivityPrefix() const;
+    int GetMeanDiffusivityIndex() const; // Tested
 
-    QString GetMeanDiffusivityPrefix() const;
+    int GetFractionalAnisotropyIndex() const; // Tested
 
-    QString GetFractionalAnisotropyPrefix() const;
+    int GetSubMatrixIndex() const; // Tested
 
-    QString GetCovariatePrefix() const;
-
-    int GetCovariateFileSubjectColumnID() const;
+    QString GetDiffusionPropertyName( int diffusionPropertyIndex ) const; // Tested
 
 
-    QMap<QString, QStringList> GetSubjects() const;
+    QString GetFilename( int diffusionPropertyIndex ) const; // Tested
 
-    QMap<int, QString> GetCovariates() const;
+    QList< QStringList > GetFileData( int diffusionPropertyIndex ) const; // Tested
+
+    QStringList GetAtlas() const; // Tested
+
+    int GetNbrRows( int diffusionPropertyIndex ) const; // Tested
+
+    int GetNbrColumns( int diffusionPropertyIndex ) const; // Tested
+
+    QMap< int, QStringList > GetSubjects() const; // Tested
+
+    int GetNbrSubjects( int diffusionPropertyIndex ) const; // Tested
 
 
-    QString GetFilename( QString pref ) const;
+    QMap< int, QString > GetCovariates() const; // Tested
 
-    QList<QStringList> GetFileData( QString pref ) const;
+    int GetSubjectColumnID() const; // Tested
 
-    int GetNbrRows( QString pref ) const;
-
-    int GetNbrColumns( QString pref ) const;
-
-    int GetNbrSubjects( QString pref ) const;
+    QString GetOutputDir() const; // Tested
 
 
-    /***************************************/
+
     /*************** Setters ***************/
-    /***************************************/
-    QString& SetOutputDir();
+    QString& SetFilename( int diffusionPropertyIndex ); // Tested
 
-    int& SetCovariateFileSubjectColumnID();
+    QList< QStringList >& SetFileData( int diffusionPropertyIndex ); // Tested
 
+    QStringList& SetAtlas(); // Tested
 
-    QMap<int, QString>& SetCovariates();
+    int& SetNbrRows( int diffusionPropertyIndex ); // Tested
 
+    int& SetNbrColumns( int diffusionPropertyIndex ); // Tested
 
-    QString& SetFilename( QString prefID );
+    QStringList& SetSubjects( int diffusionPropertyIndex ); // Tested
 
-    QList<QStringList>& SetFileData( QString prefID );
-
-    QStringList& SetSubjects( QString prefID );
-
-    int& SetNbrRows( QString prefID );
-
-    int& SetNbrColumns( QString prefID );
-
-    int& SetNbrSubjects( QString prefID );
+    int& SetNbrSubjects( int diffusionPropertyIndex ); // Tested
 
 
-    /***************************************/
-    /*********** Other Functions ***********/
-    /***************************************/
-    int InitData();
+    QMap< int, QString >& SetCovariates(); // Tested
 
-    void SetSubjects( QString prefID, QStringList subjects );
+    int& SetSubjectColumnID(); // Tested
 
-    void AddCovariate( int colunmID , QString covariate );
+    QString& SetOutputDir(); // Tested
 
-    void AddInterceptToCovariates();
 
-    void ClearFileInformation( QString prefID );
 
-    void ClearSubjects( QString prefID );
+    void ClearData( int diffusionPropertyIndex ); // Tested
 
-    void ClearCovariates();
+    void ClearSubjects( int diffusionPropertyIndex ); // Tested
+
+    void ClearCovariates(); // Not Directly Tested
+
+
+    void AddInterceptToCovariates(); // Tested
 
 
 private:
-    QMap<QString, QStringList> m_subjectMap;
+    enum diffusionProperties { AD, RD, MD, FA, SubMatrix };
 
-    QMap<QString, QString> m_filenameMap;
+    QMap< int, QList< QStringList > > m_fileDataMap;
 
-    QMap< QString, QList<QStringList> > m_fileDataMap;
+    QMap< int, QStringList > m_subjectMap;
 
-    QMap<QString, int> m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
+    QMap< int, QString > m_filenameMap, m_covariateMap;
 
-    QMap<int, QString> m_covariateMap;
+    QMap< int, int > m_nbrRowsMap, m_nbrColumnsMap, m_nbrSubjectsMap;
 
-    QStringList m_prefixList;
+    QStringList m_atlas;
 
-    QString m_outputDir,
-    m_axialDiffusivityPrefix, m_radialDiffusivityPrefix,
-    m_meanDiffusivityPrefix, m_fractionalAnisotropyPrefix, m_covariatePrefix;
+    QString m_outputDir;
 
-    int m_covariateFileSubjectColumnID;
+    int m_subjectColumnID;
 };
 
 #endif // DATA_H

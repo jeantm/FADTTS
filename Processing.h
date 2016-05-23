@@ -3,6 +3,8 @@
 
 #include "Data.h"
 
+#include <QDate>
+#include <QObject>
 #include <QProcess>
 #include <QFile>
 #include <QFileInfo>
@@ -11,61 +13,60 @@
 #include <QMap>
 
 
-class Processing
+class Processing : public QObject
 {
+    Q_OBJECT
+
 public:
-    Processing();
-
-    /*****************************************************/
-    /****************** Running Process ******************/
-    /*****************************************************/
-    void SetMatlabExe( QString matlabExe );
-
-    void SetMatlabScript( QString matlabScript );
+    explicit Processing( QObject *parent = 0 );
 
 
-    QMap< QPair< int, QString >, bool> GenerateMatlabInputFiles( QMap< QPair< int, QString >, bool > selectedInputFiles, QString selectedSubjectFile,
-                                                                 int covariateFileSubjectColumnId, QMap<int, QString> selectedCovariates,
-                                                                 QString outputDir, QString fiberName );
-
-    void RunScript();
+    QList< QStringList > GetDataFromFile( QString filePath ); // Tested
 
 
-    /*****************************************************/
-    /****************** Data Processing ******************/
-    /*****************************************************/
-    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
+    bool IsMatrixDimensionOK( const QList< QStringList >& data ); // Tested
 
-    bool IsCovariateFile(const QStringList fileData );
+    bool IsSubMatrix(const QStringList& dataSecondRow ); // Tested
 
 
-    QStringList GetSelectedSubjects( QString selectedSubjectFile );
+    QStringList GetSubjectsFromFileList( QString filePath ); // Tested
 
-    QStringList GetSubjectsFromInputFile( QList<QStringList> dataInInputFile, int covariateFileSubjectColumnID );
+    QStringList GetSubjectsFromData( const QList< QStringList >& data, int subjectColumnID ); // Tested
 
-    QStringList GetRefSubjectsFromSelectedInputFiles( QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
-
-    QStringList GetRefSubjects( const QString subjectFilePath, QMap< QPair< int, QString >, QList<QStringList> > dataInSelectedInputFiles, int covariateFileSubjectColumnID );
-
-    QMap<QString, QStringList> GetAllSubjectsFromSelectedInputFiles( const QMap<QString, QCheckBox*> checkBoxMap, const QMap<QString, QStringList > subjectsMap );
-
-    QMap< QString, QMap<QString, bool> > SortSubjects( const QStringList refSubjects, const QMap<QString, QStringList> selectedSubjects );
-
-    void AssignSortedSubject( const QMap< QString, QMap<QString, bool> > checkedSubjects, QStringList& matchedSubjects,
-                              QMap<QString, QStringList >& unMatchedSubjects );
+    QMap< int, QString > GetCovariatesFromData( QList< QStringList > data, int subjectColumnID ); //Tested
 
 
-    QList<QStringList> GetDataFromFile( QString filePath );
+    QStringList GetAllSubjects( const QMap< int, QStringList >& subjectsMap ); // Tested
 
-    QMap<int, QString> GetCovariatesFromFileData( QList<QStringList> dataCovariateFile, int covariateFileSubjectColumnID );
+    QMap< int, QStringList > GetSubjectsFromSelectedFiles( const QMap< int, bool >& diffusionPropertiesCheckState, const QMap< int, QStringList >& subjectsMap ); // Tested
+
+    QMap< QString, QMap< int, bool > > SortSubjects( const QStringList& allSubjectsList, const QMap< int, QStringList >& allSubjects ); // Tested
+
+    void AssignSortedSubject( const QMap<QString, QMap< int, bool > >& checkedSubjects, QStringList& matchedSubjects, QMap<QString, QList<int> >& unMatchedSubjects ); // Tested
+
+
+    QMap< int, QString > GenerateMatlabInputs( QString outputDir, QString fiberName,
+                                               const QMap< int, QString >& inputs, const QMap< int, QString >& properties,
+                                               const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects); // Tested
+
+
+
+    QList< QStringList > Transpose_noGUI( const QList< QStringList >& rawData ); // Tested
+
+    void RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, const QStringList& subjects ); // Tested
+
+    QList< QList< double > > ToDouble_noGUI( const QList< QStringList >& rawDataTransposed ); // Tested
+
+    QList< double > GetMean_noGUI( const QList< QList< double > >& rawDataDouble ); // Tested
+
+    double ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean ); // Tested
+
+    void ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, bool useAtlas, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold ); // Not Directly Tested
 
 
 private:
     static const QString m_csvSeparator;
 
-    QString m_matlabExe,  m_matlabScript;
-
-    QProcess *m_process;
 };
 
 #endif // PROCESSING_H

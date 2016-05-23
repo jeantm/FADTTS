@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
-    <category>PROJECT</category>
-    <title>FADTTSter</title>
-    <version>1.1</version>
-    <contributor>Jean Noel</contributor>
-    <description>This interface purpose is to simplify data processing when working with FADTTS. This interface enables the user to work on the row data as well as on the subjects used for the study.</description>
-    <parameters>
-    </parameters>
+  <category>PROJECT</category>
+  <title>FADTTSter</title>
+  <version>3.1</version>
+  <contributor>Jean Noel</contributor>
+  <parameters>
+    <boolean>
+      <name>noGUI</name>
+      <longflag>noGUI</longflag>
+      <description>If you do not need the GUI</description>
+      <label>No GUI</label>
+      <default>true</default>
+    </boolean>
+    <file>
+      <name>softConfig</name>
+      <description>Path to the .json file containing the software configuration</description>
+      <longflag>softConfig</longflag>
+      <label>.json file</label>
+    </file>
+    <file>
+      <name>paraConfig</name>
+      <description>Path to the .json file containing the parameters configuration</description>
+      <longflag>paraConfig</longflag>
+      <label>.json file</label>
+    </file>
+    <file>
+      <name>noGUIConfig</name>	
+      <description>Path to the .json file containing the configuration to run FADTTSter without the GUI interface</description>
+      <longflag>noGUIConfig</longflag>
+      <label>.json file</label>
+    </file>
+    <directory>
+      <name>directory</name>
+      <description>Path to the directory where to find the configuration files</description>
+      <flag>d</flag>
+      <label>directory</label>
+    </directory>
+  </parameters>
 </executable>

@@ -1,126 +1,229 @@
 #ifndef FADTTSWINDOW_H
 #define FADTTSWINDOW_H
 
-#include "FADTTSWindowConfig.h"
+#include "ui_FADTTSWindow.h"
+
 #include "EditInputDialog.h"
-#include "InfoDialog.h"
+#include "QCThresholdDialog.h"
 #include "Data.h"
 #include "Processing.h"
-#include "MatlabScript.h"
 #include "MatlabThread.h"
 #include "Plot.h"
+#include "Log.h"
 
+#include <QMainWindow>
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
 #include <QScrollBar>
-#include <QDebug>
+#include <QProgressBar>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 
 
-class FADTTSWindow : public FADTTSWindowConfig
+
+class FADTTSWindow : public QMainWindow, public Ui::FADTTSWindow
 {
-    friend class TestFADTTSWindow;
+    friend class TestFADTTSWindow; /** For unit tests **/
 
     Q_OBJECT
-    
+
 public:
-    /********* Configuration & Events *********/
-    FADTTSWindow();
+
+    explicit FADTTSWindow( QWidget *parent = 0, Qt::WindowFlags f = 0 );
 
     ~FADTTSWindow();
 
+    void LoadParaConfiguration( QString filename ); // Tested
+
+    void LoadSoftConfiguration( QString filename ); // Tested
+
 
 private slots:
-    /********* Configuration & Events *********/
-    void SaveParaSettings();
+    /********** Configuration & Events **********/
+    void OnLoadParaConfiguration(); // Tested
 
-    void LoadParaSettings();
+    void OnSaveParaConfiguration(); // Tested
 
-    void SaveSoftSettings();
+    void OnLoadSoftConfiguration(); // Tested
 
-    void LoadSoftSettings();
+    void OnSaveSoftConfiguration(); // Tested
 
-    void DisplayAbout();
+    void OnSaveNoGUIConfiguration();
 
+    void OnDisplayUserGuide();
 
-    void closeEvent(QCloseEvent *event);
-
-
-    /*************** Input Tab ***************/
-    void AddMultipleInputFiles();
-
-    void AddInputFile( const QString& prefID );
-
-    void UpdateInputLineEdit( const QString& prefID );
-
-    void EditInputFile( const QString& prefID );
+    void OnDisplayAbout(); /// Not tested
 
 
-    void DisplayInputFileInformation();
+    void closeEvent( QCloseEvent *event ); /// Not tested
 
 
-    void UpdateInputLineEditAfterFileEdition( const QString& newFilePathAfterFileEdition, const QString& prefID );
+    /**************** Input  Tab ****************/
+    void OnSettingInputFile( int diffusionPropertyID ); // Tested
 
-    void UpdateCovariateMapAfterFileEdition( const QMap<int, QString>& newCovariateMapAfterFileEdition );
+    void OnAddInputFiles(); // Not Directly Tested
 
-    void UpdateCovariateFileSubjectColumnIDAfterFileEdition( const int& newCovariateFileSubjectColumnIDAfterFileEdition );
+    void OnAddInputFile( int diffusionPropertyID ); // Not Directly Tested
 
-
-    /*************** Subjects Tab ***************/
-    void LoadSubjectFile();
-
-    void ResetSubjectFile();
-
-    void UpdateSubjectFileLineEdit( const QString& filePath );
-
-    void SaveCheckedSubjects();
+    void OnEditInputFile( int diffusionPropertyID ); /// Not tested
 
 
-    void CheckAllSubjectsVisible();
+    void OnCovariateClicked( QListWidgetItem *item ); // Tested
 
-    void UnCheckAllSubjectsVisible();
+    void OnCheckAllCovariates(); // Tested
 
-    void SelectSubject( QListWidgetItem *item );
-
-
-    void SortAndDisplaySubjects();
-
-    void SearchSubjects();
-
-    void SetCaseSensitivity( bool checked );
+    void OnUnCheckAllCovariates(); // Tested
 
 
-    /***************** Parameters  Tab *****************/
-    void DisplayCovariates();
+    void OnUpdatingInputFile( const int &diffusionPropertyIndex, const QString& newFilePath ); // Tested
 
-    void SelectCovariate( QListWidgetItem *item );
-
-    void CheckAllCovariates();
-
-    void UnCheckAllCovariates();
+    void OnUpdatingSubjectColumnID( int newSubjectColumnID ); // Tested
 
 
-    /****************** Execution Tab ******************/
-    void SetOutputDir();
+    /**************** Subjects Tab ****************/
+    void OnApplyQCThreshold(); /// Not tested
 
-    void UpdateOutputDir( const QString& path );
-
-    void SetMatlabExe();
-
-    void UpdateMatlabExe( const QString& executable );
-
-    void SetMVCMPath();
-
-    void UpdateMVCMPath( const QString& path );
+    void OnApplyingQCThreshold( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold ); // Tested
 
 
-    void RunFADTTS();
+    void OnSearch(); // Tested
 
-    void StopFADTTS();
+    void OnInputToggled(); // Tested
 
-//    void WriteLog();
+    void OnSetCaseSensitivityToggled( bool checked ); // Tested
 
 
-    /************** Quality Control  Tab **************/
+    void OnSubjectClicked( QListWidgetItem *item ); // Tested
+
+    void OnCheckAllVisibleSubjects(); // Tested
+
+    void OnUnCheckAllVisibleSubjects(); // Tested
+
+    void OnSaveCheckedSubjects(); // Tested
+
+
+    void OnLoadSubjectList(); // Not Directly Tested
+
+    void OnResetSubjectList(); // Tested
+
+    void OnSettingSubjectList( const QString& filePath ); // Tested
+
+
+    /************** Execution Tab **************/
+    void OnBrowsingOutputDir(); // Not Directly Tested
+
+    void OnSettingOutputDir( const QString& path ); // Not Directly Tested
+
+    void OnBrowsingMVCMPath(); // Not Directly Tested
+
+    void OnSettingMVCMPath( const QString& path ); // Not Directly Tested
+
+    void OnBrowsingMatlabExe(); // Not Directly Tested
+
+    void OnSettingMatlabExe( const QString& executable ); // Not Directly Tested
+
+
+    void OnRunMatlabToggled( bool isChecked ); // Not Directly Tested
+
+    void OnRun(); /// Not tested*
+
+    void OnStop(); /// Not tested*
+
+    void OnUpdatingLogActivity( const QString& LogActivity ); /// Not tested*
+
+    void OnClearLog(); /// Not tested*
+
+
+    void OnMatlabThreadFinished(); /// Not tested
+
+
+    /************** Plotting  Tab **************/
+    void OnBrowsingPlotDir(); /// Not tested
+
+    void OnSettingPlotDir( const QString& path ); // Not Directly Tested
+
+    void OnSettingPlotFibername( const QString& fibername ); /// Not tested*
+
+
+    void OnSettingPlotsUsed( const QStringList& plotsAvailable ); // Tested
+
+    void OnSettingAllPropertiesUsed( const QMap< int, QString >& allPropertiesUsed ); // Tested
+
+    void OnSettingAllCovariatesUsed( const QMap< int, QString >& allCovariatesUsed ); // Tested
+
+
+    void OnUpdatingCovariatesAvailable( const QMap< int, QString >& covariateGiven ); // Tested
+
+    void OnUpdatingPropertyPlotColor( const QString& property ); // Tested
+
+    void OnUpdatingCovariatePlotColor( const QString& covariate ); // Tested
+
+
+    void OnPlotSelection( const QString& plotSelected ); // Not Directly Tested
+
+    void OnPropertySelection( const QString& propertySelected ); // Tested
+
+    void OnCovariateSelection( const QString& covariateSelected ); // Tested
+
+
+    void OnLineForDisplayClicked( QListWidgetItem *item ); // Tested
+
+    void OnCheckAllLinesToDisplay(); // Tested
+
+    void OnUncheckAllToDisplay(); // Tested
+
+
+    void OnSettingLinesSelected( const QStringList& linesSelected ); // Tested
+
+
+    void OnUseCustomizedTitle( bool checkState ); /// Not tested
+
+    void OnUpdatingPlotTitle(); // Not Directly Tested
+
+
+    void OnUpdatingPlotGrid( bool checkState ); // Not Directly Tested
+
+    void OnUpdatingAbscissaNotation( bool checkState );
+
+    void OnUseCustomizedAxis( bool checkState ); /// Not tested
+
+    void OnYMinToggled( bool checkState ); /// Not tested
+
+    void OnYMaxToggled( bool checkState ); /// Not tested
+
+    void OnYMinValueChanged( double yMinValue ); // Tested
+
+    void OnYMaxValueChanged( double yMaxValue ); // Tested
+
+    void OnUpdatingPlotAxis(); // Not Directly Tested
+
+
+    void OnUsingLegend( bool checkState );
+
+    void OnUpdatingLegend( const QString& legendPosition ); // Not Directly Tested
+
+
+    void OnUpdatingPvalueThreshold( double pvalueThreshold ); // Not Directly Tested
+
+    void OnUpdatingLineWidth( double lineWidth ); // Not Directly Tested
+
+    void OnUpdatingSelectedColorLine( const QString& color ); // Not Directly Tested
+
+    void OnUpdatingMarkerType( const QString& markerType ); // Not Directly Tested
+
+    void OnUpdatingMarkerSize( double markerSize ); // Not Directly Tested
+
+
+    void OnDisplayPlot(); // Not Directly Tested
+
+    void OnResetPlot(); // Not Directly Tested
+
+    void OnLoadPlotSettings(); // Tested
+
+    void OnSavePlotSettings(); // Tested
 
 
 private:
@@ -130,129 +233,243 @@ private:
     static const QColor m_yellow;
     static const QColor m_lightBlack;
 
+    static const QString m_csvSeparator;
+
     static const int m_iconSize;
 
     QPixmap m_okPixmap;
     QPixmap m_koPixmap;
     QPixmap m_warningPixmap;
 
-    QSharedPointer<EditInputDialog> m_editInputDialog;
-
-    QSharedPointer<InfoDialog> m_infoDialog;
-
-    QListWidget *m_sortedSubjectListWidget, *m_covariateListWidget;
-
-    QVTKWidget *m_qvtkWidget;
-
-//    QPlainTextEdit *m_log;
-
-    QTextStream* m_textStreamLog;
-
-    vtkSmartPointer<vtkContextView> m_view;
-
-
-    QLineEdit *m_subjectFileLineEdit;
-
-    typedef QMap<QString, QLabel*> labelMapType;
-    labelMapType m_inputTabIconLabelMap, m_paramTabFileDataSizeLabelMap;
-
-    typedef QMap<QString, QCheckBox*> checkBoxMapType;
-    checkBoxMapType m_paramTabFileCheckBoxMap;
-
-    typedef QMap<QString, QLineEdit*> lineEditMapType;
-    lineEditMapType m_inputTabInputFileLineEditMap;
-
-    typedef QMap<QString, QPushButton*> pushButtonMapType;
-    pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
-
-    Qt::CaseSensitivity caseSensitivity;
+    typedef QMap< int, QPushButton* > pushButtonMapType;
+    typedef QMap< int, QLineEdit* > lineEditMapType;
+    typedef QMap< int, QCheckBox* > checkBoxMapType;
+    typedef QMap< int, QLabel* > labelMapType;
+    typedef QMap< int, QPair< QString, QPair< bool, QString > > > displayMapType;
+    typedef QMap< int, QPair< QString, QLabel* > > nameLabelMapType;
+    typedef QMap< int, QPair< QString, QComboBox* > > comboBoxMapType;
+    typedef QMap< int, QPair< QString, QLineEdit* > > covariateNameLineEditMapType;
 
 
     Data m_data;
 
-    Processing m_process;
+    Processing m_processing;
 
-    MatlabScript m_matlabScript;
 
+    /**************** Input Tab ****************/
+    QSharedPointer< EditInputDialog > m_editInputDialog;
+
+    QListWidget *m_covariateListWidget;
+
+    pushButtonMapType m_inputTabAddInputFilePushButtonMap, m_inputTabEditInputFilePushButtonMap;
+    lineEditMapType m_inputTabInputFileLineEditMap;
+    labelMapType m_inputTabIconLabelMap, m_inputFileInformationLabelMap;
+
+    QString m_currentInputFileDir;
+
+
+    /**************** Subjects Tab ****************/
+    QSharedPointer< QCThresholdDialog > m_qcThresholdDialog;
+
+    Qt::CaseSensitivity m_caseSensitivity;
+
+    QListWidget *m_matchedSubjectListWidget, *m_unmatchedSubjectListWidget;
+
+    checkBoxMapType m_paramTabFileCheckBoxMap;
+
+    QLineEdit *m_subjectFileLineEdit;
+    QStringList m_loadedSubjects, m_failedQCThresholdSubjects;
+    QString m_currentSubjectFileDir;
+    bool m_areSubjectsLoaded;
+
+
+    /************** Execution Tab **************/
+    Log *m_log;
     MatlabThread *m_matlabThread;
+
+    QTextEdit *m_logWindow;
+
+    QProgressBar *m_progressBar;
+
+    QMap< int, QString > m_propertySelected, m_selectedFiles, m_selectedCovariates;
+
+    QString m_fibername, m_currentMatlabExeDir, m_mvcmPath;
+
+    double m_qcThreshold;
+
+    int m_nbrSelectedSubjects;
+
+    bool m_isMatlabExeFound;
+
+
+    /************** Plotting  Tab **************/
+    QSharedPointer< QVTKWidget > m_qvtkWidget;
 
     Plot *m_plot;
 
+    QListWidget *m_lineDisplayedListWidget, *m_lineSelectedListWidget;
 
-    QString m_currentInputFileDir, m_currentSubjectFileDir, m_currentMatlabExeDir, m_mvcmPath;
+    displayMapType m_propertiesForDisplay, m_covariatesForDisplay, m_currentLinesForDisplay;
 
+    nameLabelMapType m_propertiesNameLabelMap, m_covariatesNameLabelMap;
+    comboBoxMapType m_propertiesColorsComboBoxMap, m_covariatesColorsComboBoxMap;
+    covariateNameLineEditMapType m_covariatesNameLineEditMap;
 
+    QComboBox *m_plotComboBox, *m_propertyComboBox, *m_covariateComboBox;
 
-    /********* Configuration & Events *********/
-    void InitFADTTSWindow();
+    QMap< int, QString > m_previousPropertiesUsed, m_previousCovariatesUsed;
 
-    void InitMenuBar();
+    QString m_plotSelected;
 
-    void InitInputTab();
-
-    void InitSubjectTab();
-
-    void InitExecutionTab();
-
-    void InitQualityControlTab();
+    bool m_isPlotReady, m_areLinesForDisplayProperties;
 
 
-    void UpdateEditInputDialogCurrentDir( const QString newfilePath );
 
-    QDir UpdateCurrentDir( const QString newfilePath, QString& currentDir );
+    /********** Configuration & Events **********/
+    void SaveParaConfiguration( QString filename ); // Tested
 
-    void SetDir( QDir& dir, QString filePath, QString currentDir );
+    void SaveSoftConfiguration( QString filename ); // Tested
 
-
-    void WarningPopUp( const QString warningMessage );
-
-    void CriticalPopUp( const QString criticalMessage );
-
-    void DisplayIcon( QLabel *label , const QPixmap icon );
+    void SaveNoGUIConfiguration( QString filename ); // Tested
 
 
-    /*************** Input Tab ***************/
-    void UpdateLineEditsAfterAddingMultipleFiles( const QStringList fileList );
+    void InitMenuBar(); // Not Directly Tested
+
+    void InitInputTab(); // Not Directly Tested
+
+    void InitSubjectCovariateTab(); // Not Directly Tested
+
+    void InitExecutionTab(); // Not Directly Tested
+
+    void InitPlottingTab(); // Not Directly Tested
+
+    void InitFADTTSWindow(); // Not Directly Tested
 
 
-    void LaunchEditInputDialog( QString prefID );
+    QDir UpdateCurrentDir( QString newfilePath, QString& currentDir ); // Tested
+
+    QDir SetDir( QString filePath, QString currentDir ); // Tested
 
 
-    void UpdateInputFileInformation( const QString prefID );
+    void WarningPopUp( QString warningMessage ); /// Not tested
 
-    bool IsMatrixDimensionOK( const QList<QStringList> fileData );
+    void CriticalPopUp( QString criticalMessage ); /// Not tested
 
-
-    void DisplayInputLineEditIcon( const QString prefID , const QPixmap icon );
-
-    void SetInfoCovariateFileSubjectColumnID();
+    void DisplayIcon( QLabel *label , const QPixmap& icon ); // Tested
 
 
-    /*************** Subjects Tab ***************/
-    void UpdateAvailableFileParamTab();
+    /**************** Input Tab ****************/
+    void SetCovariateListVisible( bool visible ); /// Not tested
 
-    void DisplaySortedSubjects( const QStringList matchedSubjectList, const QMap<QString, QStringList > unMatchedSubjectMap );
+    void SetCovariateListWidget(); // Tested
 
-    void DisplayNbrSubjectSelected();
+    QString GetInputFileInformation( int diffusionPropertyID ) const; // Tested
+
+    void AddAtlas( const QList< QStringList >& fileData ); /// Not tested*
+
+    void DisplayFileInformation(); // Tested
+
+    void DisplayInputLineEditIcon( int diffusionPropertyID, const QPixmap& icon ); // Tested
+
+    void UpdateInputFileInformation( int diffusionPropertyID ); // Tested
+
+    void UpdateLineEditsAfterAddingMultipleFiles( const QStringList& fileList ); // Tested
 
 
-    /*************** Parameters Tab ***************/
+    void SetCheckStateAllCovariates( Qt::CheckState checkState );  // Tested
 
 
-    /*************** Execution Tab ****************/
-    QStringList GetSelectedPrefixes();
+    void SetInfoSubjectColumnID(); // Tested
 
-    QMap< QPair< int, QString >, bool> GetSelectedInputFiles();
 
-    QMap< QPair< int, QString >, QList<QStringList> > GetFileDataOfSelectedFiles();
+    void LaunchEditInputDialog( int diffusionPropertyID ); // Not Directly Tested
 
-    QMap<int, QString> GetSelectedCovariates();
 
-    QString GenerateSelectedSubjectFile( QString outputDir );
+    /**************** Subjects Tab ****************/
+    void SetSelectedInputFiles(); // Tested
 
-    bool IsRunFADTTSOK( QString fiberName, QMap<int, QString> selectedCovariates );
+    void UpdateAvailableDiffusionProperties( int diffusionPropertyID ); // Tested
 
-    void SetMatlabThread( QString fiberName, QMap<int, QString> selectedCovariates );
+    void InitAvailableDiffusionProperties(); // Tested
+
+    QMap< int, bool > GetDiffusionPropertiesCheckState();  // Tested
+
+
+    void DisplaySubjectInformation(); // Tested
+
+    void DisplayNbrSubjectSelected(); // Tested
+
+    void DisplaySortedSubjects( const QStringList& matchedSubjectList, const QMap< QString, QList< int > >& unMatchedSubjectMap ); // Tested
+
+    void UpdateSubjectList(); // Tested
+
+    void SetCheckStateAllVisibleSubjects( Qt::CheckState checkState ); // Tested
+
+    int SearchSubjects( QListWidget *list ); // Tested
+
+    void SaveCheckedSubjects( QString filePath ); // Tested
+
+
+   QStringList GetCheckedMatchedSubjects(); // Tested
+
+   QMap< QString, QList< QStringList > > GetPropertyRawData(); // Tested
+
+
+    /************** Execution Tab **************/
+    void GenerateFailedQCThresholdSubjectFile( QString outputDir ); // Tested
+
+    QStringList GenerateSelectedSubjectFile( QString outputDir ); // Tested
+
+    void SetSelectedCovariates(); // Tested
+
+    void SetFibername(); // Tested
+
+    bool canFADTTSterBeRun(); /// Not tested
+
+    void SetMatlabScript(); // Not Directly Tested
+
+
+    /************** Plotting  Tab **************/
+    void SetColorsComboBox( QComboBox* &comboBox ); // Tested
+
+    void ResetPropertyEdition(); // Tested
+
+    void SetPropertyEdition( const QStringList& propertiesAvailable ); // Tested
+
+    void SetPropertiesForDisplay( const QStringList& propertiesForDisplay ); // Tested
+
+    void ResetCovariateEdition(); // Tested
+
+    void SetCovariateEdition( const QMap< int, QString >& allCovariatesUsed ); // Tested
+
+    void SetCovariatesForDisplay( const QMap< int, QString >& covariatesForDisplay ); // Tested
+
+
+    void SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable ); /// Not tested
+
+    void AddLinesForDisplay(); // Tested
+
+    void SetCheckStateLinesToDisplay( Qt::CheckState checkState ); // Tested
+
+    void SetSelectionLinesDisplayedVisible( bool visible ); /// Not tested
+
+    void EditCovariatesNames(); // Tested
+
+
+    void UpdatePlotAxis(); // Not Directly Tested
+
+    void UpdatePlotTitle(); // Not Directly Tested
+
+    void UpdatePlot(); // Not Directly Tested
+
+
+    void ResetPlotTab(); // Tested
+
+    void SetPlotTab(); // Tested
+
+    void LoadPlotSettings( QString filePath ); // Tested
+
+    void SavePlotSettings( QString filePath ); // Tested
 };
 
 #endif // FADTTSWINDOW_H

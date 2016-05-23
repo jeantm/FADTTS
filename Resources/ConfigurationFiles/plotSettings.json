@@ -1,0 +1,46 @@
+{
+    "title": {
+        "customizedTitle": false,
+        "bold": false,
+        "italic": false,
+        "size": 12.0
+    },
+    "axis": {
+        "showGrid": true,
+        "scientificNotation": true,
+        "customizedAxis": false,
+        "labelSize": 12,
+        "xName": "",
+        "yName": "",
+        "nameSize": 12,
+        "bold": false,
+        "italic": false,
+        "yMin": {
+            "set": false,
+            "value": -0.5
+        },
+        "yMax": {
+            "set": false,
+            "value": 0.5
+        }
+    },
+    "legend": {
+        "show": true,
+        "position": "Top Left"
+    },
+    "pvalueThreshold": {
+        "value": 0.05
+    },
+    "line": {
+        "lineWidth": 1.5,
+        "colorSelection": "Red"
+    },
+    "marker": {
+        "type": "Circle",
+        "size": 8.0
+    },
+    "propertiesEdition": [
+    ],
+    "covariatesEdition": [
+    ]
+}

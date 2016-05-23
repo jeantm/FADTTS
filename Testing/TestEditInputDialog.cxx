@@ -7,144 +7,143 @@ TestEditInputDialog::TestEditInputDialog()
 /**********************************************************************/
 /*************************** Tests ************************************/
 /**********************************************************************/
-bool TestEditInputDialog::Test_UploadFileData( QString adInputFile )
+bool TestEditInputDialog::Test_SubjectColumnID()
 {
-    Processing processing;
-
-    Data data;
-    data.InitData();
-    QString ad = "ad";
-    QList<QStringList> dataInadInputFile = processing.GetDataFromFile( adInputFile );
-    data.SetFileData( ad ) = dataInadInputFile;
-
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
-    editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( ad );
-    editInputDialog->SetInputFile( adInputFile );
-    editInputDialog->UploadFileData();
-
-    QList<QStringList> expectedFileData = processing.GetDataFromFile( adInputFile );
-
-    bool testResult = TestQTableWidget( expectedFileData, editInputDialog );
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
+    int subjectColumnID = 10;
+    int emitedSubjectColumnID;
 
 
-    if( !testResult )
+    editInputDialog->m_subjectColumnIDSpinBox->setValue( subjectColumnID );
+    editInputDialog->OnSubjectColumnIDChanged( editInputDialog->m_subjectColumnIDSpinBox->value() );
+    emitedSubjectColumnID = editInputDialog->m_subjectColumnIDSpinBox->value() - 1;
+    bool testOnSubjectColumnIDChanged = editInputDialog->m_subjectColumnID == subjectColumnID - 1;
+
+    editInputDialog->ResetSubjectColumnID();
+    bool testResetSubjectColumnID = editInputDialog->m_subjectColumnIDSpinBox->value() == 1;
+
+
+    bool testSubjectColumnID_Passed = testOnSubjectColumnIDChanged && testResetSubjectColumnID;
+    if( !testSubjectColumnID_Passed )
     {
-        std::cerr << std::endl << "Test_UploadFileData() FAILED:" << std::endl;
-        std::cerr << "\t+ Incorrect data uploaded in QTableWidget" << std::endl;
-        std::cerr << std::endl;
+        std::cerr << "/!\\/!\\ Test_SubjectColumnID() FAILED /!\\ /!\\";
+//        std::cerr << std::endl;
+//        if( !testOnSubjectColumnIDChanged )
+//        {
+//            std::cerr << "\t+ pb with OnSubjectColumnIDChanged( int columnID )" << std::endl;
+//            std::cerr << "\t  expected subject column ID to be emited: " << subjectColumnID - 1
+//                      << " | subject column ID emited: " << emitedSubjectColumnID << std::endl;
+
+//        }
+//        if( !testResetSubjectColumnID )
+//        {
+//            std::cerr << "\t+ pb with ResetSubjectColumnID()" << std::endl;
+//            std::cerr << "\t  expected m_subjectColumnIDSpinBox value: " << editInputDialog->m_subjectColumnID
+//                      << " | subject column ID emited: " << 0 << std::endl;
+//        }
     }
     else
     {
-        std::cout << std::endl << "Test_UploadFileData() PASSED" << std::endl;
+        std::cerr << "Test_SubjectColumnID() PASSED";
     }
 
-    return testResult;
+    return testSubjectColumnID_Passed;
 }
 
 
-bool TestEditInputDialog::Test_Delete( QString adInputFile )
+bool TestEditInputDialog::Test_OnDelete( QString adFilePath )
 {
-    Processing processing;
-
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
     Data data;
+    Processing processing;
+    QList< QStringList > expectedFileData;
+    int indexAD;
+    int rowID = 1;
+    int columnID = 5;
+
+
     data.InitData();
-    QString ad = "ad";
-    QList<QStringList> dataInadInputFile = processing.GetDataFromFile( adInputFile );
-    data.SetFileData( ad ) = dataInadInputFile;
-
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
     editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( ad );
-    editInputDialog->SetInputFile( adInputFile );
-    editInputDialog->UploadFileData();
+    indexAD = data.GetAxialDiffusivityIndex();
+    data.SetFileData( indexAD ) = processing.GetDataFromFile( adFilePath );
+    expectedFileData = data.GetFileData( indexAD );
 
-    QList<QStringList> expectedFileData = processing.GetDataFromFile( adInputFile );
+    editInputDialog->DisplayDataEdition( indexAD );
 
-    int IDRow = 1;
-    int IDColumn = 5;
-    /************************************************/
     /**************** Test Delete Row ***************/
-    /************************************************/
-    editInputDialog->m_dataTableWidget->selectRow( IDRow );
-    editInputDialog->DeleteRows();
-    expectedFileData.removeAt( IDRow );
+    editInputDialog->m_dataTableWidget->selectRow( rowID );
+    editInputDialog->OnDeleteRows();
+    expectedFileData.removeAt( rowID );
 
     bool testDeleteRow = TestQTableWidget( expectedFileData, editInputDialog );
 
-
-    /************************************************/
     /************** Test Delete Column **************/
-    /************************************************/
-    editInputDialog->m_dataTableWidget->selectColumn( IDColumn );
-    editInputDialog->DeleteColumns();
+    editInputDialog->m_dataTableWidget->selectColumn( columnID );
+    editInputDialog->OnDeleteColumns();
     for( int i = 0; i < expectedFileData.size(); i++ )
     {
-        expectedFileData[ i ].removeAt( IDColumn );
+        expectedFileData[ i ].removeAt( columnID );
     }
 
     bool testDeleteColumn = TestQTableWidget( expectedFileData, editInputDialog );
 
 
-    if( !testDeleteRow || !testDeleteColumn )
+    bool testOnDelete_Passed = testDeleteRow && testDeleteColumn;
+    if( !testOnDelete_Passed )
     {
-        std::cerr << std::endl << "Test_Delete() FAILED:" << std::endl;
-        if( !testDeleteRow )
-        {
-            std::cerr << "\t+ Row not deleted correctly" << std::endl;
-
-        }
-        if( !testDeleteColumn )
-        {
-            std::cerr << "\t+ Column not deleted correctly" << std::endl;
-        }
+        std::cerr << "/!\\/!\\ Test_OnDelete() FAILED /!\\ /!\\";
+//        std::cerr << std::endl;
+//        if( !testDeleteRow )
+//        {
+//            std::cerr << "\t+ pb with OnDeleteRows()" << std::endl;
+//        }
+//        if( !testDeleteColumn )
+//        {
+//            std::cerr << "\t+ pb with OnDeleteColumns()" << std::endl;
+//        }
+//        std::cerr << std::endl;
+//        std::cerr << "/!\\ WARNING /!\\ Next EditInputDialog tests heavly rely on OnDeleteRows() and OnDeleteColumns().\n"
+//                     "/!\\ WARNING /!\\ Therefore, results might not be accurate as long as Test_OnDelete() remains failed." << std::endl;
+//        std::cerr << std::endl;
     }
     else
     {
-        std::cout << std::endl << "Test_Delete() PASSED" << std::endl;
+        std::cerr << "Test_OnDelete() PASSED";
     }
 
-    return ( testDeleteRow & testDeleteColumn );
+    return testOnDelete_Passed;
 }
 
 
-bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inputCOMPFile )
+bool TestEditInputDialog::Test_LoadDisplayData( QString adFilePath, QString subMatrixFilePath )
 {
-    Processing processing;
-
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
     Data data;
-    data.InitData();
-    QString ad = "ad";
-    QList<QStringList> dataInadInputFile = processing.GetDataFromFile( adInputFile );
-    data.SetFileData( ad ) = dataInadInputFile;
-    QString COMP = "COMP";
-    QList<QStringList> dataInCOMPInputFile = processing.GetDataFromFile( inputCOMPFile );
-
-    QSharedPointer<EditInputDialog> editInputDialog = QSharedPointer<EditInputDialog>( new EditInputDialog );
-
+    Processing processing;
+    QList< QStringList > adData;
+    QList< QStringList > subMatrixData;
+    int indexAD;
+    int indexSubMatrix;
     int IDRow = 2;
     int IDColumn = 2;
+
+
+    data.InitData();
+    editInputDialog->SetData( &data );
+    indexAD = data.GetAxialDiffusivityIndex();
+    indexSubMatrix = data.GetSubMatrixIndex();
+    data.SetFileData( indexAD ) = processing.GetDataFromFile( adFilePath );
+    data.SetFileData( indexSubMatrix ) = processing.GetDataFromFile( subMatrixFilePath );
+    adData = data.GetFileData( indexAD );
+    subMatrixData = data.GetFileData( indexSubMatrix );
+
     /************************************************/
     /******************** Test 1 ********************/
     /************************************************/
     /** AD, RD, MD or FA file in right QLineEdit **/
-    editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( ad );
-    editInputDialog->SetInputFile( adInputFile );
-    editInputDialog->DisplayFileData();
+    editInputDialog->DisplayDataEdition( indexAD );
 
-    bool hiddenStateSpinBoxTest1 = editInputDialog->m_covariateFileSubjectColumnIDSpinBox->isHidden();
-    bool hiddenStateSubjectColumnLabelTest1 = editInputDialog->m_covariateFileSubjectColumnIDLabel->isHidden();
-
-    QList<QStringList> ADexpectedFileData = processing.GetDataFromFile( adInputFile );
-    QString ADfileInfoOK;
-    ADfileInfoOK.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( adInputFile ) ).fileName() + "<br>" );
-    ADfileInfoOK.append( "<br><b>Number of test subjects</b>  " + QString::number( ADexpectedFileData.at( 0 ).size()-1 ) + "<br>" );
-    ADfileInfoOK.append( "<br><b>Data matrix</b>  " + QString::number( ADexpectedFileData.size()-1 ) + "x" + QString::number( ADexpectedFileData.at( 0 ).size() ) );
-    QString fileInfoTest1 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest1 = fileInfoTest1 == ADfileInfoOK;
-
+    bool testHiddenState1 = editInputDialog->m_subjectColumnIDSpinBox->isHidden();
 
     /************************************************/
     /******************** Test 2 ********************/
@@ -152,276 +151,159 @@ bool TestEditInputDialog::Test_RefreshFileInfo( QString adInputFile, QString inp
     /** AD, RD, MD or FA file in right QLineEdit
      *  after deleting 1 row and 1 column **/
     editInputDialog->m_dataTableWidget->selectRow( IDRow );
-    editInputDialog->DeleteRows();
+    editInputDialog->OnDeleteRows();
     editInputDialog->m_dataTableWidget->selectColumn( IDColumn );
-    editInputDialog->DeleteColumns();
+    editInputDialog->OnDeleteColumns();
 
-    bool hiddenStateSpinBoxTest2 = editInputDialog->m_covariateFileSubjectColumnIDSpinBox->isHidden();
-    bool hiddenStateSubjectColumnLabelTest2 = editInputDialog->m_covariateFileSubjectColumnIDLabel->isHidden();
-
-    QString ADfileInfoOKDelete;
-    ADfileInfoOKDelete.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( adInputFile ) ).fileName() + "<br>" );
-    ADfileInfoOKDelete.append( "<br><b>Number of test subjects</b>  " + QString::number( ADexpectedFileData.at( 0 ).size()-2 ) + "<br>" );
-    ADfileInfoOKDelete.append( "<br><b>Data matrix</b>  " + QString::number( ADexpectedFileData.size()-2 ) + "x" + QString::number( ADexpectedFileData.at( 0 ).size()-1 ) );
-    QString fileInfoTest2 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest2 = fileInfoTest2 == ADfileInfoOKDelete;
-
+    bool testHiddenState2 = editInputDialog->m_subjectColumnIDSpinBox->isHidden();
 
     /************************************************/
     /******************** Test 3 ********************/
     /************************************************/
-    data.SetFileData( COMP ) = dataInadInputFile;
     /** AD, RD, MD or FA file in wrong QLineEdit **/
+    data.SetFileData( indexSubMatrix ) = adData;
     editInputDialog->ResetTableWidget();
-    editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( COMP );
-    editInputDialog->SetInputFile( adInputFile );
-    editInputDialog->DisplayFileData();
+    //    editInputDialog->SetData( &data );
+    editInputDialog->DisplayDataEdition( indexSubMatrix );
 
-    bool hiddenStateSpinBoxTest3 = !editInputDialog->m_covariateFileSubjectColumnIDSpinBox->isHidden();
-    bool hiddenStateSubjectColumnLabelTest3 = !editInputDialog->m_covariateFileSubjectColumnIDLabel->isHidden();
-
-    QString ADfileInfoKO;
-    ADfileInfoKO.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( adInputFile ) ).fileName() + "<br>" );
-    ADfileInfoKO.append( "<br><center><i>WARNING<br><br>Please make sure you have uploaded<br>a " + editInputDialog->m_lineEditPrefix.toUpper() + " file</i></center>" );
-    QString fileInfoTest3 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest3 = fileInfoTest3 == ADfileInfoKO;
-
+    bool testHiddenState3 = !editInputDialog->m_subjectColumnIDSpinBox->isHidden();
 
     /************************************************/
     /******************** Test 4 ********************/
     /************************************************/
-    /** COMP file in right QLineEdit **/
-    data.SetFileData( COMP ) = dataInCOMPInputFile;
+    /** subMatrix file in right QLineEdit **/
+    data.SetFileData( indexSubMatrix ) = subMatrixData;
     editInputDialog->ResetTableWidget();
-    editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( COMP );
-    editInputDialog->SetInputFile( inputCOMPFile );
-    editInputDialog->DisplayFileData();
+    editInputDialog->DisplayDataEdition( indexSubMatrix );
 
-    bool hiddenStateSpinBoxTest4 = !editInputDialog->m_covariateFileSubjectColumnIDSpinBox->isHidden();
-    bool hiddenStateSubjectColumnLabelTest4 = !editInputDialog->m_covariateFileSubjectColumnIDLabel->isHidden();
-
-    QList<QStringList> COMPexpectedFileData = processing.GetDataFromFile( inputCOMPFile );
-    QString COMPfileInfoOK;
-    COMPfileInfoOK.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( inputCOMPFile ) ).fileName() + "<br>" );
-    COMPfileInfoOK.append( "<br><b>Number of test subjects</b>  " + QString::number( COMPexpectedFileData.size()-1 ) + "<br>" );
-    COMPfileInfoOK.append( "<br><b>Data matrix</b>  " + QString::number( COMPexpectedFileData.size()-1 ) + "x" + QString::number( COMPexpectedFileData.at( 0 ).size()-1 ) + "<br>" );
-    COMPfileInfoOK.append( "<br><b>Number of covariates</b>  " + QString::number( COMPexpectedFileData.at( 0 ).size()-1 ) );
-    for( int i = 0; i < COMPexpectedFileData.at( 0 ).size(); i++ )
-    {
-        if( i != editInputDialog->m_covariateFileSubjectColumnIDSpinBox->value()-1 )
-        {
-            COMPfileInfoOK.append( "<br>-  " + COMPexpectedFileData.at( 0 ).at( i ) );
-        }
-    }
-    QString fileInfoTest4 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest4 = fileInfoTest4 == COMPfileInfoOK;
-
+    bool testHiddenState4 = !editInputDialog->m_subjectColumnIDSpinBox->isHidden();
 
     /************************************************/
     /******************** Test 5 ********************/
     /************************************************/
-    /** COMP file in right QLineEdit after deleting 1 row
+    /** subMatrix file in right QLineEdit after deleting 1 row
      *  and 1 column and changing the subjectColumnID **/
     editInputDialog->m_dataTableWidget->selectRow( IDRow );
-    editInputDialog->DeleteRows();
+    editInputDialog->OnDeleteRows();
     editInputDialog->m_dataTableWidget->selectColumn( IDColumn );
-    editInputDialog->DeleteColumns();
-    editInputDialog->m_covariateFileSubjectColumnIDSpinBox->setValue( 3 );
+    editInputDialog->OnDeleteColumns();
+    editInputDialog->m_subjectColumnIDSpinBox->setValue( 3 );
 
-    bool hiddenStateSpinBoxTest5 = !editInputDialog->m_covariateFileSubjectColumnIDSpinBox->isHidden();
-    bool hiddenStateSubjectColumnLabelTest5 = !editInputDialog->m_covariateFileSubjectColumnIDLabel->isHidden();
-
-    QString COMPfileInfoOKDelete;
-    COMPfileInfoOKDelete.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( inputCOMPFile ) ).fileName() + "<br>" );
-    COMPfileInfoOKDelete.append( "<br><b>Number of test subjects</b>  " + QString::number( COMPexpectedFileData.size()-2 ) + "<br>" );
-    COMPfileInfoOKDelete.append( "<br><b>Data matrix</b>  " + QString::number( COMPexpectedFileData.size()-2 ) + "x" + QString::number( COMPexpectedFileData.at( 0 ).size()-2 ) + "<br>" );
-    COMPfileInfoOKDelete.append( "<br><b>Number of covariates</b>  " + QString::number( COMPexpectedFileData.at( 0 ).size()-2 ) );
-    for( int i = 0; i < COMPexpectedFileData.at( 0 ).size()-1; i++ )
-    {
-        if( ( i != editInputDialog->m_covariateFileSubjectColumnIDSpinBox->value()-1 ) && ( i != IDColumn ) )
-        {
-            COMPfileInfoOKDelete.append( "<br>-  " + COMPexpectedFileData.at( 0 ).at( i ) );
-        }
-    }
-    QString fileInfoTest5 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest5 = fileInfoTest5 == COMPfileInfoOKDelete;
-
+    bool testHiddenState5 = !editInputDialog->m_subjectColumnIDSpinBox->isHidden();
 
     /************************************************/
     /******************** Test 6 ********************/
     /************************************************/
-    /** COMP file in right QLineEdit after deleting all ROWS **/
-    editInputDialog->m_dataTableWidget->selectColumn( IDColumn );
-    editInputDialog->DeleteRows();
-
-    QString COMPfileInfoOKDeleteAll;
-    COMPfileInfoOKDeleteAll.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( inputCOMPFile ) ).fileName() + "<br>" );
-    COMPfileInfoOKDeleteAll.append( "<br>No data to display" );
-    QString fileInfoTest6 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest6 = fileInfoTest6 == COMPfileInfoOKDeleteAll;
-
-
-    /************************************************/
-    /******************** Test 7 ********************/
-    /************************************************/
-    /**  COMP file in wrong QLineEdit **/
-    data.SetFileData( ad )= dataInCOMPInputFile;
+    /** indexSubMatrixfile in wrong QLineEdit **/
+    data.SetFileData( indexAD )= subMatrixData;
     editInputDialog->ResetTableWidget();
-    editInputDialog->SetData( &data );
-    editInputDialog->SetLineEditPrefix( ad );
-    editInputDialog->SetInputFile( inputCOMPFile );
-    editInputDialog->DisplayFileData();
+    editInputDialog->DisplayDataEdition( indexAD );
 
-    bool hiddenStateSpinBoxTest7 = editInputDialog->m_covariateFileSubjectColumnIDSpinBox->isHidden();
-    bool hiddenStateSubjectColumnLabelTest7 = editInputDialog->m_covariateFileSubjectColumnIDLabel->isHidden();
-
-    QString COMPfileInfoKO;
-    COMPfileInfoKO.append( "<br><br><b>Filename</b> " + QFileInfo( QFile( inputCOMPFile ) ).fileName() + "<br>" );
-    COMPfileInfoKO.append( "<br><center><i>WARNING<br><br>Please make sure you have uploaded<br>a(n) " + editInputDialog->m_lineEditPrefix.toUpper() + " file</i></center>" );
-    QString fileInfoTest7 = editInputDialog->m_fileInformationLabel->text();
-
-    bool fileInfoLabelTest7 = fileInfoTest7 == COMPfileInfoKO;
+    bool testHiddenState6 = editInputDialog->m_subjectColumnIDSpinBox->isHidden();
 
 
-    if( !hiddenStateSpinBoxTest1 || !hiddenStateSubjectColumnLabelTest1 || !fileInfoLabelTest1 ||
-            !hiddenStateSpinBoxTest2 || !hiddenStateSubjectColumnLabelTest2 || !fileInfoLabelTest2 ||
-            !hiddenStateSpinBoxTest3 || !hiddenStateSubjectColumnLabelTest3 || !fileInfoLabelTest3 ||
-            !hiddenStateSpinBoxTest4 || !hiddenStateSubjectColumnLabelTest4 || !fileInfoLabelTest4 ||
-            !hiddenStateSpinBoxTest5 || !hiddenStateSubjectColumnLabelTest5 || !fileInfoLabelTest5 ||
-            !fileInfoLabelTest6 ||
-            !hiddenStateSpinBoxTest7 || !hiddenStateSubjectColumnLabelTest7 || !fileInfoLabelTest7 )
+    bool testLoadDisplayData_Passed = testHiddenState1 && testHiddenState2 && testHiddenState3 &&
+            testHiddenState4 && testHiddenState5 && testHiddenState6;
+    if( !testLoadDisplayData_Passed )
     {
-        std::cerr << std::endl << "Test_RefreshFileInfo() FAILED:" << std::endl;
-        if( !hiddenStateSpinBoxTest1 || !hiddenStateSubjectColumnLabelTest1 || !fileInfoLabelTest1 )
-        {
-            std::cerr << "\t+ When AD, RD, MD or FA file in right QLineEdit" << std::endl;
-            if( !hiddenStateSpinBoxTest1 )
-            {
-                std::cerr << "\t   QSpinBox not hidden" << std::endl;
-            }
-            if( !hiddenStateSubjectColumnLabelTest1 )
-            {
-                std::cerr << "\t   subjectColumnLabel not hidden" << std::endl;
-            }
-            if( !fileInfoLabelTest1 )
-            {
-                DisplayErrorFileInfoDisplayed( ADfileInfoOK, fileInfoTest1 );
-            }
-        }
-        if( !hiddenStateSpinBoxTest2 || !hiddenStateSubjectColumnLabelTest2 || !fileInfoLabelTest2 )
-        {
-            std::cerr << "\t+ When AD, RD, MD or FA file in right QLineEdit after deleting 1 row and 1 column" << std::endl;
-            if( !hiddenStateSpinBoxTest2 )
-            {
-                std::cerr << "\t   QSpinBox not hidden" << std::endl;
-            }
-            if( !hiddenStateSubjectColumnLabelTest2 )
-            {
-                std::cerr << "\t   subjectColumnLabel not hidden" << std::endl;
-            }
-            if( !fileInfoLabelTest2 )
-            {
-                DisplayErrorFileInfoDisplayed( ADfileInfoOKDelete, fileInfoTest2 );
-            }
-        }
-        if( !hiddenStateSpinBoxTest3 || !hiddenStateSubjectColumnLabelTest3 || !fileInfoLabelTest3 )
-        {
-            std::cerr << "\t+ When AD, RD, MD or FA file in wrong QLineEdit" << std::endl;
-            if( !hiddenStateSpinBoxTest3 )
-            {
-                std::cerr << "\t   QSpinBox hidden" << std::endl;
-            }
-            if( !hiddenStateSubjectColumnLabelTest3 )
-            {
-                std::cerr << "\t   subjectColumnLabel hidden" << std::endl;
-            }
-            if( !fileInfoLabelTest3 )
-            {
-                DisplayErrorFileInfoDisplayed( ADfileInfoKO, fileInfoTest3 );
-            }
-        }
-        if( !hiddenStateSpinBoxTest4 || !hiddenStateSubjectColumnLabelTest4 || !fileInfoLabelTest4 )
-        {
-            std::cerr << "\t+ When COMP file in right QLineEdit" << std::endl;
-            if( !hiddenStateSpinBoxTest4 )
-            {
-                std::cerr << "\t   QSpinBox hidden" << std::endl;
-            }
-            if( !hiddenStateSubjectColumnLabelTest4 )
-            {
-                std::cerr << "\t   subjectColumnLabel hidden" << std::endl;
-            }
-            if( !fileInfoLabelTest4 )
-            {
-                DisplayErrorFileInfoDisplayed( COMPfileInfoOK, fileInfoTest4 );
-            }
-        }
-        if( !hiddenStateSpinBoxTest5 || !hiddenStateSubjectColumnLabelTest5 || !fileInfoLabelTest5 )
-        {
-            std::cerr << "\t+ When Comp file in right QLineEdit after deleting 1 row and 1 column and changing the subjectColumnID" << std::endl;
-            if( !hiddenStateSpinBoxTest5 )
-            {
-                std::cerr << "\t   QSpinBox hidden" << std::endl;
-            }
-            if( !hiddenStateSubjectColumnLabelTest5 )
-            {
-                std::cerr << "\t   subjectColumnLabel hidden" << std::endl;
-            }
-            if( !fileInfoLabelTest5 )
-            {
-                DisplayErrorFileInfoDisplayed( COMPfileInfoOKDelete, fileInfoTest5 );
-            }
-        }
-        if( !fileInfoLabelTest6 )
-        {
-            std::cerr << "\t+ When Comp file in right QLineEdit after deleting all ROWS" << std::endl;
-            DisplayErrorFileInfoDisplayed( COMPfileInfoOKDeleteAll, fileInfoTest6 );
-
-        }
-        if( !hiddenStateSpinBoxTest7 || !hiddenStateSubjectColumnLabelTest7 || !fileInfoLabelTest7 )
-        {
-            std::cerr << "\t+ When COMP file in wrong QLineEdit" << std::endl;
-            if( !hiddenStateSpinBoxTest7 )
-            {
-                std::cerr << "\t   QSpinBox not hidden" << std::endl;
-            }
-            if( !hiddenStateSubjectColumnLabelTest7 )
-            {
-                std::cerr << "\t   subjectColumnLabel not hidden" << std::endl;
-            }
-            if( !fileInfoLabelTest7 )
-            {
-                DisplayErrorFileInfoDisplayed( COMPfileInfoKO, fileInfoTest7 );
-            }
-        }
+        std::cerr << "/!\\/!\\ Test_LoadDisplayData() FAILED /!\\ /!\\";
+//        std::cerr << std::endl << "\t+ pb with DisplayDataEdition( const int &newDiffusionPropertyIndex ) and/or with ResetTableWidget()" << std::endl;
+//        if( !testHiddenState1 )
+//        {
+//            std::cerr << "\t  - When AD, RD, MD or FA file in right QLineEdit" << std::endl;
+//            std::cerr << "\t    EditInputDialog_subjectColumnID_spinBox and EditInputDialog_subjectColumn_label not hidden" << std::endl;
+//        }
+//        if( !testHiddenState2 )
+//        {
+//            std::cerr << "\n\t  - When AD, RD, MD or FA file in right QLineEdit after deleting 1 row and 1 column" << std::endl;
+//            std::cerr << "\t    EditInputDialog_subjectColumnID_spinBox and EditInputDialog_subjectColumn_label not hidden" << std::endl;
+//        }
+//        if( !testHiddenState3 )
+//        {
+//            std::cerr << "\n\t  - When AD, RD, MD or FA file in wrong QLineEdit" << std::endl;
+//            std::cerr << "\t    QSpinBox hidden" << std::endl;
+//        }
+//        if( !testHiddenState4 )
+//        {
+//            std::cerr << "\n\t  - When subMatrix file in right QLineEdit" << std::endl;
+//            std::cerr << "\t    QSpinBox hidden" << std::endl;
+//        }
+//        if( !testHiddenState5 )
+//        {
+//            std::cerr << "\n\t  - When indexSubMatrixfile in right QLineEdit after deleting 1 row and 1 column and changing the subjectColumnID" << std::endl;
+//            std::cerr << "\t    QSpinBox hidden" << std::endl;
+//        }
+//        if( !testHiddenState6 )
+//        {
+//            std::cerr << "\n\t  - When subMatrix file in wrong QLineEdit" << std::endl;
+//            std::cerr << "\t    EditInputDialog_subjectColumnID_spinBox and EditInputDialog_subjectColumn_label not hidden" << std::endl;
+//        }
     }
     else
     {
-        std::cout << std::endl << "Test_RefreshFileInfo() PASSED" << std::endl;
+        std::cerr << "Test_LoadDisplayData() PASSED";
     }
 
-    return ( hiddenStateSpinBoxTest1 & hiddenStateSubjectColumnLabelTest1 & fileInfoLabelTest1 &
-             hiddenStateSpinBoxTest2 & hiddenStateSubjectColumnLabelTest2 & fileInfoLabelTest2 &
-             hiddenStateSpinBoxTest3 & hiddenStateSubjectColumnLabelTest3 & fileInfoLabelTest3 &
-             hiddenStateSpinBoxTest4 & hiddenStateSubjectColumnLabelTest4 & fileInfoLabelTest4 &
-             hiddenStateSpinBoxTest5 & hiddenStateSubjectColumnLabelTest5 & fileInfoLabelTest5 &
-             fileInfoLabelTest6 &
-             hiddenStateSpinBoxTest7 & hiddenStateSubjectColumnLabelTest7 & fileInfoLabelTest7 );
+    return testLoadDisplayData_Passed;
 }
 
+
+bool TestEditInputDialog::Test_SaveFile( QString adFilePath, QString newADFile, QString tempoDir )
+{
+    QSharedPointer< EditInputDialog > editInputDialog = QSharedPointer< EditInputDialog >( new EditInputDialog );
+    QString dirTest = tempoDir + "/TestEditInputDialog/Test_OnSaveFile";
+    QDir().mkpath( dirTest );
+    Data data;
+    Processing processing;
+    int indexAD;
+    int rowID = 1;
+    int columnID = 5;
+    QString defaultSavedFilePath;
+
+
+    data.InitData();
+    editInputDialog->SetData( &data );
+    indexAD = data.GetAxialDiffusivityIndex();
+    data.SetFileData( indexAD ) = processing.GetDataFromFile( adFilePath );
+    defaultSavedFilePath = dirTest + "/new" + data.GetDiffusionPropertyName( indexAD ).toUpper() + "File.csv";
+
+    editInputDialog->DisplayDataEdition( indexAD );
+    editInputDialog->m_dataTableWidget->selectRow( rowID );
+    editInputDialog->OnDeleteRows();
+    editInputDialog->m_dataTableWidget->selectColumn( columnID );
+    editInputDialog->OnDeleteColumns();
+
+    editInputDialog->m_data->SetFilename( indexAD ) = dirTest + "/adFile.csv";
+    editInputDialog->SaveFile( defaultSavedFilePath );
+
+
+    bool testOnSaveFile_Passed = CompareFile( defaultSavedFilePath, newADFile );
+    if( !testOnSaveFile_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_OnSaveFile() FAILED /!\\ /!\\";
+//        std::cerr << std::endl << "\t+ pb with OnSaveFile()" << std::endl;
+//        if( !testFileSaved )
+//        {
+//            std::cerr << "\t  Error during new file creation" << std::endl;
+//        }
+//        if( !testFileWellSaved )
+//        {
+//            std::cerr << "\t  Data not correctly saved" << std::endl;
+//        }
+    }
+    else
+    {
+        std::cerr << "Test_OnSaveFile() PASSED";
+    }
+
+    return testOnSaveFile_Passed;
+}
 
 
 /**********************************************************************/
 /********************** Functions Used For Testing ********************/
 /**********************************************************************/
-bool TestEditInputDialog::TestQTableWidget( QList<QStringList> expectedFileData, QSharedPointer<EditInputDialog> editInputDialog )
+bool TestEditInputDialog::TestQTableWidget( QList< QStringList > expectedFileData, QSharedPointer< EditInputDialog > editInputDialog )
 {
     for( int i = 0; i < editInputDialog->m_dataTableWidget->rowCount(); i++ )
     {
@@ -438,11 +320,35 @@ bool TestEditInputDialog::TestQTableWidget( QList<QStringList> expectedFileData,
 }
 
 
-void TestEditInputDialog::DisplayErrorFileInfoDisplayed( QString infoExpected, QString infoDisplayed )
+QByteArray TestEditInputDialog::GetHashFile( QString filePath )
 {
-    std::cerr << "\t   Wrong file info displayed" << std::endl;
-    std::cerr << "\t\t- Info expected" << std::endl;
-    std::cerr << "\t\t  " << infoExpected.toStdString() << std::endl;
-    std::cerr << "\t\t- Info displayed" << std::endl;
-    std::cerr << "\t\t  " << infoDisplayed.toStdString() << std::endl;
+    QCryptographicHash hash( QCryptographicHash::Sha1 );
+    QFile file( filePath );
+
+    if( file.open( QIODevice::ReadOnly ) )
+    {
+        hash.addData( file.readAll() );
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Cannot open file: " << filePath.toStdString() << std::endl;
+    }
+
+    return hash.result().toHex();
+}
+
+bool TestEditInputDialog::CompareFile( QString filePath1, QString filePath2 )
+{
+    QByteArray sig1 = GetHashFile( filePath1 );
+    QByteArray sig2 = GetHashFile( filePath2 );
+
+    if( sig1 == sig2 )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

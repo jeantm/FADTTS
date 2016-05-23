@@ -1,0 +1,47 @@
+{
+    "paraConfiguration": {
+        "inputTab": {
+            "inputFiles": {
+                "AD": "",
+                "RD": "",
+                "MD": "",
+                "FA": "",
+                "SUBMATRIX": "",
+                "subjectColumnID": 0
+            },
+            "covariates": {
+                "Intercept" : true
+            }
+        },
+        "subjectTab": {
+            "filesUsed": {
+                "AD": false,
+                "RD": false,
+                "MD": false,
+                "FA": false,
+                "SUBMATRIX": false
+            },
+            "useAtlas": false,
+            "qcThreshold": 0.85,
+            "subjectListPath": ""
+        },
+        "executionTab": {
+            "settings": {
+                "fiberName": "",
+                "nbrPermutations": 100,
+                "confidenceBandThreshold": 0.05,
+                "pvalueThreshold": 0.05,
+                "omnibus": true,
+                "posthoc": true
+            },
+            "matlabSpecifications": {
+                "fadttsDir": "/devel/linux/FADTTS/FADTTS_V3.01_NIRAL/FADTTS/FADTTS"
+            },
+            "outputDir": ""
+        },
+        "plottingTab": {
+            "plotdir": "",
+            "fiberName": ""
+        }
+    }
+}
