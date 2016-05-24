@@ -3326,16 +3326,29 @@
                </property>
                <item>
                 <layout class="QGridLayout" name="plottingTab_editionTab_marker_gridLayout">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="plottingTab_editionTab_markerType_label">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="plottingTab_editionTab_markerSize_label">
+                   <property name="text">
+                    <string>Marker Size</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QDoubleSpinBox" name="plottingTab_editionTab_markerSize_doubleSpinBox">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
-                   <property name="text">
-                    <string>Marker Type</string>
+                   <property name="minimum">
+                    <double>4.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>20.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>8.000000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -3374,6 +3387,19 @@
                    </item>
                   </widget>
                  </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="plottingTab_editionTab_markerType_label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Marker Type</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="0" column="2">
                   <spacer name="plottingTab_editionTab_marker_horizontalSpacer">
                    <property name="orientation">
@@ -3386,52 +3412,6 @@
                     </size>
                    </property>
                   </spacer>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="plottingTab_editionTab_markerSize_label">
-                   <property name="text">
-                    <string>Marker Size</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QDoubleSpinBox" name="plottingTab_editionTab_markerSize_doubleSpinBox">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimum">
-                    <double>4.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>20.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>8.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QCheckBox" name="plottingTab_editionTab_binaryMode_checkBox">
-                   <property name="text">
-                    <string>Binary Mode</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1" colspan="2">
-                  <widget class="QLabel" name="plottingTab_editionTab_binaryMode_label">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;Post-Hoc FDR SigBetas on Avg Raw Data&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
                  </item>
                 </layout>
                </item>
@@ -3751,7 +3731,6 @@
   <tabstop>plottingTab_editionTab_selectedLineColor_comboBox</tabstop>
   <tabstop>plottingTab_editionTab_markerType_comboBox</tabstop>
   <tabstop>plottingTab_editionTab_markerSize_doubleSpinBox</tabstop>
-  <tabstop>plottingTab_editionTab_binaryMode_checkBox</tabstop>
  </tabstops>
  <resources/>
  <connections>
