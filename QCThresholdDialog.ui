@@ -542,6 +542,11 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>QCThresholdDialog_qcThreshold_doubleSpinBox</tabstop>
+  <tabstop>QCThresholdDialog_applyQCThreshold_pushButton</tabstop>
+  <tabstop>QCThresholdDialog_close_pushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

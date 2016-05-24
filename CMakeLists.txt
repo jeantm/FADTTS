@@ -17,7 +17,7 @@ include(${VTK_USE_FILE})
 
 # find Qt5 headers
 find_package(Qt5Widgets REQUIRED)
-include_directories(${Qt5Widgets_INCLUDES})
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 set(QT_LIBRARIES ${Qt5Widgets_LIBRARIES})

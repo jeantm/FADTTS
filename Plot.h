@@ -78,7 +78,7 @@ public:
     void UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString > > > selectionToDisplay ); /// Not tested*
 
 
-    void SetDefaultTitle(); // Tested
+    void SetDefaultTitle( bool isBold, bool isItalic, double fontSize ); // Tested
 
     void SetCustomizedTitle( QString title, bool isBold, bool isItalic, double fontSize ); // Tested
 
@@ -90,7 +90,7 @@ public:
 
     void UpdateAbscissaNotation( bool checkState );
 
-    void SetDefaultAxis(); // Tested
+    void SetDefaultAxis( double labelSize, double NameSize, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
 
     void SetCustomizedAxis( double labelSize, QString xName, QString yName, double NameSize, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax ); // Tested
 
@@ -99,7 +99,7 @@ public:
 
     double& SetPvalueThreshold(); // Tested
 
-    void UpdatePvalueThresold( bool customizedTitle ); /// Not tested*
+    void UpdatePvalueThreshold(); /// Not tested*
 
     double& SetLineWidth(); // Tested
 

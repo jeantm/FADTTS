@@ -301,7 +301,7 @@ void Plot::UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString 
 }
 
 
-void Plot::SetDefaultTitle()
+void Plot::SetDefaultTitle( bool isBold, bool isItalic, double fontSize )
 {
     QString title;
     if( m_plotSelected == "Raw Data" )
@@ -332,7 +332,7 @@ void Plot::SetDefaultTitle()
     {
         title = m_fibername + " Omnibus FDR Significant Beta Values " + m_covariateSelected + " alpha=" + QString::number( m_pvalueThreshold );
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         title = m_fibername + " Beta Values with Omnibus Confidence Bands " + m_covariateSelected + " (" + m_propertySelected + ")";
     }
@@ -354,9 +354,9 @@ void Plot::SetDefaultTitle()
     }
 
     m_chart->SetTitle( title.toStdString() );
-    m_chart->GetTitleProperties()->SetBold( false );
-    m_chart->GetTitleProperties()->SetItalic( false );
-    m_chart->GetTitleProperties()->SetFontSize( 12.0 );
+    m_chart->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetTitleProperties()->SetFontSize( fontSize );
 
     m_view->Render();
 }
@@ -398,11 +398,13 @@ void Plot::UpdateAbscissaNotation( bool checkState )
     m_view->Render();
 }
 
-void Plot::SetDefaultAxis()
+void Plot::SetDefaultAxis( double labelSize, double NameSize, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax )
 {
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetBold( false );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetItalic( false );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetLabelProperties()->SetFontSize( labelSize );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetFontSize( NameSize );
 
     if( m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" || m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
@@ -412,11 +414,22 @@ void Plot::SetDefaultAxis()
     {
         m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "" );
     }
-    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( false );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( false );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetLabelProperties()->SetFontSize( labelSize );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetFontSize( NameSize );
 
-    m_yMin.first = false;
-    m_yMax.first = false;
+    m_yMin.first = isYMinSet ? true : false;
+    if( m_yMin.first )
+    {
+        m_yMin.second = yMin;
+    }
+
+    m_yMax.first = isYMaxSet ? true : false;
+    if( m_yMax.first )
+    {
+        m_yMax.second = yMax;
+    }
 
     if( !m_abscissa.isEmpty() )
     {
@@ -507,7 +520,7 @@ double& Plot::SetPvalueThreshold()
     return m_pvalueThreshold;
 }
 
-void Plot::UpdatePvalueThresold( bool customizedTitle )
+void Plot::UpdatePvalueThreshold()
 {
     if( m_plotSelected.contains( "Significant Betas" ) )
     {
@@ -535,11 +548,6 @@ void Plot::UpdatePvalueThresold( bool customizedTitle )
     {
         m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
         AddSignificantLevel( -log10( m_pvalueThreshold ) );
-    }
-
-    if( !customizedTitle )
-    {
-        SetDefaultTitle();
     }
 
     m_view->Render();
@@ -722,7 +730,7 @@ void Plot::UpdateCovariatesNames( const QMap< int, QString >& newCovariateName )
         emit CovariatesAvailableForPlotting( m_binaryCovariates );
     }
     if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
-            m_plotSelected == "Betas with Omnibus Confidence Bands" || m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
+            m_plotSelected == "Omnibus Betas with Confidence Bands" || m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
     {
         emit CovariatesAvailableForPlotting( m_allCovariates );
     }
@@ -862,7 +870,7 @@ void Plot::OnSavePlot()
     {
         fileName += "Omnibus_FDR_SigBetas_" + m_covariateSelected;
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         fileName += "Betas_Omnibus_Confidence_Bands_" + m_covariateSelected + "_" + m_propertySelected;
     }
@@ -1139,7 +1147,7 @@ void Plot::SetPlots()
     }
     if( !m_dataBeta.isEmpty() && !m_dataConfidenceBands.isEmpty() )
     {
-        m_plotsUsed.append( QStringList() << "Betas with Omnibus Confidence Bands" );
+        m_plotsUsed.append( QStringList() << "Omnibus Betas with Confidence Bands" );
     }
     if( !m_dataPostHocFDRLpvalue.isEmpty() )
     {
@@ -1469,7 +1477,7 @@ bool Plot::LoadData()
     {
         m_ordinate = LoadOmnibusLpvalues( m_dataOmnibusFDRLpvalue );
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         if( !m_propertySelected.isEmpty() && !m_covariateSelected.isEmpty() )
         {
@@ -1488,7 +1496,7 @@ bool Plot::LoadData()
 
 
 void Plot::AddEntriesRawData( vtkSmartPointer< vtkTable >& table )
-{   
+{
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkDoubleArray > currentEntry = vtkSmartPointer< vtkDoubleArray >::New();
@@ -1611,7 +1619,7 @@ void Plot::AddEntries( vtkSmartPointer< vtkTable >& table )
     {
         AddEntriesByPropertiesOrCovariates( table );
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         AddEntriesConfidenceBands( table );
     }
@@ -2039,7 +2047,7 @@ void Plot::AddLines( const vtkSmartPointer< vtkTable >& table )
     {
         AddLineLPvalue( table );
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         AddLineLConfidenceBands( table );
     }
