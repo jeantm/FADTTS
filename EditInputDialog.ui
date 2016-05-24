@@ -567,6 +567,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>EditInputDialog_data_tableWidget</tabstop>
+  <tabstop>EditInputDialog_deleteColumns_pushButton</tabstop>
+  <tabstop>EditInputDialog_deleteRows_pushButton</tabstop>
+  <tabstop>EditInputDialog_subjectColumnID_spinBox</tabstop>
+  <tabstop>EditInputDialog_saveFile_pushButton</tabstop>
+  <tabstop>EditInputDialog_close_pushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

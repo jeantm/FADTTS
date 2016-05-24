@@ -34,7 +34,7 @@ public:
 
 
     /************** Subjects  Tab ***************/
-    bool Test_OnApplyingQCThreshold();
+    bool Test_OnQCThresholdApplied();
 
     bool Test_SetSelectedInputFiles();
 

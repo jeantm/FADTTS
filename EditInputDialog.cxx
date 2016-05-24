@@ -1,6 +1,8 @@
 #include "EditInputDialog.h"
 #include "ui_EditInputDialog.h"
 
+#include <QDebug>
+
 const QString EditInputDialog::m_csvSeparator = QLocale().groupSeparator();
 
 EditInputDialog::EditInputDialog( QWidget *parent ) :
@@ -90,6 +92,7 @@ void EditInputDialog::OnDeleteColumns()
         }
     }
     m_columnDeleted = true;
+    m_subjectColumnIDSpinBox->setMaximum( m_dataTableWidget->columnCount() );
 }
 
 
@@ -107,7 +110,7 @@ bool EditInputDialog::OnSaveFile()
 {
     QString newFilePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save " + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + " file as ..." ) ),
                                                         QFileInfo( QFile( m_data->GetFilename( m_diffusionPropertyIndex ) ) ).absolutePath()
-                                                        + "/new" + m_data->GetDiffusionPropertyName( m_diffusionPropertyIndex ).toUpper() + "File.csv", tr( ".csv( *.csv ) ;; .*( * )" ) );
+                                                        + "/NEW_" + QFileInfo( QFile( m_data->GetFilename( m_diffusionPropertyIndex ) ) ).fileName(), tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !newFilePath.isEmpty() )
     {
         SaveFile( newFilePath );
@@ -153,10 +156,10 @@ void EditInputDialog::LoadData()
     int nbrRows = 0;
     int nbrColumns = 0;
 
-    m_subjectColumnIDSpinBox->setMaximum( fileData.first().count() ); /** Limite the column selection to the number of covariates **/
-
     m_dataTableWidget->setRowCount( fileData.count() ); /** The number of StringLists gives the number of row **/
     m_dataTableWidget->setColumnCount( fileData.first().count() ); /** The number of Strings from initial StringList gives the number of column **/
+
+    m_subjectColumnIDSpinBox->setMaximum( m_dataTableWidget->columnCount() ); /** Limite the column selection to the number of covariates **/
 
     m_dataTableWidget->setUpdatesEnabled( false );
     foreach( QStringList row, fileData )

@@ -86,7 +86,7 @@ private slots:
     /**************** Subjects Tab ****************/
     void OnApplyQCThreshold(); /// Not tested
 
-    void OnApplyingQCThreshold( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold ); // Tested
+    void OnQCThresholdApplied( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold ); // Tested
 
 
     void OnSearch(); // Tested
@@ -179,7 +179,7 @@ private slots:
     void OnSettingLinesSelected( const QStringList& linesSelected ); // Tested
 
 
-    void OnUseCustomizedTitle( bool checkState ); /// Not tested
+    void OnUseDefaultTitle( bool checkState ); /// Not tested
 
     void OnUpdatingPlotTitle(); // Not Directly Tested
 
@@ -188,7 +188,7 @@ private slots:
 
     void OnUpdatingAbscissaNotation( bool checkState );
 
-    void OnUseCustomizedAxis( bool checkState ); /// Not tested
+    void OnUseDefaultdAxis( bool checkState ); /// Not tested
 
     void OnYMinToggled( bool checkState ); /// Not tested
 
@@ -267,6 +267,8 @@ private:
 
     QString m_currentInputFileDir;
 
+    bool m_afterEdition;
+
 
     /**************** Subjects Tab ****************/
     QSharedPointer< QCThresholdDialog > m_qcThresholdDialog;
@@ -278,7 +280,7 @@ private:
     checkBoxMapType m_paramTabFileCheckBoxMap;
 
     QLineEdit *m_subjectFileLineEdit;
-    QStringList m_loadedSubjects, m_failedQCThresholdSubjects;
+    QStringList m_loadedSubjects, m_selectedSubjects, m_failedQCThresholdSubjects;
     QString m_currentSubjectFileDir;
     bool m_areSubjectsLoaded;
 
@@ -407,6 +409,8 @@ private:
 
     int SearchSubjects( QListWidget *list ); // Tested
 
+    void UseSavedSubjectList( QString filePath ); /// Not tested*
+
     void SaveCheckedSubjects( QString filePath ); // Tested
 
 
@@ -423,6 +427,8 @@ private:
     void SetSelectedCovariates(); // Tested
 
     void SetFibername(); // Tested
+
+    bool IsAtLeastOneSubjectSelected(); /// Not tested*
 
     bool canFADTTSterBeRun(); /// Not tested
 
@@ -451,7 +457,7 @@ private:
 
     void SetCheckStateLinesToDisplay( Qt::CheckState checkState ); // Tested
 
-    void SetSelectionLinesDisplayedVisible( bool visible ); /// Not tested
+    void SetSelectionLinesDisplayedVisible( bool isVisible ); /// Not tested
 
     void EditCovariatesNames(); // Tested
 

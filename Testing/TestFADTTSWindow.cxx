@@ -208,7 +208,7 @@ bool TestFADTTSWindow::Test_OnLoadSaveSoftConfiguration( QString softFilePath, Q
 
 
 /************** Subjects  Tab ***************/
-bool TestFADTTSWindow::Test_OnApplyingQCThreshold()
+bool TestFADTTSWindow::Test_OnQCThresholdApplied()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList matchedSubjectList = QStringList() << "Marcus Paige" << "Brice Johnson" << "Joel Berry II" << "Kennedy Meeks" << "Justin Jackson";
@@ -219,7 +219,7 @@ bool TestFADTTSWindow::Test_OnApplyingQCThreshold()
 
 
     fadttsWindow->DisplaySortedSubjects( matchedSubjectList, QMap< QString, QList< int > >() );
-    fadttsWindow->OnApplyingQCThreshold( subjectsCorrelated, subjectsNotCorrelated, qcThreshold );
+    fadttsWindow->OnQCThresholdApplied( subjectsCorrelated, subjectsNotCorrelated, qcThreshold );
 
     bool testFailedQCThresholdSubjects = fadttsWindow->m_failedQCThresholdSubjects == subjectsNotCorrelated;
 
@@ -236,11 +236,11 @@ bool TestFADTTSWindow::Test_OnApplyingQCThreshold()
     bool testQCThreshold = fadttsWindow->m_qcThreshold == qcThreshold;
 
 
-    bool testOnApplyingQCThreshold_Passed = testFailedQCThresholdSubjects && testCheckedMatchedSubjects && testQCThreshold;
-    if( !testOnApplyingQCThreshold_Passed )
+    bool testOnQCThresholdApplied_Passed = testFailedQCThresholdSubjects && testCheckedMatchedSubjects && testQCThreshold;
+    if( !testOnQCThresholdApplied_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_OnApplyingQCThreshold() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnApplyingQCThreshold( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_OnQCThresholdApplied() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with OnQCThresholdApplied( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold )" << std::endl;
 //        if( testFailedQCThresholdSubjects )
 //        {
 //            std::cerr << "\t  wrong m_failedQCThresholdSubjects" << std::endl;
@@ -258,10 +258,10 @@ bool TestFADTTSWindow::Test_OnApplyingQCThreshold()
     }
     else
     {
-        std::cerr << "Test_OnApplyingQCThreshold() PASSED";
+        std::cerr << "Test_OnQCThresholdApplied() PASSED";
     }
 
-    return testOnApplyingQCThreshold_Passed;
+    return testOnQCThresholdApplied_Passed;
 }
 
 bool TestFADTTSWindow::Test_SetSelectedInputFiles()
