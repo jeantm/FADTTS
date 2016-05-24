@@ -11,16 +11,18 @@ ${${PROJECT_NAME}_BINARY_DIR}/CMake
 ${CMAKE_MODULE_PATH}
 )
 
-# find VTK headers
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
 # find Qt5 headers
-find_package(Qt5Widgets REQUIRED)
-include_directories(${Qt5Widgets_INCLUDES})
+
+find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
+
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 set(QT_LIBRARIES ${Qt5Widgets_LIBRARIES})
+
+# find VTK headers
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
 # find SlicerExecutionModel headers
 find_package(SlicerExecutionModel REQUIRED)
