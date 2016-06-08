@@ -81,7 +81,7 @@ void Log::InitLog( QString outputDir, QString fibername, const QMap< int, QStrin
     *m_textStreamLog << "- nbr subjects: " << QString::number( nbrSelectedSubjects ) << endl;
     if( !failedQCThresholdSubjects.isEmpty() )
     {
-        *m_textStreamLog << "/!\\ That number INCLUDE the " << QString::number( failedQCThresholdSubjects.size() ) << " subject(s) that was/were removed from the study after failing the QC Threshold set at " << QString::number( qcThreshold ) << endl;
+        *m_textStreamLog << "/!\\ That number INCLUDES the " << QString::number( failedQCThresholdSubjects.size() ) << " subject(s) that was/were removed from the study after failing a QC Threshold set at " << QString::number( qcThreshold ) << endl;
     }
 
     *m_textStreamLog << endl << "/**********************      Settings      **********************/" << endl;

@@ -66,7 +66,6 @@ QList< QStringList > Processing::GetDataFromFile( QString filePath )
     return fileData;
 }
 
-
 bool Processing::IsMatrixDimensionOK( const QList< QStringList >& data )
 {
     if( data.isEmpty() )
@@ -88,19 +87,59 @@ bool Processing::IsMatrixDimensionOK( const QList< QStringList >& data )
     }
 }
 
-bool Processing::IsSubMatrix( const QStringList& dataSecondRow )
+bool Processing::IsSubMatrix( const QList< QStringList >& data )
 {
     bool ok;
-    foreach( QString data, dataSecondRow )
+    QStringList dataSecondRow = data.at( 1 );
+    foreach( QString d, dataSecondRow )
     {
-        data.toFloat( &ok );
-        if( !ok )
+        d.toFloat( &ok );
+        if( !ok && d != "-nan" )
         {
             return !ok;
         }
     }
 
     return !ok;
+}
+
+bool Processing::AreDuplicatesFound( const QList< QStringList >& data )
+{
+    bool isSubMatrixData = IsSubMatrix( data );
+    QStringList subjects = isSubMatrixData ? Transpose( data ).first() : data.first();
+    int duplicateSubjectsFound = 0;
+
+    duplicateSubjectsFound = subjects.removeDuplicates();
+
+    return duplicateSubjectsFound != 0;
+}
+
+QStringList Processing::GetNANSubjects( const QList< QStringList >& faData, const QStringList& matchedSubjects )
+{
+    QList< QStringList > tempData = Transpose( faData );
+    QStringList nanSubjects;
+
+    foreach( QStringList row, tempData )
+    {
+        int i = 1;
+        bool found = false;
+        QString currentSubject = row.first();
+
+        if( matchedSubjects.contains( currentSubject ) )
+        {
+            while( i < row.size() && found == false )
+            {
+                if( row.at( i ) == "nan" || row.at( i ) == "-nan" )
+                {
+                    nanSubjects.append( row.first() );
+                    found = true;
+                }
+                i++;
+            }
+        }
+    }
+
+    return nanSubjects;
 }
 
 
@@ -138,7 +177,7 @@ QStringList Processing::GetSubjectsFromData(const QList< QStringList >& data, in
     int nbRows = data.count();
     int nbColumns = data.first().count();
 
-    if( IsSubMatrix( data.at( 1 ) ) )
+    if( IsSubMatrix( data ) )
     {
         for( int row = 1; row < nbRows; row++ )
         {
@@ -170,6 +209,133 @@ QMap< int, QString > Processing::GetCovariatesFromData( QList< QStringList > dat
     }
 
     return covariates;
+}
+
+QList< QStringList > Processing::Transpose( const QList< QStringList >& rawData )
+{
+    QList< QStringList > rawDataTransposed;
+    for( int j = 0; j < rawData.first().size(); j++ )
+    {
+        QStringList rowData;
+        for( int i = 0; i < rawData.size(); i++ )
+        {
+            rowData.append( rawData.at( i ).at( j ) );
+        }
+        rawDataTransposed.append( rowData );
+    }
+
+    return rawDataTransposed;
+}
+
+bool Processing::RemoveUnmatchedSubjects( QList< QStringList >& rawData, QStringList& subjects, const QStringList& matchedSubjects )
+{
+    QList< QStringList > tempData;
+    for( int i = 0; i < rawData.size(); i++ )
+    {
+        QString currentSubject = rawData.at( i ).first();
+
+        if( matchedSubjects.contains( currentSubject ) )
+        {
+            tempData.append( rawData.at( i ) );
+        }
+        else
+        {
+            subjects.removeAll( currentSubject );
+        }
+    }
+
+    rawData.clear();
+    rawData = tempData;
+
+    QStringList tempSubjects = subjects;
+    tempSubjects.sort();
+
+    return tempSubjects == matchedSubjects;
+}
+
+QList< double > Processing::QStringListToDouble( const QStringList& rowData )
+{
+    QList< double > rowDataDouble;
+    foreach ( QString data, rowData )
+    {
+        rowDataDouble.append( data.toDouble() );
+    }
+    return rowDataDouble;
+}
+
+QList< QList< double > > Processing::DataToDouble( const QList< QStringList >& data )
+{
+    QList< QList< double > > dataDouble;
+    foreach ( QStringList rowData, data )
+    {
+        dataDouble.append( QStringListToDouble( rowData ) );
+    }
+    return dataDouble;
+}
+
+QList< double > Processing::GetMean( const QList< QList< double > >& rawDataDouble, int shift )
+{
+    QList< double > mean;
+
+    int nbrPoints = rawDataDouble.first().size();
+    int nbrSubjects = rawDataDouble.size();
+
+    for( int i = shift; i < nbrPoints; i++ )
+    {
+        double currentMean = 0;
+        for( int j = 0; j < nbrSubjects; j++ )
+        {
+            currentMean += rawDataDouble.at( j ).at( i );
+        }
+        currentMean = currentMean / nbrSubjects;
+        mean.append( currentMean );
+    }
+
+    return mean;
+}
+
+double Processing::ApplyPearsonCorrelation( const QList< double >& currentLine, const QList< double >& mean, int shift )
+{
+    double pearsonCorrelation = 1.0;
+    int nbrPoints = mean.size();
+
+    if( nbrPoints > 1)
+    {
+        double sumMean = 0;
+        for( int i = 0; i < nbrPoints; i++ )
+        {
+            sumMean += mean.at( i );
+        }
+
+        double sumMeanSquare = 0;
+        for( int i = 0; i < nbrPoints; i++ )
+        {
+            sumMeanSquare += mean.at( i ) * mean.at( i );
+        }
+
+        double sumCurrentLine = 0;
+        for( int i = shift; i < nbrPoints + shift; i++ )
+        {
+            sumCurrentLine += currentLine.at( i );
+        }
+
+        double sumCurrentLineSquare = 0;
+        for( int i = shift; i < nbrPoints + shift; i++ )
+        {
+            sumCurrentLineSquare += currentLine.at( i ) * currentLine.at( i );
+        }
+
+        double meanXcurrentLine = 0;
+        for( int i = 0; i < nbrPoints; i++ )
+        {
+            meanXcurrentLine += mean.at( i ) * currentLine.at( i + shift );
+        }
+
+        pearsonCorrelation = ( meanXcurrentLine - ( sumMean * sumCurrentLine ) / nbrPoints ) /
+                std::sqrt( ( sumMeanSquare - std::pow( sumMean, 2 ) / nbrPoints ) * ( sumCurrentLineSquare - std::pow( sumCurrentLine, 2 ) / nbrPoints ) );
+    }
+
+    return pearsonCorrelation;
 }
 
 
@@ -289,7 +455,7 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
 
         QStringList rowData;
         QStringList subjectProcessed;
-        if( IsSubMatrix( data.at( 1 ) ) )
+        if( IsSubMatrix( data ) )
         {
             /** File is SubMatrix -> subject data stored by row.
              *  Subjects are all in the column subjectColumnID. **/
@@ -380,154 +546,41 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
 }
 
 
-
-QList< QStringList > Processing::Transpose_noGUI( const QList< QStringList >& rawData )
-{
-    QList< QStringList > rawDataTransposed;
-    for( int j = 0; j < rawData.first().size(); j++ )
-    {
-        QStringList rowData;
-        for( int i = 0; i < rawData.size(); i++ )
-        {
-            rowData.append( rawData.at( i ).at( j ) );
-        }
-        rawDataTransposed.append( rowData );
-    }
-
-    return rawDataTransposed;
-}
-
-void Processing::RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, const QStringList& subjects )
-{
-    for( int i = 1; i < rawDataTransposed.size(); i++ )
-    {
-        QString currentSubject = rawDataTransposed.at( i ).first();
-
-        if( !subjects.contains( currentSubject ) )
-        {
-            rawDataTransposed.removeAt( i );
-        }
-    }
-}
-
-QList< QList< double > > Processing::ToDouble_noGUI( const QList< QStringList >& rawDataTransposed )
-{
-    QList< QList< double > > rawDataDouble;
-    foreach ( QStringList rowData, rawDataTransposed )
-    {
-        QList< double > rowDataDouble;
-        foreach ( QString data, rowData )
-        {
-            rowDataDouble.append( data.toDouble() );
-        }
-
-        rowDataDouble.removeFirst();
-        rawDataDouble.append( rowDataDouble );
-    }
-
-    return rawDataDouble;
-}
-
-QList< double > Processing::GetMean_noGUI( const QList< QList< double > >& rawDataDouble )
-{
-    QList< double > mean;
-    int nbrSubjects = rawDataDouble.size() - 1;
-    int nbrPoints = rawDataDouble.first().size();
-
-
-    for( int i = 0; i < nbrPoints; i++ )
-    {
-        double currentMean = 0;
-        for( int j = 0; j < nbrSubjects; j++ )
-        {
-            currentMean += rawDataDouble.at( j + 1 ).at( i );
-        }
-        currentMean = currentMean / nbrSubjects;
-        mean.append( currentMean );
-    }
-
-    return mean;
-}
-
-double Processing::ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean )
-{
-    double pearsonCorrelation = 1.0;
-    int nbrPoints = rawDataDouble.first().size();
-    QList< double > currentLine = rawDataDouble.at( indexLine );
-
-    int indexMax = mean.size();
-
-    double sumMean = 0;
-    for( int i = 0; i < indexMax; i++ )
-    {
-        sumMean += mean.at( i );
-    }
-
-    double sumMeanSquare = 0;
-    for( int i = 0; i < indexMax; i++ )
-    {
-        sumMeanSquare += mean.at( i ) * mean.at( i );
-    }
-
-    double sumCurrentLine = 0;
-    for( int i = 0; i < indexMax; i++ )
-    {
-        sumCurrentLine += currentLine.at( i );
-    }
-
-    double sumCurrentLineSquare = 0;
-    for( int i = 0; i < indexMax; i++ )
-    {
-        sumCurrentLineSquare += currentLine.at( i ) * currentLine.at( i );
-    }
-
-    double meanXcurrentLine = 0;
-    for( int i = 0; i < indexMax; i++ )
-    {
-        meanXcurrentLine += mean.at( i ) * currentLine.at( i );
-    }
-
-    pearsonCorrelation = ( meanXcurrentLine - ( sumMean * sumCurrentLine ) / nbrPoints ) /
-            std::sqrt( ( sumMeanSquare - std::pow( sumMean, 2 ) / nbrPoints ) * ( sumCurrentLineSquare - std::pow( sumCurrentLine, 2 ) / nbrPoints ) );
-
-    return pearsonCorrelation;
-}
-
 void Processing::ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, bool useAtlas, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold )
 {
     QStringList subjectsCorrelated, subjectsNotCorrelated;
-    QStringList subjects = matchedSubjects;
+    QStringList subjects = rawData.first();
 
     /*** Transpose ***/
-    QList< QStringList > rawDataTransposed = Transpose_noGUI( rawData );
+    QList< QStringList > rawDataTransposed = Transpose( rawData );
 
     /*** Remove unmatched subjects ***/
-    RemoveUnmatchedSubjects_noGUI( rawDataTransposed, subjects );
+    RemoveUnmatchedSubjects( rawDataTransposed, subjects, matchedSubjects );
 
     /*** To Double ***/
-    QList< QList< double > > rawDataDouble = ToDouble_noGUI( rawDataTransposed );
+    QList< QList< double > > rawDataDouble = DataToDouble( rawDataTransposed );
 
-    /*** Get Mean ***/
-    QList< double > mean;
+    /*** Get Ref ***/
+    QList< double > ref;
     if( useAtlas )
     {
         if( rawData.first().last().contains( "atlas", Qt::CaseInsensitive ) )
         {
             for( int i = 1; i < rawData.size(); i++ )
             {
-                mean.append( rawData.at( i ).last().toDouble() );
+                ref.append( rawData.at( i ).last().toDouble() );
             }
         }
     }
     else
     {
-        mean = GetMean_noGUI( rawDataDouble );
+        ref = GetMean( rawDataDouble, 1 );
     }
 
     /*** Apply QCThreshold ***/
     for( int i = 1; i < rawDataDouble.size(); i++ )
     {
-        double pearsonCorrelation = ApplyPearsonCorrelation_noGUI( i, rawDataDouble, mean );
+        double pearsonCorrelation = ApplyPearsonCorrelation( rawDataDouble.at( i ), ref, 1 );
 
         if( pearsonCorrelation < qcThreshold )
         {

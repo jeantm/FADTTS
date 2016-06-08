@@ -6,7 +6,7 @@ close all
 clear all
 clc
 
-disp('Running matlab script without plotting...')
+disp('Running matlab script with plotting...')
 
 % Path to access FADTTS functions
 addpath '$addMVCMPath$';
@@ -101,6 +101,8 @@ designdata = [ ones( size( dataSubmatrix, 1 ), 1 ) dataSubmatrix ]; % intercept 
 
 Cnames = cell( nbrCovariates, 1 );
 $listCovariates$
+CnamesNoInt = Cnames;
+CnamesNoInt( 1, : ) = [];
 
 disp('Loading diffusion file...')
 $diffusionData$
@@ -206,7 +208,8 @@ for Dii=1:nbrDiffusionProperties
     clear h;
     saveas(gcf,sprintf('%s/%s_Betas_%s.pdf',savingFolder,fiberName,Dnames{Dii}),'pdf');
     disp(sprintf('Saving betas %s...',Dnames{Dii}))
-    csvwrite(sprintf('%s/%s_Betas_%s.csv', savingFolder, fiberName, Dnames{Dii}),efitBetas(:,:,Dii));
+    writetable( cell2table( num2cell( vertcat( arclength.', efitBetas( :,:,Dii ) ) ),'RowNames', [ 'Arclength', Cnames.' ] ),...
+                sprintf('%s/%s_Betas_%s.csv', savingFolder, fiberName, Dnames{ Dii } ), 'WriteRowNames', true, 'WriteVariableNames', false );
     close()
 end
 
@@ -247,12 +250,14 @@ if( omnibus == 1 )
     end
 
     disp('Saving omnibus global p-values...')
-    csvwrite( sprintf( '%s/%s_Omnibus_Global_pvalues.csv', savingFolder, fiberName), Gpvals );
+    writetable( cell2table( num2cell( Gpvals ),'VariableNames', CnamesNoInt ),...
+                sprintf( '%s/%s_Omnibus_Global_pvalues.csv', savingFolder, fiberName ) );
     Gpvals
 
     Lpvals = 1-chi2cdf( Lstats, nbrDiffusionProperties );
     disp('Saving omnibus local p-values...')
-    csvwrite(sprintf('%s/%s_Omnibus_Local_pvalues.csv',savingFolder,fiberName),Lpvals);  % column for each covariate; local p-values are computed at each arclength
+    writetable( cell2table( num2cell( horzcat( arclength, Lpvals ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                sprintf( '%s/%s_Omnibus_Local_pvalues.csv',savingFolder,fiberName ) ); % column for each covariate; local p-values are computed at each arclength
     
     
     disp('Plotting omnibus local p-values...')
@@ -282,7 +287,8 @@ if( omnibus == 1 )
     end
     
     disp('Saving omnibus FDR local p-values...')
-    csvwrite( sprintf( '%s/%s_Omnibus_FDR_Local_pvalues.csv', savingFolder, fiberName), Lpvals_FDR );
+    writetable( cell2table( num2cell( horzcat( arclength, Lpvals_FDR ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                sprintf( '%s/%s_Omnibus_FDR_Local_pvalues.csv', savingFolder, fiberName) );
     
     
     disp('Plotting omnibus FDR local p-values for all covariates...')
@@ -398,8 +404,13 @@ if( omnibus == 1 )
     [CBands] = MVCM_CBands( nbrSubjects, confidenceBandsThreshold, Gvalue, efitBetas, zeros( size( ebiasBetas ) ) );
 
     disp('Saving omnibus covariate confidence bands...')
+    confidenceBandRowNames = cell(1,2*nbrCovariates+1);
+    confidenceBandRowNames{1} = 'Arclength';
+    confidenceBandRowNames(2:2:end) = strcat( Cnames(:), ' Lower Conf Band' );
+    confidenceBandRowNames(3:2:end) = strcat( Cnames(:), ' Upper Conf Band' );
     for Dii=1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_Omnibus_ConfidenceBands_%s.csv', savingFolder, fiberName, Dnames{Dii} ), CBands(:,:,Dii) );
+        writetable( cell2table( num2cell( vertcat( arclength.', CBands( :,:,Dii ) ) ),'RowNames', confidenceBandRowNames ),...
+                    sprintf( '%s/%s_Omnibus_ConfidenceBands_%s.csv', savingFolder, fiberName, Dnames{Dii} ), 'WriteRowNames', true, 'WriteVariableNames', false );
     end
     
     
@@ -459,12 +470,14 @@ if( postHoc == 1 )
     end
 
     disp('Saving post-hoc global p-values...')
-    csvwrite( sprintf( '%s/%s_PostHoc_Global_pvalues.csv', savingFolder, fiberName ), posthoc_Gpvals );
+    writetable( cell2table( num2cell( posthoc_Gpvals ),'VariableNames', CnamesNoInt ),...
+                sprintf( '%s/%s_PostHoc_Global_pvalues.csv', savingFolder, fiberName ));
     posthoc_Gpvals % for FA, RD, AD, MD for each covariate
 
     disp('Saving post-hoc local p-values...')
     for Dii = 1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_PostHoc_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
+        writetable( cell2table( num2cell( horzcat( arclength, squeeze( posthoc_Lpvals( :, Dii, : ) ) ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                    sprintf( '%s/%s_PostHoc_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ) );
     end
 
     disp('Correcting post-hoc local p-values...')
@@ -478,7 +491,8 @@ if( postHoc == 1 )
 
     disp('Saving post-hoc FDR local p-values...')
     for Dii = 1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_PostHoc_FDR_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
+        writetable( cell2table( num2cell( horzcat( arclength, squeeze( posthoc_Lpvals_FDR( :, Dii, : ) ) ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                    sprintf( '%s/%s_PostHoc_FDR_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ) );
     end
 
     disp('Plotting post-hoc FDR local p-values by property...')
@@ -486,7 +500,7 @@ if( postHoc == 1 )
         figure()
         hold on
         for Dii=1:nbrDiffusionProperties
-            plot(arclength, -log10(posthoc_Lpvals_FDR(:,Dii,pii-1)), '-', 'Color', color{Dii}, 'LineWidth', 1.25);
+            plot(arclength, -log10( posthoc_Lpvals_FDR(:,Dii,pii-1) ), '-', 'Color', color{Dii}, 'LineWidth', 1.25);
         end
         hold off
         xlabel('Arc Length','fontweight','bold');
