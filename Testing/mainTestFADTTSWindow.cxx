@@ -412,7 +412,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLineForDisplayClicked() )
+    if( testFADTTSWindow.Test_ClickLineForDisplay() )
     {
         nbrTestsPassed++;
     }

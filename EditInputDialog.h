@@ -49,10 +49,16 @@ private slots:
     void OnDeleteColumns(); // Tested
 
 
+    void OnRemoveDuplicates();
+
+
     void OnSubjectColumnIDChanged( int columnID ); // Tested
 
 
     bool OnSaveFile(); // Tested
+
+
+    void closeEvent( QCloseEvent *event ); /// Not tested
 
 
 private:
@@ -66,6 +72,10 @@ private:
 
     Data *m_data;
 
+    QStringList firstOccurrences;
+
+    QList< int > indexSecondeOccurrences;
+
     QString m_currentDir;
 
     int m_diffusionPropertyIndex, m_subjectColumnID;
@@ -77,13 +87,12 @@ private:
 
     void LoadData(); // Not Directly Tested
 
+    void GetDuplicates();
+
     void ResetTableWidget(); // Tested
 
 
     void SaveFile( QString newFilePath ); // Tested
-
-
-    void closeEvent( QCloseEvent *event ); /// Not tested
 };
 
 #endif // SETINPUT_H

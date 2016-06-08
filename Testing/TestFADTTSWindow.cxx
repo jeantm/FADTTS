@@ -219,7 +219,7 @@ bool TestFADTTSWindow::Test_OnQCThresholdApplied()
 
 
     fadttsWindow->DisplaySortedSubjects( matchedSubjectList, QMap< QString, QList< int > >() );
-    fadttsWindow->OnQCThresholdApplied( subjectsCorrelated, subjectsNotCorrelated, qcThreshold );
+    fadttsWindow->OnQCThresholdApplied( subjectsCorrelated, subjectsNotCorrelated, qcThreshold, true );
 
     bool testFailedQCThresholdSubjects = fadttsWindow->m_failedQCThresholdSubjects == subjectsNotCorrelated;
 
@@ -544,17 +544,19 @@ bool TestFADTTSWindow::Test_DisplayNbrSubjectSelected()
         fadttsWindow->m_matchedSubjectListWidget->addItem( item );
     }
     fadttsWindow->DisplayNbrSubjectSelected();
-    bool testAllSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text() == "9 subjects selected";
+    bool testAllSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text() == "9/9 subjects selected";
 
     fadttsWindow->m_matchedSubjectListWidget->item( 1 )->setCheckState( Qt::Unchecked );
-    bool testSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text() == "8 subjects selected";
+    fadttsWindow->m_matchedSubjectListWidget->item( 2 )->setCheckState( Qt::Unchecked );
+    fadttsWindow->DisplayNbrSubjectSelected();
+    bool testSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text() == "7/9 subjects selected";
 
     fadttsWindow->m_matchedSubjectListWidget->clear();
     fadttsWindow->DisplayNbrSubjectSelected();
     bool testNoSubjects = fadttsWindow->subjectTab_checkedSubjectsInformation_label->text().isEmpty();
 
 
-    bool testDisplayNbrSubjectSelected_Passed = testAllSubjects && testAllSubjects && testNoSubjects;
+    bool testDisplayNbrSubjectSelected_Passed = testAllSubjects && testSubjects && testNoSubjects;
     if( !testDisplayNbrSubjectSelected_Passed )
     {
         std::cerr << "/!\\/!\\ Test_DisplayNbrSubjectSelected() FAILED /!\\/!\\";
@@ -2480,247 +2482,251 @@ bool TestFADTTSWindow::Test_EditCovariatesNames()
 
 bool TestFADTTSWindow::Test_SetResetPlotTab( QString dataDir, QString tempoDir )
 {
-    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QString dirTest = tempoDir + "/TestFADTTSWindow/Test_SetResetPlotTab";
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+//    QString dirTest = tempoDir + "/TestFADTTSWindow/Test_SetResetPlotTab";
 
 
-    /******************************************/
-    /***************** Test 1 *****************/
-    /******************************************/
-    QString outputDir1 = dirTest + "/FADTTSter_testPlot1";
-    QString matlabDir1 = outputDir1 + "/MatlabOutputs";
-    QDir().mkpath( outputDir1 );
-    QDir().mkpath( matlabDir1 );
-    QFile::copy( dataDir + "/testPlot1_RawData_MD.csv", outputDir1 + "/testPlot1_RawData_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_RawData_RD.csv", outputDir1 + "/testPlot1_RawData_RD.csv" );
-    QFile::copy( dataDir + "/testPlot1_RawData_SUBMATRIX.csv", outputDir1 + "/testPlot1_RawData_SUBMATRIX.csv" );
-    QFile::copy( dataDir + "/testPlot1_Betas_MD.csv", matlabDir1 + "/testPlot1_Betas_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_Betas_RD.csv", matlabDir1 + "/testPlot1_Betas_RD.csv" );
-    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv", matlabDir1 + "/testPlot1_Omnibus_ConfidenceBands_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv", matlabDir1 + "/testPlot1_Omnibus_ConfidenceBands_RD.csv" );
-    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv", matlabDir1 + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir1 + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" );
-    QMap< int, QString > expectedProperties1;
-    expectedProperties1.insert( 1, "RD" );
-    expectedProperties1.insert( 2, "MD" );
-    QMap< int, QString > expectedAllCovariates1;
-    expectedAllCovariates1.insert( 0, "Intercept" );
-    expectedAllCovariates1.insert( 1, "ngroup" );
-    expectedAllCovariates1.insert( 2, "GENDER" );
-    expectedAllCovariates1.insert( 3, "DaysPostBirth" );
-    expectedAllCovariates1.insert( 4, "ICV_y0" );
-    QMap< int, QString > expectedCovariatesNoIntercept1;
-    expectedCovariatesNoIntercept1.insert( 1, "ngroup" );
-    expectedCovariatesNoIntercept1.insert( 2, "GENDER" );
-    expectedCovariatesNoIntercept1.insert( 3, "DaysPostBirth" );
-    expectedCovariatesNoIntercept1.insert( 4, "ICV_y0" );
-    QMap< int, QString > expectedBinaryCovariates1;
-    expectedBinaryCovariates1.insert( 1, "ngroup" );
-    expectedBinaryCovariates1.insert( 2, "GENDER" );
+//    /******************************************/
+//    /***************** Test 1 *****************/
+//    /******************************************/
+//    QString outputDir1 = dirTest + "/FADTTSter_testPlot1";
+//    QString matlabDir1 = outputDir1 + "/MatlabOutputs";
+//    QDir().mkpath( outputDir1 );
+//    QDir().mkpath( matlabDir1 );
+//    QFile::copy( dataDir + "/testPlot1_RawData_MD.csv", outputDir1 + "/testPlot1_RawData_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_RawData_RD.csv", outputDir1 + "/testPlot1_RawData_RD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_RawData_SUBMATRIX.csv", outputDir1 + "/testPlot1_RawData_SUBMATRIX.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Betas_MD.csv", matlabDir1 + "/testPlot1_Betas_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Betas_RD.csv", matlabDir1 + "/testPlot1_Betas_RD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv", matlabDir1 + "/testPlot1_Omnibus_ConfidenceBands_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv", matlabDir1 + "/testPlot1_Omnibus_ConfidenceBands_RD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv", matlabDir1 + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir1 + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" );
+//    QMap< int, QString > expectedProperties1;
+//    expectedProperties1.insert( 1, "RD" );
+//    expectedProperties1.insert( 2, "MD" );
+//    QMap< int, QString > expectedAllCovariates1;
+//    expectedAllCovariates1.insert( 0, "Intercept" );
+//    expectedAllCovariates1.insert( 1, "ngroup" );
+//    expectedAllCovariates1.insert( 2, "GENDER" );
+//    expectedAllCovariates1.insert( 3, "DaysPostBirth" );
+//    expectedAllCovariates1.insert( 4, "ICV_y0" );
+//    QMap< int, QString > expectedCovariatesNoIntercept1;
+//    expectedCovariatesNoIntercept1.insert( 1, "ngroup" );
+//    expectedCovariatesNoIntercept1.insert( 2, "GENDER" );
+//    expectedCovariatesNoIntercept1.insert( 3, "DaysPostBirth" );
+//    expectedCovariatesNoIntercept1.insert( 4, "ICV_y0" );
+//    QMap< int, QString > expectedBinaryCovariates1;
+//    expectedBinaryCovariates1.insert( 1, "ngroup" );
+//    expectedBinaryCovariates1.insert( 2, "GENDER" );
 
 
-    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( outputDir1 );
-    fadttsWindow->SetPlotTab();
+//    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( outputDir1 );
+//    fadttsWindow->SetPlotTab();
 
-    bool testSet1 = fadttsWindow->m_plot->m_directory == outputDir1
-            && fadttsWindow->m_plot->m_matlabDirectory == matlabDir1
-            && fadttsWindow->m_plot->m_fibername == "testPlot1"
-            && fadttsWindow->m_plot->m_csvRawDataFiles == ( QStringList() << "testPlot1_RawData_MD.csv" << "testPlot1_RawData_RD.csv" << "testPlot1_RawData_SUBMATRIX.csv" )
-            && fadttsWindow->m_plot->m_csvBetaFiles == ( QStringList() << "testPlot1_Betas_MD.csv" << "testPlot1_Betas_RD.csv" )
-            && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
-            && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles.isEmpty()
-            && fadttsWindow->m_plot->m_csvConfidenceBandsFiles == ( QStringList() << "testPlot1_Omnibus_ConfidenceBands_MD.csv" << "testPlot1_Omnibus_ConfidenceBands_RD.csv" )
-            && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles == ( QStringList() << "testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" << "testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" )
-            && fadttsWindow->m_plot->m_plotsUsed == ( QStringList() << "Raw Data" << "Raw Stats" << "Raw Betas by Properties" << "Raw Betas by Covariates" << "Betas with Omnibus Confidence Bands"
-                                                      << "Post-Hoc FDR Local pvalues by Covariates" << "Post-Hoc FDR Significant Betas by Properties" << "Post-Hoc FDR Significant Betas by Covariates" )
-            && fadttsWindow->m_plot->m_properties == expectedProperties1
-            && fadttsWindow->m_plot->m_subjects == ( QStringList() << "F02-1_dwi_35_all_QCed_VC_DTI_embed" << "F05-1_dwi_35_all_QCed_VC_DTI_embed" << "F06-1_42_DWI_QCed_VC_DTI_embed" << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "F12-1_42_DWI_QCed_VC_DTI_embed" << "F21-1_42_DWI_QCed_VC_DTI_embed" << "F22-1_42_DWI_QCed_VC_DTI_embed" << "F23-1_42_DWI_QCed_VC_DTI_embed" << "F25-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "neo-0093-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0096-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0113-2_42_DWI_QCed_VC_DTI_embed" << "neo-0129-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0130-1_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "neo-0137-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0187-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0191-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0219-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0235-1-1_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "neo-0261-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0266-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0318-2_42_DWI_QCed_VC_DTI_embed" << "neo-0387-1_42_DWI_QCed_VC_DTI_embed" << "neo-0389-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0393-1_42_DWI_QCed_VC_DTI_embed" << "neo-0394-1_42_DWI_QCed_VC_DTI_embed" << "neo-0397-1_42_DWI_QCed_VC_DTI_embed" << "neo-0404-1_42_DWI_QCed_VC_DTI_embed" << "neo-0409-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0414-1_42_DWI_QCed_VC_DTI_embed" << "neo-0436-1_42_DWI_QCed_VC_DTI_embed" << "neo-0444-1_42_DWI_QCed_VC_DTI_embed" << "neo-0446-1_42_DWI_QCed_VC_DTI_embed" << "neo-0460-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0485-1_42_DTI_QCed_VC_DTI_embed" << "neo-0498-1_42_DTI_QCed_VC_DTI_embed" << "T0008-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0009-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0010-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "T0039-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0045-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0081-1-2-neo_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "T0086-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0092-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0113-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "T0113-1-2-neo_dwi_28_all_QCed_VC_DTI_embed" << "T0114-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0126-1-1-neo_dwi_21_all_QCed_VC_DTI_embed" << "T0131-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0143-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" )
-            && fadttsWindow->m_plot->m_allCovariates == expectedAllCovariates1
-            && fadttsWindow->m_plot->m_covariatesNoIntercept == expectedCovariatesNoIntercept1
-            && fadttsWindow->m_plot->m_binaryCovariates == expectedBinaryCovariates1
-            && fadttsWindow->m_plot->m_abscissa == ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846
-                                                     << -29.1846 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846
-                                                     << -19.1846 << -18.1846 << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846
-                                                     << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462 << -2.18462 << -1.18462 << -0.184619
-                                                     << 0.815381 << 1.81538 << 2.81538 << 3.81538 << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538
-                                                     << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
-                                                     << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
-                                                     << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
-            && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
-            && fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled()
-            && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
-            && fadttsWindow->plottingTab_editionTab->isEnabled()
-            && fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled()
-            && fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
-
-
-    /**********************************************/
-    /***************** Test Reset *****************/
-    /**********************************************/
-    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( "wrong/path" );
-
-    bool testReset = fadttsWindow->m_plot->m_directory.isEmpty() && fadttsWindow->m_plot->m_matlabDirectory.isEmpty() && fadttsWindow->m_plot->m_fibername.isEmpty()
-            && fadttsWindow->m_plot->m_csvRawDataFiles.isEmpty() && fadttsWindow->m_plot->m_csvBetaFiles.isEmpty() && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
-            && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles.isEmpty() && fadttsWindow->m_plot->m_csvConfidenceBandsFiles.isEmpty() && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles.isEmpty()
-            && fadttsWindow->m_plot->m_plotsUsed.isEmpty() && fadttsWindow->m_plot->m_properties.isEmpty() && fadttsWindow->m_plot->m_subjects.isEmpty() && fadttsWindow->m_plot->m_allCovariates.isEmpty()
-            && fadttsWindow->m_plot->m_covariatesNoIntercept.isEmpty() && fadttsWindow->m_plot->m_binaryCovariates.isEmpty() && fadttsWindow->m_plot->m_abscissa.isEmpty()
-            && fadttsWindow->m_plotComboBox->currentText() == "No Plot" && !fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled() && !fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
-            && !fadttsWindow->plottingTab_editionTab->isEnabled() && !fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled() && !fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
+//    bool testSet1 = fadttsWindow->m_plot->m_directory == outputDir1
+//            && fadttsWindow->m_plot->m_matlabDirectory == matlabDir1
+//            && fadttsWindow->m_plot->m_fibername == "testPlot1"
+//            && fadttsWindow->m_plot->m_csvRawDataFiles == ( QStringList() << "testPlot1_RawData_MD.csv" << "testPlot1_RawData_RD.csv" << "testPlot1_RawData_SUBMATRIX.csv" )
+//            && fadttsWindow->m_plot->m_csvBetaFiles == ( QStringList() << "testPlot1_Betas_MD.csv" << "testPlot1_Betas_RD.csv" )
+//            && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_csvConfidenceBandsFiles == ( QStringList() << "testPlot1_Omnibus_ConfidenceBands_MD.csv" << "testPlot1_Omnibus_ConfidenceBands_RD.csv" )
+//            && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles == ( QStringList() << "testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" << "testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" )
+//            && fadttsWindow->m_plot->m_plotsAvailable == ( QStringList() << "Raw Data" << "Raw Stats" << "Raw Betas by Properties" << "Raw Betas by Covariates" << "Betas with Omnibus Confidence Bands"
+//                                                      << "Post-Hoc FDR Local pvalues by Covariates" << "Post-Hoc FDR Significant Betas by Properties" << "Post-Hoc FDR Significant Betas by Covariates" )
+//            && fadttsWindow->m_plot->m_properties == expectedProperties1
+//            && fadttsWindow->m_plot->m_subjects == ( QStringList() << "F02-1_dwi_35_all_QCed_VC_DTI_embed" << "F05-1_dwi_35_all_QCed_VC_DTI_embed" << "F06-1_42_DWI_QCed_VC_DTI_embed" << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "F12-1_42_DWI_QCed_VC_DTI_embed" << "F21-1_42_DWI_QCed_VC_DTI_embed" << "F22-1_42_DWI_QCed_VC_DTI_embed" << "F23-1_42_DWI_QCed_VC_DTI_embed" << "F25-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "neo-0093-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0096-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0113-2_42_DWI_QCed_VC_DTI_embed" << "neo-0129-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0130-1_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "neo-0137-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0187-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0191-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0219-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0235-1-1_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "neo-0261-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0266-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0318-2_42_DWI_QCed_VC_DTI_embed" << "neo-0387-1_42_DWI_QCed_VC_DTI_embed" << "neo-0389-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0393-1_42_DWI_QCed_VC_DTI_embed" << "neo-0394-1_42_DWI_QCed_VC_DTI_embed" << "neo-0397-1_42_DWI_QCed_VC_DTI_embed" << "neo-0404-1_42_DWI_QCed_VC_DTI_embed" << "neo-0409-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0414-1_42_DWI_QCed_VC_DTI_embed" << "neo-0436-1_42_DWI_QCed_VC_DTI_embed" << "neo-0444-1_42_DWI_QCed_VC_DTI_embed" << "neo-0446-1_42_DWI_QCed_VC_DTI_embed" << "neo-0460-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0485-1_42_DTI_QCed_VC_DTI_embed" << "neo-0498-1_42_DTI_QCed_VC_DTI_embed" << "T0008-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0009-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0010-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "T0039-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0045-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0081-1-2-neo_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "T0086-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0092-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0113-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "T0113-1-2-neo_dwi_28_all_QCed_VC_DTI_embed" << "T0114-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0126-1-1-neo_dwi_21_all_QCed_VC_DTI_embed" << "T0131-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0143-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" )
+//            && fadttsWindow->m_plot->m_allCovariates == expectedAllCovariates1
+//            && fadttsWindow->m_plot->m_covariatesNoIntercept == expectedCovariatesNoIntercept1
+//            && fadttsWindow->m_plot->m_binaryCovariates == expectedBinaryCovariates1
+//            && fadttsWindow->m_plot->m_abscissa == ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846
+//                                                     << -29.1846 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846
+//                                                     << -19.1846 << -18.1846 << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846
+//                                                     << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462 << -2.18462 << -1.18462 << -0.184619
+//                                                     << 0.815381 << 1.81538 << 2.81538 << 3.81538 << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538
+//                                                     << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
+//                                                     << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
+//                                                     << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
+//            && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
+//            && fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled()
+//            && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
+//            && fadttsWindow->plottingTab_editionTab->isEnabled()
+//            && fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled()
+//            && fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
 
 
-    /******************************************/
-    /***************** Test 2 *****************/
-    /******************************************/
-    QString outputDir2 = dirTest + "/FADTTSter_testPlot2";
-    QString matlabDir2 = outputDir2 + "/MatlabOutputs";
-    QDir().mkpath( outputDir2 );
-    QDir().mkpath( matlabDir2 );
-    QFile::copy( dataDir + "/testPlot2_RawData_AD.csv", outputDir2 + "/testPlot2_RawData_AD.csv" );
-    QFile::copy( dataDir + "/testPlot2_RawData_FA.csv", outputDir2 + "/testPlot2_RawData_FA.csv" );
-    QFile::copy( dataDir + "/testPlot2_RawData_SUBMATRIX.csv", outputDir2 + "/testPlot2_RawData_SUBMATRIX.csv" );
-    QFile::copy( dataDir + "/testPlot2_Betas_AD.csv", matlabDir2 + "/testPlot2_Betas_AD.csv" );
-    QFile::copy( dataDir + "/testPlot2_Betas_FA.csv", matlabDir2 + "/testPlot2_Betas_FA.csv" );
-    QFile::copy( dataDir + "/testPlot2_Omnibus_FDR_Local_pvalues.csv", matlabDir2 + "/testPlot2_Omnibus_FDR_Local_pvalues.csv" );
-    QMap< int, QString > expectedProperties2;
-    expectedProperties2.insert( 0, "AD" );
-    expectedProperties2.insert( 3, "FA" );
-    QMap< int, QString > expectedAllCovariates2;
-    expectedAllCovariates2.insert( 0, "Intercept" );
-    expectedAllCovariates2.insert( 1, "ngroup" );
-    expectedAllCovariates2.insert( 2, "DaysPostBirth" );
-    QMap< int, QString > expectedCovariatesNoIntercept2;
-    expectedCovariatesNoIntercept2.insert( 1, "ngroup" );
-    expectedCovariatesNoIntercept2.insert( 2, "DaysPostBirth" );
-    QMap< int, QString > expectedBinaryCovariates2;
-    expectedBinaryCovariates2.insert( 1, "ngroup" );
+//    /**********************************************/
+//    /***************** Test Reset *****************/
+//    /**********************************************/
+//    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( "wrong/path" );
+
+//    bool testReset = fadttsWindow->m_plot->m_directory.isEmpty() && fadttsWindow->m_plot->m_matlabDirectory.isEmpty() && fadttsWindow->m_plot->m_fibername.isEmpty()
+//            && fadttsWindow->m_plot->m_csvRawDataFiles.isEmpty() && fadttsWindow->m_plot->m_csvBetaFiles.isEmpty() && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles.isEmpty() && fadttsWindow->m_plot->m_csvConfidenceBandsFiles.isEmpty() && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_plotsAvailable.isEmpty() && fadttsWindow->m_plot->m_properties.isEmpty() && fadttsWindow->m_plot->m_subjects.isEmpty() && fadttsWindow->m_plot->m_allCovariates.isEmpty()
+//            && fadttsWindow->m_plot->m_covariatesNoIntercept.isEmpty() && fadttsWindow->m_plot->m_binaryCovariates.isEmpty() && fadttsWindow->m_plot->m_abscissa.isEmpty()
+//            && fadttsWindow->m_plotComboBox->currentText() == "No Plot" && !fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled() && !fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
+//            && !fadttsWindow->plottingTab_editionTab->isEnabled() && !fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled() && !fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
 
 
-//    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testPlot2" );
-    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( outputDir2 );
-    fadttsWindow->SetPlotTab();
-
-    bool testSet2 = fadttsWindow->m_plot->m_directory == outputDir2
-            && fadttsWindow->m_plot->m_matlabDirectory == matlabDir2
-            && fadttsWindow->m_plot->m_fibername == "testPlot2"
-            && fadttsWindow->m_plot->m_csvRawDataFiles == ( QStringList() << "testPlot2_RawData_AD.csv" << "testPlot2_RawData_FA.csv" << "testPlot2_RawData_SUBMATRIX.csv" )
-            && fadttsWindow->m_plot->m_csvBetaFiles == ( QStringList() << "testPlot2_Betas_AD.csv" << "testPlot2_Betas_FA.csv" )
-            && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
-            && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles == ( QStringList() << "testPlot2_Omnibus_FDR_Local_pvalues.csv" )
-            && fadttsWindow->m_plot->m_csvConfidenceBandsFiles.isEmpty()
-            && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles.isEmpty()
-            && fadttsWindow->m_plot->m_plotsUsed == ( QStringList() << "Raw Data" << "Raw Stats" << "Raw Betas by Properties" << "Raw Betas by Covariates" << "Omnibus FDR Local pvalues"
-                                                      << "Omnibus FDR Significant Betas by Properties" << "Omnibus FDR Significant Betas by Covariates" )
-            && fadttsWindow->m_plot->m_properties == expectedProperties2
-            && fadttsWindow->m_plot->m_subjects == ( QStringList() << "F02-1_dwi_35_all_QCed_VC_DTI_embed" << "F05-1_dwi_35_all_QCed_VC_DTI_embed" << "F06-1_42_DWI_QCed_VC_DTI_embed" << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "F12-1_42_DWI_QCed_VC_DTI_embed" << "F21-1_42_DWI_QCed_VC_DTI_embed" << "F22-1_42_DWI_QCed_VC_DTI_embed" << "F23-1_42_DWI_QCed_VC_DTI_embed" << "F25-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "neo-0093-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0096-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0113-2_42_DWI_QCed_VC_DTI_embed" << "neo-0129-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0130-1_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "neo-0137-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0187-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0191-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0219-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0235-1-1_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "neo-0261-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0266-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0318-2_42_DWI_QCed_VC_DTI_embed" << "neo-0387-1_42_DWI_QCed_VC_DTI_embed" << "neo-0389-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0393-1_42_DWI_QCed_VC_DTI_embed" << "neo-0394-1_42_DWI_QCed_VC_DTI_embed" << "neo-0397-1_42_DWI_QCed_VC_DTI_embed" << "neo-0404-1_42_DWI_QCed_VC_DTI_embed" << "neo-0409-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0414-1_42_DWI_QCed_VC_DTI_embed" << "neo-0436-1_42_DWI_QCed_VC_DTI_embed" << "neo-0444-1_42_DWI_QCed_VC_DTI_embed" << "neo-0446-1_42_DWI_QCed_VC_DTI_embed" << "neo-0460-1_42_DWI_QCed_VC_DTI_embed"
-                                                     << "neo-0485-1_42_DTI_QCed_VC_DTI_embed" << "neo-0498-1_42_DTI_QCed_VC_DTI_embed" << "T0008-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0009-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0010-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "T0039-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0045-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0081-1-2-neo_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "T0086-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0092-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0113-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
-                                                     << "T0113-1-2-neo_dwi_28_all_QCed_VC_DTI_embed" << "T0114-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0126-1-1-neo_dwi_21_all_QCed_VC_DTI_embed" << "T0131-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0143-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" )
-            && fadttsWindow->m_plot->m_allCovariates == expectedAllCovariates2
-            && fadttsWindow->m_plot->m_covariatesNoIntercept == expectedCovariatesNoIntercept2
-            && fadttsWindow->m_plot->m_binaryCovariates == expectedBinaryCovariates2
-            && fadttsWindow->m_plot->m_abscissa == ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846
-                                                     << -29.1846 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846
-                                                     << -19.1846 << -18.1846 << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846
-                                                     << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462 << -2.18462 << -1.18462 << -0.184619
-                                                     << 0.815381 << 1.81538 << 2.81538 << 3.81538 << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538
-                                                     << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
-                                                     << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
-                                                     << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
-            && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
-            && fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled()
-            && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
-            && fadttsWindow->plottingTab_editionTab->isEnabled()
-            && fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled()
-            && fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
+//    /******************************************/
+//    /***************** Test 2 *****************/
+//    /******************************************/
+//    QString outputDir2 = dirTest + "/FADTTSter_testPlot2";
+//    QString matlabDir2 = outputDir2 + "/MatlabOutputs";
+//    QDir().mkpath( outputDir2 );
+//    QDir().mkpath( matlabDir2 );
+//    QFile::copy( dataDir + "/testPlot2_RawData_AD.csv", outputDir2 + "/testPlot2_RawData_AD.csv" );
+//    QFile::copy( dataDir + "/testPlot2_RawData_FA.csv", outputDir2 + "/testPlot2_RawData_FA.csv" );
+//    QFile::copy( dataDir + "/testPlot2_RawData_SUBMATRIX.csv", outputDir2 + "/testPlot2_RawData_SUBMATRIX.csv" );
+//    QFile::copy( dataDir + "/testPlot2_Betas_AD.csv", matlabDir2 + "/testPlot2_Betas_AD.csv" );
+//    QFile::copy( dataDir + "/testPlot2_Betas_FA.csv", matlabDir2 + "/testPlot2_Betas_FA.csv" );
+//    QFile::copy( dataDir + "/testPlot2_Omnibus_FDR_Local_pvalues.csv", matlabDir2 + "/testPlot2_Omnibus_FDR_Local_pvalues.csv" );
+//    QMap< int, QString > expectedProperties2;
+//    expectedProperties2.insert( 0, "AD" );
+//    expectedProperties2.insert( 3, "FA" );
+//    QMap< int, QString > expectedAllCovariates2;
+//    expectedAllCovariates2.insert( 0, "Intercept" );
+//    expectedAllCovariates2.insert( 1, "ngroup" );
+//    expectedAllCovariates2.insert( 2, "DaysPostBirth" );
+//    QMap< int, QString > expectedCovariatesNoIntercept2;
+//    expectedCovariatesNoIntercept2.insert( 1, "ngroup" );
+//    expectedCovariatesNoIntercept2.insert( 2, "DaysPostBirth" );
+//    QMap< int, QString > expectedBinaryCovariates2;
+//    expectedBinaryCovariates2.insert( 1, "ngroup" );
 
 
-    bool testSetResetPlotTab_Passed = testSet1 /*&& testReset*/ && testSet2;
-    if( !testSetResetPlotTab_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_SetResetPlotTab() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with SetPlotTab() and/or ResetPlotTab()" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Test_SetResetPlotTab() PASSED";
-    }
+////    fadttsWindow->para_executionTab_fiberName_lineEdit->setText( "testPlot2" );
+//    fadttsWindow->para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit->setText( outputDir2 );
+//    fadttsWindow->SetPlotTab();
 
-    return testSetResetPlotTab_Passed;
+//    bool testSet2 = fadttsWindow->m_plot->m_directory == outputDir2
+//            && fadttsWindow->m_plot->m_matlabDirectory == matlabDir2
+//            && fadttsWindow->m_plot->m_fibername == "testPlot2"
+//            && fadttsWindow->m_plot->m_csvRawDataFiles == ( QStringList() << "testPlot2_RawData_AD.csv" << "testPlot2_RawData_FA.csv" << "testPlot2_RawData_SUBMATRIX.csv" )
+//            && fadttsWindow->m_plot->m_csvBetaFiles == ( QStringList() << "testPlot2_Betas_AD.csv" << "testPlot2_Betas_FA.csv" )
+//            && fadttsWindow->m_plot->m_csvOmnibusLpvalueFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_csvOmnibusFDRLpvalueFiles == ( QStringList() << "testPlot2_Omnibus_FDR_Local_pvalues.csv" )
+//            && fadttsWindow->m_plot->m_csvConfidenceBandsFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_csvPostHocFDRLpvalueFiles.isEmpty()
+//            && fadttsWindow->m_plot->m_plotsAvailable == ( QStringList() << "Raw Data" << "Raw Stats" << "Raw Betas by Properties" << "Raw Betas by Covariates" << "Omnibus FDR Local pvalues"
+//                                                      << "Omnibus FDR Significant Betas by Properties" << "Omnibus FDR Significant Betas by Covariates" )
+//            && fadttsWindow->m_plot->m_properties == expectedProperties2
+//            && fadttsWindow->m_plot->m_subjects == ( QStringList() << "F02-1_dwi_35_all_QCed_VC_DTI_embed" << "F05-1_dwi_35_all_QCed_VC_DTI_embed" << "F06-1_42_DWI_QCed_VC_DTI_embed" << "F07-1_42_DWI_QCed_VC_DTI_embed" << "F09-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "F12-1_42_DWI_QCed_VC_DTI_embed" << "F21-1_42_DWI_QCed_VC_DTI_embed" << "F22-1_42_DWI_QCed_VC_DTI_embed" << "F23-1_42_DWI_QCed_VC_DTI_embed" << "F25-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0038-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0042-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0066-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0071-1_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "neo-0093-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0096-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0113-2_42_DWI_QCed_VC_DTI_embed" << "neo-0129-2-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0130-1_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "neo-0137-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0187-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0191-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0219-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0235-1-1_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "neo-0261-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0266-1-1_dwi_35_all_QCed_VC_DTI_embed" << "neo-0318-2_42_DWI_QCed_VC_DTI_embed" << "neo-0387-1_42_DWI_QCed_VC_DTI_embed" << "neo-0389-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0393-1_42_DWI_QCed_VC_DTI_embed" << "neo-0394-1_42_DWI_QCed_VC_DTI_embed" << "neo-0397-1_42_DWI_QCed_VC_DTI_embed" << "neo-0404-1_42_DWI_QCed_VC_DTI_embed" << "neo-0409-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0414-1_42_DWI_QCed_VC_DTI_embed" << "neo-0436-1_42_DWI_QCed_VC_DTI_embed" << "neo-0444-1_42_DWI_QCed_VC_DTI_embed" << "neo-0446-1_42_DWI_QCed_VC_DTI_embed" << "neo-0460-1_42_DWI_QCed_VC_DTI_embed"
+//                                                     << "neo-0485-1_42_DTI_QCed_VC_DTI_embed" << "neo-0498-1_42_DTI_QCed_VC_DTI_embed" << "T0008-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0009-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0010-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "T0039-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0045-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0068-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0081-1-2-neo_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "T0086-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0092-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0107-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0113-1-1-neo_dwi_35_all_QCed_VC_DTI_embed"
+//                                                     << "T0113-1-2-neo_dwi_28_all_QCed_VC_DTI_embed" << "T0114-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0126-1-1-neo_dwi_21_all_QCed_VC_DTI_embed" << "T0131-1-2-neo_dwi_35_all_QCed_VC_DTI_embed" << "T0143-1-1-neo_dwi_35_all_QCed_VC_DTI_embed" )
+//            && fadttsWindow->m_plot->m_allCovariates == expectedAllCovariates2
+//            && fadttsWindow->m_plot->m_covariatesNoIntercept == expectedCovariatesNoIntercept2
+//            && fadttsWindow->m_plot->m_binaryCovariates == expectedBinaryCovariates2
+//            && fadttsWindow->m_plot->m_abscissa == ( QList< double >() << -39.1846 << -38.1846 << -37.1846 << -36.1846 << -35.1846 << -34.1846 << -33.1846 << -32.1846 << -31.1846 << -30.1846
+//                                                     << -29.1846 << -28.1846 << -27.1846 << -26.1846 << -25.1846 << -24.1846 << -23.1846 << -22.1846 << -21.1846 << -20.1846
+//                                                     << -19.1846 << -18.1846 << -17.1846 << -16.1846 << -15.1846 << -14.1846 << -13.1846 << -12.1846 << -11.1846 << -10.1846
+//                                                     << -9.18462 << -8.18462 << -7.18462 << -6.18462 << -5.18462 << -4.18462 << -3.18462 << -2.18462 << -1.18462 << -0.184619
+//                                                     << 0.815381 << 1.81538 << 2.81538 << 3.81538 << 4.81538 << 5.81538 << 6.81538 << 7.81538 << 8.81538 << 9.81538
+//                                                     << 10.8154 << 11.8154 << 12.8154 << 13.8154 << 14.8154 << 15.8154 << 16.8154 << 17.8154 << 18.8154 << 19.8154
+//                                                     << 20.8154 << 21.8154 << 22.8154 << 23.8154 << 24.8154 << 25.8154 << 26.8154 << 27.8154 << 28.8154 << 29.8154
+//                                                     << 30.8154 << 31.8154 << 32.8154 << 33.8154 << 34.8154 << 35.8154 << 36.8154 << 37.8154 << 38.8154 )
+//            && fadttsWindow->m_plotComboBox->currentText() == "No Plot"
+//            && fadttsWindow->plottingTab_loadSetDataTab_load_widget->isEnabled()
+//            && fadttsWindow->plottingTab_titleAxisLegendTab->isEnabled()
+//            && fadttsWindow->plottingTab_editionTab->isEnabled()
+//            && fadttsWindow->plottingTab_loadPlotSettings_pushButton->isEnabled()
+//            && fadttsWindow->plottingTab_savePlotSettings_pushButton->isEnabled();
+
+
+//    bool testSetResetPlotTab_Passed = testSet1 /*&& testReset*/ && testSet2;
+//    if( !testSetResetPlotTab_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_SetResetPlotTab() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with SetPlotTab() and/or ResetPlotTab()" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_SetResetPlotTab() PASSED";
+//    }
+
+//    return testSetResetPlotTab_Passed;
+    std::cerr << "RE-WRITE Test_SetResetPlotTab()";
+    return false;
 }
 
 
 bool TestFADTTSWindow::Test_LoadSavePlotSettings( QString dataDir, QString tempoDir )
 {
-    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
-    QString dirTest = tempoDir + "/TestFADTTSWindow/Test_LoadSavePlotSettings";
-    QString outputDir = dirTest + "/FADTTSter_testPlotSettings";
-    QString matlabDir = outputDir + "/MatlabOutputs";
-    QDir().mkpath( outputDir );
-    QDir().mkpath( matlabDir );
-    QFile::copy( dataDir + "/testPlot1_RawData_MD.csv", outputDir + "/testPlot1_RawData_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_RawData_RD.csv", outputDir + "/testPlot1_RawData_RD.csv" );
-    QFile::copy( dataDir + "/testPlot1_RawData_SUBMATRIX.csv", outputDir + "/testPlot1_RawData_SUBMATRIX.csv" );
-    QFile::copy( dataDir + "/testPlot1_Betas_MD.csv", matlabDir + "/testPlot1_Betas_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_Betas_RD.csv", matlabDir + "/testPlot1_Betas_RD.csv" );
-    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv", matlabDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv", matlabDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv" );
-    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv", matlabDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" );
-    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" );
-    QMap< int, QString > expectedProperties;
-    expectedProperties.insert( 1, "RD" );
-    expectedProperties.insert( 2, "MD" );
-    QMap< int, QString > expectedAllCovariates;
-    expectedAllCovariates.insert( 0, "Intercept" );
-    expectedAllCovariates.insert( 1, "ngroup" );
-    expectedAllCovariates.insert( 2, "GENDER" );
-    expectedAllCovariates.insert( 3, "DaysPostBirth" );
-    expectedAllCovariates.insert( 4, "ICV_y0" );
-    QMap< int, QString > expectedCovariatesNoIntercept;
-    expectedCovariatesNoIntercept.insert( 1, "ngroup" );
-    expectedCovariatesNoIntercept.insert( 2, "GENDER" );
-    expectedCovariatesNoIntercept.insert( 3, "DaysPostBirth" );
-    expectedCovariatesNoIntercept.insert( 4, "ICV_y0" );
-    QMap< int, QString > expectedBinaryCovariates;
-    expectedBinaryCovariates.insert( 1, "ngroup" );
-    expectedBinaryCovariates.insert( 2, "GENDER" );
+//    QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
+//    QString dirTest = tempoDir + "/TestFADTTSWindow/Test_LoadSavePlotSettings";
+//    QString outputDir = dirTest + "/FADTTSter_testPlotSettings";
+//    QString matlabDir = outputDir + "/MatlabOutputs";
+//    QDir().mkpath( outputDir );
+//    QDir().mkpath( matlabDir );
+//    QFile::copy( dataDir + "/testPlot1_RawData_MD.csv", outputDir + "/testPlot1_RawData_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_RawData_RD.csv", outputDir + "/testPlot1_RawData_RD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_RawData_SUBMATRIX.csv", outputDir + "/testPlot1_RawData_SUBMATRIX.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Betas_MD.csv", matlabDir + "/testPlot1_Betas_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Betas_RD.csv", matlabDir + "/testPlot1_Betas_RD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv", matlabDir + "/testPlot1_Omnibus_ConfidenceBands_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv", matlabDir + "/testPlot1_Omnibus_ConfidenceBands_RD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv", matlabDir + "/testPlot1_PostHoc_FDR_Local_pvalues_MD.csv" );
+//    QFile::copy( dataDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv", matlabDir + "/testPlot1_PostHoc_FDR_Local_pvalues_RD.csv" );
+//    QMap< int, QString > expectedProperties;
+//    expectedProperties.insert( 1, "RD" );
+//    expectedProperties.insert( 2, "MD" );
+//    QMap< int, QString > expectedAllCovariates;
+//    expectedAllCovariates.insert( 0, "Intercept" );
+//    expectedAllCovariates.insert( 1, "ngroup" );
+//    expectedAllCovariates.insert( 2, "GENDER" );
+//    expectedAllCovariates.insert( 3, "DaysPostBirth" );
+//    expectedAllCovariates.insert( 4, "ICV_y0" );
+//    QMap< int, QString > expectedCovariatesNoIntercept;
+//    expectedCovariatesNoIntercept.insert( 1, "ngroup" );
+//    expectedCovariatesNoIntercept.insert( 2, "GENDER" );
+//    expectedCovariatesNoIntercept.insert( 3, "DaysPostBirth" );
+//    expectedCovariatesNoIntercept.insert( 4, "ICV_y0" );
+//    QMap< int, QString > expectedBinaryCovariates;
+//    expectedBinaryCovariates.insert( 1, "ngroup" );
+//    expectedBinaryCovariates.insert( 2, "GENDER" );
 
 
-    fadttsWindow->m_plot->InitPlot( outputDir, "testPlotSettings" );
-    fadttsWindow->LoadPlotSettings( dataDir + "/plotSettings.json" );
-    fadttsWindow->SavePlotSettings( dirTest + "/plotSettings.json" );
+//    fadttsWindow->m_plot->InitPlot( outputDir, "testPlotSettings", 0.05 );
+//    fadttsWindow->LoadPlotSettings( dataDir + "/plotSettings.json" );
+//    fadttsWindow->SavePlotSettings( dirTest + "/plotSettings.json" );
 
 
-    bool testLoadSavePlotSettings_Passed = CompareFile( dataDir + "/plotSettings.json", dirTest + "/plotSettings.json" );
-    if( !testLoadSavePlotSettings_Passed )
-    {
-        std::cerr << "/!\\/!\\ Test_LoadSavePlotSettings() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with LoadPlotSettings( QString filePath ) and/or SavePlotSettings( QString filePath )" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Test_LoadSavePlotSettings() PASSED";
-    }
+//    bool testLoadSavePlotSettings_Passed = CompareFile( dataDir + "/plotSettings.json", dirTest + "/plotSettings.json" );
+//    if( !testLoadSavePlotSettings_Passed )
+//    {
+//        std::cerr << "/!\\/!\\ Test_LoadSavePlotSettings() FAILED /!\\/!\\";
+////        std::cerr << std::endl << "\t+ pb with LoadPlotSettings( QString filePath ) and/or SavePlotSettings( QString filePath )" << std::endl;
+//    }
+//    else
+//    {
+//        std::cerr << "Test_LoadSavePlotSettings() PASSED";
+//    }
 
-    return testLoadSavePlotSettings_Passed;
+//    return testLoadSavePlotSettings_Passed;
+    std::cerr << "RE-WRITE Test_LoadSavePlotSettings()";
+    return false;
 }
 
 
@@ -3002,7 +3008,7 @@ bool TestFADTTSWindow::Test_OnSettingLinesSelected()
     return testOnSettingLinesSelected_Passed;
 }
 
-bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
+bool TestFADTTSWindow::Test_ClickLineForDisplay()
 {
     QSharedPointer< FADTTSWindow > fadttsWindow = QSharedPointer< FADTTSWindow >( new FADTTSWindow );
     QStringList properties = QStringList() << "AD" << "RD" << "FA";
@@ -3016,27 +3022,27 @@ bool TestFADTTSWindow::Test_OnLineForDisplayClicked()
     fadttsWindow->SetPropertiesForDisplay( properties );
     fadttsWindow->m_areLinesForDisplayProperties = true;
     fadttsWindow->AddLinesForDisplay();
-    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
-    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
-    fadttsWindow->OnLineForDisplayClicked( fadttsWindow->m_lineDisplayedListWidget->item( 1 ) );
+    fadttsWindow->ClickLineForDisplay( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
+    fadttsWindow->ClickLineForDisplay( fadttsWindow->m_lineDisplayedListWidget->item( 0 ) );
+    fadttsWindow->ClickLineForDisplay( fadttsWindow->m_lineDisplayedListWidget->item( 1 ) );
 
     bool testCheckState = fadttsWindow->m_lineDisplayedListWidget->item( 0 )->checkState()
             && !fadttsWindow->m_lineDisplayedListWidget->item( 1 )->checkState() && fadttsWindow->m_lineDisplayedListWidget->item( 2 )->checkState();
     bool testPropertyForDisplay = fadttsWindow->m_propertiesForDisplay == expectedPropertyForDisplay;
 
 
-    bool testOnLineForDisplayClicked_Passed = testCheckState && testPropertyForDisplay;
-    if( !testOnLineForDisplayClicked_Passed )
+    bool testClickLineForDisplay_Passed = testCheckState && testPropertyForDisplay;
+    if( !testClickLineForDisplay_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_OnLineForDisplayClicked() FAILED /!\\/!\\";
-//        std::cerr << std::endl << "\t+ pb with OnLineForDisplayClicked( QListWidgetItem *item )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_ClickLineForDisplay() FAILED /!\\/!\\";
+//        std::cerr << std::endl << "\t+ pb with ClickLineForDisplay( QListWidgetItem *item )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_OnLineForDisplayClicked() PASSED";
+        std::cerr << "Test_ClickLineForDisplay() PASSED";
     }
 
-    return testOnLineForDisplayClicked_Passed;
+    return testClickLineForDisplay_Passed;
 }
 
 bool TestFADTTSWindow::Test_OnYChanged()
@@ -3112,7 +3118,7 @@ bool TestFADTTSWindow::Test_GenerateFailedQCThresholdSubjectFile( QString dataDi
     fadttsWindow->GenerateFailedQCThresholdSubjectFile( testDir );
 
 
-    bool testGenerateFailedQCThresholdSubjectFile_Passed = CompareFile( testDir + "/test_failed_QCThreshold_SubjectList.txt", dataDir + "/test_failed_QCThreshold_SubjectList.txt" );
+    bool testGenerateFailedQCThresholdSubjectFile_Passed = CompareFile( testDir + "/test_FAILED_QCThreshold_subjectList.txt", dataDir + "/test_failed_QCThreshold_SubjectList.txt" );
     if( !testGenerateFailedQCThresholdSubjectFile_Passed )
     {
         std::cerr << "/!\\/!\\ Test_GenerateFailedQCThresholdSubjectFile() FAILED /!\\/!\\";

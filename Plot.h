@@ -50,7 +50,7 @@ public:
 
     void SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget ); // Tested
 
-    bool InitPlot( QString directory, QString fibername ); // Not Directly Tested
+    bool InitPlot( QString directory, QString fibername, double pvalueThreshold ); // Not Directly Tested
 
     bool InitQCThresholdPlot( QList< QStringList > rawData, QStringList matchedSubjects ); // Not Directly Tested
 
@@ -99,7 +99,7 @@ public:
 
     double& SetPvalueThreshold(); // Tested
 
-    void UpdatePvalueThreshold(); /// Not tested*
+    void UpdatePvalueThreshold( double pvalueThreshold ); /// Not tested*
 
     double& SetLineWidth(); // Tested
 
@@ -114,6 +114,10 @@ public:
     double& SetMarkerSize(); // Tested
 
     void UpdateMarker(); /// Not tested*
+
+    bool& SetBinaryBetas();
+
+    void UpdateBinaryBetas( bool isPosNeg );
 
     double& SetQCThreshold(); // Tested
 
@@ -148,6 +152,21 @@ signals:
 
 
 private:
+    enum dataKind{ RawData, Betas, OmnibusLpvalues, OmnibusFDRLpvalues, ConfidenceBands, PostHocpvalues, PostHocFDRLpvalues };
+
+    /************************/
+    /**** INITIALIZATION ****/
+    /************************/
+    Processing m_processing;
+    QSharedPointer< QVTKWidget > m_qvtkWidget;
+    vtkSmartPointer< vtkContextView > m_view;
+    vtkSmartPointer< vtkChartXY > m_chart;
+    QMap< int, vtkSmartPointer< vtkPlot > > m_line;
+    QString m_directory, m_matlabDirectory, m_fibername;
+
+    /********************/
+    /**** LINE COLOR ****/
+    /********************/
     static QMap< QString, QList< int > > InitColorMap()
     {
         QMap< QString, QList< int > > newColorMap;
@@ -175,17 +194,14 @@ private:
 
         return newColorMap;
     }
-
-
     static const QMap< QString, QList< int > > m_allColors;
 
-    Processing m_processing;
+    QList< QList< int > > m_lineColors;
+    double m_selectedLineColor[ 3 ];
 
-    QSharedPointer< QVTKWidget > m_qvtkWidget;
-    vtkSmartPointer< vtkContextView > m_view;
-    vtkSmartPointer< vtkChartXY > m_chart;
-    QMap< int, vtkSmartPointer< vtkPlot > > m_line;
-
+    /************************/
+    /**** LINE SELECTION ****/
+    /************************/
     typedef struct
     {
         vtkSmartPointer< vtkPlot > line;
@@ -201,63 +217,114 @@ private:
     } struct_selectedLines;
     struct_selectedLines m_previousSelectedLines, m_currentSelectedLines;
 
+    QList< double > m_selectedLineIndex;
+    QStringList m_selectedLineLabels;
 
-    QMap< QString, QList< QList< double > > > m_dataRawData, m_dataBeta, m_dataConfidenceBands, m_dataPostHocFDRLpvalue;
+    /***************/
+    /**** FILES ****/
+    /***************/
+    QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles, m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles;
 
+    /**************/
+    /**** DATA ****/
+    /**************/
+    // Binary Data
+    QMap< QString, QList< QList< double > > > m_dataRawData;
+    QMap< QString, QMap< int, QMap< int, QList< QList< double > > > > > m_dataBinaryRawData, m_dataBinaryRawStats;
+    QMap< QString, QMap< int, QMap< int, QStringList > > > m_subjectsBinaryRawData;
+    QStringList m_subjects;
+
+    // Raw Betas
+    QMap< QString, QList< QList< double > > > m_dataBetasByProperties;
+    QMap< int, QList< QList< double > > > m_dataBetasByCovariates;
+
+    // Omnibus Local pvalues
+    QList< QList< double > > m_dataOmnibusLpvalue, m_dataOmnibusFDRLpvalue;
+
+    // Omnibus Sig Betas
+    QMap< QString, QList< QList< double > > > m_dataOmnibusFDRSigBetasByProperties, m_abscissaOmnibusFDRSigBetasByProperties;
+    QMap< int, QList< QList< double > > > m_dataOmnibusFDRSigBetasByCovariates, m_abscissaOmnibusFDRSigBetasByCovariates;
+
+    // Confidence Bands
+    QMap< QString, QList< QList< double > > > m_dataConfidenceBands;
+
+    // Post-Hoc FDR Local pvalues
+    QMap< QString, QList< QList< double > > > m_dataPostHocFDRLpvalue;
+    QMap< int, QList< QList< double > > > m_dataPostHocFDRLpvaluesByCovariates;
+
+    // Post-Hoc FDR Sig Betas on Average Raw Data
+    QMap< QString, QMap< QString, QList< QList< double > > > > m_dataPostHocFDRSigBetasOnAverageRawData, m_abscissaPostHocFDRSigBetasOnAverageRawData;
+
+    // Post-Hoc Sig Betas
+    QMap< QString, QList< QList< double > > > m_dataPostHocFDRSigBetasByProperties, m_abscissaPostHocFDRSigBetasByProperties;
+    QMap< int, QList< QList< double > > >  m_dataPostHocFDRSigBetasByCovariates, m_abscissaPostHocFDRSigBetasByCovariates;
+
+    // Covariates
+    QMap< int, QString > m_covariatesNoIntercept, m_allCovariates, m_binaryCovariates;
+    bool m_isBinaryCovariatesSent, m_isAllCovariatesSent, m_isCovariatesNoInterceptSent;
+
+    // Properties
+    QMap< int, QString > m_properties;
+
+    /******************/
+    /**** PLOTTING ****/
+    /******************/
     QMap< int, QPair< QString, QPair< bool, QString > > > m_selectionToDisplay, m_covariatesProperties;
+    QList< QList< double > > m_ordinate;
+    QList< double > m_abscissa;
+    QStringList m_plotsAvailable, m_lineNames;
+    QString m_plotSelected, m_propertySelected, m_covariateSelected;
+    int m_nbrPlots, m_nbrPoints;
+    bool m_isPosNeg;
 
-    QMap< int, QString > m_covariatesNoIntercept, m_allCovariates, m_binaryCovariates, m_properties;
-
-    QList< QList< int > > m_lineColors;
-
-    QList< QStringList > m_dataSubMatrix;
-
-    QList< QList< double > > m_dataOmnibusLpvalue, m_dataOmnibusFDRLpvalue, m_ordinate;
-
-    QList< double > m_abscissa, m_selectedLineIndex;
-
+    /**************/
+    /**** AXIS ****/
+    /**************/
     QPair< bool, double > m_yMin, m_yMax;
+    double m_yMinMax[ 2 ];
+    int m_abscissaNotation;
+    bool m_gridOn;
 
-    QStringList m_csvRawDataFiles, m_csvBetaFiles, m_csvOmnibusLpvalueFiles, m_csvOmnibusFDRLpvalueFiles,
-    m_csvConfidenceBandsFiles, m_csvPostHocFDRLpvalueFiles, m_lineNames, m_subjects, m_plotsUsed, m_selectedLineLabels, m_matchedSubjects, m_atlasQCThreshold;
+    /*****************/
+    /**** OPTIONS ****/
+    /*****************/
+    double m_pvalueThreshold, m_lineWidth, m_markerSize;
+    int m_markerType;
 
-    QString m_matlabDirectory, m_directory, m_plotSelected, m_propertySelected, m_covariateSelected,
-    m_fibername;
-
-    double m_selectedLineColor[ 3 ], m_yMinMax[ 2 ], m_pvalueThreshold, m_lineWidth, m_markerSize, m_qcThreshold;
-
-    int m_nbrPlots, m_nbrPoints, m_markerType, m_abscissaNotation;
-
-    bool m_isBinaryCovariatesSent, m_isAllCovariatesSent, m_isCovariatesNoInterceptSent, m_gridOn;
-
-
-    QList< double > QStringListToDouble( const QStringList& rowData ); // Tested
-
-    QList< QList< double > > DataToDouble( const QList< QStringList >& data ); // Tested
-
-    void SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data ); // Tested
-
-    void TransposeData( QList< QList< double > >& data, int firstRow, int firstColumn ); // Tested
-
-    void TransposeDataInQMap( QMap< QString, QList< QList< double > > >& data, int firstRow, int firstColumn ); // Tested
-
-    void RemoveUnmatchedSubjects( QList<QStringList> &rawData ); // Tested
+    /**********************/
+    /**** QC THRESHOLD ****/
+    /**********************/
+    QStringList m_matchedSubjects, m_atlasQCThreshold;
+    QList< double > m_meanQCThreshold;
+    double m_qcThreshold;
 
 
-    void SetRawData(); // Tested
+    void SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data, int dataKind ); // Tested
 
-    bool SetRawDataQCThreshold( QList<QStringList> &rawData ); // Tested
+    void SetRawData(); /// Write new test
 
-    void SetBeta(); // Tested
+    void SetRawSats(); /// Write new test
 
-    void SetOmnibusLpvalue( const QStringList& omnibusLpvalueFiles, QList< QList< double > >& omnibusLpvaluesData ); // Tested
+    void SetBetasByCovariate(); /// Write new test
 
-    void SetConfidenceBands(); // Tested
+    void SetOmnibusLpvalue( const QStringList& omnibusLpvalueFiles, QList< QList< double > >& omnibusLpvaluesData ); /// Write new test
 
-    void SetPostHocFDRLpvalue(); // Tested
+    void SetOmnibusFDRSigBetasByProperties(); /// Not tested*
+
+    void SetOmnibusFDRSigBetasByCovariates(); /// Not tested*
+
+    void SetPostHocFDRLpvaluesByCovariates(); /// Not tested*
+
+    void SetPostHocFDRSigBetasOnAverageRawData(); /// Not tested*
+
+    void SetPostHocFDRSigBetasByProperties(); /// Not tested*
+
+    void SetPostHocFDRSigBetasByCovariates(); /// Not tested*
+
+    bool SetRawDataQCThreshold( const QList<QStringList>& rawData ); // Tested
 
 
-    bool GetRawDataFiles(); // Tested
+    void GetRawDataFiles(); // Tested
 
     void GetBetaFiles(); // Tested
 
@@ -270,24 +337,18 @@ private:
     void GetPostHocFDRLpvalueFiles(); // Tested
 
 
-    void SetPlots(); // Tested
+    bool SetPlots(); // Tested
 
-    void SetProperties(); // Tested
+    void SetProperties( const QStringList& properties ); // Tested
 
-    void SetSubjects(); // Tested
+    void SetSubjects( const QList< QStringList >& rawDataSubMatrix ); // Tested
 
-    void SetCovariates(); // Tested
-
-    void SetAbscissa(); // Tested
+    void SetCovariates( const QList< QStringList >& data, int dataKind ); // Tested
 
 
-    void SeparateBinary( QList< QList< double > >& temp0Bin, QList< QList< double > >& temp1Bin ); // Tested
+    void GetMeanAndStdDv( const QList< QList< double > >& binaryRawData, QList< double >& tempMean, QList< double >& tempStdDv ); // Tested
 
-    void GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< double >& tempMean, QList< double >& tempStdDv ); // Tested
-
-    QList< double > GetMean( const QList< QList< double > >& rawData ); // Tested
-
-    void ProcessRawStats( const QList< QList< double > >& tempBin, QList< double >& tempBinMean, QList< double >& tempBinUp, QList< double >& tempBinDown ); // Tested
+    void ProcessRawStats( const QList< QList< double > >& binaryRawData, QList< double >& binaryRawDataMean, QList< double >& binaryRawDataUp, QList< double >& binaryRawDataDown ); // Tested
 
     void SetSelectionToDisplayProperties(); // Tested
 
@@ -298,17 +359,17 @@ private:
 
     QList< QList< double > > LoadRawStats(); // Tested
 
-    QList< QList< double > > LoadSigBetasOnAverageRawData(); /// Not Tested*
+    QList< QList< double > > LoadBetasByProperties(); // Tested
 
-    QList< QList< double > > LoadBetas(); // Tested
-
-    QList< QList< double > > LoadBetaByCovariate(); // Tested
-
-    QList< QList< double > > LoadOmnibusLpvalues( QList< QList< double > > omnibusLpvalues ); // Tested
+    QList< QList< double > > LoadBetasByCovariates(); // Tested
 
     QList< QList< double > > LoadConfidenceBand(); // Tested
 
     QList< QList< double > > LoadPostHocFDRLpvalues(); // Tested
+
+    QList< QList< double > > LoadSigBetasOnAverageRawData(); /// Not Tested*
+
+    QList< QList< double > > LoadOmnibusLpvalues(); // Tested
 
     bool LoadData(); // Not Directly Tested
 
@@ -329,15 +390,15 @@ private:
     void SetData( vtkSmartPointer< vtkTable >& table ); // Tested
 
 
-    double ApplyPearsonCorrelation( int indexLine, const QList<double>& meanRawData ); // Tested
-
     void InitLines(); // Tested
 
     void AddSignificantLevel( double significantLevel ); // Tested
 
     void AddMean( QList< double > meanRawData ); // Not Directly Tested
 
-    void AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i ); // Not Directly Tested
+    void AddSigBetas( const QList< double >& dataSigBetas, const QList< double >& abscissaSigBetas, int index ); // Not Directly Tested
+
+    void AddSigBetasOnAverageRawData( const QList< double >& sigBetas, const QList< double >& sigBetasAbscissa, const QList< int >& markerColor, QString IDLegend );
 
     void AddLineRawData( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
@@ -347,13 +408,13 @@ private:
 
     void AddLineBetas( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddLineLPvalue( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
+    void AddLineLPvalue( const vtkSmartPointer< vtkTable >& table, int shift ); // Not Directly Tested
 
     void AddLineLConfidenceBands( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
     void AddLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
-    void AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table, const QList< double >& atlas ); // Not Directly Tested
+    void AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table ); // Not Directly Tested
 
 
     void GetyMinMax(); // Tested
@@ -366,6 +427,8 @@ private:
 
     void SetQCThresholdAxisProperties(); /// Not tested*
 
+
+    double SetMinMax( double minMax );
 
     int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /// Not tested*
 

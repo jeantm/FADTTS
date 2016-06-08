@@ -143,22 +143,35 @@ void FADTTS_noGUI::GetInputFiles( const QJsonObject& inputFiles )
 
 void FADTTS_noGUI::GetCovariates( const QJsonObject& covariates )
 {
-    QStringList expectedCovariates = m_processing.GetDataFromFile( m_inputs.value( SubMatrix ) ).first();
-    expectedCovariates.removeAt( m_subjectColumnID );
-    expectedCovariates.append( "Intercept" );
-    expectedCovariates.sort();
+    QList< QStringList > subMatrixFile = m_processing.GetDataFromFile( m_inputs.value( SubMatrix ) );
+    QStringList expectedCovariates;
+    if( !subMatrixFile.isEmpty() )
+    {
+        expectedCovariates = subMatrixFile.first();
+        expectedCovariates.removeAt( m_subjectColumnID );
+        expectedCovariates.append( "Intercept" );
+        expectedCovariates.sort();
+    }
 
     QStringList covariatesFound = covariates.keys();
+
     if( expectedCovariates != covariatesFound )
     {
         std::cout << "/!\\ Covariates provided mismatched the ones found in the submatrix file provided." << std::endl;
-        if( expectedCovariates.size() != covariatesFound.size() )
+        if( subMatrixFile.isEmpty() )
         {
-            std::cout << "     --> number of covariates is different" << std::endl;
+            std::cout << "     --> no data extracted from subMatrix file" << std::endl;
         }
         else
         {
-            std::cout << "     --> at least one covariate name mismatches" << std::endl << std::endl;
+            if( expectedCovariates.size() != covariatesFound.size() )
+            {
+                std::cout << "     --> number of covariates is different" << std::endl;
+            }
+            else
+            {
+                std::cout << "     --> at least one covariate name provided mismatches" << std::endl << std::endl;
+            }
         }
     }
     else

@@ -47,7 +47,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testProcessing.Test_GetSubjectsFromFile( argv[9] ) )
+    if( testProcessing.Test_GetSubjectsFromFileList( argv[9] ) )
     {
         nbrTestsPassed++;
     }
@@ -69,6 +69,52 @@ int main( int argc, char *argv[] )
 
 
     std::cerr << std::endl;
+    /************* Plot Processing *************/
+    std::cerr << std::endl << "/************* Plot Processing *************/";
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_Transpose() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_RemoveUnmatchedSubjects() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_QStringListToDouble() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_DataToDouble() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_GetMean() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+    std::cerr << std::endl << nbrTests + 1 << "- ";
+    if( testProcessing.Test_ApplyPearsonCorrelation() )
+    {
+        nbrTestsPassed++;
+    }
+    nbrTests++;
+
+
+    std::cerr << std::endl;
     /*** Functions used for Subjects Display ***/
     std::cerr << std::endl << "/*** Functions used for Subjects Display ***/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
@@ -77,64 +123,27 @@ int main( int argc, char *argv[] )
         nbrTestsPassed++;
     }
     nbrTests++;
+
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testProcessing.Test_GetSubjectsFromSelectedFiles() )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
+
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testProcessing.Test_SortSubjects() )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
+
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testProcessing.Test_AssignSortedSubject() )
     {
         nbrTestsPassed++;
     }
     nbrTests++;
-
-
-    std::cerr << std::endl;
-    /************* noGUI Functions *************/
-    std::cerr << std::endl << "/************* noGUI Functions *************/";
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testProcessing.Test_Transpose_noGUI() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testProcessing.Test_RemoveUnmatchedSubjects_noGUI() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testProcessing.Test_ToDouble_noGUI() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testProcessing.Test_GetMean_noGUI() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testProcessing.Test_ApplyPearsonCorrelation_noGUI() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-
-
-
-
 
 
     std::cerr << std::endl;

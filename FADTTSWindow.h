@@ -86,7 +86,9 @@ private slots:
     /**************** Subjects Tab ****************/
     void OnApplyQCThreshold(); /// Not tested
 
-    void OnQCThresholdApplied( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold ); // Tested
+    void OnQCThresholdApplied( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold, bool windowClosed ); // Tested
+
+    void OnNanSujects( const QStringList& nanSubjects );
 
 
     void OnSearch(); // Tested
@@ -216,6 +218,8 @@ private slots:
 
     void OnUpdatingMarkerSize( double markerSize ); // Not Directly Tested
 
+    void OnUpdatingBinaryBetas( bool checkState );
+
 
     void OnDisplayPlot(); // Not Directly Tested
 
@@ -339,7 +343,7 @@ private:
 
     void InitInputTab(); // Not Directly Tested
 
-    void InitSubjectCovariateTab(); // Not Directly Tested
+    void InitSubjectsTab(); // Not Directly Tested
 
     void InitExecutionTab(); // Not Directly Tested
 
@@ -454,6 +458,8 @@ private:
     void SetPlotOptions( bool isPlotSelected, bool propertySelectionAvailable, bool covariateSelectionAvailable ); /// Not tested
 
     void AddLinesForDisplay(); // Tested
+
+    void ClickLineForDisplay( QListWidgetItem *item );
 
     void SetCheckStateLinesToDisplay( Qt::CheckState checkState ); // Tested
 

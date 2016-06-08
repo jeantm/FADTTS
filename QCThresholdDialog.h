@@ -24,7 +24,7 @@ class QCThresholdDialog : public QDialog
     
 
 public slots:
-    void OnApplyQCThreshold();
+
 
 
 public:
@@ -36,7 +36,9 @@ public:
 
 
 signals:
-    void ApplyQCThreshold( const QStringList&, const QStringList&, double qcThreshold );
+    void ApplyQCThreshold( const QStringList&, const QStringList&, double qcThreshold, bool windowClosed );
+
+    void NanSujects( const QStringList& );
 
 
 private slots:
@@ -44,9 +46,17 @@ private slots:
 
     void OnUpdatingQCThreshold( double qcThreshold ); // Not Directly Tested
 
+    void OnRemoveNAN();
+
+    void OnApplyQCThreshold();
+
+    void closeEvent( QCloseEvent *event );
+
 
 private:
     Ui::QCThresholdDialog *ui;
+
+    Processing m_processing;
 
     QSharedPointer< QVTKWidget > m_qvtkWidget;
 
@@ -54,17 +64,18 @@ private:
 
     QDoubleSpinBox *m_qcThresholdDoubleSpinBox;
 
-    QList< QStringList > m_rawData;
+    QList< QStringList > m_faData;
 
-    QStringList m_matchedSubjects, m_subjectsCorrelated, m_subjectsNotCorrelated, m_atlas;
+    QStringList m_matchedSubjects,
+    m_subjectsCorrelated, m_subjectsNotCorrelated, m_atlas,
+    m_nanSubjects;
+
+    bool m_updated;
 
 
     void InitQCThresholdDialog();  // Not Directly Tested
 
-    void DisplayQCThresholdPlot( double qcThreshold, QStringList atlas ); // Not Directly Tested
-
-
-    void closeEvent( QCloseEvent *event );
+    void DisplayQCThresholdPlot( double qcThreshold, const QStringList& atlas ); // Not Directly Tested
 };
 
 #endif // QCTHRESHOLDDIALOG_H
