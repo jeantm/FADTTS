@@ -73,14 +73,47 @@ void FADTTSWindow::LoadParaConfiguration( QString filename )
             m_paramTabFileCheckBoxMap.value( i )->setChecked( m_paramTabFileCheckBoxMap.value( i )->isEnabled() ? filesUsed.value( m_data.GetDiffusionPropertyName( i ) ).toBool() : false );
         }
 
+        para_subjectTab_startArcLength_value_label->clear();
+        para_subjectTab_endArcLength_value_label->clear();
+        if( para_subjectTab_faFile_checkBox->isEnabled() )
+        {
+            QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+            arcLength.removeFirst();
+
+            if( !arcLength.isEmpty() )
+            {
+                QString tempStartProfile = subjectTab.value( "startProfile" ).toString();
+                QString tempEndProfile = subjectTab.value( "endProfile" ).toString();
+
+                QString startProfile = arcLength.contains( tempStartProfile ) ? tempStartProfile : arcLength.first();
+                QString endProfile = arcLength.contains( tempEndProfile ) ? tempEndProfile : arcLength.last();
+
+                if( startProfile.toDouble() < endProfile.toDouble() )
+                {
+                    para_subjectTab_startArcLength_value_label->setText( startProfile );
+                    para_subjectTab_endArcLength_value_label->setText( endProfile );
+                }
+            }
+        }
+
+
         para_subjectTab_qcThresoldOnAtlas_radioButton->setChecked( subjectTab.value( "useAtlas" ).toBool() );
         para_subjectTab_qcThreshold_doubleSpinBox->setValue( subjectTab.value( "qcThreshold" ).toDouble( 0.85 ) );
         para_subjectTab_subjectFile_lineEdit->setText( subjectTab.value( "subjectListPath" ).toString() );
+
 
         /****** 3rd tab: Execution ******/
         QJsonObject executionTab = jsonObject_param.value( "executionTab" ).toObject();
         QJsonObject settings = executionTab.value( "settings" ).toObject();
         para_executionTab_fiberName_lineEdit->setText( settings.value( "fiberName" ).toString() );
+        if( para_subjectTab_faFile_checkBox->isChecked() )
+        {
+            para_executionTab_useCroppedProfile_checkBox->setChecked( settings.value( "useCroppedProfile" ).toBool() );
+        }
+        else
+        {
+            para_executionTab_useCroppedProfile_checkBox->setChecked( false );
+        }
         para_executionTab_nbrPermutations_spinBox->setValue( settings.value( "nbrPermutations" ).toInt( 100 ) );
         para_executionTab_confidenceBandsThreshold_doubleSpinBox->setValue( settings.value( "confidenceBandThreshold" ).toDouble( 0.05 ) );
         para_executionTab_pvalueThreshold_doubleSpinBox->setValue( settings.value( "pvalueThreshold" ).toDouble( 0.05 ) );
@@ -276,6 +309,8 @@ void FADTTSWindow::SaveParaConfiguration( QString filename )
     }
     subjectTab.insert( "filesUsed", filesUsed );
 
+    subjectTab.insert( "startProfile", para_subjectTab_startArcLength_value_label->text() );
+    subjectTab.insert( "endProfile", para_subjectTab_endArcLength_value_label->text() );
     subjectTab.insert( "useAtlas", para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() );
     subjectTab.insert( "qcThreshold", para_subjectTab_qcThreshold_doubleSpinBox->value() );
     subjectTab.insert( "subjectListPath", para_subjectTab_subjectFile_lineEdit->text() );
@@ -283,6 +318,7 @@ void FADTTSWindow::SaveParaConfiguration( QString filename )
     /****** 3rd tab: Execution ******/
     QJsonObject settings;
     settings.insert( "fiberName", para_executionTab_fiberName_lineEdit->text() );
+    settings.insert( "useCroppedProfile", para_executionTab_useCroppedProfile_checkBox->isChecked() );
     settings.insert( "nbrPermutations", para_executionTab_nbrPermutations_spinBox->value() );
     settings.insert( "confidenceBandThreshold", para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() );
     settings.insert( "pvalueThreshold", para_executionTab_pvalueThreshold_doubleSpinBox->value() );
@@ -347,6 +383,7 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     QJsonObject inputFiles;
     QJsonObject covariates;
     QJsonObject subjects;
+    QJsonObject profile;
     QJsonObject settings;
     QJsonObject matlabSpecifications;
 
@@ -391,6 +428,11 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     qcThreshold.insert( "value", para_subjectTab_qcThreshold_doubleSpinBox->value() );
     subjects.insert( "qcThreshold", qcThreshold );
 
+    /******   Profile   ******/
+    profile.insert( "startProfile", para_subjectTab_startArcLength_value_label->text() );
+    profile.insert( "endProfile", para_subjectTab_endArcLength_value_label->text() );
+    profile.insert( "useCroppedProfile", para_executionTab_useCroppedProfile_checkBox->isChecked() );
+
     /******   Settings   ******/
     settings.insert( "fiberName", para_executionTab_fiberName_lineEdit->text() );
     settings.insert( "nbrPermutations", para_executionTab_nbrPermutations_spinBox->value() );
@@ -411,6 +453,7 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     jsonObject_noGUI.insert( "inputFiles", inputFiles );
     jsonObject_noGUI.insert( "covariates", covariates );
     jsonObject_noGUI.insert( "subjects", subjects );
+    jsonObject_noGUI.insert( "profile", profile );
     jsonObject_noGUI.insert( "settings", settings );
     jsonObject_noGUI.insert( "matlabSpecifications", matlabSpecifications );
     jsonObject.insert( "noGUIConfiguration", jsonObject_noGUI );

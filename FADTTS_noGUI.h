@@ -95,7 +95,7 @@ bool CanFADTTSterBeRun();
 
 void GenerateSubjectFile();
 
-void SetMatlabScript();
+void SetMatlabScript( const QJsonObject& profile );
 };
 
 #endif // FADTTS_noGUI_H

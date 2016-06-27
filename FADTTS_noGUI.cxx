@@ -42,7 +42,9 @@ int FADTTS_noGUI::RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI )
 
     if( CanFADTTSterBeRun() )
     {
-        SetMatlabScript();
+        QJsonObject profile = jsonObject_noGUI.value( "profile" ).toObject();;
+
+        SetMatlabScript( profile );
 
         m_matlabThread->start();
         while( m_matlabThread->isRunning() )
@@ -428,14 +430,42 @@ void FADTTS_noGUI::GenerateSubjectFile()
     }
 }
 
-void FADTTS_noGUI::SetMatlabScript()
+void FADTTS_noGUI::SetMatlabScript( const QJsonObject& profile )
 {
     QDir().mkpath( m_outputDir );
 
     GenerateSubjectFile();
 
+    int startProfile = -1;
+    int endProfile = -1;
+    QList< QStringList > faData = m_processing.GetDataFromFile( m_inputs.value( FA ) );
+    if( !faData.isEmpty() )
+    {
+        QStringList arcLength = m_processing.Transpose( faData ).first();
+        arcLength.removeFirst();
+
+        if( profile.value( "useCroppedProfile" ).toBool() )
+        {
+            if( !arcLength.isEmpty() )
+            {
+                QString tempStartProfile = profile.value( "startProfile" ).toString();
+                QString tempEndProfile = profile.value( "endProfile" ).toString();
+
+                startProfile = arcLength.contains( tempStartProfile ) ? arcLength.indexOf( tempStartProfile, 0 ) : -1;
+                endProfile = arcLength.contains( tempEndProfile ) ? arcLength.indexOf( tempEndProfile, 0 ) : -1;
+
+                if( startProfile >= endProfile )
+                {
+                    startProfile = -1;
+                    endProfile = -1;
+                }
+            }
+        }
+    }
+
+
     QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( m_outputDir, m_fibername, m_inputs, m_properties, m_covariates,
-                                                                               m_subjectColumnID, m_subjects, -1, -1 );
+                                                                               m_subjectColumnID, m_subjects, startProfile, endProfile );
 
     m_matlabThread->InitMatlabScript( m_outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( m_nbrPermutations ) + "perm.m" );
     m_matlabThread->SetHeader();
