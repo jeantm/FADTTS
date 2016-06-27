@@ -85,6 +85,8 @@ private:
 
     void InitEditInputDialog(); // Not Directly Tested
 
+    void UpdateNAN();
+
     void LoadData(); // Not Directly Tested
 
     void GetDuplicates();

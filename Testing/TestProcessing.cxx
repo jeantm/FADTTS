@@ -755,7 +755,7 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     int covariatesColumnIdTest1 = 0;
 
     QMap< int, QString > matlabInputFilesTest1 = processing.GenerateMatlabInputs( dirTest, fiberNameTest1, filesTest1, propertiesTest1,
-                                                                                  covariatesTest1, covariatesColumnIdTest1, subjects );
+                                                                                  covariatesTest1, covariatesColumnIdTest1, subjects, -1, -1 );
 
     /************************************************/
     /******************** Test 2 ********************/
@@ -776,7 +776,7 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     int covariatesColumnIdTest2 = 3;
 
     QMap< int, QString > matlabInputFilesTest2 = processing.GenerateMatlabInputs( dirTest, fiberNameTest2, filesTest2, propertiesTest2,
-                                                                                  covariatesTest2, covariatesColumnIdTest2, subjects );
+                                                                                  covariatesTest2, covariatesColumnIdTest2, subjects, -1, -1 );
 
 
     QMap< int, QString >::ConstIterator iterMatlabInputTest1 = matlabInputFilesTest1.cbegin();

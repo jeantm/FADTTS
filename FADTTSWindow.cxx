@@ -543,11 +543,13 @@ void FADTTSWindow::InitSubjectsTab()
         signalMapperSelectFile->setMapping( m_paramTabFileCheckBoxMap[ m_data.GetDiffusionPropertiesIndices().at( i ) ], m_data.GetDiffusionPropertiesIndices().at( i ) );
     }
 
-    /*** QC Threshold ***/
-    m_qcThresholdDialog = QSharedPointer< QCThresholdDialog >( new QCThresholdDialog( this ) );
-    connect( subjectTab_applyQCThreshold_pushButton, SIGNAL( clicked() ), this, SLOT( OnApplyQCThreshold() ) );
-    connect( m_qcThresholdDialog.data(), SIGNAL( ApplyQCThreshold( const QStringList&, const QStringList&, double, bool ) ), this, SLOT( OnQCThresholdApplied( const QStringList&, const QStringList&, double, bool ) ) );
-    connect( m_qcThresholdDialog.data(), SIGNAL( NanSujects( const QStringList& ) ), this, SLOT( OnNanSujects( const QStringList& ) ) );
+    /*** Subjects File ***/
+    m_subjectFileLineEdit = new QLineEdit();
+    m_subjectFileLineEdit = para_subjectTab_subjectFile_lineEdit;
+    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingSubjectList( const QString&  ) ) );
+    connect( subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
+    connect( subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
+    connect( subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
 
     /*** Subjects Lists ***/
     m_areSubjectsLoaded = false;
@@ -566,13 +568,15 @@ void FADTTSWindow::InitSubjectsTab()
     connect( subjectTab_search_lineEdit, SIGNAL( textEdited( const QString& ) ), this, SLOT( OnSearch() ) );
     connect( subjectTab_caseSensitive_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnSetCaseSensitivityToggled( bool ) ) );
 
-    /*** Subjects File ***/
-    m_subjectFileLineEdit = new QLineEdit();
-    m_subjectFileLineEdit = para_subjectTab_subjectFile_lineEdit;
-    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingSubjectList( const QString&  ) ) );
-    connect( subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
-    connect( subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
-    connect( subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
+    /*** QC Threshold ***/
+    m_qcThresholdDialog = QSharedPointer< QCThresholdDialog >( new QCThresholdDialog( this ) );
+    connect( subjectTab_applyQCThreshold_pushButton, SIGNAL( clicked() ), this, SLOT( OnApplyQCThreshold() ) );
+    connect( m_qcThresholdDialog.data(), SIGNAL( ApplyQCThreshold( const QStringList&, const QStringList&, double, bool ) ), this, SLOT( OnQCThresholdApplied( const QStringList&, const QStringList&, double, bool ) ) );
+    connect( m_qcThresholdDialog.data(), SIGNAL( NanSujects( const QStringList& ) ), this, SLOT( OnNanSujects( const QStringList& ) ) );
+
+    connect( m_qcThresholdDialog.data(), SIGNAL( UpdateStartArcLength( const QString& ) ), this, SLOT( OnUpdatingStartArcLength( const QString& ) ) );
+    connect( m_qcThresholdDialog.data(), SIGNAL( UpdateEndArcLength( const QString& ) ), this, SLOT( OnUpdatingEndArcLength( const QString& ) ) );
+    connect( subjectTab_resetProfileCropping_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetProfileCropping() ) );
 
     OnInputToggled();
 }
@@ -581,6 +585,10 @@ void FADTTSWindow::InitExecutionTab()
 {
     /*** Settings ***/
     para_executionTab_nbrPermutations_spinBox->setMaximum( 2000 );
+
+    connect( para_executionTab_useCroppedProfile_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUseCroppedProfileToggled( bool ) ) );
+    executionTab_croppedProfileWarningIcon_label->hide();
+    executionTab_croppedProfileWarningInfo_label->hide();
 
     /*** Output directory ***/
     connect( executionTab_outputDir_pushButton, SIGNAL( clicked() ), this, SLOT( OnBrowsingOutputDir() ) );
@@ -630,7 +638,7 @@ void FADTTSWindow::InitPlottingTab()
     m_qvtkWidget = QSharedPointer< QVTKWidget >( plottingTab_plot_qvtkWidget );
 
     m_plot = new Plot();
-    m_plot->SetQVTKWidget( m_qvtkWidget );
+    m_plot->SetQVTKWidget( m_qvtkWidget, false );
     connect( m_plot, SIGNAL( PlotsUsed( const QStringList& ) ), this, SLOT( OnSettingPlotsUsed( const QStringList& ) ) );
     connect( m_plot, SIGNAL( AllPropertiesUsed( const QMap< int, QString >& ) ), this, SLOT( OnSettingAllPropertiesUsed( const QMap< int, QString >& ) ) );
     connect( m_plot, SIGNAL( AllCovariatesUsed( const QMap< int, QString >& ) ), this, SLOT( OnSettingAllCovariatesUsed( const QMap< int, QString >& ) ) );
@@ -788,6 +796,17 @@ void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap& icon )
 void FADTTSWindow::OnSettingInputFile( int diffusionPropertyIndex )
 {
     m_data.ClearData( diffusionPropertyIndex );
+    if( diffusionPropertyIndex == m_data.GetFractionalAnisotropyIndex() )
+    {
+        para_subjectTab_startArcLength_value_label->clear();
+        para_subjectTab_endArcLength_value_label->clear();
+
+        para_executionTab_useCroppedProfile_checkBox->setChecked( false );
+        para_executionTab_useCroppedProfile_checkBox->setEnabled( false );
+        executionTab_croppedProfileWarningIcon_label->hide();
+        executionTab_croppedProfileWarningInfo_label->clear();
+        executionTab_croppedProfileWarningInfo_label->hide();
+    }
 
     QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ];
     QString filePath = lineEdit->text();
@@ -1045,6 +1064,15 @@ void FADTTSWindow::DisplayInputLineEditIcon( int diffusionPropertyIndex, const Q
     DisplayIcon( m_inputTabIconLabelMap[ diffusionPropertyIndex ], icon );
 }
 
+void FADTTSWindow::SetProfileCropping()
+{
+    QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+    arcLength.removeFirst();
+
+    para_subjectTab_startArcLength_value_label->setText( arcLength.first() );
+    para_subjectTab_endArcLength_value_label->setText( arcLength.last() );
+}
+
 void FADTTSWindow::UpdateInputFileInformation( int diffusionPropertyIndex )
 {
     QList< QStringList > fileData = m_data.GetFileData( diffusionPropertyIndex );
@@ -1059,6 +1087,11 @@ void FADTTSWindow::UpdateInputFileInformation( int diffusionPropertyIndex )
         QStringList subjects = m_processing.GetSubjectsFromData( fileData, m_data.GetSubjectColumnID() );
         m_data.SetSubjects( diffusionPropertyIndex ) = subjects;
         m_data.SetNbrSubjects( diffusionPropertyIndex ) = subjects.count();
+
+        if( diffusionPropertyIndex == m_data.GetFractionalAnisotropyIndex() )
+        {
+            SetProfileCropping();
+        }
 
         if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
         {
@@ -1165,7 +1198,7 @@ void FADTTSWindow::OnApplyQCThreshold()
 
     if( !matchedSubjects.isEmpty() && !rawData.isEmpty() && ( para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() ? !atlas.isEmpty() : true ) )
     {
-        bool initDiaolog = m_qcThresholdDialog->InitPlot( rawData, atlas, matchedSubjects, para_subjectTab_qcThreshold_doubleSpinBox->value() );
+        bool initDiaolog = m_qcThresholdDialog->InitPlot( rawData, atlas, matchedSubjects, para_subjectTab_qcThreshold_doubleSpinBox->value(), para_subjectTab_startArcLength_value_label->text(), para_subjectTab_endArcLength_value_label->text() );
 
         if( initDiaolog )
         {
@@ -1222,6 +1255,27 @@ void FADTTSWindow::OnNanSujects( const QStringList& nanSubjects )
     DisplayNbrSubjectSelected();
 }
 
+void FADTTSWindow::OnResetProfileCropping()
+{
+    SetProfileCropping();
+
+    OnUseCroppedProfileToggled( para_executionTab_useCroppedProfile_checkBox->isChecked() );
+}
+
+void FADTTSWindow::OnUpdatingStartArcLength( const QString& valueStart )
+{
+    para_subjectTab_startArcLength_value_label->setText( valueStart );
+
+    OnUseCroppedProfileToggled( para_executionTab_useCroppedProfile_checkBox->isChecked() );
+}
+
+void FADTTSWindow::OnUpdatingEndArcLength( const QString& valueEnd )
+{
+    para_subjectTab_endArcLength_value_label->setText( valueEnd );
+
+    OnUseCroppedProfileToggled( para_executionTab_useCroppedProfile_checkBox->isChecked() );
+}
+
 
 void FADTTSWindow::OnSearch()
 {
@@ -1235,8 +1289,9 @@ void FADTTSWindow::OnInputToggled()
     SetSelectedInputFiles();
     UpdateSubjectList();
 
-    bool isEnable = m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isChecked() && m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isEnabled();
-    subjectTab_qcThreshold_widget->setEnabled( isEnable );
+    bool isFAEnable = m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isChecked() && m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isEnabled();
+    subjectTab_qcThreshold_widget->setEnabled( isFAEnable );
+    para_executionTab_useCroppedProfile_checkBox->setEnabled( isFAEnable );
 }
 
 void FADTTSWindow::OnSetCaseSensitivityToggled( bool checked )
@@ -1657,6 +1712,37 @@ QMap< QString, QList< QStringList > > FADTTSWindow::GetPropertyRawData()
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
+void FADTTSWindow::OnUseCroppedProfileToggled( bool useCroppedProfile )
+{
+    QList< QStringList > faFile = m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() );
+    QStringList arcLength;
+
+    if( !faFile.isEmpty() )
+    {
+        arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+        arcLength.removeFirst();
+    }
+
+
+    if( useCroppedProfile && !arcLength.isEmpty() )
+    {
+        QString warningText;
+
+        warningText = "<i><span style=""font-size:8pt;"">Original Profile: from " + arcLength.first() + " to " + arcLength.last() +
+                "<br>Cropped Profile: from "+ para_subjectTab_startArcLength_value_label->text() + " to " + para_subjectTab_endArcLength_value_label->text() + "</span></i>";
+
+        executionTab_croppedProfileWarningInfo_label->setText( tr( qPrintable( warningText ) ) );
+    }
+    else
+    {
+        executionTab_croppedProfileWarningInfo_label->clear();
+    }
+
+    executionTab_croppedProfileWarningIcon_label->setHidden( !useCroppedProfile );
+    executionTab_croppedProfileWarningInfo_label->setHidden( !useCroppedProfile );
+}
+
+
 void FADTTSWindow::OnBrowsingOutputDir()
 {
     QLineEdit *lineEdit = para_executionTab_outputDir_lineEdit;
@@ -1847,6 +1933,34 @@ void FADTTSWindow::OnMatlabThreadFinished()
 
 
 /*********************** Private function ***********************/
+void FADTTSWindow::GenerateNANSubjectFile( QString outputDir, QStringList selectedSubjects )
+{
+    QList< QStringList > faData = m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() );
+    if( !faData.isEmpty() )
+    {
+        QStringList nanSubjects = m_processing.GetNANSubjects( faData, selectedSubjects );
+
+        if( !nanSubjects.isEmpty() )
+        {
+            QFile nanSubjectFile( outputDir + "/" + para_executionTab_fiberName_lineEdit->text() + "_subjectList_NAN.txt" );
+
+            if( nanSubjectFile.open( QIODevice::WriteOnly ) )
+            {
+                QTextStream tsNanSubjectFile( &nanSubjectFile );
+
+                tsNanSubjectFile << "The following subject(s) present(s) -nan and/or nan values in FA file:" << endl;
+
+                for( int i = 0; i < nanSubjects.size(); i++ )
+                {
+                    tsNanSubjectFile << "- " << nanSubjects.at( i ) << endl;
+                }
+                nanSubjectFile.flush();
+                nanSubjectFile.close();
+            }
+        }
+    }
+}
+
 void FADTTSWindow::GenerateFailedQCThresholdSubjectFile( QString outputDir )
 {
     QFile failedQCThresholdSubjectFile( outputDir + "/" + para_executionTab_fiberName_lineEdit->text() + "_subjectList_FAILED_QCThreshold.txt" );
@@ -1892,6 +2006,8 @@ QStringList FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
     {
         GenerateFailedQCThresholdSubjectFile( outputDir );
     }
+
+    GenerateNANSubjectFile( outputDir, selectedSubjects );
 
     return selectedSubjects;
 }
@@ -1989,7 +2105,7 @@ bool FADTTSWindow::canFADTTSterBeRun()
         if( atLeastOneDiffusionPropertyEnabled || subMatrixEnabled )
         {
             if( ( !atLeastOneDiffusionPropertyChecked && atLeastOneDiffusionPropertyEnabled ) || ( !subMatrixChecked && subMatrixEnabled ) ||
-                    ( ( atLeastOneDiffusionPropertyChecked || subMatrixChecked ) || !atLeastOneSubjectSelected ) )
+                    ( ( atLeastOneDiffusionPropertyChecked || subMatrixChecked ) && !atLeastOneSubjectSelected ) )
             {
                 warningText.append( "Subjects Tab<br>" );
                 if( !atLeastOneDiffusionPropertyChecked && atLeastOneDiffusionPropertyEnabled )
@@ -2000,7 +2116,7 @@ bool FADTTSWindow::canFADTTSterBeRun()
                 {
                     warningText.append( "- Covariate file not selected<br>" );
                 }
-                if( ( atLeastOneDiffusionPropertyChecked || subMatrixChecked ) || !atLeastOneSubjectSelected )
+                if( ( atLeastOneDiffusionPropertyChecked || subMatrixChecked ) && !atLeastOneSubjectSelected )
                 {
                     warningText.append( "- Select at least 1 subject<br>" );
                 }
@@ -2036,8 +2152,19 @@ void FADTTSWindow::SetMatlabScript()
     QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + m_fibername;
     QDir().mkpath( outputDir );
 
+    int startProfile = -1;
+    int endProfile = -1;
+    if( para_executionTab_useCroppedProfile_checkBox->isChecked() )
+    {
+        QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+        arcLength.removeFirst();
+
+        startProfile = arcLength.indexOf( para_subjectTab_startArcLength_value_label->text(), 0 );
+        endProfile = arcLength.indexOf( para_subjectTab_endArcLength_value_label->text(), 0 );
+    }
+
     QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( outputDir,m_fibername, m_selectedFiles, m_propertySelected, m_selectedCovariates,
-                                                                               m_data.GetSubjectColumnID(), GenerateSelectedSubjectFile( outputDir ) );
+                                                                               m_data.GetSubjectColumnID(), GenerateSelectedSubjectFile( outputDir ), startProfile, endProfile );
 
     m_matlabThread->InitMatlabScript( outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( para_executionTab_nbrPermutations_spinBox->value() ) + "perm.m" );
     m_matlabThread->SetHeader();

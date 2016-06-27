@@ -17,7 +17,7 @@ bool TestPlot::Test_SetQVTKWidget()
 
 
     bool testSetQVTKWidget_Passed = plot.m_qvtkWidget.isNull();
-    plot.SetQVTKWidget( qvtkWidget );
+    plot.SetQVTKWidget( qvtkWidget, false );
     testSetQVTKWidget_Passed = testSetQVTKWidget_Passed && !plot.m_qvtkWidget.isNull();
 
 
@@ -885,7 +885,7 @@ bool TestPlot::Test_SetCustomizedTitle()
     double fontSize = 24;
 
 
-    plot.SetQVTKWidget( qvtkWidget );
+    plot.SetQVTKWidget( qvtkWidget, false );
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
     plot.SetCustomizedTitle( title, bold, italic, fontSize );
 
@@ -930,7 +930,7 @@ bool TestPlot::Test_SetDefaultTitle()
     QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
 
 
-    plot.SetQVTKWidget( qvtkWidget );
+    plot.SetQVTKWidget( qvtkWidget, false );
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
     plot.m_fibername = "Test";
     plot.SetSelectedProperty() = "RD";
@@ -1019,7 +1019,7 @@ bool TestPlot::Test_SetCustomizedAxis()
     double yMax = 5;
 
 
-    plot.SetQVTKWidget( qvtkWidget );
+    plot.SetQVTKWidget( qvtkWidget, false );
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
     plot.SetCustomizedAxis( 12, xName, yName, 12, bold, italic, yMinSet, yMin, yMaxSet, yMax );
 
@@ -1089,7 +1089,7 @@ bool TestPlot::Test_SetDefaultAxis()
     QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
 
 
-    plot.SetQVTKWidget( qvtkWidget );
+    plot.SetQVTKWidget( qvtkWidget, false );
     plot.m_plotSelected = "Omnibus Local pvalues";
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
 
@@ -1160,7 +1160,7 @@ bool TestPlot::Test_SetLegend()
     QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
 
 
-    plot.SetQVTKWidget( qvtkWidget );
+    plot.SetQVTKWidget( qvtkWidget, false );
     plot.m_chart = vtkSmartPointer< vtkChartXY >::New();
 
     plot.m_plotSelected = "Raw Data";
@@ -2162,7 +2162,7 @@ bool TestPlot::Test_SavePlot( QString plotPath, QString dataDir, QString tempoDi
 //    linesToDisplay.insert( 3, QPair< QString, QPair< bool, QString > >( "GestAgeAtBirth", QPair< bool, QString >( true, "Yellow" ) ) );
 
 
-//    plot.SetQVTKWidget( qvtkWidget );
+//    plot.SetQVTKWidget( qvtkWidget, false );
 //    plot.InitPlot( dirTest, "test", 0.05 );
 //    plot.SetSelectedPlot( "Raw Betas by Properties" );
 //    plot.SetSelectedProperty() = "FA";

@@ -202,6 +202,24 @@ QMap< int, QStringList > FADTTS_noGUI::GetInputSubjects()
     return subjectMap;
 }
 
+void FADTTS_noGUI::NANSubjects( QStringList allSubjects )
+{
+    QList< QStringList > faData = m_processing.GetDataFromFile( m_inputs.value( FA ) );
+    if( !faData.isEmpty() )
+    {
+        QStringList nanSubjects = m_processing.GetNANSubjects( faData, allSubjects );
+        if( !nanSubjects.isEmpty() )
+        {
+            std::cout << "/!\\ WARNING /!\\ subject(s) with -nan and/or nan values (FA file):" << std::endl;
+            for( int i = 0; i < nanSubjects.size(); i++ )
+            {
+                std::cout << "    - " << nanSubjects.at( i ).toStdString() << std::endl;
+            }
+            std::cout << std::endl;
+        }
+    }
+}
+
 void FADTTS_noGUI::SetQCThreshold( const QJsonObject& qcThresholdObject )
 {
     if( qcThresholdObject.value( "apply" ).toBool() )
@@ -234,7 +252,10 @@ void FADTTS_noGUI::SetQCThreshold( const QJsonObject& qcThresholdObject )
 void FADTTS_noGUI::GetSubjects( const QJsonObject& subjects )
 {
     m_subjectFile = subjects.value( "subjectListPath" ).toString();
-    m_loadedSubjects = m_processing.GetSubjectsFromFileList( m_subjectFile );
+    if( !m_subjectFile.isEmpty() )
+    {
+        m_loadedSubjects = m_processing.GetSubjectsFromFileList( m_subjectFile );
+    }
 
     QMap< int, QStringList > allSubjects = GetInputSubjects();
     if( !m_loadedSubjects.isEmpty() )
@@ -249,6 +270,8 @@ void FADTTS_noGUI::GetSubjects( const QJsonObject& subjects )
     QMap< QString, QList< int > > unMatchedSubjects;
     m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
     m_subjects = matchedSubjects;
+
+    NANSubjects( matchedSubjects );
 
     SetQCThreshold( subjects.value( "qcThreshold" ).toObject() );
 
@@ -412,7 +435,7 @@ void FADTTS_noGUI::SetMatlabScript()
     GenerateSubjectFile();
 
     QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( m_outputDir, m_fibername, m_inputs, m_properties, m_covariates,
-                                                                               m_subjectColumnID, m_subjects );
+                                                                               m_subjectColumnID, m_subjects, -1, -1 );
 
     m_matlabThread->InitMatlabScript( m_outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( m_nbrPermutations ) + "perm.m" );
     m_matlabThread->SetHeader();

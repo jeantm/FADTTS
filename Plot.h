@@ -48,7 +48,7 @@ public:
     explicit Plot( QObject *parent = 0 );
 
 
-    void SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget ); // Tested
+    void SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget, bool isQCThreshold ); // Tested
 
     bool InitPlot( QString directory, QString fibername, double pvalueThreshold ); // Not Directly Tested
 
@@ -123,6 +123,12 @@ public:
 
     QStringList& SetAtlasQCThreshold(); /// Not tested*
 
+    bool& SetCroppingEnabled();
+
+    int& SetArcLengthStartIndex();
+
+    int& SetArcLengthEndIndex();
+
 
     void UpdateCovariatesNames( const QMap< int, QString >& newCovariatesNames ); // Tested
 
@@ -130,6 +136,15 @@ public:
     void AddSelectedLine( vtkSmartPointer< vtkPlot > newLine ); /// Not tested*
 
     void UpdateLineSelection(); /// Not tested*
+
+
+    void UpdateNAN( const QStringList& m_nanSubjects);
+
+    void UpdateQCThreshold( double qcThreshold, bool emitSignal );
+
+    void UpdateCropping();
+
+    void ShowHideProfileCropping( bool show );
 
 
 
@@ -295,8 +310,9 @@ private:
     /**** QC THRESHOLD ****/
     /**********************/
     QStringList m_matchedSubjects, m_atlasQCThreshold;
-    QList< double > m_meanQCThreshold;
     double m_qcThreshold;
+    int m_arcLengthStartIndex, m_arcLengthEndIndex;
+    bool m_croppingEnabled;
 
 
     void SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data, int dataKind ); // Tested
@@ -392,9 +408,13 @@ private:
 
     void InitLines(); // Tested
 
+    void InitQCThresholdLines();
+
     void AddSignificantLevel( double significantLevel ); // Tested
 
     void AddMean( QList< double > meanRawData ); // Not Directly Tested
+
+    void AddCrop( bool previousExist );
 
     void AddSigBetas( const QList< double >& dataSigBetas, const QList< double >& abscissaSigBetas, int index ); // Not Directly Tested
 

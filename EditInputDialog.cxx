@@ -69,6 +69,11 @@ void EditInputDialog::OnDeleteRows()
         }
     }
     m_rowDeleted = true;
+
+    if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+    {
+        UpdateNAN();
+    }
 }
 
 void EditInputDialog::OnDeleteColumns()
@@ -94,6 +99,11 @@ void EditInputDialog::OnDeleteColumns()
     }
     m_columnDeleted = true;
     m_subjectColumnIDSpinBox->setMaximum( m_dataTableWidget->columnCount() );
+
+    if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+    {
+        UpdateNAN();
+    }
 }
 
 
@@ -119,6 +129,11 @@ void EditInputDialog::OnRemoveDuplicates()
         }
 
         indexSecondeOccurrences.clear();
+
+        if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+        {
+            UpdateNAN();
+        }
 
         m_ui->EditInputDialog_removeDuplicates_info_label->setEnabled( false );
         m_ui->EditInputDialog_removeDuplicates_pushButton->setEnabled( false );
@@ -228,6 +243,34 @@ void EditInputDialog::InitEditInputDialog()
     connect( m_ui->EditInputDialog_saveFile_pushButton, SIGNAL( clicked() ), SLOT( OnSaveFile() ) );
 }
 
+void EditInputDialog::UpdateNAN()
+{
+    QColor carolinaBlue = QColor( 123,175,212,47 );
+    bool atLeastOneNAN = false;
+
+    for( int column = 1; column < m_dataTableWidget->columnCount(); column++ )
+    {
+        int tempRow = 1;
+        bool nanFound = false;
+        while( tempRow < m_dataTableWidget->rowCount() && !nanFound )
+        {
+            if( m_dataTableWidget->item( tempRow, column )->text().contains( "-nan" ) || m_dataTableWidget->item( tempRow, column )->text().contains( "nan" ) )
+            {
+                nanFound = true;
+                atLeastOneNAN = true;
+            }
+            tempRow++;
+        }
+
+        for( int row = 0; row < m_dataTableWidget->rowCount(); row++ )
+        {
+            m_dataTableWidget->item( row, column )->setBackgroundColor( nanFound ? carolinaBlue : Qt::transparent );
+        }
+    }
+
+    m_ui->EditInputDialog_nanValues_label->setHidden( !atLeastOneNAN );
+}
+
 void EditInputDialog::LoadData()
 {
     QList< QStringList > fileData = m_data->GetFileData( m_diffusionPropertyIndex );
@@ -253,10 +296,16 @@ void EditInputDialog::LoadData()
             {
                 data.remove( 0, 1 );
             }
-            m_dataTableWidget->setItem( nbrRows, nbrColumns++, new QTableWidgetItem( data ) );
+            m_dataTableWidget->setItem( nbrRows, nbrColumns, new QTableWidgetItem( data ) );
+            nbrColumns++;
         }
         nbrRows++; nbrColumns=0;
     }
+    if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+    {
+        UpdateNAN();
+    }
+
     m_dataTableWidget->setUpdatesEnabled( true );
 
     if( m_diffusionPropertyIndex == m_data->GetSubMatrixIndex() )

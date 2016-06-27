@@ -78,6 +78,8 @@ void GetCovariates( const QJsonObject& covariates );
 
 QMap< int, QStringList > GetInputSubjects();
 
+void NANSubjects( QStringList allSubjects );
+
 void SetQCThreshold( const QJsonObject& qcThresholdObject );
 
 void GetSubjects( const QJsonObject& subjects );

@@ -32,7 +32,7 @@ Plot::Plot( QObject *parent ) :
 }
 
 
-void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )
+void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget, bool isQCThreshold )
 {
     m_qvtkWidget = QSharedPointer< QVTKWidget >( qvtkWidget );
     m_view = vtkSmartPointer< vtkContextView >::New();
@@ -41,7 +41,10 @@ void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )
     m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
     m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
 
-    connect( m_qvtkWidget.data(), SIGNAL( mouseEvent( QMouseEvent * ) ), this, SLOT( OnMouseEvent( QMouseEvent * ) ) );
+    if( !isQCThreshold )
+    {
+        connect( m_qvtkWidget.data(), SIGNAL( mouseEvent( QMouseEvent * ) ), this, SLOT( OnMouseEvent( QMouseEvent * ) ) );
+    }
 }
 
 bool Plot::InitPlot( QString directory, QString fibername, double pvalueThreshold )
@@ -140,7 +143,7 @@ bool Plot::DisplayQCThresholdPlot()
         // Setting axis properties and observers
         SetQCThresholdAxisProperties();
 
-        m_chart->SetInteractive( false );
+//        m_chart->SetInteractive( false );
     }
 
     return dataAvailable;
@@ -201,7 +204,6 @@ void Plot::ResetPlotData()
 
     m_matchedSubjects.clear();
     m_atlasQCThreshold.clear();
-    m_meanQCThreshold.clear();
 }
 
 void Plot::ClearPlot()
@@ -808,6 +810,21 @@ QStringList& Plot::SetAtlasQCThreshold()
     return m_atlasQCThreshold;
 }
 
+bool& Plot::SetCroppingEnabled()
+{
+    return m_croppingEnabled;
+}
+
+int& Plot::SetArcLengthStartIndex()
+{
+    return m_arcLengthStartIndex;
+}
+
+int& Plot::SetArcLengthEndIndex()
+{
+    return m_arcLengthEndIndex;
+}
+
 
 void Plot::UpdateCovariatesNames( const QMap< int, QString >& newCovariateName )
 {
@@ -942,6 +959,83 @@ void Plot::UpdateLineSelection()
         m_currentSelectedLines.selectedLines.clear();
         m_currentSelectedLines.isEmpty = true;
     }
+}
+
+
+void Plot::UpdateNAN( const QStringList& nanSubjects )
+{
+    for( int plotIndex = m_chart->GetNumberOfPlots(); plotIndex > 0 ; plotIndex-- )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( plotIndex - 1 );
+        if( nanSubjects.contains( QString( currentLine->GetLabel() ) ) )
+        {
+            int currentIndex = m_chart->GetPlotIndex( currentLine );
+            m_chart->RemovePlot( currentIndex );
+            m_dataRawData[ m_propertySelected ].removeAt( currentIndex );
+        }
+    }
+
+    m_nbrPlots = m_dataRawData[ m_propertySelected ].size();
+
+    UpdateQCThreshold( m_qcThreshold, false );
+
+    m_view->Render();
+}
+
+void Plot::UpdateQCThreshold( double qcThreshold, bool emitSignal )
+{
+    m_qcThreshold = qcThreshold;
+    QList< double > atlas = m_processing.QStringListToDouble( m_atlasQCThreshold );
+    QList< double > refLine = !atlas.isEmpty() ? atlas : m_processing.GetMean( m_dataRawData.value( m_propertySelected ), 0 );
+    QStringList subjectsCorrelated, subjectsNotCorrelated;
+
+    for( int i = 0; i < m_nbrPlots; i++ )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
+        QList< int > color;
+
+        double pearsonCorrelation = m_processing.ApplyPearsonCorrelation( m_dataRawData.value( m_propertySelected ).at( i ), refLine, 0 );
+
+        if( pearsonCorrelation < m_qcThreshold )
+        {
+            subjectsNotCorrelated.append( QString( currentLine->GetLabel() ) );
+
+            color = m_allColors.value( "Red" );
+            currentLine->GetPen()->SetLineType( vtkPen::DASH_LINE );
+        }
+        else
+        {
+            subjectsCorrelated.append( QString( currentLine->GetLabel() ) );
+
+            color = m_allColors.value( "Carolina Blue" );
+            currentLine->GetPen()->SetLineType( vtkPen::SOLID_LINE );
+        }
+
+        currentLine->SetColor(  color.first(), color.at( 1 ), color.at( 2 ), 255 );
+        currentLine->SetWidth( m_lineWidth );
+    }
+
+    if( emitSignal )
+    {
+        emit UpdateSubjectsCorrelated( subjectsCorrelated, subjectsNotCorrelated );
+    }
+
+    m_view->Render();
+}
+
+void Plot::UpdateCropping()
+{
+    AddCrop( true );
+
+    m_view->Render();
+}
+
+void Plot::ShowHideProfileCropping( bool show )
+{
+    m_chart->GetPlot( m_chart->GetNumberOfPlots() - 1 )->SetVisible( show );
+    m_chart->GetPlot( m_chart->GetNumberOfPlots() - 2 )->SetVisible( show );
+
+    m_view->Render();
 }
 
 
@@ -1462,7 +1556,6 @@ bool Plot::SetRawDataQCThreshold( const QList< QStringList >& rawData )
     faData.removeFirst();
     faData = m_processing.Transpose( faData );
     faData.removeFirst();
-    m_meanQCThreshold = m_processing.GetMean( m_processing.DataToDouble( faData ), 0 );
 
     bool subjectsRemoved;
     if( !m_matchedSubjects.isEmpty() )
@@ -1479,7 +1572,9 @@ bool Plot::SetRawDataQCThreshold( const QList< QStringList >& rawData )
         tempData.removeFirst();
         tempData = m_processing.Transpose( tempData );
 
-        m_dataRawData.insert( m_propertySelected, m_processing.DataToDouble( tempData ) );
+        QList< QList< double > > tempDoubleData = m_processing.DataToDouble( tempData );
+        m_processing.NANToZeros( tempDoubleData );
+        m_dataRawData.insert( m_propertySelected, tempDoubleData );
     }
 
     return !m_dataRawData.value( m_propertySelected ).isEmpty() && subjectsRemoved;
@@ -2110,6 +2205,15 @@ void Plot::InitLines()
     }
 }
 
+void Plot::InitQCThresholdLines()
+{
+    for( int i = 0; i < m_nbrPlots; i++ )
+    {
+        m_chart->AddPlot( vtkChart::LINE );
+        m_chart->GetPlot( i )->SetSelectable( false );
+    }
+}
+
 void Plot::AddSignificantLevel( double significantLevel )
 {
     vtkSmartPointer< vtkDoubleArray > abscissaSigLevel = vtkSmartPointer< vtkDoubleArray >::New();
@@ -2160,6 +2264,62 @@ void Plot::AddMean( QList< double > meanRawData )
     sigLevelLine->SetInputData( tableSigLevel, 0, 1 );
     sigLevelLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
     sigLevelLine->SetWidth( m_lineWidth * 2 );
+}
+
+void Plot::AddCrop( bool previousExist )
+{
+    if( previousExist )
+    {
+        m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+        m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+    }
+
+    GetyMinMax();
+
+    vtkSmartPointer< vtkDoubleArray > startCrop = vtkSmartPointer< vtkDoubleArray >::New();
+    startCrop->SetNumberOfComponents( 1 );
+    startCrop->SetName( "Abscissa Start Crop" );
+    vtkSmartPointer< vtkDoubleArray > endCrop = vtkSmartPointer< vtkDoubleArray >::New();
+    endCrop->SetNumberOfComponents( 1 );
+    endCrop->SetName( "Abscissa End Crop" );
+    vtkSmartPointer< vtkDoubleArray > yCropStart = vtkSmartPointer< vtkDoubleArray >::New();
+    yCropStart->SetNumberOfComponents( 1 );
+    yCropStart->SetName( "Y Crop Start" );
+    vtkSmartPointer< vtkDoubleArray > yCropEnd = vtkSmartPointer< vtkDoubleArray >::New();
+    yCropEnd->SetNumberOfComponents( 1 );
+    yCropEnd->SetName( "Y Crop End" );
+
+    startCrop->InsertNextValue( m_abscissa.at( m_arcLengthStartIndex ) );
+    startCrop->InsertNextValue( m_abscissa.at( m_arcLengthStartIndex ) );
+    endCrop->InsertNextValue( m_abscissa.at( m_arcLengthEndIndex ) );
+    endCrop->InsertNextValue( m_abscissa.at( m_arcLengthEndIndex ) );
+    yCropStart->InsertNextValue( m_yMinMax[ 0 ] );
+    yCropStart->InsertNextValue( m_yMinMax[ 1 ] );
+    yCropEnd->InsertNextValue( m_yMinMax[ 0 ] );
+    yCropEnd->InsertNextValue( m_yMinMax[ 1 ] );
+
+    vtkSmartPointer< vtkTable > tableCrop = vtkSmartPointer< vtkTable >::New();
+    tableCrop->SetNumberOfRows( 2 );
+    tableCrop->AddColumn( startCrop );
+    tableCrop->AddColumn( endCrop );
+    tableCrop->AddColumn( yCropStart );
+    tableCrop->AddColumn( yCropEnd );
+
+    vtkSmartPointer< vtkPlot > startCropLine = m_chart->AddPlot( vtkChart::LINE );
+    startCropLine->SetSelectable( false );
+    startCropLine->SetInputData( tableCrop, 0, 2 );
+    startCropLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
+    startCropLine->GetPen()->SetLineType( vtkPen::DASH_DOT_LINE );
+    startCropLine->SetWidth( m_lineWidth );
+    startCropLine->SetVisible( m_croppingEnabled );
+
+    vtkSmartPointer< vtkPlot > endCropLine = m_chart->AddPlot( vtkChart::LINE );
+    endCropLine->SetSelectable( false );
+    endCropLine->SetInputData( tableCrop, 1, 3 );
+    endCropLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
+    endCropLine->GetPen()->SetLineType( vtkPen::DASH_DOT_LINE );
+    endCropLine->SetWidth( m_lineWidth );
+    endCropLine->SetVisible( m_croppingEnabled );
 }
 
 void Plot::AddSigBetas( const QList< double >& dataSigBetas, const QList< double >& abscissaSigBetas, int index )
@@ -2461,11 +2621,11 @@ void Plot::AddLines( const vtkSmartPointer< vtkTable >& table )
 
 void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table )
 {
-    InitLines();
+    InitQCThresholdLines();
 
     QList< double > atlas = m_processing.QStringListToDouble( m_atlasQCThreshold );
 
-    QList< double > refLine = !atlas.isEmpty() ? atlas : m_meanQCThreshold;
+    QList< double > refLine = !atlas.isEmpty() ? atlas : m_processing.GetMean( m_dataRawData.value( m_propertySelected ), 0 );
 
     QStringList subjectsCorrelated, subjectsNotCorrelated;
     for( int i = 0; i < m_nbrPlots; i++ )
@@ -2496,6 +2656,7 @@ void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table )
     }
 
     AddMean( refLine );
+    AddCrop( false );
 
     emit UpdateSubjectsCorrelated( subjectsCorrelated, subjectsNotCorrelated );
 }
@@ -2585,25 +2746,16 @@ void Plot::SetAxisProperties()
 
 void Plot::SetQCThresholdAxisProperties()
 {
-    if( !m_abscissa.isEmpty() )
-    {
-        double xMin = m_abscissa.first();
-        double xMax = m_abscissa.last();
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetLabelsVisible( false );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
-    }
+    double xMin = m_abscissa.first();
+    double xMax = m_abscissa.last();
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
 
-    GetyMinMax();
-    double yMin = m_yMinMax[ 0 ];
-    double yMax = m_yMinMax[ 1 ];
-    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetLabelsVisible( false );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "" );
+
+    m_chart->SetSelectionMode( vtkContextScene::SELECTION_NONE );
+    m_chart->SetForceAxesToBounds( true );
 }
 
 double Plot::SetMinMax( double minMax )

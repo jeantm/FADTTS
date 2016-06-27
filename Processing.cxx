@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-//#include <QDebug>
+#include <QDebug>
 
 
 const QString Processing::m_csvSeparator = QLocale().groupSeparator();
@@ -140,6 +140,20 @@ QStringList Processing::GetNANSubjects( const QList< QStringList >& faData, cons
     }
 
     return nanSubjects;
+}
+
+void Processing::NANToZeros( QList< QList< double > >& faData )
+{
+    for( int i = 0; i < faData.size(); i++ )
+    {
+        for( int j = 0; j < faData.first().size(); j++ )
+        {
+            if( isnan( faData.at( i ).at( j ) ) )
+            {
+                faData[ i ][ j ] = 0;
+            }
+        }
+    }
 }
 
 
@@ -433,7 +447,7 @@ void Processing::AssignSortedSubject( const QMap<QString, QMap< int, bool > >& s
 
 
 QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QString fiberName, const QMap< int, QString >& inputs, const QMap< int, QString >& properties,
-                                                       const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects )
+                                                       const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects, int startProfile, int endProfile )
 {
     /** Files with standard names are created in the output directory.
      *  Based on the input type (AD/RD/MD/FA/SubMatrix), the covariates, and the subjects,
@@ -521,8 +535,17 @@ QMap< int, QString > Processing::GenerateMatlabInputs( QString outputDir, QStrin
                 }
             }
 
+            /** Adding 1st row **/
+            foreach ( int index, columnIndex )
+            {
+                rowData << data.at( 0 ).at( index );
+            }
+            tsM << QObject::tr( qPrintable( rowData.join( m_csvSeparator ) ) ) << endl;
+
             /** Look through the 'original' and copy data to the new one **/
-            for( int row = 0; row < nbRows; ++row )
+            int profileFirstIndex = startProfile == -1 ? 1 : startProfile + 1;
+            int profileLastIndex = endProfile == -1 ? nbRows : endProfile + 2;
+            for( int row = profileFirstIndex; row < profileLastIndex; ++row )
             {
                 rowData.clear();
                 foreach ( int index, columnIndex )

@@ -31,6 +31,8 @@ public:
 
     QStringList GetNANSubjects( const QList< QStringList >& faData, const QStringList& matchedSubjects );
 
+    void NANToZeros( QList< QList< double > >& faData );
+
 
     QStringList GetSubjectsFromFileList( QString filePath ); // Tested
 
@@ -63,7 +65,7 @@ public:
 
     QMap< int, QString > GenerateMatlabInputs( QString outputDir, QString fiberName,
                                                const QMap< int, QString >& inputs, const QMap< int, QString >& properties,
-                                               const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects); // Tested
+                                               const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects, int startProfile, int endProfile ); // Tested
 
 
     void ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, bool useAtlas, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold ); // Not Directly Tested

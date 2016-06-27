@@ -90,6 +90,12 @@ private slots:
 
     void OnNanSujects( const QStringList& nanSubjects );
 
+    void OnResetProfileCropping();
+
+    void OnUpdatingStartArcLength( const QString& valueStart );
+
+    void OnUpdatingEndArcLength( const QString& valueStart );
+
 
     void OnSearch(); // Tested
 
@@ -115,6 +121,8 @@ private slots:
 
 
     /************** Execution Tab **************/
+    void OnUseCroppedProfileToggled( bool useCroppedProfile );
+
     void OnBrowsingOutputDir(); // Not Directly Tested
 
     void OnSettingOutputDir( const QString& path ); // Not Directly Tested
@@ -377,6 +385,8 @@ private:
 
     void DisplayInputLineEditIcon( int diffusionPropertyID, const QPixmap& icon ); // Tested
 
+    void SetProfileCropping();
+
     void UpdateInputFileInformation( int diffusionPropertyID ); // Tested
 
     void UpdateLineEditsAfterAddingMultipleFiles( const QStringList& fileList ); // Tested
@@ -418,12 +428,14 @@ private:
     void SaveCheckedSubjects( QString filePath ); // Tested
 
 
-   QStringList GetCheckedMatchedSubjects(); // Tested
+    QStringList GetCheckedMatchedSubjects(); // Tested
 
-   QMap< QString, QList< QStringList > > GetPropertyRawData(); // Tested
+    QMap< QString, QList< QStringList > > GetPropertyRawData(); // Tested
 
 
     /************** Execution Tab **************/
+    void GenerateNANSubjectFile( QString outputDir, QStringList selectedSubjects );
+
     void GenerateFailedQCThresholdSubjectFile( QString outputDir ); // Tested
 
     QStringList GenerateSelectedSubjectFile( QString outputDir ); // Tested
