@@ -359,6 +359,8 @@ private:
 
     void SetSubjects( const QList< QStringList >& rawDataSubMatrix ); // Tested
 
+    bool IsCovariateBinary( const QList< QStringList >& data, int indexCovariate );
+
     void SetCovariates( const QList< QStringList >& data, int dataKind ); // Tested
 
 

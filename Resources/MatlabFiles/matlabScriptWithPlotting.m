@@ -124,7 +124,16 @@ nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 
 disp('Plotting raw data...')
 for pii=2:nbrCovariates
-    if (designdata(1,pii) == 0 || designdata(1,pii) == 1)
+    isBinary = 1;
+    row = 1;
+    while( isBinary && row <= size(designdata(:,pii), 1) )
+        if( designdata(row,pii) ~= 0 && designdata(row,pii) ~= 1 )
+            isBinary = 0;
+        end
+        row=row+1;
+    end
+
+    if (isBinary)
         for Dii=1:nbrDiffusionProperties
             figure(Dii)
             for nii=1:nbrSubjects
@@ -151,11 +160,33 @@ end
 
 disp('Plotting raw data average and standard deviation...')
 for pii=2:nbrCovariates
-    if (designdata(1,pii) == 0 || designdata(1,pii) == 1)
-        [Mavg]= mean(Ydesign(designdata(:,pii)==0,:,:)); % TD average for each diffusion paramter
+    isBinary = 1;
+    row = 1;
+    while( isBinary && row <= size(designdata(:,pii), 1) )
+        if( designdata(row,pii) ~= 0 && designdata(row,pii) ~= 1 )
+            isBinary = 0;
+        end
+        row=row+1;
+    end
+
+    if (isBinary)
+        [Mavg]= Ydesign(designdata(:,pii)==0,:,:); % TD average for each diffusion paramter
+        if ( size( Mavg(:,:,1), 1 ) ~= 1 )
+            [Mavg]= mean(Mavg);
+        end
         [Mstddev]= std(Ydesign(designdata(:,pii)==0,:,:)); % TD standard deviation for each diffusion paramter
-        [Favg]= mean(Ydesign(designdata(:,pii)==1,:,:)); % SE average for each diffusion paramter
+        if ( size( Mstddev(:,:,1), 1 ) ~= 1 )
+            [Mstddev]= mean(Mstddev);
+        end
+        [Favg]= Ydesign(designdata(:,pii)==1,:,:); % SE average for each diffusion paramter
+        if ( size( Favg(:,:,1), 1 ) ~= 1 )
+            [Favg]= mean(Favg);
+        end
         [Fstddev]= std(Ydesign(designdata(:,pii)==1,:,:)); % SE standard deviation for each diffusion paramter
+        if ( size( Fstddev(:,:,1), 1 ) ~= 1 )
+            [Fstddev]= mean(Fstddev);
+        end
+
         for Dii=1:nbrDiffusionProperties
             figure(Dii)
             hold on

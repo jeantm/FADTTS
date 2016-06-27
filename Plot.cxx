@@ -1767,9 +1767,25 @@ void Plot::SetSubjects( const QList< QStringList >& rawDataSubMatrix )
     m_subjects.append( rawDataSubMatrix.first() );
 }
 
+bool Plot::IsCovariateBinary( const QList< QStringList >& data, int indexCovariate )
+{
+    bool isBinary = true;
+    int row = 1;
+    while( row < data.size() && isBinary )
+    {
+        if( ( data.at( row ).at( indexCovariate ).toDouble() != 0 ) && ( data.at( row ).at( indexCovariate ).toDouble() != 1 ) )
+        {
+            isBinary = false;
+        }
+        row++;
+    }
+
+    return isBinary;
+}
+
 void Plot::SetCovariates( const QList< QStringList >& data, int dataKind )
 {
-    QStringList firstRaw = data.first();
+    QStringList firstRow = data.first();
     int shift = 0;
     if( dataKind == Betas )
     {
@@ -1781,10 +1797,10 @@ void Plot::SetCovariates( const QList< QStringList >& data, int dataKind )
     }
 
     m_allCovariates.insert( 0, "Intercept" );
-    for( int i = shift + 1; i < firstRaw.size(); i++ )
+    for( int i = shift + 1; i < firstRow.size(); i++ )
     {
-        m_allCovariates.insert( i - shift, firstRaw.at( i ).split( " " ).first() );
-        m_covariatesNoIntercept.insert( i - shift, firstRaw.at( i ).split( " " ).first() );
+        m_allCovariates.insert( i - shift, firstRow.at( i ).split( " " ).first() );
+        m_covariatesNoIntercept.insert( i - shift, firstRow.at( i ).split( " " ).first() );
         if( dataKind == ConfidenceBands )
         {
             i++;
@@ -1794,19 +1810,17 @@ void Plot::SetCovariates( const QList< QStringList >& data, int dataKind )
 
     if( dataKind == RawData )
     {
-        QStringList firstDataRaw = data.at( 1 );
-        for( int i = 1; i < firstRaw.size(); i++ )
+        for( int i = 1; i < firstRow.size(); i++ )
         {
-            if( ( firstDataRaw .at( i ).toDouble() == 0 ) || ( firstDataRaw.at( i ).toDouble() == 1 ) )
+            if( IsCovariateBinary( data, i ) )
             {
-                m_binaryCovariates.insert( i, firstRaw.at( i ) );
+                m_binaryCovariates.insert( i, firstRow.at( i ) );
             }
         }
     }
 
     emit AllCovariatesUsed( m_allCovariates );
 }
-
 
 void Plot::GetMeanAndStdDv( const QList< QList< double > >& binaryRawData, QList< double >& tempMean, QList< double >& tempStdDv )
 {

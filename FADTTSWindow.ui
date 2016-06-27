@@ -1600,7 +1600,7 @@
           <item row="2" column="0" colspan="2">
            <widget class="QCheckBox" name="para_executionTab_useCroppedProfile_checkBox">
             <property name="text">
-             <string>Use Crop Profile</string>
+             <string>Use Cropped Profile</string>
             </property>
            </widget>
           </item>
