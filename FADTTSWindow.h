@@ -121,7 +121,7 @@ private slots:
 
 
     /************** Execution Tab **************/
-    void OnUseCroppedProfileToggled( bool useCroppedProfile );
+    void OnCroppedProfileUpdated();
 
     void OnBrowsingOutputDir(); // Not Directly Tested
 

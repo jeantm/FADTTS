@@ -444,21 +444,18 @@ void FADTTS_noGUI::SetMatlabScript( const QJsonObject& profile )
         QStringList arcLength = m_processing.Transpose( faData ).first();
         arcLength.removeFirst();
 
-        if( profile.value( "useCroppedProfile" ).toBool() )
+        if( !arcLength.isEmpty() )
         {
-            if( !arcLength.isEmpty() )
+            QString tempStartProfile = profile.value( "startProfile" ).toString();
+            QString tempEndProfile = profile.value( "endProfile" ).toString();
+
+            startProfile = arcLength.contains( tempStartProfile ) ? arcLength.indexOf( tempStartProfile, 0 ) : -1;
+            endProfile = arcLength.contains( tempEndProfile ) ? arcLength.indexOf( tempEndProfile, 0 ) : -1;
+
+            if( startProfile >= endProfile )
             {
-                QString tempStartProfile = profile.value( "startProfile" ).toString();
-                QString tempEndProfile = profile.value( "endProfile" ).toString();
-
-                startProfile = arcLength.contains( tempStartProfile ) ? arcLength.indexOf( tempStartProfile, 0 ) : -1;
-                endProfile = arcLength.contains( tempEndProfile ) ? arcLength.indexOf( tempEndProfile, 0 ) : -1;
-
-                if( startProfile >= endProfile )
-                {
-                    startProfile = -1;
-                    endProfile = -1;
-                }
+                startProfile = -1;
+                endProfile = -1;
             }
         }
     }

@@ -1372,7 +1372,7 @@
                 <string>Based on population average</string>
                </property>
                <property name="checked">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1539,9 +1539,9 @@
        <attribute name="title">
         <string>Execution</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
+       <layout class="QGridLayout" name="gridLayout_10">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="executionTab_settings_gridLayout">
+         <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0" colspan="2">
            <widget class="QLabel" name="executionTab_settings_label">
             <property name="sizePolicy">
@@ -1598,52 +1598,6 @@
            </widget>
           </item>
           <item row="2" column="0" colspan="2">
-           <widget class="QCheckBox" name="para_executionTab_useCroppedProfile_checkBox">
-            <property name="text">
-             <string>Use Cropped Profile</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2" colspan="3">
-           <widget class="QLabel" name="executionTab_useCroppedProfileInfo_label">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt;FA file must be provided to use profile cropping. To set profile cropping go to the 'Subjects Tab'.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="executionTab_croppedProfileWarningIcon_label">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>15</width>
-              <height>15</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="FADTTS_Resources.qrc">:/Icons/Resources/Icons/warningIcon.xpm</pixmap>
-            </property>
-            <property name="scaledContents">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1" colspan="4">
-           <widget class="QLabel" name="executionTab_croppedProfileWarningInfo_label">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="2">
            <widget class="QLabel" name="executionTab_nbrPermutations_label">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1656,7 +1610,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="2">
+          <item row="2" column="2">
            <widget class="QSpinBox" name="para_executionTab_nbrPermutations_spinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1684,7 +1638,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="3">
+          <item row="2" column="3">
            <widget class="QLabel" name="executionTab_nbrPermutationsInfo_label">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1697,7 +1651,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="4">
+          <item row="2" column="4">
            <spacer name="executionTab_fiberName_horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -1710,7 +1664,7 @@
             </property>
            </spacer>
           </item>
-          <item row="5" column="0" colspan="2">
+          <item row="3" column="0" colspan="2">
            <widget class="QLabel" name="executionTab_confidenceBandsThreshold_label">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1723,7 +1677,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
+          <item row="3" column="2">
            <widget class="QDoubleSpinBox" name="para_executionTab_confidenceBandsThreshold_doubleSpinBox">
             <property name="decimals">
              <number>2</number>
@@ -1739,7 +1693,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0" colspan="2">
+          <item row="4" column="0" colspan="2">
            <widget class="QLabel" name="executionTab_pvalueThreshold_label">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1752,7 +1706,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="2">
+          <item row="4" column="2">
            <widget class="QDoubleSpinBox" name="para_executionTab_pvalueThreshold_doubleSpinBox">
             <property name="decimals">
              <number>2</number>
@@ -1768,7 +1722,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0" colspan="2">
+          <item row="5" column="0" colspan="2">
            <widget class="QCheckBox" name="para_executionTab_omnibus_checkBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1784,7 +1738,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0" colspan="3">
+          <item row="6" column="0" colspan="3">
            <widget class="QCheckBox" name="para_executionTab_postHoc_checkBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1797,6 +1751,38 @@
             </property>
             <property name="checked">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="executionTab_croppedProfileWarningIcon_label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>15</width>
+              <height>15</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="FADTTS_Resources.qrc">:/Icons/Resources/Icons/warningIcon.xpm</pixmap>
+            </property>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1" colspan="3">
+           <widget class="QLabel" name="executionTab_croppedProfileWarningInfo_label">
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>

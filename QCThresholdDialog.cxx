@@ -37,7 +37,9 @@ bool QCThresholdDialog::InitPlot( const QList< QStringList >& rawData, const QSt
     ui->QCThresholdDialog_removeNAN_pushButton->setHidden( m_nanSubjects.isEmpty() );
     ui->QCThresholdDialog_removeNAN_label->setHidden( m_nanSubjects.isEmpty() );
 
+    m_qcThresholdDoubleSpinBox->blockSignals( true );
     m_qcThresholdDoubleSpinBox->setValue( qcThreshold );
+    m_qcThresholdDoubleSpinBox->blockSignals( false );
 
     m_arcLengthStartHorizontalSlider->blockSignals( true );
     m_arcLengthEndHorizontalSlider->blockSignals( true );

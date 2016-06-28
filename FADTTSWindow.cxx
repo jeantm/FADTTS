@@ -106,14 +106,6 @@ void FADTTSWindow::LoadParaConfiguration( QString filename )
         QJsonObject executionTab = jsonObject_param.value( "executionTab" ).toObject();
         QJsonObject settings = executionTab.value( "settings" ).toObject();
         para_executionTab_fiberName_lineEdit->setText( settings.value( "fiberName" ).toString() );
-        if( para_subjectTab_faFile_checkBox->isChecked() )
-        {
-            para_executionTab_useCroppedProfile_checkBox->setChecked( settings.value( "useCroppedProfile" ).toBool() );
-        }
-        else
-        {
-            para_executionTab_useCroppedProfile_checkBox->setChecked( false );
-        }
         para_executionTab_nbrPermutations_spinBox->setValue( settings.value( "nbrPermutations" ).toInt( 100 ) );
         para_executionTab_confidenceBandsThreshold_doubleSpinBox->setValue( settings.value( "confidenceBandThreshold" ).toDouble( 0.05 ) );
         para_executionTab_pvalueThreshold_doubleSpinBox->setValue( settings.value( "pvalueThreshold" ).toDouble( 0.05 ) );
@@ -318,7 +310,6 @@ void FADTTSWindow::SaveParaConfiguration( QString filename )
     /****** 3rd tab: Execution ******/
     QJsonObject settings;
     settings.insert( "fiberName", para_executionTab_fiberName_lineEdit->text() );
-    settings.insert( "useCroppedProfile", para_executionTab_useCroppedProfile_checkBox->isChecked() );
     settings.insert( "nbrPermutations", para_executionTab_nbrPermutations_spinBox->value() );
     settings.insert( "confidenceBandThreshold", para_executionTab_confidenceBandsThreshold_doubleSpinBox->value() );
     settings.insert( "pvalueThreshold", para_executionTab_pvalueThreshold_doubleSpinBox->value() );
@@ -431,7 +422,6 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     /******   Profile   ******/
     profile.insert( "startProfile", para_subjectTab_startArcLength_value_label->text() );
     profile.insert( "endProfile", para_subjectTab_endArcLength_value_label->text() );
-    profile.insert( "useCroppedProfile", para_executionTab_useCroppedProfile_checkBox->isChecked() );
 
     /******   Settings   ******/
     settings.insert( "fiberName", para_executionTab_fiberName_lineEdit->text() );
@@ -629,7 +619,6 @@ void FADTTSWindow::InitExecutionTab()
     /*** Settings ***/
     para_executionTab_nbrPermutations_spinBox->setMaximum( 2000 );
 
-    connect( para_executionTab_useCroppedProfile_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUseCroppedProfileToggled( bool ) ) );
     executionTab_croppedProfileWarningIcon_label->hide();
     executionTab_croppedProfileWarningInfo_label->hide();
 
@@ -844,8 +833,6 @@ void FADTTSWindow::OnSettingInputFile( int diffusionPropertyIndex )
         para_subjectTab_startArcLength_value_label->clear();
         para_subjectTab_endArcLength_value_label->clear();
 
-        para_executionTab_useCroppedProfile_checkBox->setChecked( false );
-        para_executionTab_useCroppedProfile_checkBox->setEnabled( false );
         executionTab_croppedProfileWarningIcon_label->hide();
         executionTab_croppedProfileWarningInfo_label->clear();
         executionTab_croppedProfileWarningInfo_label->hide();
@@ -1302,21 +1289,21 @@ void FADTTSWindow::OnResetProfileCropping()
 {
     SetProfileCropping();
 
-    OnUseCroppedProfileToggled( para_executionTab_useCroppedProfile_checkBox->isChecked() );
+    OnCroppedProfileUpdated();
 }
 
 void FADTTSWindow::OnUpdatingStartArcLength( const QString& valueStart )
 {
     para_subjectTab_startArcLength_value_label->setText( valueStart );
 
-    OnUseCroppedProfileToggled( para_executionTab_useCroppedProfile_checkBox->isChecked() );
+    OnCroppedProfileUpdated();
 }
 
 void FADTTSWindow::OnUpdatingEndArcLength( const QString& valueEnd )
 {
     para_subjectTab_endArcLength_value_label->setText( valueEnd );
 
-    OnUseCroppedProfileToggled( para_executionTab_useCroppedProfile_checkBox->isChecked() );
+    OnCroppedProfileUpdated();
 }
 
 
@@ -1334,7 +1321,6 @@ void FADTTSWindow::OnInputToggled()
 
     bool isFAEnable = m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isChecked() && m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isEnabled();
     subjectTab_qcThreshold_widget->setEnabled( isFAEnable );
-    para_executionTab_useCroppedProfile_checkBox->setEnabled( isFAEnable );
 }
 
 void FADTTSWindow::OnSetCaseSensitivityToggled( bool checked )
@@ -1755,10 +1741,13 @@ QMap< QString, QList< QStringList > > FADTTSWindow::GetPropertyRawData()
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
-void FADTTSWindow::OnUseCroppedProfileToggled( bool useCroppedProfile )
+void FADTTSWindow::OnCroppedProfileUpdated()
 {
     QList< QStringList > faFile = m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() );
     QStringList arcLength;
+    QString startProfile = para_subjectTab_startArcLength_value_label->text();
+    QString endProfile = para_subjectTab_endArcLength_value_label->text();
+    bool showWarning = false;
 
     if( !faFile.isEmpty() )
     {
@@ -1767,22 +1756,31 @@ void FADTTSWindow::OnUseCroppedProfileToggled( bool useCroppedProfile )
     }
 
 
-    if( useCroppedProfile && !arcLength.isEmpty() )
+    if( !arcLength.isEmpty() )
     {
-        QString warningText;
+        showWarning = startProfile != arcLength.first() || endProfile != arcLength.last();
 
-        warningText = "<i><span style=""font-size:8pt;"">Original Profile: from " + arcLength.first() + " to " + arcLength.last() +
-                "<br>Cropped Profile: from "+ para_subjectTab_startArcLength_value_label->text() + " to " + para_subjectTab_endArcLength_value_label->text() + "</span></i>";
+        if( showWarning )
+        {
+            QString warningText;
 
-        executionTab_croppedProfileWarningInfo_label->setText( tr( qPrintable( warningText ) ) );
+            warningText = "<i><span style=""font-size:8pt;"">Original Profile: from " + arcLength.first() + " to " + arcLength.last() +
+                    "<br>Profile used after cropping: from "+ para_subjectTab_startArcLength_value_label->text() + " to " + para_subjectTab_endArcLength_value_label->text() + "</span></i>";
+
+            executionTab_croppedProfileWarningInfo_label->setText( tr( qPrintable( warningText ) ) );
+        }
+        else
+        {
+            executionTab_croppedProfileWarningInfo_label->clear();
+        }
     }
     else
     {
         executionTab_croppedProfileWarningInfo_label->clear();
     }
 
-    executionTab_croppedProfileWarningIcon_label->setHidden( !useCroppedProfile );
-    executionTab_croppedProfileWarningInfo_label->setHidden( !useCroppedProfile );
+    executionTab_croppedProfileWarningIcon_label->setHidden( !showWarning );
+    executionTab_croppedProfileWarningInfo_label->setHidden( !showWarning );
 }
 
 
@@ -2197,7 +2195,7 @@ void FADTTSWindow::SetMatlabScript()
 
     int startProfile = -1;
     int endProfile = -1;
-    if( para_executionTab_useCroppedProfile_checkBox->isChecked() )
+    if( m_paramTabFileCheckBoxMap.value( m_data.GetFractionalAnisotropyIndex() )->isChecked() )
     {
         QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
         arcLength.removeFirst();

@@ -496,7 +496,7 @@
      <item row="2" column="0">
       <widget class="QCheckBox" name="QCThresholdDialog_cropProfile_checkBox">
        <property name="text">
-        <string>Crop Profile</string>
+        <string>Show Cropping</string>
        </property>
        <property name="checked">
         <bool>false</bool>
