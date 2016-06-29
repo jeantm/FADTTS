@@ -126,6 +126,7 @@ disp('Plotting raw data...')
 for pii=2:nbrCovariates
     isBinary = 1;
     row = 1;
+
     while( isBinary && row <= size(designdata(:,pii), 1) )
         if( designdata(row,pii) ~= 0 && designdata(row,pii) ~= 1 )
             isBinary = 0;
@@ -136,6 +137,7 @@ for pii=2:nbrCovariates
     if (isBinary)
         for Dii=1:nbrDiffusionProperties
             figure(Dii)
+
             for nii=1:nbrSubjects
                 if (designdata(nii,pii) == 0)
                     h(1)=plot(arclength,Ydesign(nii,:,Dii),'-k','LineWidth', 1);
@@ -145,10 +147,19 @@ for pii=2:nbrCovariates
                 hold on
             end
             hold off
+
             xlabel('Arc Length','fontweight','bold');
             ylabel(Dnames{Dii},'fontweight','bold');
             xlim([min(arclength) max(arclength)]);
-            legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+
+            if( h(1) ~= 0 && h(2) ~= 0 )
+                legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( h(1) == 0 )
+                legend([h(2)],sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( h(2) == 0 )
+                legend([h(1)],sprintf('%s=0',Cnames{pii}),'Location','SouthEastOutside');
+            end
+
             title(sprintf('%s\nRaw Data %s (%s)',fiberName,Cnames{pii},Dnames{Dii}),'fontweight','bold');
             clear h;
             saveas(gcf,sprintf('%s/%s_Raw_Data_%s_%s.pdf',savingFolder,fiberName,Cnames{pii},Dnames{Dii}),'pdf');
@@ -162,6 +173,7 @@ disp('Plotting raw data average and standard deviation...')
 for pii=2:nbrCovariates
     isBinary = 1;
     row = 1;
+
     while( isBinary && row <= size(designdata(:,pii), 1) )
         if( designdata(row,pii) ~= 0 && designdata(row,pii) ~= 1 )
             isBinary = 0;
@@ -190,17 +202,30 @@ for pii=2:nbrCovariates
         for Dii=1:nbrDiffusionProperties
             figure(Dii)
             hold on
-            h(1)=plot(arclength, Mavg(:,:,Dii),'-k','LineWidth', 1.25);
-            plot(arclength, Mavg(:,:,Dii)+Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
-            plot(arclength, Mavg(:,:,Dii)-Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
-            h(2)=plot(arclength, Favg(:,:,Dii),'-','Color',color{pii},'LineWidth', 1.25);
-            plot(arclength, Favg(:,:,Dii)+Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
-            plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
+            if( mean( isnan( Mavg(:,:,Dii) ) ) == 0 )
+                h(1)=plot(arclength, Mavg(:,:,Dii),'-k','LineWidth', 1.25);
+                plot(arclength, Mavg(:,:,Dii)+Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
+                plot(arclength, Mavg(:,:,Dii)-Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
+            end
+            if( mean( isnan( Favg(:,:,Dii) ) ) == 0 )
+                h(2)=plot(arclength, Favg(:,:,Dii),'-','Color',color{pii},'LineWidth', 1.25);
+                plot(arclength, Favg(:,:,Dii)+Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
+                plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
+            end
             hold off
+
             xlabel('Arc Length','fontweight','bold');
             ylabel(Dnames{Dii},'fontweight','bold');
             xlim([min(arclength) max(arclength)]);
-            legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+
+            if( mean( isnan( Mavg(:,:,Dii) ) ) == 0 && mean( isnan( Favg(:,:,Dii) ) ) == 0 )
+                legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( mean( isnan( Mavg(:,:,Dii) ) ) ~= 0 )
+                legend([h(2)],sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( mean( isnan( Favg(:,:,Dii) ) ) ~= 0 )
+                legend([h(1)],sprintf('%s=0',Cnames{pii}),'Location','SouthEastOutside');
+            end
+
             title(sprintf('%s\nAverage and Standard Deviation %s (%s)',fiberName,Cnames{pii},Dnames{Dii}),'fontweight','bold');
             clear h;
             saveas(gcf,sprintf('%s/%s_AverageStdDeviation_%s_%s.pdf',savingFolder,fiberName,Cnames{pii},Dnames{Dii}),'pdf');
