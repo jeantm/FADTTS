@@ -34,7 +34,7 @@ public:
 
 
     /************** Subjects  Tab ***************/
-    bool Test_OnApplyingQCThreshold();
+    bool Test_OnQCThresholdApplied();
 
     bool Test_SetSelectedInputFiles();
 
@@ -134,7 +134,7 @@ public:
 
     bool Test_OnCovariateSelection();
 
-    bool Test_OnLineForDisplayClicked();
+    bool Test_ClickLineForDisplay();
 
     bool Test_OnSettingLinesSelected();
 

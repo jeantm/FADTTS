@@ -42,7 +42,9 @@ int FADTTS_noGUI::RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI )
 
     if( CanFADTTSterBeRun() )
     {
-        SetMatlabScript();
+        QJsonObject profile = jsonObject_noGUI.value( "profile" ).toObject();;
+
+        SetMatlabScript( profile );
 
         m_matlabThread->start();
         while( m_matlabThread->isRunning() )
@@ -143,22 +145,35 @@ void FADTTS_noGUI::GetInputFiles( const QJsonObject& inputFiles )
 
 void FADTTS_noGUI::GetCovariates( const QJsonObject& covariates )
 {
-    QStringList expectedCovariates = m_processing.GetDataFromFile( m_inputs.value( SubMatrix ) ).first();
-    expectedCovariates.removeAt( m_subjectColumnID );
-    expectedCovariates.append( "Intercept" );
-    expectedCovariates.sort();
+    QList< QStringList > subMatrixFile = m_processing.GetDataFromFile( m_inputs.value( SubMatrix ) );
+    QStringList expectedCovariates;
+    if( !subMatrixFile.isEmpty() )
+    {
+        expectedCovariates = subMatrixFile.first();
+        expectedCovariates.removeAt( m_subjectColumnID );
+        expectedCovariates.append( "Intercept" );
+        expectedCovariates.sort();
+    }
 
     QStringList covariatesFound = covariates.keys();
+
     if( expectedCovariates != covariatesFound )
     {
         std::cout << "/!\\ Covariates provided mismatched the ones found in the submatrix file provided." << std::endl;
-        if( expectedCovariates.size() != covariatesFound.size() )
+        if( subMatrixFile.isEmpty() )
         {
-            std::cout << "     --> number of covariates is different" << std::endl;
+            std::cout << "     --> no data extracted from subMatrix file" << std::endl;
         }
         else
         {
-            std::cout << "     --> at least one covariate name mismatches" << std::endl << std::endl;
+            if( expectedCovariates.size() != covariatesFound.size() )
+            {
+                std::cout << "     --> number of covariates is different" << std::endl;
+            }
+            else
+            {
+                std::cout << "     --> at least one covariate name provided mismatches" << std::endl << std::endl;
+            }
         }
     }
     else
@@ -187,6 +202,24 @@ QMap< int, QStringList > FADTTS_noGUI::GetInputSubjects()
     }
 
     return subjectMap;
+}
+
+void FADTTS_noGUI::NANSubjects( QStringList allSubjects )
+{
+    QList< QStringList > faData = m_processing.GetDataFromFile( m_inputs.value( FA ) );
+    if( !faData.isEmpty() )
+    {
+        QStringList nanSubjects = m_processing.GetNANSubjects( faData, allSubjects );
+        if( !nanSubjects.isEmpty() )
+        {
+            std::cout << "/!\\ WARNING /!\\ subject(s) with -nan and/or nan values (FA file):" << std::endl;
+            for( int i = 0; i < nanSubjects.size(); i++ )
+            {
+                std::cout << "    - " << nanSubjects.at( i ).toStdString() << std::endl;
+            }
+            std::cout << std::endl;
+        }
+    }
 }
 
 void FADTTS_noGUI::SetQCThreshold( const QJsonObject& qcThresholdObject )
@@ -221,7 +254,10 @@ void FADTTS_noGUI::SetQCThreshold( const QJsonObject& qcThresholdObject )
 void FADTTS_noGUI::GetSubjects( const QJsonObject& subjects )
 {
     m_subjectFile = subjects.value( "subjectListPath" ).toString();
-    m_loadedSubjects = m_processing.GetSubjectsFromFileList( m_subjectFile );
+    if( !m_subjectFile.isEmpty() )
+    {
+        m_loadedSubjects = m_processing.GetSubjectsFromFileList( m_subjectFile );
+    }
 
     QMap< int, QStringList > allSubjects = GetInputSubjects();
     if( !m_loadedSubjects.isEmpty() )
@@ -236,6 +272,8 @@ void FADTTS_noGUI::GetSubjects( const QJsonObject& subjects )
     QMap< QString, QList< int > > unMatchedSubjects;
     m_processing.AssignSortedSubject( sortedSubjects, matchedSubjects, unMatchedSubjects );
     m_subjects = matchedSubjects;
+
+    NANSubjects( matchedSubjects );
 
     SetQCThreshold( subjects.value( "qcThreshold" ).toObject() );
 
@@ -392,14 +430,39 @@ void FADTTS_noGUI::GenerateSubjectFile()
     }
 }
 
-void FADTTS_noGUI::SetMatlabScript()
+void FADTTS_noGUI::SetMatlabScript( const QJsonObject& profile )
 {
     QDir().mkpath( m_outputDir );
 
     GenerateSubjectFile();
 
+    int startProfile = -1;
+    int endProfile = -1;
+    QList< QStringList > faData = m_processing.GetDataFromFile( m_inputs.value( FA ) );
+    if( !faData.isEmpty() )
+    {
+        QStringList arcLength = m_processing.Transpose( faData ).first();
+        arcLength.removeFirst();
+
+        if( !arcLength.isEmpty() )
+        {
+            QString tempStartProfile = profile.value( "startProfile" ).toString();
+            QString tempEndProfile = profile.value( "endProfile" ).toString();
+
+            startProfile = arcLength.contains( tempStartProfile ) ? arcLength.indexOf( tempStartProfile, 0 ) : -1;
+            endProfile = arcLength.contains( tempEndProfile ) ? arcLength.indexOf( tempEndProfile, 0 ) : -1;
+
+            if( startProfile >= endProfile )
+            {
+                startProfile = -1;
+                endProfile = -1;
+            }
+        }
+    }
+
+
     QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( m_outputDir, m_fibername, m_inputs, m_properties, m_covariates,
-                                                                               m_subjectColumnID, m_subjects );
+                                                                               m_subjectColumnID, m_subjects, startProfile, endProfile );
 
     m_matlabThread->InitMatlabScript( m_outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( m_nbrPermutations ) + "perm.m" );
     m_matlabThread->SetHeader();

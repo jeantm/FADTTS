@@ -1,6 +1,6 @@
 #include "TestMatlabThread.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 
 TestMatlabThread::TestMatlabThread()

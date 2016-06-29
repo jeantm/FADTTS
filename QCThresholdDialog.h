@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QAbstractSlider>
 
 
 namespace Ui {
@@ -24,7 +25,7 @@ class QCThresholdDialog : public QDialog
     
 
 public slots:
-    void OnApplyQCThreshold();
+
 
 
 public:
@@ -32,21 +33,41 @@ public:
     ~QCThresholdDialog();
 
 
-    bool InitPlot( const QList< QStringList >& rawData, const QStringList& atlas, const QStringList& matchedSubjects, double qcThreshold ); // Not Directly Tested
+    bool InitPlot( const QList< QStringList >& rawData, const QStringList& atlas, const QStringList& matchedSubjects, double qcThreshold, const QString& valueStartArcLength, const QString&  valueEndArcLength ); // Not Directly Tested
 
 
 signals:
-    void ApplyQCThreshold( const QStringList&, const QStringList&, double qcThreshold );
+    void ApplyQCThreshold( const QStringList&, const QStringList&, double qcThreshold, bool windowClosed );
+
+    void NanSujects( const QStringList& );
+
+    void UpdateStartArcLength( const QString& );
+
+    void UpdateEndArcLength( const QString& );
 
 
 private slots:
+    void OnCroppingProfile();
+
+    void OnResetProfileCropping();
+
+    void OnCropProfileToggled( bool checked );
+
     void OnUpdatingSubjectsCorrelated( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated ); // Not Directly Tested
 
     void OnUpdatingQCThreshold( double qcThreshold ); // Not Directly Tested
 
+    void OnRemoveNAN();
+
+    void OnApplyQCThreshold();
+
+    void closeEvent( QCloseEvent *event );
+
 
 private:
     Ui::QCThresholdDialog *ui;
+
+    Processing m_processing;
 
     QSharedPointer< QVTKWidget > m_qvtkWidget;
 
@@ -54,17 +75,26 @@ private:
 
     QDoubleSpinBox *m_qcThresholdDoubleSpinBox;
 
-    QList< QStringList > m_rawData;
+    QAbstractSlider *m_arcLengthStartHorizontalSlider, *m_arcLengthEndHorizontalSlider;
 
-    QStringList m_matchedSubjects, m_subjectsCorrelated, m_subjectsNotCorrelated, m_atlas;
+    QList< QStringList > m_faData;
+
+    QStringList m_matchedSubjects,
+    m_subjectsCorrelated, m_subjectsNotCorrelated, m_atlas,
+    m_nanSubjects;
+
+    int m_currentSliderStartIndex, m_currentSliderEndIndex;
+
+    bool m_updated;
 
 
     void InitQCThresholdDialog();  // Not Directly Tested
 
-    void DisplayQCThresholdPlot( double qcThreshold, QStringList atlas ); // Not Directly Tested
+    void DisplayQCThresholdPlot( double qcThreshold ); // Not Directly Tested
 
+    void SetProfileCropping( const QString& valueStartArcLength, const QString&  valueEndArcLength );
 
-    void closeEvent( QCloseEvent *event );
+    void SetCroppingFeatureEnabled( bool enabled );
 };
 
 #endif // QCTHRESHOLDDIALOG_H

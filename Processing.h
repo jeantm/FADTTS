@@ -23,10 +23,15 @@ public:
 
     QList< QStringList > GetDataFromFile( QString filePath ); // Tested
 
-
     bool IsMatrixDimensionOK( const QList< QStringList >& data ); // Tested
 
-    bool IsSubMatrix(const QStringList& dataSecondRow ); // Tested
+    bool IsSubMatrix(const QList< QStringList >& data ); // Tested
+
+    bool AreDuplicatesFound( const QList< QStringList >& data );
+
+    QStringList GetNANSubjects( const QList< QStringList >& faData, const QStringList& matchedSubjects );
+
+    void NANToZeros( QList< QList< double > >& faData );
 
 
     QStringList GetSubjectsFromFileList( QString filePath ); // Tested
@@ -34,6 +39,19 @@ public:
     QStringList GetSubjectsFromData( const QList< QStringList >& data, int subjectColumnID ); // Tested
 
     QMap< int, QString > GetCovariatesFromData( QList< QStringList > data, int subjectColumnID ); //Tested
+
+
+    QList< QStringList > Transpose( const QList< QStringList >& rawData ); // Tested
+
+    bool RemoveUnmatchedSubjects( QList< QStringList >& rawDataTransposed, QStringList& subjects, const QStringList& matchedSubjects ); // Tested
+
+    QList< double > QStringListToDouble( const QStringList& rowData );
+
+    QList< QList< double > > DataToDouble( const QList< QStringList >& data );
+
+    QList< double > GetMean( const QList< QList< double > >& rawDataDouble, int shift ); // Tested
+
+    double ApplyPearsonCorrelation( const QList< double >& currentLine, const QList< double >& mean, int shift ); // Tested
 
 
     QStringList GetAllSubjects( const QMap< int, QStringList >& subjectsMap ); // Tested
@@ -47,19 +65,8 @@ public:
 
     QMap< int, QString > GenerateMatlabInputs( QString outputDir, QString fiberName,
                                                const QMap< int, QString >& inputs, const QMap< int, QString >& properties,
-                                               const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects); // Tested
+                                               const QMap< int, QString >& covariates, int subjectColumnID, const QStringList& subjects, int startProfile, int endProfile ); // Tested
 
-
-
-    QList< QStringList > Transpose_noGUI( const QList< QStringList >& rawData ); // Tested
-
-    void RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, const QStringList& subjects ); // Tested
-
-    QList< QList< double > > ToDouble_noGUI( const QList< QStringList >& rawDataTransposed ); // Tested
-
-    QList< double > GetMean_noGUI( const QList< QList< double > >& rawDataDouble ); // Tested
-
-    double ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean ); // Tested
 
     void ApplyQCThreshold_noGUI( const QList< QStringList >& rawData, bool useAtlas, QStringList& matchedSubjects, QStringList& qcThresholdFailedSubject, const double& qcThreshold ); // Not Directly Tested
 

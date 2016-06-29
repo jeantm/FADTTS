@@ -95,7 +95,7 @@ int main( int argc, char *argv[] )
     /********* Subjects/Covariates Tab *********/
     std::cerr << std::endl << "/********* Subjects/Covariates Tab *********/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnApplyingQCThreshold() )
+    if( testFADTTSWindow.Test_OnQCThresholdApplied() )
     {
         nbrTestsPassed++;
     }
@@ -412,7 +412,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testFADTTSWindow.Test_OnLineForDisplayClicked() )
+    if( testFADTTSWindow.Test_ClickLineForDisplay() )
     {
         nbrTestsPassed++;
     }

@@ -73,9 +73,34 @@ void FADTTSWindow::LoadParaConfiguration( QString filename )
             m_paramTabFileCheckBoxMap.value( i )->setChecked( m_paramTabFileCheckBoxMap.value( i )->isEnabled() ? filesUsed.value( m_data.GetDiffusionPropertyName( i ) ).toBool() : false );
         }
 
+        para_subjectTab_startArcLength_value_label->clear();
+        para_subjectTab_endArcLength_value_label->clear();
+        if( para_subjectTab_faFile_checkBox->isEnabled() )
+        {
+            QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+            arcLength.removeFirst();
+
+            if( !arcLength.isEmpty() )
+            {
+                QString tempStartProfile = subjectTab.value( "startProfile" ).toString();
+                QString tempEndProfile = subjectTab.value( "endProfile" ).toString();
+
+                QString startProfile = arcLength.contains( tempStartProfile ) ? tempStartProfile : arcLength.first();
+                QString endProfile = arcLength.contains( tempEndProfile ) ? tempEndProfile : arcLength.last();
+
+                if( startProfile.toDouble() < endProfile.toDouble() )
+                {
+                    para_subjectTab_startArcLength_value_label->setText( startProfile );
+                    para_subjectTab_endArcLength_value_label->setText( endProfile );
+                }
+            }
+        }
+
+
         para_subjectTab_qcThresoldOnAtlas_radioButton->setChecked( subjectTab.value( "useAtlas" ).toBool() );
         para_subjectTab_qcThreshold_doubleSpinBox->setValue( subjectTab.value( "qcThreshold" ).toDouble( 0.85 ) );
         para_subjectTab_subjectFile_lineEdit->setText( subjectTab.value( "subjectListPath" ).toString() );
+
 
         /****** 3rd tab: Execution ******/
         QJsonObject executionTab = jsonObject_param.value( "executionTab" ).toObject();
@@ -214,7 +239,7 @@ void FADTTSWindow::OnDisplayAbout()
 }
 
 
-void FADTTSWindow::closeEvent(QCloseEvent *event)
+void FADTTSWindow::closeEvent( QCloseEvent *event )
 {
     if( m_matlabThread->isRunning() )
     {
@@ -276,6 +301,8 @@ void FADTTSWindow::SaveParaConfiguration( QString filename )
     }
     subjectTab.insert( "filesUsed", filesUsed );
 
+    subjectTab.insert( "startProfile", para_subjectTab_startArcLength_value_label->text() );
+    subjectTab.insert( "endProfile", para_subjectTab_endArcLength_value_label->text() );
     subjectTab.insert( "useAtlas", para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() );
     subjectTab.insert( "qcThreshold", para_subjectTab_qcThreshold_doubleSpinBox->value() );
     subjectTab.insert( "subjectListPath", para_subjectTab_subjectFile_lineEdit->text() );
@@ -347,6 +374,7 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     QJsonObject inputFiles;
     QJsonObject covariates;
     QJsonObject subjects;
+    QJsonObject profile;
     QJsonObject settings;
     QJsonObject matlabSpecifications;
 
@@ -383,13 +411,17 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     }
 
     /******   Subjects   ******/
-    settings.insert( "subjectListPath", para_subjectTab_subjectFile_lineEdit->text() );
+    subjects.insert( "subjectListPath", para_subjectTab_subjectFile_lineEdit->text() );
 
     QJsonObject qcThreshold;
     qcThreshold.insert( "apply", !m_failedQCThresholdSubjects.isEmpty() );
     qcThreshold.insert( "useAtlas", para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() );
     qcThreshold.insert( "value", para_subjectTab_qcThreshold_doubleSpinBox->value() );
-    settings.insert( "qcThreshold", qcThreshold );
+    subjects.insert( "qcThreshold", qcThreshold );
+
+    /******   Profile   ******/
+    profile.insert( "startProfile", para_subjectTab_startArcLength_value_label->text() );
+    profile.insert( "endProfile", para_subjectTab_endArcLength_value_label->text() );
 
     /******   Settings   ******/
     settings.insert( "fiberName", para_executionTab_fiberName_lineEdit->text() );
@@ -411,6 +443,7 @@ void FADTTSWindow::SaveNoGUIConfiguration( QString filename )
     jsonObject_noGUI.insert( "inputFiles", inputFiles );
     jsonObject_noGUI.insert( "covariates", covariates );
     jsonObject_noGUI.insert( "subjects", subjects );
+    jsonObject_noGUI.insert( "profile", profile );
     jsonObject_noGUI.insert( "settings", settings );
     jsonObject_noGUI.insert( "matlabSpecifications", matlabSpecifications );
     jsonObject.insert( "noGUIConfiguration", jsonObject_noGUI );
@@ -521,9 +554,11 @@ void FADTTSWindow::InitInputTab()
     connect( inputTab_covariatesUncheckAll_pushButton, SIGNAL( clicked() ), this, SLOT( OnUnCheckAllCovariates() ) );
 
     DisplayFileInformation();
+
+    m_afterEdition = false;
 }
 
-void FADTTSWindow::InitSubjectCovariateTab()
+void FADTTSWindow::InitSubjectsTab()
 {
     /*** Inputs Available ***/
     /** Map of CheckBoxes to select the files we want to work on and
@@ -541,10 +576,13 @@ void FADTTSWindow::InitSubjectCovariateTab()
         signalMapperSelectFile->setMapping( m_paramTabFileCheckBoxMap[ m_data.GetDiffusionPropertiesIndices().at( i ) ], m_data.GetDiffusionPropertiesIndices().at( i ) );
     }
 
-    /*** QC Threshold ***/
-    m_qcThresholdDialog = QSharedPointer< QCThresholdDialog >( new QCThresholdDialog( this ) );
-    connect( subjectTab_applyQCThreshold_pushButton, SIGNAL( clicked() ), this, SLOT( OnApplyQCThreshold() ) );
-    connect( m_qcThresholdDialog.data(), SIGNAL( ApplyQCThreshold( const QStringList&, const QStringList&, double ) ), this, SLOT( OnApplyingQCThreshold( const QStringList&, const QStringList&, double ) ) );
+    /*** Subjects File ***/
+    m_subjectFileLineEdit = new QLineEdit();
+    m_subjectFileLineEdit = para_subjectTab_subjectFile_lineEdit;
+    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingSubjectList( const QString&  ) ) );
+    connect( subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
+    connect( subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
+    connect( subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
 
     /*** Subjects Lists ***/
     m_areSubjectsLoaded = false;
@@ -563,13 +601,15 @@ void FADTTSWindow::InitSubjectCovariateTab()
     connect( subjectTab_search_lineEdit, SIGNAL( textEdited( const QString& ) ), this, SLOT( OnSearch() ) );
     connect( subjectTab_caseSensitive_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnSetCaseSensitivityToggled( bool ) ) );
 
-    /*** Subjects File ***/
-    m_subjectFileLineEdit = new QLineEdit();
-    m_subjectFileLineEdit = para_subjectTab_subjectFile_lineEdit;
-    connect( m_subjectFileLineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnSettingSubjectList( const QString&  ) ) );
-    connect( subjectTab_loadSubjectFile_PushButton, SIGNAL( clicked() ), this, SLOT( OnLoadSubjectList() ) );
-    connect( subjectTab_resetSubjectFile_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetSubjectList() ) );
-    connect( subjectTab_saveCheckedSubjects_pushButton, SIGNAL( clicked() ), this, SLOT( OnSaveCheckedSubjects() ) );
+    /*** QC Threshold ***/
+    m_qcThresholdDialog = QSharedPointer< QCThresholdDialog >( new QCThresholdDialog( this ) );
+    connect( subjectTab_applyQCThreshold_pushButton, SIGNAL( clicked() ), this, SLOT( OnApplyQCThreshold() ) );
+    connect( m_qcThresholdDialog.data(), SIGNAL( ApplyQCThreshold( const QStringList&, const QStringList&, double, bool ) ), this, SLOT( OnQCThresholdApplied( const QStringList&, const QStringList&, double, bool ) ) );
+    connect( m_qcThresholdDialog.data(), SIGNAL( NanSujects( const QStringList& ) ), this, SLOT( OnNanSujects( const QStringList& ) ) );
+
+    connect( m_qcThresholdDialog.data(), SIGNAL( UpdateStartArcLength( const QString& ) ), this, SLOT( OnUpdatingStartArcLength( const QString& ) ) );
+    connect( m_qcThresholdDialog.data(), SIGNAL( UpdateEndArcLength( const QString& ) ), this, SLOT( OnUpdatingEndArcLength( const QString& ) ) );
+    connect( subjectTab_resetProfileCropping_pushButton, SIGNAL( clicked() ), this, SLOT( OnResetProfileCropping() ) );
 
     OnInputToggled();
 }
@@ -578,6 +618,9 @@ void FADTTSWindow::InitExecutionTab()
 {
     /*** Settings ***/
     para_executionTab_nbrPermutations_spinBox->setMaximum( 2000 );
+
+    executionTab_croppedProfileWarningIcon_label->hide();
+    executionTab_croppedProfileWarningInfo_label->hide();
 
     /*** Output directory ***/
     connect( executionTab_outputDir_pushButton, SIGNAL( clicked() ), this, SLOT( OnBrowsingOutputDir() ) );
@@ -627,7 +670,7 @@ void FADTTSWindow::InitPlottingTab()
     m_qvtkWidget = QSharedPointer< QVTKWidget >( plottingTab_plot_qvtkWidget );
 
     m_plot = new Plot();
-    m_plot->SetQVTKWidget( m_qvtkWidget );
+    m_plot->SetQVTKWidget( m_qvtkWidget, false );
     connect( m_plot, SIGNAL( PlotsUsed( const QStringList& ) ), this, SLOT( OnSettingPlotsUsed( const QStringList& ) ) );
     connect( m_plot, SIGNAL( AllPropertiesUsed( const QMap< int, QString >& ) ), this, SLOT( OnSettingAllPropertiesUsed( const QMap< int, QString >& ) ) );
     connect( m_plot, SIGNAL( AllCovariatesUsed( const QMap< int, QString >& ) ), this, SLOT( OnSettingAllCovariatesUsed( const QMap< int, QString >& ) ) );
@@ -663,9 +706,8 @@ void FADTTSWindow::InitPlottingTab()
 
 
     /*** Title/Axis/Legend Tab ***/
-    connect( plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUseCustomizedTitle( bool ) ) );
-    connect( plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingPlotTitle() ) );
-    plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( false );
+    connect( plottingTab_titleAxisLegendTab_useDefaultTitle_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUseDefaultTitle( bool ) ) );
+    connect( plottingTab_titleAxisLegendTab_useDefaultTitle_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingPlotTitle() ) );
 
     connect( plottingTab_titleAxisLegendTab_titleName_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnUpdatingPlotTitle() ) );
     connect( plottingTab_titleAxisLegendTab_titleBold_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingPlotTitle() ) );
@@ -675,9 +717,8 @@ void FADTTSWindow::InitPlottingTab()
     connect( plottingTab_titleAxisLegendTab_gridOn_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingPlotGrid( bool ) ) );
     connect( plottingTab_titleAxisLegendTab_scientificNotation_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingAbscissaNotation( bool ) ) );
 
-    connect( plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUseCustomizedAxis( bool ) ) );
-    connect( plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingPlotAxis() ) );
-    plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( false );
+    connect( plottingTab_titleAxisLegendTab_useDefaultAxis_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUseDefaultdAxis( bool ) ) );
+    connect( plottingTab_titleAxisLegendTab_useDefaultAxis_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingPlotAxis() ) );
 
     connect( plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox, SIGNAL( valueChanged( double ) ), this, SLOT( OnUpdatingPlotAxis() ) );
     connect( plottingTab_titleAxisLegendTab_xName_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( OnUpdatingPlotAxis() ) );
@@ -714,6 +755,7 @@ void FADTTSWindow::InitPlottingTab()
 
     connect( plottingTab_editionTab_markerType_comboBox, SIGNAL( currentIndexChanged( const QString& ) ), this, SLOT( OnUpdatingMarkerType( const QString& ) ) );
     connect( plottingTab_editionTab_markerSize_doubleSpinBox, SIGNAL( valueChanged( double ) ), this, SLOT( OnUpdatingMarkerSize( double ) ) );
+    connect( plottingTab_editionTab_binaryBetas_checkBox, SIGNAL( toggled( bool ) ), this, SLOT( OnUpdatingBinaryBetas( bool ) ) );
 
 
     connect( plottingTab_displayPlot_pushButton, SIGNAL( clicked() ), this, SLOT( OnDisplayPlot() ) );
@@ -732,7 +774,7 @@ void FADTTSWindow::InitFADTTSWindow()
     /** Initialization of the menu bar and all FADTTSter tabs **/
     InitMenuBar();
     InitInputTab();
-    InitSubjectCovariateTab();
+    InitSubjectsTab();
     InitExecutionTab();
     InitPlottingTab();
 
@@ -785,6 +827,17 @@ void FADTTSWindow::DisplayIcon( QLabel *label , const QPixmap& icon )
 /***********************  Private slots  ***********************/
 void FADTTSWindow::OnSettingInputFile( int diffusionPropertyIndex )
 {
+    m_data.ClearData( diffusionPropertyIndex );
+    if( diffusionPropertyIndex == m_data.GetFractionalAnisotropyIndex() )
+    {
+        para_subjectTab_startArcLength_value_label->clear();
+        para_subjectTab_endArcLength_value_label->clear();
+
+        executionTab_croppedProfileWarningIcon_label->hide();
+        executionTab_croppedProfileWarningInfo_label->clear();
+        executionTab_croppedProfileWarningInfo_label->hide();
+    }
+
     QLineEdit *lineEdit = m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ];
     QString filePath = lineEdit->text();
     QFile file( filePath );
@@ -792,14 +845,12 @@ void FADTTSWindow::OnSettingInputFile( int diffusionPropertyIndex )
     if( filePath.isEmpty() )
     {
         m_inputTabIconLabelMap[ diffusionPropertyIndex ]->clear();
-        m_data.ClearData( diffusionPropertyIndex );
     }
     else
     {
         if( !file.open( QIODevice::ReadOnly ) )
         {
             DisplayInputLineEditIcon( diffusionPropertyIndex, m_koPixmap );
-            m_data.ClearData( diffusionPropertyIndex );
         }
         else
         {
@@ -807,21 +858,27 @@ void FADTTSWindow::OnSettingInputFile( int diffusionPropertyIndex )
             QList< QStringList > fileData = m_processing.GetDataFromFile( filePath );
             if( m_processing.IsMatrixDimensionOK( fileData ) )
             {
-                DisplayInputLineEditIcon( diffusionPropertyIndex, m_okPixmap );
-
-                m_data.SetFilename( diffusionPropertyIndex ) = filePath;
-                m_data.SetFileData( diffusionPropertyIndex ) = fileData;
-
-                if( diffusionPropertyIndex == m_data.GetFractionalAnisotropyIndex() )
+                if( !m_processing.AreDuplicatesFound( fileData ) )
                 {
-                    AddAtlas( fileData );
+                    DisplayInputLineEditIcon( diffusionPropertyIndex, m_okPixmap );
+
+                    m_data.SetFilename( diffusionPropertyIndex ) = filePath;
+                    m_data.SetFileData( diffusionPropertyIndex ) = fileData;
+
+                    if( diffusionPropertyIndex == m_data.GetFractionalAnisotropyIndex() )
+                    {
+                        AddAtlas( fileData );
+                    }
+                }
+                else
+                {
+                    DisplayInputLineEditIcon( diffusionPropertyIndex, m_warningPixmap );
+                    m_data.SetFileData( diffusionPropertyIndex ) = fileData;
                 }
             }
             else
             {
                 DisplayInputLineEditIcon( diffusionPropertyIndex, m_koPixmap );
-
-                m_data.ClearData( diffusionPropertyIndex );
 
                 QString criticalMessage = m_data.GetDiffusionPropertyName( diffusionPropertyIndex ).toUpper()
                         + " data file corrupted:<br><i>" + m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->text()
@@ -836,7 +893,14 @@ void FADTTSWindow::OnSettingInputFile( int diffusionPropertyIndex )
 
     if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
     {
-        m_editInputDialog->ResetSubjectColumnID(); /** By default Subjects are on the 1st column. **/
+        if( !m_afterEdition )
+        {
+            m_editInputDialog->ResetSubjectColumnID(); /** By default Subjects are on the 1st column. **/
+        }
+        else
+        {
+            m_afterEdition = false;
+        }
         SetInfoSubjectColumnID();
     }
 
@@ -863,14 +927,13 @@ void FADTTSWindow::OnAddInputFile( int diffusionPropertyIndex )
     QString file = QFileDialog::getOpenFileName( this, tr( qPrintable( "Choose " + m_data.GetDiffusionPropertyName( diffusionPropertyIndex ).toUpper() + " File" ) ), dir.absolutePath(), tr( ".csv( *.csv ) ;; .*( * )" ) );
     if( !file.isEmpty() )
     {
-        lineEdit->clear();
         lineEdit->setText( file );
     }
 }
 
 void FADTTSWindow::OnEditInputFile( int diffusionPropertyIndex )
 {
-    if( m_data.GetFilename( diffusionPropertyIndex ).isEmpty() )
+    if( m_data.GetFileData( diffusionPropertyIndex ).isEmpty() )
     {
         QString warningMessage = "<b>File Edition Unable</b><br>";
         warningMessage.append( m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->text().isEmpty() ?
@@ -924,6 +987,7 @@ void FADTTSWindow::OnUnCheckAllCovariates()
 
 void FADTTSWindow::OnUpdatingInputFile( const int &diffusionPropertyIndex, const QString& newFilePath )
 {
+    m_afterEdition = true;
     m_inputTabInputFileLineEditMap[ diffusionPropertyIndex ]->setText( newFilePath );
 }
 
@@ -1030,11 +1094,21 @@ void FADTTSWindow::DisplayInputLineEditIcon( int diffusionPropertyIndex, const Q
     DisplayIcon( m_inputTabIconLabelMap[ diffusionPropertyIndex ], icon );
 }
 
+void FADTTSWindow::SetProfileCropping()
+{
+    QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+    arcLength.removeFirst();
+
+    para_subjectTab_startArcLength_value_label->setText( arcLength.first() );
+    para_subjectTab_endArcLength_value_label->setText( arcLength.last() );
+}
+
 void FADTTSWindow::UpdateInputFileInformation( int diffusionPropertyIndex )
 {
     QList< QStringList > fileData = m_data.GetFileData( diffusionPropertyIndex );
+    QString filePath = m_data.SetFilename( diffusionPropertyIndex );
 
-    if( !fileData.isEmpty() )
+    if( !fileData.isEmpty() && !filePath.isEmpty() )
     {
         m_data.SetNbrRows( diffusionPropertyIndex ) = fileData.count();
         m_data.SetNbrColumns( diffusionPropertyIndex ) = fileData.first().count();
@@ -1043,6 +1117,11 @@ void FADTTSWindow::UpdateInputFileInformation( int diffusionPropertyIndex )
         QStringList subjects = m_processing.GetSubjectsFromData( fileData, m_data.GetSubjectColumnID() );
         m_data.SetSubjects( diffusionPropertyIndex ) = subjects;
         m_data.SetNbrSubjects( diffusionPropertyIndex ) = subjects.count();
+
+        if( diffusionPropertyIndex == m_data.GetFractionalAnisotropyIndex() )
+        {
+            SetProfileCropping();
+        }
 
         if( diffusionPropertyIndex == m_data.GetSubMatrixIndex() )
         {
@@ -1133,9 +1212,23 @@ void FADTTSWindow::OnApplyQCThreshold()
     QList< QStringList > rawData = m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() );
     QStringList atlas = para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() ? m_data.GetAtlas() : QStringList();
 
+    if( matchedSubjects.isEmpty() || ( para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() && atlas.isEmpty() ) )
+    {
+        QString warningMessage = "<b>Unable to apply QC Threshold</b><br>";
+        if( matchedSubjects.isEmpty() )
+        {
+            warningMessage.append( QString( "<br>- No subjects selected<br>" ) );
+        }
+        if( para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() && atlas.isEmpty() )
+        {
+            warningMessage.append( QString( "<br>- No atlas detected" ) );
+        }
+        WarningPopUp( warningMessage );
+    }
+
     if( !matchedSubjects.isEmpty() && !rawData.isEmpty() && ( para_subjectTab_qcThresoldOnAtlas_radioButton->isChecked() ? !atlas.isEmpty() : true ) )
     {
-        bool initDiaolog = m_qcThresholdDialog->InitPlot( rawData, atlas, matchedSubjects, para_subjectTab_qcThreshold_doubleSpinBox->value() );
+        bool initDiaolog = m_qcThresholdDialog->InitPlot( rawData, atlas, matchedSubjects, para_subjectTab_qcThreshold_doubleSpinBox->value(), para_subjectTab_startArcLength_value_label->text(), para_subjectTab_endArcLength_value_label->text() );
 
         if( initDiaolog )
         {
@@ -1146,10 +1239,14 @@ void FADTTSWindow::OnApplyQCThreshold()
     }
 }
 
-void FADTTSWindow::OnApplyingQCThreshold( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold )
+void FADTTSWindow::OnQCThresholdApplied( const QStringList& subjectsCorrelated, const QStringList& subjectsNotCorrelated, double qcThreshold, bool windowClosed )
 {
-    m_failedQCThresholdSubjects.clear();
-    m_failedQCThresholdSubjects = subjectsNotCorrelated;
+    if( windowClosed )
+    {
+        m_failedQCThresholdSubjects.append( subjectsNotCorrelated );
+        m_failedQCThresholdSubjects.removeDuplicates();
+        m_failedQCThresholdSubjects.sort();
+    }
 
     para_subjectTab_qcThreshold_doubleSpinBox->setValue( qcThreshold );
     m_qcThreshold = qcThreshold;
@@ -1157,7 +1254,7 @@ void FADTTSWindow::OnApplyingQCThreshold( const QStringList& subjectsCorrelated,
     for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
     {
         QListWidgetItem *currentItem = m_matchedSubjectListWidget->item( i );
-        if( m_failedQCThresholdSubjects.contains( currentItem->text() ) )
+        if( subjectsNotCorrelated.contains( currentItem->text() ) )
         {
             currentItem->setCheckState( Qt::Unchecked );
             currentItem->setBackgroundColor( m_grey );
@@ -1173,6 +1270,42 @@ void FADTTSWindow::OnApplyingQCThreshold( const QStringList& subjectsCorrelated,
     DisplayNbrSubjectSelected();
 }
 
+void FADTTSWindow::OnNanSujects( const QStringList& nanSubjects )
+{
+    for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
+    {
+        QListWidgetItem *currentItem = m_matchedSubjectListWidget->item( i );
+        if( nanSubjects.contains( currentItem->text() ) )
+        {
+            currentItem->setCheckState( Qt::Unchecked );
+            currentItem->setBackgroundColor( m_grey );
+        }
+    }
+
+    DisplayNbrSubjectSelected();
+}
+
+void FADTTSWindow::OnResetProfileCropping()
+{
+    SetProfileCropping();
+
+    OnCroppedProfileUpdated();
+}
+
+void FADTTSWindow::OnUpdatingStartArcLength( const QString& valueStart )
+{
+    para_subjectTab_startArcLength_value_label->setText( valueStart );
+
+    OnCroppedProfileUpdated();
+}
+
+void FADTTSWindow::OnUpdatingEndArcLength( const QString& valueEnd )
+{
+    para_subjectTab_endArcLength_value_label->setText( valueEnd );
+
+    OnCroppedProfileUpdated();
+}
+
 
 void FADTTSWindow::OnSearch()
 {
@@ -1186,8 +1319,8 @@ void FADTTSWindow::OnInputToggled()
     SetSelectedInputFiles();
     UpdateSubjectList();
 
-    bool isEnable = m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isChecked() && m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isEnabled();
-    subjectTab_qcThreshold_widget->setEnabled( isEnable );
+    bool isFAEnable = m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isChecked() && m_paramTabFileCheckBoxMap[ m_data.GetFractionalAnisotropyIndex() ]->isEnabled();
+    subjectTab_qcThreshold_widget->setEnabled( isFAEnable );
 }
 
 void FADTTSWindow::OnSetCaseSensitivityToggled( bool checked )
@@ -1229,6 +1362,7 @@ void FADTTSWindow::OnSaveCheckedSubjects()
     if( !filePath.isEmpty() )
     {
         SaveCheckedSubjects( filePath );
+        UseSavedSubjectList( filePath );
     }
 }
 
@@ -1379,7 +1513,7 @@ void FADTTSWindow::DisplayNbrSubjectSelected()
             }
         }
 
-        subjectTab_checkedSubjectsInformation_label->setText( tr( qPrintable( QString::number( nbrSubjectsSelected ) + " subjects selected") ) );
+        subjectTab_checkedSubjectsInformation_label->setText( tr( qPrintable( QString::number( nbrSubjectsSelected ) + "/" + QString::number( m_matchedSubjectListWidget->count() ) + " subjects selected") ) );
     }
 }
 
@@ -1518,7 +1652,41 @@ int FADTTSWindow::SearchSubjects( QListWidget *list )
         palette.setColor( QPalette::Base, Qt::white );
         lineEdit->setPalette( palette );
     }
+
     return nbrFound;
+}
+
+void FADTTSWindow::UseSavedSubjectList( QString filePath )
+{
+    bool use = false;
+    QMessageBox::StandardButton questionBox =
+            QMessageBox::question( this, tr( "Use Saved Subject List" ), tr( qPrintable( "Do you want to use the subject list<br><i>" + filePath + "</i><br>as new reference list?" ) ),
+                                   QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes );
+    switch( questionBox )
+    {
+    case QMessageBox::No:
+        use = false;
+        break;
+    case QMessageBox::Yes:
+    {
+        use = true;
+        break;
+    }
+    default:
+        use = false;
+        break;
+    }
+
+    if( use )
+    {
+        QString previousFilePath = m_subjectFileLineEdit->text();
+        m_subjectFileLineEdit->setText( filePath );
+        if( previousFilePath == filePath )
+        {
+            /** If filePath does not change, an update is needed to display the right subject list **/
+            UpdateSubjectList();
+        }
+    }
 }
 
 void FADTTSWindow::SaveCheckedSubjects( QString filePath )
@@ -1529,23 +1697,14 @@ void FADTTSWindow::SaveCheckedSubjects( QString filePath )
 
     for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
     {
-        if( m_matchedSubjectListWidget->item( i )->checkState() == Qt::Checked )
+        if( m_matchedSubjectListWidget->item( i )->checkState() == Qt::Checked && !m_matchedSubjectListWidget->item( i )->isHidden() )
         {
             ts << m_matchedSubjectListWidget->item( i )->text() <<  endl;
         }
     }
     exportedTXT.flush();
     exportedTXT.close();
-
-    QString previousFilePath = m_subjectFileLineEdit->text();
-    m_subjectFileLineEdit->setText( filePath );
-    if( previousFilePath == filePath )
-    {
-        /** If filePath does not change, an update is needed to display the right subject list **/
-        UpdateSubjectList();
-    }
 }
-
 
 QStringList FADTTSWindow::GetCheckedMatchedSubjects()
 {
@@ -1582,6 +1741,49 @@ QMap< QString, QList< QStringList > > FADTTSWindow::GetPropertyRawData()
 /****************************************************************/
 
 /***********************  Private  slots  ***********************/
+void FADTTSWindow::OnCroppedProfileUpdated()
+{
+    QList< QStringList > faFile = m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() );
+    QStringList arcLength;
+    QString startProfile = para_subjectTab_startArcLength_value_label->text();
+    QString endProfile = para_subjectTab_endArcLength_value_label->text();
+    bool showWarning = false;
+
+    if( !faFile.isEmpty() )
+    {
+        arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+        arcLength.removeFirst();
+    }
+
+
+    if( !arcLength.isEmpty() )
+    {
+        showWarning = startProfile != arcLength.first() || endProfile != arcLength.last();
+
+        if( showWarning )
+        {
+            QString warningText;
+
+            warningText = "<i><span style=""font-size:8pt;"">Original Profile: from " + arcLength.first() + " to " + arcLength.last() +
+                    "<br>Profile used after cropping: from "+ para_subjectTab_startArcLength_value_label->text() + " to " + para_subjectTab_endArcLength_value_label->text() + "</span></i>";
+
+            executionTab_croppedProfileWarningInfo_label->setText( tr( qPrintable( warningText ) ) );
+        }
+        else
+        {
+            executionTab_croppedProfileWarningInfo_label->clear();
+        }
+    }
+    else
+    {
+        executionTab_croppedProfileWarningInfo_label->clear();
+    }
+
+    executionTab_croppedProfileWarningIcon_label->setHidden( !showWarning );
+    executionTab_croppedProfileWarningInfo_label->setHidden( !showWarning );
+}
+
+
 void FADTTSWindow::OnBrowsingOutputDir()
 {
     QLineEdit *lineEdit = para_executionTab_outputDir_lineEdit;
@@ -1772,9 +1974,37 @@ void FADTTSWindow::OnMatlabThreadFinished()
 
 
 /*********************** Private function ***********************/
+void FADTTSWindow::GenerateNANSubjectFile( QString outputDir, QStringList selectedSubjects )
+{
+    QList< QStringList > faData = m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() );
+    if( !faData.isEmpty() )
+    {
+        QStringList nanSubjects = m_processing.GetNANSubjects( faData, selectedSubjects );
+
+        if( !nanSubjects.isEmpty() )
+        {
+            QFile nanSubjectFile( outputDir + "/" + para_executionTab_fiberName_lineEdit->text() + "_subjectList_NAN.txt" );
+
+            if( nanSubjectFile.open( QIODevice::WriteOnly ) )
+            {
+                QTextStream tsNanSubjectFile( &nanSubjectFile );
+
+                tsNanSubjectFile << "The following subject(s) present(s) -nan and/or nan values in FA file:" << endl;
+
+                for( int i = 0; i < nanSubjects.size(); i++ )
+                {
+                    tsNanSubjectFile << "- " << nanSubjects.at( i ) << endl;
+                }
+                nanSubjectFile.flush();
+                nanSubjectFile.close();
+            }
+        }
+    }
+}
+
 void FADTTSWindow::GenerateFailedQCThresholdSubjectFile( QString outputDir )
 {
-    QFile failedQCThresholdSubjectFile( outputDir + "/" + para_executionTab_fiberName_lineEdit->text() + "_failed_QCThreshold_SubjectList.txt" );
+    QFile failedQCThresholdSubjectFile( outputDir + "/" + para_executionTab_fiberName_lineEdit->text() + "_subjectList_FAILED_QCThreshold.txt" );
 
     if( failedQCThresholdSubjectFile.open( QIODevice::WriteOnly ) )
     {
@@ -1818,6 +2048,8 @@ QStringList FADTTSWindow::GenerateSelectedSubjectFile( QString outputDir )
         GenerateFailedQCThresholdSubjectFile( outputDir );
     }
 
+    GenerateNANSubjectFile( outputDir, selectedSubjects );
+
     return selectedSubjects;
 }
 
@@ -1851,6 +2083,19 @@ void FADTTSWindow::SetFibername()
     m_fibername = para_executionTab_fiberName_lineEdit->text();
 }
 
+bool FADTTSWindow::IsAtLeastOneSubjectSelected()
+{
+    for( int i = 0; i < m_matchedSubjectListWidget->count(); i++ )
+    {
+        if( m_matchedSubjectListWidget->item( i )->checkState() == Qt::Checked )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool FADTTSWindow::canFADTTSterBeRun()
 {
     bool atLeastOneDiffusionPropertyEnabled = ( m_paramTabFileCheckBoxMap.value( m_data.GetAxialDiffusivityIndex() )->isEnabled() ||
@@ -1858,58 +2103,63 @@ bool FADTTSWindow::canFADTTSterBeRun()
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetMeanDiffusivityIndex() )->isEnabled() ||
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetFractionalAnisotropyIndex() )->isEnabled() );
     bool subMatrixEnabled = m_paramTabFileCheckBoxMap.value( m_data.GetSubMatrixIndex() )->isEnabled();
+    bool atLeastOneCovariateChecked = m_selectedCovariates.count() != 0;
 
     bool atLeastOneDiffusionPropertyChecked = ( m_paramTabFileCheckBoxMap.value( m_data.GetAxialDiffusivityIndex() )->isChecked() ||
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetMeanDiffusivityIndex() )->isChecked() ||
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetRadialDiffusivityIndex() )->isChecked() ||
                                                 m_paramTabFileCheckBoxMap.value( m_data.GetFractionalAnisotropyIndex() )->isChecked() );
     bool subMatrixChecked = m_paramTabFileCheckBoxMap.value( m_data.GetSubMatrixIndex() )->isChecked();
-
-    bool atLeastOneCovariateChecked = m_selectedCovariates.count() != 0;
+    bool atLeastOneSubjectSelected = IsAtLeastOneSubjectSelected();
 
     bool fiberNameProvided = !m_fibername.isEmpty();
-
     bool mvcmPathSpecified = !para_executionTab_mvcm_lineEdit->text().isEmpty();
     bool matlabExeSpecified = !soft_executionTab_runMatlab_checkBox->isChecked() ? true : m_isMatlabExeFound;
 
-    if( !atLeastOneDiffusionPropertyEnabled || !subMatrixEnabled ||
-            !atLeastOneDiffusionPropertyChecked || !subMatrixChecked ||
-            !atLeastOneCovariateChecked ||
-            !fiberNameProvided ||
-            !mvcmPathSpecified || !matlabExeSpecified )
+    if( !atLeastOneDiffusionPropertyEnabled || !subMatrixEnabled || !atLeastOneCovariateChecked ||
+            !atLeastOneDiffusionPropertyChecked || !subMatrixChecked || !atLeastOneSubjectSelected ||
+            !fiberNameProvided || !mvcmPathSpecified || !matlabExeSpecified )
     {
         QString warningText = "<b>FADTTSter will not be executed for the following reason(s):</b><br>";
-        if( !atLeastOneDiffusionPropertyEnabled || !subMatrixEnabled )
+        if( !atLeastOneDiffusionPropertyEnabled || !subMatrixEnabled || !atLeastOneCovariateChecked )
         {
             warningText.append( "Inputs Tab<br>" );
             if( !atLeastOneDiffusionPropertyEnabled )
             {
-                warningText.append( "- Provide at least 1 data file (AD, RD, MR or FA)<br>" );
+                warningText.append( "- Provide at least 1 diffusion profile file (AD, RD, MR or FA)<br>" );
             }
             if( !subMatrixEnabled )
             {
                 warningText.append( "- No covariate file provided<br>" );
             }
-        }
-        if( atLeastOneDiffusionPropertyEnabled || subMatrixEnabled )
-        {
-            if( ( !atLeastOneDiffusionPropertyChecked && atLeastOneDiffusionPropertyEnabled ) || ( !subMatrixChecked && subMatrixEnabled ) || !atLeastOneCovariateChecked )
+            else
             {
-                warningText.append( "Subjects / Covariates Tab<br>" );
-                if( !atLeastOneDiffusionPropertyChecked && atLeastOneDiffusionPropertyEnabled )
-                {
-                    warningText.append( "- Select at least 1 data file (AD, RD, MR or FA)<br>" );
-                }
-                if( !subMatrixChecked && subMatrixEnabled )
-                {
-                    warningText.append( "- Covariate file not selected<br>" );
-                }
                 if( subMatrixChecked )
                 {
                     if( !atLeastOneCovariateChecked )
                     {
                         warningText.append( "- Select at least 1 covariate<br>" );
                     }
+                }
+            }
+        }
+        if( atLeastOneDiffusionPropertyEnabled || subMatrixEnabled )
+        {
+            if( ( !atLeastOneDiffusionPropertyChecked && atLeastOneDiffusionPropertyEnabled ) || ( !subMatrixChecked && subMatrixEnabled ) ||
+                    ( ( atLeastOneDiffusionPropertyChecked || subMatrixChecked ) && !atLeastOneSubjectSelected ) )
+            {
+                warningText.append( "Subjects Tab<br>" );
+                if( !atLeastOneDiffusionPropertyChecked && atLeastOneDiffusionPropertyEnabled )
+                {
+                    warningText.append( "- Select at least 1 diffusion profile (AD, RD, MR or FA)<br>" );
+                }
+                if( !subMatrixChecked && subMatrixEnabled )
+                {
+                    warningText.append( "- Covariate file not selected<br>" );
+                }
+                if( ( atLeastOneDiffusionPropertyChecked || subMatrixChecked ) && !atLeastOneSubjectSelected )
+                {
+                    warningText.append( "- Select at least 1 subject<br>" );
                 }
             }
         }
@@ -1943,8 +2193,19 @@ void FADTTSWindow::SetMatlabScript()
     QString outputDir = m_data.GetOutputDir() + "/FADTTSter_" + m_fibername;
     QDir().mkpath( outputDir );
 
+    int startProfile = -1;
+    int endProfile = -1;
+    if( m_paramTabFileCheckBoxMap.value( m_data.GetFractionalAnisotropyIndex() )->isChecked() )
+    {
+        QStringList arcLength = m_processing.Transpose( m_data.GetFileData( m_data.GetFractionalAnisotropyIndex() ) ).first();
+        arcLength.removeFirst();
+
+        startProfile = arcLength.indexOf( para_subjectTab_startArcLength_value_label->text(), 0 );
+        endProfile = arcLength.indexOf( para_subjectTab_endArcLength_value_label->text(), 0 );
+    }
+
     QMap< int, QString > matlabInputFiles = m_processing.GenerateMatlabInputs( outputDir,m_fibername, m_selectedFiles, m_propertySelected, m_selectedCovariates,
-                                                                               m_data.GetSubjectColumnID(), GenerateSelectedSubjectFile( outputDir ) );
+                                                                               m_data.GetSubjectColumnID(), GenerateSelectedSubjectFile( outputDir ), startProfile, endProfile );
 
     m_matlabThread->InitMatlabScript( outputDir, "FADTTSterAnalysis_" + m_fibername + "_" + QString::number( para_executionTab_nbrPermutations_spinBox->value() ) + "perm.m" );
     m_matlabThread->SetHeader();
@@ -1966,9 +2227,9 @@ void FADTTSWindow::SetMatlabScript()
                     para_executionTab_pvalueThreshold_doubleSpinBox->value(), para_executionTab_omnibus_checkBox->isChecked(), para_executionTab_postHoc_checkBox->isChecked(),
                     para_executionTab_mvcm_lineEdit->text(), soft_executionTab_runMatlab_checkBox->isChecked(), soft_executionTab_matlabExe_lineEdit->text() );
 
-    SaveParaConfiguration( QString( outputDir + "/defaultConfiguration_para.json" ) );
-    SaveSoftConfiguration( QString( outputDir + "/defaultConfiguration_soft.json" ) );
-    SaveNoGUIConfiguration( QString( outputDir + "/defaultConfiguration_noGUI.json" ) );
+    SaveParaConfiguration( QString( outputDir + "/configuration_para_" + m_fibername + ".json" ) );
+    SaveSoftConfiguration( QString( outputDir + "/configuration_soft_" + m_fibername + ".json" ) );
+    SaveNoGUIConfiguration( QString( outputDir + "/configuration_noGUI_" + m_fibername + ".json" ) );
 }
 
 
@@ -2167,7 +2428,7 @@ void FADTTSWindow::OnPlotSelection( const QString& plotSelected )
         SetPlotOptions( false, false, false );
     }
     if( plotSelected == "Raw Data" || plotSelected == "Raw Stats" ||
-            plotSelected == "Betas with Omnibus Confidence Bands" ||
+            plotSelected == "Omnibus Betas with Confidence Bands" ||
             plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
     {
         SetPlotOptions( true, true, true );
@@ -2200,37 +2461,9 @@ void FADTTSWindow::OnCovariateSelection( const QString& covariateSelected )
     m_plot->SetSelectedCovariate() = covariateSelected;
 }
 
-
 void FADTTSWindow::OnLineForDisplayClicked( QListWidgetItem *item )
 {
-    if( item->flags() == Qt::ItemIsEnabled )
-    {
-        item->setCheckState( item->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked );
-
-        displayMapType::Iterator currentIterator = m_currentLinesForDisplay.begin();
-        bool iterFound = false;
-        while( !iterFound && ( currentIterator != m_currentLinesForDisplay.end() ) )
-        {
-            if( currentIterator.value().first == item->text() )
-            {
-                iterFound = true;
-                currentIterator.value().second.first = item->checkState();
-            }
-            else
-            {
-                ++currentIterator;
-            }
-        }
-    }
-
-    if( m_areLinesForDisplayProperties )
-    {
-        m_propertiesForDisplay = m_currentLinesForDisplay;
-    }
-    else
-    {
-        m_covariatesForDisplay = m_currentLinesForDisplay;
-    }
+    ClickLineForDisplay( item );
 
     m_plot->UpdateLineToDisplay( m_currentLinesForDisplay );
 }
@@ -2238,11 +2471,15 @@ void FADTTSWindow::OnLineForDisplayClicked( QListWidgetItem *item )
 void FADTTSWindow::OnCheckAllLinesToDisplay()
 {
     SetCheckStateLinesToDisplay( Qt::Checked );
+
+    m_plot->UpdateLineToDisplay( m_currentLinesForDisplay );
 }
 
 void FADTTSWindow::OnUncheckAllToDisplay()
 {
     SetCheckStateLinesToDisplay( Qt::Unchecked );
+
+    m_plot->UpdateLineToDisplay( m_currentLinesForDisplay );
 }
 
 
@@ -2271,13 +2508,10 @@ void FADTTSWindow::OnSettingLinesSelected( const QStringList& linesSelected )
 }
 
 
-void FADTTSWindow::OnUseCustomizedTitle( bool checkState )
+void FADTTSWindow::OnUseDefaultTitle( bool checkState )
 {
-    plottingTab_titleAxisLegendTab_titleName_lineEdit->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_titleBold_checkBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_titleItalic_checkBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_titleSize_label->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setEnabled( checkState );
+    plottingTab_titleAxisLegendTab_titleName_lineEdit->setEnabled( !checkState );
+    plottingTab_titleAxisLegendTab_titleName_label->setEnabled( !checkState );
 }
 
 void FADTTSWindow::OnUpdatingPlotTitle()
@@ -2296,22 +2530,14 @@ void FADTTSWindow::OnUpdatingAbscissaNotation( bool checkState )
     m_plot->UpdateAbscissaNotation( checkState );
 }
 
-void FADTTSWindow::OnUseCustomizedAxis( bool checkState )
+void FADTTSWindow::OnUseDefaultdAxis( bool checkState )
 {
-    plottingTab_titleAxisLegendTab_axisLabelSize_label->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_xName_label->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_xName_lineEdit->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_yName_label->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_yName_lineEdit->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_axisNameSize_label->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_axisNameSize_doubleSpinBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_axisBold_checkBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_axisItalic_checkBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_yMin_checkBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setEnabled( checkState && plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked() );
-    plottingTab_titleAxisLegendTab_yMax_checkBox->setEnabled( checkState );
-    plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setEnabled( checkState && plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked() );
+    plottingTab_titleAxisLegendTab_xName_label->setEnabled( !checkState );
+    plottingTab_titleAxisLegendTab_xName_lineEdit->setEnabled( !checkState );
+    plottingTab_titleAxisLegendTab_yName_label->setEnabled( !checkState );
+    plottingTab_titleAxisLegendTab_yName_lineEdit->setEnabled( !checkState );
+//    plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->setEnabled( checkState && plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked() );
+//    plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->setEnabled( checkState && plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked() );
 }
 
 void FADTTSWindow::OnYMinToggled( bool checkState )
@@ -2377,8 +2603,7 @@ void FADTTSWindow::OnUpdatingLegend( const QString& legendPosition )
 
 void FADTTSWindow::OnUpdatingPvalueThreshold( double pvalueThreshold )
 {
-    m_plot->SetPvalueThreshold() = pvalueThreshold;
-    m_plot->UpdatePvalueThresold( plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() );
+    m_plot->UpdatePvalueThreshold( pvalueThreshold );
 }
 
 void FADTTSWindow::OnUpdatingLineWidth( double lineWidth )
@@ -2404,19 +2629,31 @@ void FADTTSWindow::OnUpdatingMarkerSize( double markerSize )
     m_plot->UpdateMarker();
 }
 
+void FADTTSWindow::OnUpdatingBinaryBetas( bool checkState )
+{
+    m_plot->UpdateBinaryBetas( checkState );
+}
+
 
 void FADTTSWindow::OnDisplayPlot()
 {
     m_plot->ClearPlot();
     m_lineSelectedListWidget->hide();
 
-    if( m_plotSelected.contains( "by Covariates" ) )
+    if( m_plotSelected == "Raw Betas by Covariates" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
         m_areLinesForDisplayProperties = true;
     }
     else
     {
-        if(  m_plotSelected.contains( "by Properties" ) ||  m_plotSelected.contains( "Local pvalues" ) )
+        if(  m_plotSelected == "Raw Betas by Properties" ||
+             m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+             m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+             m_plotSelected == "Omnibus Local pvalues" ||
+             m_plotSelected == "Omnibus FDR Local pvalues" )
         {
             m_areLinesForDisplayProperties = false;
         }
@@ -2426,16 +2663,30 @@ void FADTTSWindow::OnDisplayPlot()
     UpdatePlot();
 
     bool isPlotDisplayed = m_plot->DisplayPlot();
+
+//    UpdatePlot();
     plottingTab_savePlot_pushButton->setEnabled( isPlotDisplayed );
     plottingTab_resetPlot_pushButton->setEnabled( isPlotDisplayed );
 
-    bool isVisible = isPlotDisplayed && ( m_plotSelected.contains( "Betas by" ) || m_plotSelected.contains( "Local pvalues" ) );
-    SetSelectionLinesDisplayedVisible( isVisible );
+    bool isSelectionLinesDisplayedVisible = isPlotDisplayed && ( m_plotSelected == "Raw Betas by Properties" ||
+                                                                 m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+                                                                 m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+                                                                 m_plotSelected == "Raw Betas by Covariates" ||
+                                                                 m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+                                                                 m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" ||
+                                                                 m_plotSelected == "Omnibus Local pvalues" ||
+                                                                 m_plotSelected == "Omnibus FDR Local pvalues" ||
+                                                                 m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" );
+    SetSelectionLinesDisplayedVisible( isSelectionLinesDisplayedVisible );
 }
 
 void FADTTSWindow::OnResetPlot()
 {
     m_plot->ClearPlot();
+
+    m_lineSelectedListWidget->hide();
+    SetSelectionLinesDisplayedVisible( false );
+
     plottingTab_savePlot_pushButton->setEnabled( false );
     plottingTab_resetPlot_pushButton->setEnabled( false );
 }
@@ -2452,7 +2703,7 @@ void FADTTSWindow::OnLoadPlotSettings()
 
 void FADTTSWindow::OnSavePlotSettings()
 {
-    QString filePath = QFileDialog::getSaveFileName( this, tr( qPrintable( "Save Plot Settings as ..." ) ), "newPlotSettings.json", tr( ".json( *.json ) ;; .*( * )" ) );
+    QString filePath = QFileDialog::getSaveFileName( this, tr( "Save Plot Settings as ..." ), "newPlotSettings.json", tr( ".json( *.json ) ;; .*( * )" ) );
     if( !filePath.isEmpty() )
     {
         SavePlotSettings( filePath );
@@ -2683,6 +2934,38 @@ void FADTTSWindow::AddLinesForDisplay()
     m_lineDisplayedListWidget->setMaximumHeight( m_lineDisplayedListWidget->sizeHintForRow( 0 ) * ( m_lineDisplayedListWidget->count() + 1 ) );
 }
 
+void FADTTSWindow::ClickLineForDisplay( QListWidgetItem *item )
+{
+    if( item->flags() == Qt::ItemIsEnabled )
+    {
+        item->setCheckState( item->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked );
+
+        displayMapType::Iterator currentIterator = m_currentLinesForDisplay.begin();
+        bool iterFound = false;
+        while( !iterFound && ( currentIterator != m_currentLinesForDisplay.end() ) )
+        {
+            if( currentIterator.value().first == item->text() )
+            {
+                iterFound = true;
+                currentIterator.value().second.first = item->checkState();
+            }
+            else
+            {
+                ++currentIterator;
+            }
+        }
+    }
+
+    if( m_areLinesForDisplayProperties )
+    {
+        m_propertiesForDisplay = m_currentLinesForDisplay;
+    }
+    else
+    {
+        m_covariatesForDisplay = m_currentLinesForDisplay;
+    }
+}
+
 void FADTTSWindow::SetCheckStateLinesToDisplay( Qt::CheckState checkState )
 {
     for( int i = 0; i < m_lineDisplayedListWidget->count(); i++ )
@@ -2704,16 +2987,14 @@ void FADTTSWindow::SetCheckStateLinesToDisplay( Qt::CheckState checkState )
     {
         m_covariatesForDisplay = m_currentLinesForDisplay;
     }
-
-    m_plot->UpdateLineToDisplay( m_currentLinesForDisplay );
 }
 
-void FADTTSWindow::SetSelectionLinesDisplayedVisible( bool visible )
+void FADTTSWindow::SetSelectionLinesDisplayedVisible( bool isVisible )
 {
-    plottingTab_loadSetDataTab_linesToDisplay_label->setHidden( !visible );
-    m_lineDisplayedListWidget->setHidden( !visible );
-    plottingTab_loadSetDataTab_checkAllLinesToDisplay_pushButton->setHidden( !visible );
-    plottingTab_loadSetDataTab_uncheckAllLinesToDisplay_pushButton->setHidden( !visible );
+    plottingTab_loadSetDataTab_linesToDisplay_label->setHidden( !isVisible );
+    m_lineDisplayedListWidget->setHidden( !isVisible );
+    plottingTab_loadSetDataTab_checkAllLinesToDisplay_pushButton->setHidden( !isVisible );
+    plottingTab_loadSetDataTab_uncheckAllLinesToDisplay_pushButton->setHidden( !isVisible );
 }
 
 void FADTTSWindow::EditCovariatesNames()
@@ -2741,37 +3022,46 @@ void FADTTSWindow::EditCovariatesNames()
 
 void FADTTSWindow::UpdatePlotAxis()
 {
-    if( plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked() )
+    if( plottingTab_titleAxisLegendTab_useDefaultAxis_checkBox->isChecked() )
     {
-        m_plot->SetCustomizedAxis( plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox->value(),
-                                   plottingTab_titleAxisLegendTab_xName_lineEdit->text(),
-                                   plottingTab_titleAxisLegendTab_yName_lineEdit->text(),
-                                   plottingTab_titleAxisLegendTab_axisNameSize_doubleSpinBox->value(),
-                                   plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked(),
-                                   plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked(),
-                                   plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked(),
-                                   plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value(),
-                                   plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked(),
-                                   plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value() );
+        m_plot->SetDefaultAxis( plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox->value(),
+                                plottingTab_titleAxisLegendTab_axisNameSize_doubleSpinBox->value(),
+                                plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked(),
+                                plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked(),
+                                plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked(),
+                                plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value(),
+                                plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked(),
+                                plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value() );
     }
     else
     {
-        m_plot->SetDefaultAxis();
+        m_plot->SetCustomizedAxis( plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox->value(),
+                                           plottingTab_titleAxisLegendTab_xName_lineEdit->text(),
+                                           plottingTab_titleAxisLegendTab_yName_lineEdit->text(),
+                                           plottingTab_titleAxisLegendTab_axisNameSize_doubleSpinBox->value(),
+                                           plottingTab_titleAxisLegendTab_axisBold_checkBox->isChecked(),
+                                           plottingTab_titleAxisLegendTab_axisItalic_checkBox->isChecked(),
+                                           plottingTab_titleAxisLegendTab_yMin_checkBox->isChecked(),
+                                           plottingTab_titleAxisLegendTab_yMin_doubleSpinBox->value(),
+                                           plottingTab_titleAxisLegendTab_yMax_checkBox->isChecked(),
+                                           plottingTab_titleAxisLegendTab_yMax_doubleSpinBox->value() );
     }
 }
 
 void FADTTSWindow::UpdatePlotTitle()
 {
-    if( plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() )
+    if( plottingTab_titleAxisLegendTab_useDefaultTitle_checkBox->isChecked() )
+    {
+        m_plot->SetDefaultTitle( plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked(),
+                                         plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked(),
+                                         plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value() );
+    }
+    else
     {
         m_plot->SetCustomizedTitle( plottingTab_titleAxisLegendTab_titleName_lineEdit->text(),
                                     plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked(),
                                     plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked(),
                                     plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value() );
-    }
-    else
-    {
-        m_plot->SetDefaultTitle();
     }
 }
 
@@ -2793,6 +3083,7 @@ void FADTTSWindow::UpdatePlot()
 
     m_plot->SetMarkerType( plottingTab_editionTab_markerType_comboBox->currentText() );
     m_plot->SetMarkerSize() = plottingTab_editionTab_markerSize_doubleSpinBox->value();
+    m_plot->SetBinaryBetas() = plottingTab_editionTab_binaryBetas_checkBox->isChecked();
 
     UpdatePlotTitle();
 }
@@ -2828,7 +3119,7 @@ void FADTTSWindow::SetPlotTab()
 
     if( QDir( directory ).exists() && !directory.isEmpty() )
     {
-        m_isPlotReady = m_plot->InitPlot( directory, fibername );
+        m_isPlotReady = m_plot->InitPlot( directory, fibername, para_executionTab_pvalueThreshold_doubleSpinBox->value() );
     }
     else
     {
@@ -2861,7 +3152,7 @@ void FADTTSWindow::SetPlotTab()
 
     if( m_isPlotReady )
     {
-        QStringList filter = QStringList() << "*plotSettings.json" << "*PlotSettings.json";
+        QStringList filter = QStringList() << "*plotSettings*.json" << "*PlotSettings*.json";
         QStringList plotSettings = QDir( directory ).entryList( filter, QDir::Files );
         if( !plotSettings.isEmpty() )
         {
@@ -2885,7 +3176,7 @@ void FADTTSWindow::LoadPlotSettings( QString filePath )
 
         /*** Title/Axis/Legend Data Tab ***/
         QJsonObject title = jsonObject.value( "title" ).toObject();
-        plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->setChecked( title.value( "customizedTitle" ).toBool() );
+        plottingTab_titleAxisLegendTab_useDefaultTitle_checkBox->setChecked( title.value( "defaultTitle" ).toBool() );
         plottingTab_titleAxisLegendTab_titleBold_checkBox->setChecked( title.value( "bold" ).toBool() );
         plottingTab_titleAxisLegendTab_titleItalic_checkBox->setChecked( title.value( "italic" ).toBool() );
         plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->setValue( title.value( "size" ).toDouble() );
@@ -2893,7 +3184,7 @@ void FADTTSWindow::LoadPlotSettings( QString filePath )
         QJsonObject axis = jsonObject.value( "axis" ).toObject();
         plottingTab_titleAxisLegendTab_gridOn_checkBox->setChecked( axis.value( "showGrid" ).toBool() );
         plottingTab_titleAxisLegendTab_scientificNotation_checkBox->setChecked( axis.value( "scientificNotation" ).toBool() );
-        plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->setChecked( axis.value( "customizedAxis" ).toBool() );
+        plottingTab_titleAxisLegendTab_useDefaultAxis_checkBox->setChecked( axis.value( "defaultAxis" ).toBool() );
         plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox->setValue( axis.value( "labelSize" ).toDouble() );
         plottingTab_titleAxisLegendTab_xName_lineEdit->setText( axis.value( "xName" ).toString() );
         plottingTab_titleAxisLegendTab_yName_lineEdit->setText( axis.value( "yName" ).toString() );
@@ -2920,6 +3211,7 @@ void FADTTSWindow::LoadPlotSettings( QString filePath )
         QJsonObject marker = jsonObject.value( "marker" ).toObject();
         plottingTab_editionTab_markerType_comboBox->setCurrentText( marker.value( "type" ).toString() );
         plottingTab_editionTab_markerSize_doubleSpinBox->setValue( marker.value( "size" ).toDouble() );
+        plottingTab_editionTab_binaryBetas_checkBox->setChecked( marker.value( "binaryBetas" ).toBool() );
 
         /*** properties Edition ***/
         QJsonArray propertiesEdition = jsonObject.value( "propertiesEdition" ).toArray();
@@ -2982,14 +3274,14 @@ void FADTTSWindow::SavePlotSettings( QString filePath )
     QJsonArray covariatesEdition;
 
     /*** Title/Axis/Legend Data Tab ***/
-    title.insert( "customizedTitle", plottingTab_titleAxisLegendTab_useCustomizedTitle_checkBox->isChecked() );
+    title.insert( "defaultTitle", plottingTab_titleAxisLegendTab_useDefaultTitle_checkBox->isChecked() );
     title.insert( "bold", plottingTab_titleAxisLegendTab_titleBold_checkBox->isChecked() );
     title.insert( "italic", plottingTab_titleAxisLegendTab_titleItalic_checkBox->isChecked() );
     title.insert( "size", plottingTab_titleAxisLegendTab_titleSize_doubleSpinBox->value() );
 
     axis.insert( "showGrid", plottingTab_titleAxisLegendTab_gridOn_checkBox->isChecked() );
     axis.insert( "scientificNotation", plottingTab_titleAxisLegendTab_scientificNotation_checkBox->isChecked() );
-    axis.insert( "customizedAxis", plottingTab_titleAxisLegendTab_useCustomizedAxis_checkBox->isChecked() );
+    axis.insert( "defaultAxis", plottingTab_titleAxisLegendTab_useDefaultAxis_checkBox->isChecked() );
     axis.insert( "labelSize", plottingTab_titleAxisLegendTab_axisLabelSize_doubleSpinBox->value() );
     axis.insert( "xName", plottingTab_titleAxisLegendTab_xName_lineEdit->text() );
     axis.insert( "yName", plottingTab_titleAxisLegendTab_yName_lineEdit->text() );
@@ -3016,6 +3308,7 @@ void FADTTSWindow::SavePlotSettings( QString filePath )
 
     marker.insert( "type", plottingTab_editionTab_markerType_comboBox->currentText() );
     marker.insert( "size", plottingTab_editionTab_markerSize_doubleSpinBox->value() );
+    marker.insert( "binaryBetas", plottingTab_editionTab_binaryBetas_checkBox->isChecked() );
 
     /*** properties Edition ***/
     comboBoxMapType::ConstIterator iterPropertyColor = m_propertiesColorsComboBoxMap.cbegin();
@@ -3045,7 +3338,6 @@ void FADTTSWindow::SavePlotSettings( QString filePath )
         ++iterCovariateColor;
         ++iterCovariateName;
     }
-
 
     jsonObject.insert( "title", title );
     jsonObject.insert( "axis", axis );

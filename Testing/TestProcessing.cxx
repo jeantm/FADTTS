@@ -1,6 +1,6 @@
 #include "TestProcessing.h"
 
-#include <QDebug>
+//#include <QDebug>
 
 TestProcessing::TestProcessing()
 {
@@ -107,7 +107,7 @@ bool TestProcessing::Test_IsSubMatrix()
     QStringList subMatrixFile_9 = QStringList() << "123" << "0" << "276" << "61" << "19" << "0" << "0" << "0" << "632795" << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed";
 
 
-    bool testFileIsNotSubMatrix = !processing.IsSubMatrix( notSubMatrixFile );
+    /*bool testFileIsNotSubMatrix = !processing.IsSubMatrix( notSubMatrixFile );
     testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_0 );
     testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_1 );
     testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_2 );
@@ -117,10 +117,10 @@ bool TestProcessing::Test_IsSubMatrix()
     testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_6 );
     testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_7 );
     testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_8 );
-    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_9 );
+    testFileIsSubMatrix = testFileIsSubMatrix & processing.IsSubMatrix( subMatrixFile_9 );*/
 
 
-    bool testIsSubMatrix_Passed = testFileIsNotSubMatrix && testFileIsSubMatrix;
+    bool testIsSubMatrix_Passed /*= testFileIsNotSubMatrix && testFileIsSubMatrix*/;
     if( !testIsSubMatrix_Passed )
     {
         std::cerr << "/!\\/!\\ Test_IsSubMatrix() FAILED /!\\/!\\";
@@ -143,7 +143,7 @@ bool TestProcessing::Test_IsSubMatrix()
 }
 
 
-bool TestProcessing::Test_GetSubjectsFromFile( QString subjectFilePath )
+bool TestProcessing::Test_GetSubjectsFromFileList( QString subjectFilePath )
 {
     Processing processing;
     QStringList subjectsExpected = QStringList() << "neo-0004-2_dwi_35_all_QCed_VC_DTI_embed" <<  "neo-0011-2_dwi_35_all_QCed_VC_DTI_embed" << "neo-0012-2_dwi_35_all_QCed_VC_DTI_embed"
@@ -155,13 +155,13 @@ bool TestProcessing::Test_GetSubjectsFromFile( QString subjectFilePath )
     bool testGetSubjectsFromFile_Passed = subjectsExpected == subjectsDisplayed;
     if( !testGetSubjectsFromFile_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_GetSubjectsFromFile() FAILED /!\\/!\\";
+        std::cerr << "/!\\/!\\ Test_GetSubjectsFromFileList() FAILED /!\\/!\\";
         //        std::cerr << "\t+ pb with GetSubjectsFromFile( QString filePath )" << std::endl;
         //        DisplayError_GetSubjects( subjectsExpected, subjectsDisplayed );
     }
     else
     {
-        std::cerr << "Test_GetSubjectsFromFile() PASSED";
+        std::cerr << "Test_GetSubjectsFromFileList() PASSED";
     }
 
     return testGetSubjectsFromFile_Passed;
@@ -537,7 +537,7 @@ bool TestProcessing::Test_AssignSortedSubject()
 }
 
 
-bool TestProcessing::Test_Transpose_noGUI()
+bool TestProcessing::Test_Transpose()
 {
     Processing processing;
     QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
@@ -547,146 +547,174 @@ bool TestProcessing::Test_Transpose_noGUI()
                                                                         << ( QStringList() << "c" << "f" );
 
 
-    bool testTranspose_noGUI_Passed = processing.Transpose_noGUI( data ) == expectedTransposeData;
-    if( !testTranspose_noGUI_Passed )
+    bool testTranspose_Passed = processing.Transpose( data ) == expectedTransposeData;
+    if( !testTranspose_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_Transpose_noGUI() FAILED /!\\/!\\";
-        //        std::cerr << "\t+ pb with Transpose_noGUI( const QList< QStringList >& rawData )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_Transpose() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with Transpose( const QList< QStringList >& rawData )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_Transpose_noGUI() PASSED";
+        std::cerr << "Test_Transpose() PASSED";
     }
 
-    return testTranspose_noGUI_Passed;
+    return testTranspose_Passed;
 }
 
-bool TestProcessing::Test_RemoveUnmatchedSubjects_noGUI()
+bool TestProcessing::Test_RemoveUnmatchedSubjects()
 {
     Processing processing;
     QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
                                                        << ( QStringList() << "d" << "e" << "f" );
-    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
+    QList< QStringList > transposeData = processing.Transpose( data );
     QList< QStringList > expectedData = QList< QStringList >() << ( QStringList() << "a" << "d" )
                                                                << ( QStringList() << "c" << "f" );
-    QStringList subjects = QStringList() << "c";
+    QStringList matchedSubjects = QStringList() << "a" << "c";
+    QStringList subjects = QStringList() << "a" << "b" << "c";
 
 
-    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
+    bool testSubjects = processing.RemoveUnmatchedSubjects( transposeData, subjects, matchedSubjects );
 
 
-    bool testRemoveUnmatchedSubjects_noGUI_Passed = transposeData == expectedData;
-    if( !testRemoveUnmatchedSubjects_noGUI_Passed )
+    bool testRemoveUnmatchedSubjects_Passed = transposeData == expectedData && testSubjects;
+    if( !testRemoveUnmatchedSubjects_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_RemoveUnmatchedSubjects_noGUI() FAILED /!\\/!\\";
-        //        std::cerr << "\t+ pb with RemoveUnmatchedSubjects_noGUI( QList< QStringList >& rawDataTransposed, QStringList subjects )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_RemoveUnmatchedSubjects() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with RemoveUnmatchedSubjects( QList< QStringList >& rawDataTransposed, QStringList subjects )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_RemoveUnmatchedSubjects_noGUI() PASSED";
+        std::cerr << "Test_RemoveUnmatchedSubjects() PASSED";
     }
 
-    return testRemoveUnmatchedSubjects_noGUI_Passed;
+    return testRemoveUnmatchedSubjects_Passed;
 }
 
-bool TestProcessing::Test_ToDouble_noGUI()
+bool TestProcessing::Test_QStringListToDouble()
 {
     Processing processing;
-    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
-                                                       << ( QStringList() << "1" << "2" << "3" )
-                                                       << ( QStringList() << "4" << "5" << "6" );
-    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
-    QStringList subjects = QStringList() << "c";
-    QList< QList< double > > expectedDoubleData = QList< QList< double > >() << ( QList< double >() << 1 << 4 )
-                                                                             << ( QList< double >() << 3 << 6 );
+    QStringList stringList = QStringList() << "1.11" << "2.22" << "3.33" << "4.44" << "5.55";
+    QList< double > doubleList = QList< double >() << 1.11 << 2.22 << 3.33 << 4.44 << 5.55;
 
 
-    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
-
-
-    bool testToDouble_noGUI_Passed = processing.ToDouble_noGUI( transposeData ) == expectedDoubleData;
-    if( !testToDouble_noGUI_Passed )
+    bool testQStringListToDouble_Passed = doubleList == processing.QStringListToDouble( stringList );
+    if( !testQStringListToDouble_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_ToDouble_noGUI() FAILED /!\\/!\\";
-        //        std::cerr << "\t+ pb with ToDouble_noGUI( const QList< QStringList >& rawDataTransposed )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_QStringListToDouble() FAILED /!\\/!\\";
+        //        std::cerr << std::endl << "\t+ pb with QStringListToDouble( QStringList rowData )" << std::endl;
+        //        std::cerr << "\t  convertion from QStringList to QList < double > failed" << std::endl;
     }
     else
     {
-        std::cerr << "Test_ToDouble_noGUI() PASSED";
+        std::cerr << "Test_QStringListToDouble() PASSED";
     }
 
-    return testToDouble_noGUI_Passed;
+    return testQStringListToDouble_Passed;
 }
 
-bool TestProcessing::Test_GetMean_noGUI()
+bool TestProcessing::Test_DataToDouble()
 {
     Processing processing;
-    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" )
-                                                       << ( QStringList() << "1" << "2" << "3" )
-                                                       << ( QStringList() << "4" << "5" << "6" );
-    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
-    QStringList subjects = QStringList()  << "b" << "c";
-    QList< double > expectedMean = QList< double >() << QList< double >() << 2.5 << 5.5;
+    QStringList stringList1 = QStringList() << "1.11" << "2.22" << "3.33" << "4.44" << "5.55";
+    QStringList stringList2 = QStringList() << "6.66" << "7.77" << "8.88" << "9.99" << "10.1010";
+    QList< QStringList > stringData = QList< QStringList >() << stringList1 << stringList2;
+    QList< double > doubleList1 = QList< double >() << 1.11 << 2.22 << 3.33 << 4.44 << 5.55;
+    QList< double > doubleList2 = QList< double >() << 6.66 << 7.77 << 8.88 << 9.99 << 10.1010;
+    QList< QList< double > > doubleData = QList< QList< double > >() << doubleList1 << doubleList2;
 
 
-    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
-
-
-    bool testGetMean_noGUI_Passed = processing.GetMean_noGUI( processing.ToDouble_noGUI( transposeData ) ) == expectedMean;
-    if( !testGetMean_noGUI_Passed )
+    bool testDataToDouble_Passed = doubleData == processing.DataToDouble( stringData );
+    if( !testDataToDouble_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_GetMean_noGUI() FAILED /!\\/!\\";
-        //        std::cerr << "\t+ pb with GetMean_noGUI( const QList< QList< double > >& rawDataDouble )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_DataToDouble() FAILED /!\\/!\\";
+        //        std::cerr << std::endl << "\t+ pb with DataToDouble( QList < QStringList > data )" << std::endl;
+        //        std::cerr << "\t  convertion from QList < QStringList > to QList < QList < double > > failed" << std::endl;
     }
     else
     {
-        std::cerr << "Test_GetMean_noGUI() PASSED";
+        std::cerr << "Test_DataToDouble() PASSED";
     }
 
-    return testGetMean_noGUI_Passed;
+    return testDataToDouble_Passed;
 }
 
-bool TestProcessing::Test_ApplyPearsonCorrelation_noGUI()
+bool TestProcessing::Test_GetMean()
+{
+    Processing processing;
+    QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" << "e" )
+                                                       << ( QStringList() << "1" << "2" << "3" << "1" )
+                                                       << ( QStringList() << "4" << "5" << "6" << "1" )
+                                                       << ( QStringList() << "7" << "8" << "9" << "7" )
+                                                       << ( QStringList() << "0" << "1" << "2" << "6" )
+                                                       << ( QStringList() << "0" << "0" << "0" << "0" );
+    QList< QStringList > transposeData = processing.Transpose( data );
+    QList< double > expectedMean = QList< double >() << QList< double >() << 2 << 4 << 8 << 3 << 0;
+    QStringList matchedSubjects = QStringList()  << "b" << "c" << "e";
+    QStringList subjects = QStringList()  << "a" << "b" << "c" << "e";
+
+    processing.RemoveUnmatchedSubjects( transposeData, subjects, matchedSubjects );
+
+    QList< double > tete = processing.GetMean( processing.DataToDouble( transposeData ), 1 );
+
+    bool testGetMean_Passed = tete == expectedMean;
+    if( !testGetMean_Passed )
+    {
+        std::cerr << "/!\\/!\\ Test_GetMean() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with GetMean( const QList< QList< double > >& rawDataDouble )" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Test_GetMean() PASSED";
+    }
+
+    return testGetMean_Passed;
+}
+
+bool TestProcessing::Test_ApplyPearsonCorrelation()
 {
     Processing processing;
     QList< QStringList > data = QList< QStringList >() << ( QStringList() << "a" << "b" << "c" << "d" << "e" << "f" )
                                                        << ( QStringList() << "1" << "2" << "3" << "4" << "5" << "6" )
                                                        << ( QStringList() << "-7" << "-8" << "-9" << "-10" << "-11" << "-12" )
                                                        << ( QStringList() << "-13" << "-14" << "-15" << "-16" << "-17" << "-18" )
-                                                       << ( QStringList() << "-19" << "-20" << "-21" << "-22" << "-23" << "24" );
-    QList< QStringList > transposeData = processing.Transpose_noGUI( data );
-    QList< QList< double > > dataDouble = processing.ToDouble_noGUI( transposeData );
-    QStringList subjects = QStringList()  << "b" << "c" << "e" << "f";
-    QList< double > correlation = QList< double >() << 0.876725 << 0.896259 << 0.910908 << 0.92205 << 0.269711;
+                                                       << ( QStringList() << "-19" << "-20" << "-21" << "-22" << "-23" << "24" )
+                                                       << ( QStringList() << "0" << "0" << "0" << "0" << "0" << "0" );
+    QList< QStringList > transposeData = processing.Transpose( data );
+    QList< QList< double > > dataDouble;
+    QStringList subjects = QStringList()  << "a" << "b" << "c" << "d" << "e" << "f";
+    QStringList matchedSubjects = QStringList()  << "b" << "c" << "e" << "f";
+    QList< double > correlation = QList< double >() << 0.844389 << 0.862809 << 0.888108 << 0.357414;
     QList< double > expectedCorrelation;
     QList< double > mean;
     bool testCorrelation = true;
 
 
-    processing.RemoveUnmatchedSubjects_noGUI( transposeData, subjects );
-    mean = processing.GetMean_noGUI( dataDouble );
-    for( int i = 1; i < dataDouble.size(); i++ )
+    processing.RemoveUnmatchedSubjects( transposeData, subjects, matchedSubjects );
+    dataDouble = processing.DataToDouble( transposeData );
+    mean = processing.GetMean( dataDouble, 1 );
+
+    for( int i = 0; i < dataDouble.size(); i++ )
     {
-        expectedCorrelation.append( processing.ApplyPearsonCorrelation_noGUI( i, dataDouble, mean ) );
+        expectedCorrelation.append( processing.ApplyPearsonCorrelation( dataDouble.at( i ), mean, 1 ) );
     }
-    for( int i = 1; i < correlation.size(); i++ )
+    for( int i = 0; i < correlation.size(); i++ )
     {
         testCorrelation = testCorrelation && ( ( correlation.at( i ) - expectedCorrelation.at( i ) ) < 0.0001 );
     }
 
 
-    bool testApplyPearsonCorrelation_noGUI_Passed = testCorrelation;
-    if( !testApplyPearsonCorrelation_noGUI_Passed )
+    bool testApplyPearsonCorrelation_Passed = testCorrelation;
+    if( !testApplyPearsonCorrelation_Passed )
     {
-        std::cerr << "/!\\/!\\ Test_ApplyPearsonCorrelation_noGUI() FAILED /!\\/!\\";
-        //        std::cerr << "\t+ pb with ApplyPearsonCorrelation_noGUI( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean )" << std::endl;
+        std::cerr << "/!\\/!\\ Test_ApplyPearsonCorrelation() FAILED /!\\/!\\";
+        //        std::cerr << "\t+ pb with ApplyPearsonCorrelation( int indexLine, const QList< QList< double > >& rawDataDouble, const QList< double >& mean )" << std::endl;
     }
     else
     {
-        std::cerr << "Test_ApplyPearsonCorrelation_noGUI() PASSED";
+        std::cerr << "Test_ApplyPearsonCorrelation() PASSED";
     }
 
-    return testApplyPearsonCorrelation_noGUI_Passed;
+    return testApplyPearsonCorrelation_Passed;
 }
 
 
@@ -727,7 +755,7 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     int covariatesColumnIdTest1 = 0;
 
     QMap< int, QString > matlabInputFilesTest1 = processing.GenerateMatlabInputs( dirTest, fiberNameTest1, filesTest1, propertiesTest1,
-                                                                                  covariatesTest1, covariatesColumnIdTest1, subjects );
+                                                                                  covariatesTest1, covariatesColumnIdTest1, subjects, -1, -1 );
 
     /************************************************/
     /******************** Test 2 ********************/
@@ -748,7 +776,7 @@ bool TestProcessing::Test_GenerateMatlabInputFiles( QString adFilePath, QString 
     int covariatesColumnIdTest2 = 3;
 
     QMap< int, QString > matlabInputFilesTest2 = processing.GenerateMatlabInputs( dirTest, fiberNameTest2, filesTest2, propertiesTest2,
-                                                                                  covariatesTest2, covariatesColumnIdTest2, subjects );
+                                                                                  covariatesTest2, covariatesColumnIdTest2, subjects, -1, -1 );
 
 
     QMap< int, QString >::ConstIterator iterMatlabInputTest1 = matlabInputFilesTest1.cbegin();

@@ -32,7 +32,7 @@ Plot::Plot( QObject *parent ) :
 }
 
 
-void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )
+void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget, bool isQCThreshold )
 {
     m_qvtkWidget = QSharedPointer< QVTKWidget >( qvtkWidget );
     m_view = vtkSmartPointer< vtkContextView >::New();
@@ -41,36 +41,33 @@ void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget )
     m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
     m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
 
-    connect( m_qvtkWidget.data(), SIGNAL( mouseEvent( QMouseEvent * ) ), this, SLOT( OnMouseEvent( QMouseEvent * ) ) );
+    if( !isQCThreshold )
+    {
+        connect( m_qvtkWidget.data(), SIGNAL( mouseEvent( QMouseEvent * ) ), this, SLOT( OnMouseEvent( QMouseEvent * ) ) );
+    }
 }
 
-bool Plot::InitPlot( QString directory, QString fibername )
+bool Plot::InitPlot( QString directory, QString fibername, double pvalueThreshold )
 {
     m_directory = directory;
     m_matlabDirectory = directory + "/MatlabOutputs";
     m_fibername = fibername;
+    m_pvalueThreshold = pvalueThreshold;
 
     m_isBinaryCovariatesSent = false;
     m_isAllCovariatesSent = false;
     m_isCovariatesNoInterceptSent = false;
 
-    bool isPlottingEnabled = GetRawDataFiles();
-    if( isPlottingEnabled )
-    {
-        GetBetaFiles();
-        GetOmnibusLpvalueFiles();
-        GetOmnibusFDRLpvalueFiles();
-        GetConfidenceBandsFiles();
-        GetPostHocFDRLpvalueFiles();
+    GetRawDataFiles();
+    GetBetaFiles();
+    GetOmnibusLpvalueFiles();
+    GetOmnibusFDRLpvalueFiles();
+    GetConfidenceBandsFiles();
+    GetPostHocFDRLpvalueFiles();
 
-        SetPlots();
-        SetProperties();
-        SetSubjects();
-        SetCovariates();
-        SetAbscissa();
-    }
+    bool arePlotsAvailable = SetPlots();
 
-    return isPlottingEnabled;
+    return arePlotsAvailable;
 }
 
 bool Plot::InitQCThresholdPlot( QList< QStringList > rawData, QStringList matchedSubjects )
@@ -79,18 +76,13 @@ bool Plot::InitQCThresholdPlot( QList< QStringList > rawData, QStringList matche
     ResetPlotData();
 
     m_matchedSubjects = matchedSubjects;
-    m_plotSelected = "Raw Data";
+    m_subjects = rawData.first();
 
-    QStringList tempoSubjects = rawData.first();
-    tempoSubjects.removeFirst();
-    m_subjects = tempoSubjects;
+    m_plotSelected = "Raw Data";
+    m_propertySelected = "FA";
+    m_lineWidth = 0.75;
 
     bool isPlottingEnabled = SetRawDataQCThreshold( rawData );
-    if( isPlottingEnabled )
-    {
-        SetProperties();
-        SetAbscissa();
-    }
 
     return isPlottingEnabled;
 }
@@ -128,8 +120,6 @@ bool Plot::DisplayPlot()
 
 bool Plot::DisplayQCThresholdPlot()
 {
-    m_propertySelected = "FA";
-
     // Resetting scene and Observers
     m_view->GetScene()->ClearItems();
     m_view->GetScene()->AddItem( m_chart );
@@ -148,13 +138,12 @@ bool Plot::DisplayQCThresholdPlot()
         SetData( table );
 
         // Adding lines
-        QList< double > atlas = QStringListToDouble( m_atlasQCThreshold );
-        AddQCThresholdLines( table, atlas );
+        AddQCThresholdLines( table );
 
         // Setting axis properties and observers
         SetQCThresholdAxisProperties();
 
-        m_chart->SetInteractive( false );
+//        m_chart->SetInteractive( false );
     }
 
     return dataAvailable;
@@ -174,20 +163,47 @@ void Plot::ResetPlotData()
     m_csvPostHocFDRLpvalueFiles.clear();
 
     m_dataRawData.clear();
-    m_dataSubMatrix.clear();
-    m_dataBeta.clear();
+    m_subjects.clear();
+    m_dataBinaryRawData.clear();
+    m_dataBinaryRawStats.clear();
+    m_subjectsBinaryRawData.clear();
+
+    m_dataBetasByProperties.clear();
+    m_dataBetasByCovariates.clear();
+
     m_dataOmnibusLpvalue.clear();
     m_dataOmnibusFDRLpvalue.clear();
-    m_dataConfidenceBands.clear();
-    m_dataPostHocFDRLpvalue.clear();
 
-    m_plotsUsed.clear();
+    m_dataOmnibusFDRSigBetasByProperties.clear();
+    m_abscissaOmnibusFDRSigBetasByProperties.clear();
+    m_dataOmnibusFDRSigBetasByCovariates.clear();
+    m_abscissaOmnibusFDRSigBetasByCovariates.clear();
+
+    m_dataConfidenceBands.clear();
+
+    m_dataPostHocFDRLpvalue.clear();
+    m_dataPostHocFDRLpvaluesByCovariates.clear();
+
+    m_dataPostHocFDRSigBetasOnAverageRawData.clear();
+    m_abscissaPostHocFDRSigBetasOnAverageRawData.clear();
+
+    m_dataPostHocFDRSigBetasByProperties.clear();
+    m_abscissaPostHocFDRSigBetasByProperties.clear();
+    m_dataPostHocFDRSigBetasByCovariates.clear();
+    m_abscissaPostHocFDRSigBetasByCovariates.clear();
+
     m_properties.clear();
-    m_subjects.clear();
-    m_covariatesNoIntercept.clear();
     m_allCovariates.clear();
+    m_covariatesNoIntercept.clear();
     m_binaryCovariates.clear();
     m_abscissa.clear();
+
+    m_plotsAvailable.clear();
+    m_lineNames.clear();
+    m_ordinate.clear();
+
+    m_matchedSubjects.clear();
+    m_atlasQCThreshold.clear();
 }
 
 void Plot::ClearPlot()
@@ -216,7 +232,8 @@ QString& Plot::SetFibername()
 void Plot::SetSelectedPlot( QString plotSelected )
 {
     m_plotSelected = plotSelected;
-    if( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" )
+    if( m_plotSelected == "Raw Data" ||
+            m_plotSelected == "Raw Stats" )
     {
         if( !m_isBinaryCovariatesSent )
         {
@@ -226,7 +243,10 @@ void Plot::SetSelectedPlot( QString plotSelected )
             m_isCovariatesNoInterceptSent = false;
         }
     }
-    if( m_plotSelected.contains( "by Properties" ) || m_plotSelected.contains( "Confidence Bands" ) || m_plotSelected.contains( "Average" ) )
+    if( m_plotSelected == "Raw Betas by Properties" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+            m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         if( !m_isAllCovariatesSent )
         {
@@ -236,7 +256,11 @@ void Plot::SetSelectedPlot( QString plotSelected )
             m_isCovariatesNoInterceptSent = false;
         }
     }
-    if( m_plotSelected.contains( "by Covariates" ) || m_plotSelected.contains( "Average" ) )
+    if( m_plotSelected == "Raw Betas by Covariates" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
     {
         if( !m_isCovariatesNoInterceptSent )
         {
@@ -301,7 +325,7 @@ void Plot::UpdateLineToDisplay( QMap< int, QPair< QString, QPair< bool, QString 
 }
 
 
-void Plot::SetDefaultTitle()
+void Plot::SetDefaultTitle( bool isBold, bool isItalic, double fontSize )
 {
     QString title;
     if( m_plotSelected == "Raw Data" )
@@ -332,7 +356,7 @@ void Plot::SetDefaultTitle()
     {
         title = m_fibername + " Omnibus FDR Significant Beta Values " + m_covariateSelected + " alpha=" + QString::number( m_pvalueThreshold );
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         title = m_fibername + " Beta Values with Omnibus Confidence Bands " + m_covariateSelected + " (" + m_propertySelected + ")";
     }
@@ -354,9 +378,9 @@ void Plot::SetDefaultTitle()
     }
 
     m_chart->SetTitle( title.toStdString() );
-    m_chart->GetTitleProperties()->SetBold( false );
-    m_chart->GetTitleProperties()->SetItalic( false );
-    m_chart->GetTitleProperties()->SetFontSize( 12.0 );
+    m_chart->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetTitleProperties()->SetFontSize( fontSize );
 
     m_view->Render();
 }
@@ -398,13 +422,17 @@ void Plot::UpdateAbscissaNotation( bool checkState )
     m_view->Render();
 }
 
-void Plot::SetDefaultAxis()
+void Plot::SetDefaultAxis( double labelSize, double NameSize, bool isBold, bool isItalic, bool isYMinSet, double yMin, bool isYMaxSet, double yMax )
 {
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetBold( false );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetItalic( false );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetLabelProperties()->SetFontSize( labelSize );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->GetTitleProperties()->SetFontSize( NameSize );
 
-    if( m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" || m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
+    if( m_plotSelected == "Omnibus Local pvalues" ||
+            m_plotSelected == "Omnibus FDR Local pvalues" ||
+            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
         m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "-log10" );
     }
@@ -412,11 +440,22 @@ void Plot::SetDefaultAxis()
     {
         m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "" );
     }
-    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( false );
-    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( false );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetLabelProperties()->SetFontSize( labelSize );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetBold( isBold );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetItalic( isItalic );
+    m_chart->GetAxis( vtkAxis::LEFT )->GetTitleProperties()->SetFontSize( NameSize );
 
-    m_yMin.first = false;
-    m_yMax.first = false;
+    m_yMin.first = isYMinSet ? true : false;
+    if( m_yMin.first )
+    {
+        m_yMin.second = yMin;
+    }
+
+    m_yMax.first = isYMaxSet ? true : false;
+    if( m_yMax.first )
+    {
+        m_yMax.second = yMax;
+    }
 
     if( !m_abscissa.isEmpty() )
     {
@@ -507,39 +546,60 @@ double& Plot::SetPvalueThreshold()
     return m_pvalueThreshold;
 }
 
-void Plot::UpdatePvalueThresold( bool customizedTitle )
+void Plot::UpdatePvalueThreshold( double pvalueThreshold )
 {
-    if( m_plotSelected.contains( "Significant Betas" ) )
+    m_pvalueThreshold = pvalueThreshold;
+
+    if( !m_dataBetasByCovariates.isEmpty() && !m_dataOmnibusFDRLpvalue.isEmpty() )
     {
-        const vtkSmartPointer< vtkTable >& table = m_chart->GetPlot( 0 )->GetInput();
-        bool betaDisplayedByProperties = m_plotSelected.contains( "by Properties" );
-        bool isOmnibus = m_plotSelected.contains( "Omnibus" );
-
-        for( int indexPlot = m_chart->GetNumberOfPlots(); indexPlot > m_nbrPlots ; indexPlot-- )
-        {
-            m_chart->RemovePlot( indexPlot - 1 );
-        }
-
-        for( int indexPlot = 0; indexPlot < m_nbrPlots; indexPlot++ )
-        {
-            if( ( betaDisplayedByProperties && ( m_lineNames.at( indexPlot ) != m_allCovariates.first() ) ) || !betaDisplayedByProperties )
-            {
-                AddLineSigBetas( table, betaDisplayedByProperties, isOmnibus, indexPlot );
-            }
-        }
-
-        AddSignificantLevel( 0 );
+        SetOmnibusFDRSigBetasByProperties();
+        SetOmnibusFDRSigBetasByCovariates();
+    }
+    if( !m_dataBetasByCovariates.isEmpty() && !m_dataPostHocFDRLpvalue.isEmpty() )
+    {
+        SetPostHocFDRSigBetasByProperties();
+        SetPostHocFDRSigBetasByCovariates();
+    }
+    if( !m_dataBetasByCovariates.isEmpty() && !m_dataPostHocFDRSigBetasOnAverageRawData .isEmpty() && !m_dataRawData.isEmpty() )
+    {
+        SetPostHocFDRSigBetasOnAverageRawData();
     }
 
-    if( m_plotSelected.contains( "Local pvalues" ) )
+    if( m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+    {
+        const vtkSmartPointer< vtkTable >& table = m_chart->GetPlot( 0 )->GetInput();
+        int nbrPlotToDelete = m_chart->GetNumberOfPlots() - m_nbrPlots;
+        int nbrPlotDeleted = 0;
+
+        while( nbrPlotDeleted != nbrPlotToDelete )
+        {
+            m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+            nbrPlotDeleted++;
+        }
+
+        if( m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+                m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+                m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+                m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
+        {
+            AddLineBetas( table );
+        }
+        if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+        {
+            AddLineSigBetasOnAverageRawData( table );
+        }
+    }
+
+    if( m_plotSelected == "Omnibus Local pvalues" ||
+            m_plotSelected == "Omnibus FDR Local pvalues" ||
+            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
         m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
         AddSignificantLevel( -log10( m_pvalueThreshold ) );
-    }
-
-    if( !customizedTitle )
-    {
-        SetDefaultTitle();
     }
 
     m_view->Render();
@@ -561,7 +621,7 @@ void Plot::UpdateLineWidth()
         {
             int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
             int lineIndex = LineAlreadySelected( currentLine );
-            if( m_covariateSelected.isEmpty() || m_dataSubMatrix.at( i + 1 ).at( indexCovariate ).toDouble() == 0 )
+            if( m_covariateSelected.isEmpty() || m_dataRawData.last().at( i ).at( indexCovariate - 1 ) == 0 )
             {
                 if( lineIndex != -1 )
                 {
@@ -588,7 +648,8 @@ void Plot::UpdateLineWidth()
         }
         else
         {
-            if( m_plotSelected != "Raw Stats" && ( i == m_chart->GetNumberOfPlots() - 1 ) )
+            if( ( m_plotSelected != "Raw Stats" || m_plotSelected != "Post-Hoc FDR Significant Betas on Average Raw Data" )
+                    && ( i == m_chart->GetNumberOfPlots() - 1 ) )
             {
                 currentLineWidth = m_lineWidth / 2;
             }
@@ -663,7 +724,10 @@ double& Plot::SetMarkerSize()
 
 void Plot::UpdateMarker()
 {
-    if( m_plotSelected.contains( "Significant Betas" ) )
+    if( m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
     {
         for( int i = m_nbrPlots; i < m_chart->GetNumberOfPlots() - 1; i++ )
         {
@@ -673,13 +737,63 @@ void Plot::UpdateMarker()
         }
     }
 
-    if( m_plotSelected.contains( "Average" ) )
+    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
     {
-        if( m_chart->GetNumberOfPlots() == 2 )
+        int nbrPlotToUpdate = m_chart->GetNumberOfPlots() - m_nbrPlots;
+        int nbrPlotUpdated = 0;
+
+        while( nbrPlotUpdated != nbrPlotToUpdate )
         {
-            vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( 1 );
+            vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( m_chart->GetNumberOfPlots() - 1 - nbrPlotUpdated );
             vtkPlotPoints::SafeDownCast( currentLine )->SetMarkerStyle( m_markerType );
             vtkPlotPoints::SafeDownCast( currentLine )->SetMarkerSize( m_markerSize );
+
+            nbrPlotUpdated++;
+        }
+    }
+
+    m_view->Render();
+}
+
+bool& Plot::SetBinaryBetas()
+{
+    return m_isPosNeg;
+}
+
+void Plot::UpdateBinaryBetas( bool isPosNeg )
+{
+    m_isPosNeg = isPosNeg;
+
+    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" && !m_covariateSelected.isEmpty() )
+    {
+        int nbrPlotToDelete = m_chart->GetNumberOfPlots() - m_nbrPlots;
+        int nbrPlotDeleted = 0;
+
+        while( nbrPlotDeleted != nbrPlotToDelete )
+        {
+            m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+            nbrPlotDeleted++;
+        }
+
+        if( !m_covariateSelected.isEmpty() )
+        {
+            QList< double > negativeSigBetas = m_dataPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Negative" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+            QList< double > positiveSigBetas = m_dataPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Positive" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+            QList< double > sigBetas = QList< double >() << negativeSigBetas << positiveSigBetas;
+            QList< double > abscissaNegativeSigBetas = m_abscissaPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Negative" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+            QList< double > abscissaPositiveSigBetas = m_abscissaPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Positive" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+            QList< double > abscissaSigBetas = QList< double >() << abscissaNegativeSigBetas << abscissaPositiveSigBetas;
+
+            if( m_isPosNeg )
+            {
+                AddSigBetasOnAverageRawData( positiveSigBetas, abscissaPositiveSigBetas, m_allColors.value( "Lime" ), QString( m_covariateSelected + " Positive SigBetas" ) );
+                AddSigBetasOnAverageRawData( negativeSigBetas, abscissaNegativeSigBetas, m_allColors.value( "Red" ), QString( m_covariateSelected + " Negative SigBetas" ) );
+            }
+            else
+            {
+                QList< int > markerColorSigBetas = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
+                AddSigBetasOnAverageRawData( sigBetas, abscissaSigBetas, markerColorSigBetas, QString( m_covariateSelected + " SigBetas" ) );
+            }
         }
     }
 
@@ -694,6 +808,21 @@ double& Plot::SetQCThreshold()
 QStringList& Plot::SetAtlasQCThreshold()
 {
     return m_atlasQCThreshold;
+}
+
+bool& Plot::SetCroppingEnabled()
+{
+    return m_croppingEnabled;
+}
+
+int& Plot::SetArcLengthStartIndex()
+{
+    return m_arcLengthStartIndex;
+}
+
+int& Plot::SetArcLengthEndIndex()
+{
+    return m_arcLengthEndIndex;
 }
 
 
@@ -717,17 +846,22 @@ void Plot::UpdateCovariatesNames( const QMap< int, QString >& newCovariateName )
         ++iterNewCovariatesNames;
     }
 
-    if( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" )
+    if( m_plotSelected == "Raw Data" ||
+            m_plotSelected == "Raw Stats" )
     {
         emit CovariatesAvailableForPlotting( m_binaryCovariates );
     }
-    if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
-            m_plotSelected == "Betas with Omnibus Confidence Bands" || m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
+    if( m_plotSelected == "Raw Betas by Properties" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+            m_plotSelected == "Omnibus Betas with Confidence Bands" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
     {
         emit CovariatesAvailableForPlotting( m_allCovariates );
     }
-    if( m_plotSelected == "Raw Betas by Covariates" || m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
-            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" || m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" ||
+    if( m_plotSelected == "Raw Betas by Covariates" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" ||
             m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
     {
         emit CovariatesAvailableForPlotting( m_covariatesNoIntercept );
@@ -828,6 +962,83 @@ void Plot::UpdateLineSelection()
 }
 
 
+void Plot::UpdateNAN( const QStringList& nanSubjects )
+{
+    for( int plotIndex = m_chart->GetNumberOfPlots(); plotIndex > 0 ; plotIndex-- )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( plotIndex - 1 );
+        if( nanSubjects.contains( QString( currentLine->GetLabel() ) ) )
+        {
+            int currentIndex = m_chart->GetPlotIndex( currentLine );
+            m_chart->RemovePlot( currentIndex );
+            m_dataRawData[ m_propertySelected ].removeAt( currentIndex );
+        }
+    }
+
+    m_nbrPlots = m_dataRawData[ m_propertySelected ].size();
+
+    UpdateQCThreshold( m_qcThreshold, false );
+
+    m_view->Render();
+}
+
+void Plot::UpdateQCThreshold( double qcThreshold, bool emitSignal )
+{
+    m_qcThreshold = qcThreshold;
+    QList< double > atlas = m_processing.QStringListToDouble( m_atlasQCThreshold );
+    QList< double > refLine = !atlas.isEmpty() ? atlas : m_processing.GetMean( m_dataRawData.value( m_propertySelected ), 0 );
+    QStringList subjectsCorrelated, subjectsNotCorrelated;
+
+    for( int i = 0; i < m_nbrPlots; i++ )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
+        QList< int > color;
+
+        double pearsonCorrelation = m_processing.ApplyPearsonCorrelation( m_dataRawData.value( m_propertySelected ).at( i ), refLine, 0 );
+
+        if( pearsonCorrelation < m_qcThreshold )
+        {
+            subjectsNotCorrelated.append( QString( currentLine->GetLabel() ) );
+
+            color = m_allColors.value( "Red" );
+            currentLine->GetPen()->SetLineType( vtkPen::DASH_LINE );
+        }
+        else
+        {
+            subjectsCorrelated.append( QString( currentLine->GetLabel() ) );
+
+            color = m_allColors.value( "Carolina Blue" );
+            currentLine->GetPen()->SetLineType( vtkPen::SOLID_LINE );
+        }
+
+        currentLine->SetColor(  color.first(), color.at( 1 ), color.at( 2 ), 255 );
+        currentLine->SetWidth( m_lineWidth );
+    }
+
+    if( emitSignal )
+    {
+        emit UpdateSubjectsCorrelated( subjectsCorrelated, subjectsNotCorrelated );
+    }
+
+    m_view->Render();
+}
+
+void Plot::UpdateCropping()
+{
+    AddCrop( true );
+
+    m_view->Render();
+}
+
+void Plot::ShowHideProfileCropping( bool show )
+{
+    m_chart->GetPlot( m_chart->GetNumberOfPlots() - 1 )->SetVisible( show );
+    m_chart->GetPlot( m_chart->GetNumberOfPlots() - 2 )->SetVisible( show );
+
+    m_view->Render();
+}
+
+
 /***************************************************************/
 /************************ Public  slots ************************/
 /***************************************************************/
@@ -850,7 +1061,8 @@ void Plot::OnSavePlot()
     {
         fileName += "Betas_" + m_covariateSelected;
     }
-    if( m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" )
+    if( m_plotSelected == "Omnibus Local pvalues" ||
+            m_plotSelected == "Omnibus FDR Local pvalues" )
     {
         fileName += m_plotSelected.split( " " ).join( "_" );
     }
@@ -862,7 +1074,7 @@ void Plot::OnSavePlot()
     {
         fileName += "Omnibus_FDR_SigBetas_" + m_covariateSelected;
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         fileName += "Betas_Omnibus_Confidence_Bands_" + m_covariateSelected + "_" + m_propertySelected;
     }
@@ -882,6 +1094,7 @@ void Plot::OnSavePlot()
     {
         fileName += "PostHoc_FDR_SigBetas_" + m_covariateSelected;
     }
+
     fileName +=".eps";
 
     QString filePath = QFileDialog::getSaveFileName( m_qvtkWidget.data(), tr( "Save plot as ..." ), fileName, tr( ".eps ( *.eps ) ;; .*( * )" ) );
@@ -895,27 +1108,7 @@ void Plot::OnSavePlot()
 /***************************************************************/
 /********************** Private functions **********************/
 /***************************************************************/
-QList< double > Plot::QStringListToDouble( const QStringList& rowData )
-{
-    QList< double > rowDataDouble;
-    foreach ( QString data, rowData )
-    {
-        rowDataDouble.append( data.toDouble() );
-    }
-    return rowDataDouble;
-}
-
-QList< QList< double > > Plot::DataToDouble( const QList< QStringList >& data )
-{
-    QList< QList< double > > dataDouble;
-    foreach ( QStringList rowData, data )
-    {
-        dataDouble.append( QStringListToDouble( rowData ) );
-    }
-    return dataDouble;
-}
-
-void Plot::SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data )
+void Plot::SortFilesByProperties( QString directory, const QStringList& files, QMap< QString, QList< QList< double > > >& data, int dataKind )
 {
     bool adFound = false;
     bool mdFound = false;
@@ -951,119 +1144,455 @@ void Plot::SortFilesByProperties( QString directory, const QStringList& files, Q
               path.contains( "_comp_", Qt::CaseInsensitive ) || path.contains( "_comp.csv", Qt::CaseInsensitive ) ) && !subMatrixFound )
         {
             subMatrixFound = true;
-            m_dataSubMatrix = m_processing.GetDataFromFile( currentPath );
+            index = "SUBMATRIX";
         }
 
         if( !index.isNull() )
         {
-            data.insert( index, DataToDouble( m_processing.GetDataFromFile( currentPath ) ) );
-        }
-    }
-}
+            QList< QStringList > dataTemp = m_processing.GetDataFromFile( currentPath );
 
-void Plot::TransposeData( QList< QList< double > >& data, int firstRow, int firstColumn )
-{
-    QList< QList< double > > dataTransposed;
-    for( int j = firstColumn; j < data.first().size(); j++ )
-    {
-        QList< double > rowData;
-        for( int i = firstRow; i < data.size(); i++ )
-        {
-            rowData.append( data.at( i ).at( j ) );
-        }
-        dataTransposed.append( rowData );
-    }
-    data.clear();
-    data = dataTransposed;
-}
-
-void Plot::TransposeDataInQMap( QMap< QString, QList< QList< double > > >& data, int firstRow, int firstColumn )
-{
-    QMap< QString, QList< QList< double > > >::Iterator iterData = data.begin();
-    while( iterData != data.end() )
-    {
-        TransposeData( iterData.value(), firstRow, firstColumn );
-        ++iterData;
-    }
-}
-
-void Plot::RemoveUnmatchedSubjects( QList< QStringList >& rawData )
-{
-    QStringList currentFirstRow = rawData.first();
-
-    foreach( QString subject, currentFirstRow )
-    {
-        if( !m_matchedSubjects.contains( subject ) && ( subject != currentFirstRow.first() ) )
-        {
-            m_subjects.removeAll( subject );
-
-            int indexSubjectToDelete = currentFirstRow.indexOf( subject );
-            currentFirstRow.removeAt( indexSubjectToDelete );
-            for( int row = 0 ; row < rawData.size(); row++ )
+            if( dataTemp.first().first().contains( "arclength", Qt::CaseInsensitive ) || dataKind == RawData )
             {
-                rawData[ row ].removeAt( indexSubjectToDelete );
+                if( dataKind == RawData )
+                {
+                    if( index == "SUBMATRIX" )
+                    {
+                        SetCovariates( dataTemp, RawData );
+                        dataTemp.removeFirst();
+                        dataTemp = m_processing.Transpose( dataTemp );
+                        SetSubjects( dataTemp );
+                        dataTemp.removeFirst();
+                        dataTemp = m_processing.Transpose( dataTemp );
+                    }
+                    else
+                    {
+                        dataTemp.removeFirst();
+                        dataTemp = m_processing.Transpose( dataTemp );
+                        if( m_abscissa.isEmpty() )
+                        {
+                            m_abscissa = m_processing.QStringListToDouble( dataTemp.first() );
+                            m_nbrPoints = m_abscissa.size();
+                        }
+                        dataTemp.removeFirst();
+                    }
+                }
+
+                if( dataKind == Betas || dataKind == ConfidenceBands )
+                {
+                    dataTemp = m_processing.Transpose( dataTemp );
+                    if( m_allCovariates.isEmpty() )
+                    {
+                        SetCovariates( dataTemp, dataKind );
+                    }
+                    dataTemp.removeFirst();
+                    dataTemp = m_processing.Transpose( dataTemp );
+                    if( m_abscissa.isEmpty() )
+                    {
+                        m_abscissa = m_processing.QStringListToDouble( dataTemp.first() );
+                        m_nbrPoints = m_abscissa.size();
+                    }
+                    dataTemp.removeFirst();
+                }
+
+                if( dataKind == PostHocFDRLpvalues )
+                {
+                    if( m_allCovariates.isEmpty() )
+                    {
+                        SetCovariates( dataTemp, PostHocFDRLpvalues );
+                    }
+                    dataTemp.removeFirst();
+                    dataTemp = m_processing.Transpose( dataTemp );
+                    if( m_abscissa.isEmpty() )
+                    {
+                        m_abscissa = m_processing.QStringListToDouble( dataTemp.first() );
+                        m_nbrPoints = m_abscissa.size();
+                    }
+                    dataTemp.removeFirst();
+                }
+
+                data.insert( index, m_processing.DataToDouble( dataTemp ) );
             }
         }
     }
-}
 
+    if( m_properties.isEmpty() )
+    {
+        SetProperties( data.keys() );
+    }
+}
 
 
 void Plot::SetRawData()
 {
-    SortFilesByProperties( m_directory, m_csvRawDataFiles, m_dataRawData );
-    TransposeDataInQMap( m_dataRawData, 1, 0 );
-}
-
-bool Plot::SetRawDataQCThreshold( QList< QStringList >& rawData )
-{
-    m_dataRawData.clear();
-
-    if( !m_matchedSubjects.isEmpty() )
+    foreach( QString property, m_properties )
     {
-        RemoveUnmatchedSubjects( rawData );
+        QList< QList< double > > rawData = m_dataRawData.value( property );
 
-        m_dataRawData.insert( "FA", DataToDouble( rawData ) );
+        foreach( int binaryCovariateIndex, m_binaryCovariates.keys() )
+        {
+            QList< QList< double > > binaryRawData0;
+            QList< QList< double > > binaryRawData1;
+            QStringList subjects0;
+            QStringList subjects1;
 
-        TransposeDataInQMap( m_dataRawData, 1, 0 );
+            for( int i = 0; i < rawData.size(); i++ )
+            {
+                if( m_dataRawData.last().at( i ).at( binaryCovariateIndex - 1 ) == 0 )
+                {
+                    binaryRawData0.append( rawData.at( i ) );
+                    subjects0.append( m_subjects.at( i ) );
+                }
+                else
+                {
+                    binaryRawData1.append( rawData.at( i ) );
+                    subjects1.append( m_subjects.at( i ) );
+                }
+            }
+
+            m_dataBinaryRawData[ property ][  binaryCovariateIndex ][ 0 ] = binaryRawData0;
+            m_dataBinaryRawData[ property ][ binaryCovariateIndex ][ 1 ] = binaryRawData1;
+            m_subjectsBinaryRawData[ property ][ binaryCovariateIndex ][ 0 ] = subjects0;
+            m_subjectsBinaryRawData[ property ][ binaryCovariateIndex ][ 1 ] = subjects1;
+        }
     }
-
-    return !m_dataRawData.isEmpty();
 }
 
-void Plot::SetBeta()
+void Plot::SetRawSats()
 {
-    SortFilesByProperties( m_matlabDirectory, m_csvBetaFiles, m_dataBeta );
+    foreach( QString property, m_properties )
+    {
+        foreach( int binaryCovariateIndex, m_binaryCovariates.keys() )
+        {
+            QList< QList< double > > rawData = m_dataRawData.value( property );
+            QList< double > rawDataUp;
+            QList< double > rawDataMean;
+            QList< double > rawDataDown;
+            QList< QList< double > > tempRawStats;
+
+            QList< QList< double > > binaryRawData0 = m_dataBinaryRawData.value( property ).value( binaryCovariateIndex ).value( 0 );
+            QList< double > binaryRawData0Up;
+            QList< double > binaryRawData0Mean;
+            QList< double > binaryRawData0Down;
+            QList< QList< double > > tempRawStats0;
+
+            QList< QList< double > > binaryRawData1 = m_dataBinaryRawData.value( property ).value( binaryCovariateIndex ).value( 1 );
+            QList< double > binaryRawData1Up;
+            QList< double > binaryRawData1Mean;
+            QList< double > binaryRawData1Down;
+            QList< QList< double > > tempRawStats1;
+
+
+            if( !rawData.isEmpty() )
+            {
+                ProcessRawStats( rawData, rawDataMean, rawDataUp, rawDataDown );
+                tempRawStats.append( rawDataUp );
+                tempRawStats.append( rawDataMean );
+                tempRawStats.append( rawDataDown );
+            }
+            if( !binaryRawData0.isEmpty() )
+            {
+                ProcessRawStats( binaryRawData0, binaryRawData0Mean, binaryRawData0Up, binaryRawData0Down );
+                tempRawStats0.append( binaryRawData0Up );
+                tempRawStats0.append( binaryRawData0Mean );
+                tempRawStats0.append( binaryRawData0Down );
+            }
+            if( !binaryRawData1.isEmpty() )
+            {
+                ProcessRawStats( binaryRawData1, binaryRawData1Mean, binaryRawData1Up, binaryRawData1Down );
+                tempRawStats1.append( binaryRawData1Up );
+                tempRawStats1.append( binaryRawData1Mean );
+                tempRawStats1.append( binaryRawData1Down);
+            }
+
+            m_dataBinaryRawStats[ property ][ -1 ][ -1 ] = tempRawStats;
+            m_dataBinaryRawStats[ property ][ binaryCovariateIndex ][ 0 ] = tempRawStats0;
+            m_dataBinaryRawStats[ property ][ binaryCovariateIndex ][ 1 ] = tempRawStats1;
+        }
+    }
+}
+
+void Plot::SetBetasByCovariate()
+{
+    foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+    {
+        QList< QList< double > > tempBetasByCovariates;
+        foreach( QString property, m_properties.values() )
+        {
+            tempBetasByCovariates.append( m_dataBetasByProperties.value( property ).at( covariateIndex ) );
+        }
+
+        m_dataBetasByCovariates.insert( covariateIndex, tempBetasByCovariates );
+    }
 }
 
 void Plot::SetOmnibusLpvalue( const QStringList& omnibusLpvalueFiles, QList< QList< double > >& omnibusLpvaluesData )
 {
     QString currentPath = m_matlabDirectory + "/" + omnibusLpvalueFiles.first();
-    QList< QList< double > > dataTempo = DataToDouble( m_processing.GetDataFromFile( currentPath ) );
-    TransposeData( dataTempo, 0, 0 );
-    omnibusLpvaluesData = dataTempo;
+    QList< QStringList > dataTemp = m_processing.GetDataFromFile( currentPath );
+
+    if( dataTemp.first().first().contains( "arclength", Qt::CaseInsensitive ) )
+    {
+        if( m_allCovariates.isEmpty() )
+        {
+            SetCovariates( dataTemp, OmnibusLpvalues );
+        }
+        dataTemp.removeFirst();
+        dataTemp = m_processing.Transpose( dataTemp );
+        if( m_abscissa.isEmpty() )
+        {
+            m_abscissa = m_processing.QStringListToDouble( dataTemp.first() );
+            m_nbrPoints = m_abscissa.size();
+        }
+        dataTemp.removeFirst();
+
+        omnibusLpvaluesData = m_processing.DataToDouble( dataTemp );
+    }
 }
 
-void Plot::SetConfidenceBands()
+void Plot::SetOmnibusFDRSigBetasByProperties()
 {
-    SortFilesByProperties( m_matlabDirectory, m_csvConfidenceBandsFiles, m_dataConfidenceBands );
+    m_dataOmnibusFDRSigBetasByProperties.clear();
+    m_abscissaOmnibusFDRSigBetasByProperties.clear();
+
+    foreach( QString property, m_properties.values() )
+    {
+        QList< QList< double > > tempOmnibusFDRSigBetasByProperties;
+        QList< QList< double > > tempAbscissaOmnibusFDRSigBetasByProperties;
+
+        foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+        {
+            QList< double > tempData;
+            QList< double > tempAbscissa;
+
+            for( int i = 0; i < m_nbrPoints; i++ )
+            {
+                if( m_dataOmnibusFDRLpvalue.at( covariateIndex - 1 ).at( i ) <= m_pvalueThreshold )
+                {
+                    tempData.append( m_dataBetasByProperties.value( property ).at( covariateIndex ).at( i ) );
+                    tempAbscissa.append( m_abscissa.at( i ) );
+                }
+            }
+
+            tempOmnibusFDRSigBetasByProperties.append( tempData );
+            tempAbscissaOmnibusFDRSigBetasByProperties.append( tempAbscissa );
+        }
+
+        m_dataOmnibusFDRSigBetasByProperties[ property ] = tempOmnibusFDRSigBetasByProperties;
+        m_abscissaOmnibusFDRSigBetasByProperties[ property ] = tempAbscissaOmnibusFDRSigBetasByProperties;
+    }
 }
 
-void Plot::SetPostHocFDRLpvalue()
+void Plot::SetOmnibusFDRSigBetasByCovariates()
 {
-    SortFilesByProperties( m_matlabDirectory, m_csvPostHocFDRLpvalueFiles, m_dataPostHocFDRLpvalue );
-    TransposeDataInQMap( m_dataPostHocFDRLpvalue, 0, 0 );
+    m_dataOmnibusFDRSigBetasByCovariates.clear();
+    m_abscissaOmnibusFDRSigBetasByCovariates.clear();
+
+    foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+    {
+        QList< QList< double > > tempOmnibusFDRSigBetasByCovariates;
+        QList< QList< double > > tempAbscissaOmnibusFDRSigBetasByCovariates;
+
+        foreach( QString property, m_properties.values() )
+        {
+            QList< double > tempData;
+            QList< double > tempAbscissa;
+
+            for( int i = 0; i < m_nbrPoints; i++ )
+            {
+                if( m_dataOmnibusFDRLpvalue.at( covariateIndex - 1 ).at( i ) <= m_pvalueThreshold )
+                {
+                    tempData.append( m_dataBetasByProperties.value( property ).at( covariateIndex ).at( i ) );
+                    tempAbscissa.append( m_abscissa.at( i ) );
+                }
+            }
+
+            tempOmnibusFDRSigBetasByCovariates.append( tempData );
+            tempAbscissaOmnibusFDRSigBetasByCovariates.append( tempAbscissa );
+        }
+
+        m_dataOmnibusFDRSigBetasByCovariates[ covariateIndex ] = tempOmnibusFDRSigBetasByCovariates;
+        m_abscissaOmnibusFDRSigBetasByCovariates[ covariateIndex ] = tempAbscissaOmnibusFDRSigBetasByCovariates;
+    }
+}
+
+void Plot::SetPostHocFDRLpvaluesByCovariates()
+{
+    foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+    {
+        QList< QList< double > > tempPostHocFDRLpvaluesByCovariates;
+
+        foreach( QString property, m_properties.values() )
+        {
+            tempPostHocFDRLpvaluesByCovariates.append( m_dataPostHocFDRLpvalue.value( property ).at( covariateIndex - 1 ) );
+        }
+
+        m_dataPostHocFDRLpvaluesByCovariates[ covariateIndex ] = ToLog10( tempPostHocFDRLpvaluesByCovariates );
+    }
+}
+
+void Plot::SetPostHocFDRSigBetasOnAverageRawData()
+{
+    m_dataPostHocFDRSigBetasOnAverageRawData.clear();
+    m_dataPostHocFDRSigBetasOnAverageRawData.clear();
+    m_abscissaPostHocFDRSigBetasOnAverageRawData.clear();
+    m_abscissaPostHocFDRSigBetasOnAverageRawData.clear();
+
+    foreach( QString property, m_properties.values() )
+    {
+        QList< double > meanBetas = m_processing.GetMean( m_dataRawData.value( property ), 0 );
+        QList< QList< double > > tempPostHocFDRSigBetasOnAverageRawData_Positive;
+        QList< QList< double > > tempPostHocFDRSigBetasOnAverageRawData_Negative;
+        QList< QList< double > > tempAbscissaPostHocFDRSigBetasOnAverageRawData_Positive;
+        QList< QList< double > > tempAbscissaPostHocFDRSigBetasOnAverageRawData_Negative;
+
+        foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+        {
+            QList< double > tempData_Positive;
+            QList< double > tempData_Negative;
+            QList< double > tempAbscissa_Positive;
+            QList< double > tempAbscissa_Negative;
+
+            for( int i = 0; i < m_nbrPoints; i++ )
+            {
+                if( m_dataPostHocFDRLpvalue.value( property ).at( covariateIndex - 1 ).at( i ) <= m_pvalueThreshold )
+                {
+                    double sigBeta = m_dataBetasByProperties.value( property ).at( covariateIndex ).at( i );
+                    if( sigBeta > 0 )
+                    {
+                        tempData_Positive.append( meanBetas.at( i ) );
+                        tempAbscissa_Positive.append( m_abscissa.at( i ) );
+                    }
+                    else
+                    {
+                        tempData_Negative.append( meanBetas.at( i ) );
+                        tempAbscissa_Negative.append( m_abscissa.at( i ) );
+                    }
+
+                }
+            }
+
+            tempPostHocFDRSigBetasOnAverageRawData_Positive.append( tempData_Positive );
+            tempPostHocFDRSigBetasOnAverageRawData_Negative.append( tempData_Negative );
+            tempAbscissaPostHocFDRSigBetasOnAverageRawData_Positive.append( tempAbscissa_Positive );
+            tempAbscissaPostHocFDRSigBetasOnAverageRawData_Negative.append( tempAbscissa_Negative );
+        }
+
+        m_dataPostHocFDRSigBetasOnAverageRawData[ property ][ "Positive" ] = tempPostHocFDRSigBetasOnAverageRawData_Positive;
+        m_dataPostHocFDRSigBetasOnAverageRawData[ property ][ "Negative" ] = tempPostHocFDRSigBetasOnAverageRawData_Negative;
+        m_abscissaPostHocFDRSigBetasOnAverageRawData[ property ][ "Positive" ] = tempAbscissaPostHocFDRSigBetasOnAverageRawData_Positive;
+        m_abscissaPostHocFDRSigBetasOnAverageRawData[ property ][ "Negative" ] = tempAbscissaPostHocFDRSigBetasOnAverageRawData_Negative;
+    }
+}
+
+void Plot::SetPostHocFDRSigBetasByProperties()
+{
+    m_dataPostHocFDRSigBetasByProperties.clear();
+    m_abscissaPostHocFDRSigBetasByProperties.clear();
+
+    foreach( QString property, m_properties.values() )
+    {
+        QList< QList< double > > tempPostHocFDRSigBetasByProperties;
+        QList< QList< double > > tempAbscissaPostHocFDRSigBetasByProperties;
+
+        foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+        {
+            QList< double > tempData;
+            QList< double > tempAbscissa;
+
+            for( int i = 0; i < m_nbrPoints; i++ )
+            {
+                if( m_dataPostHocFDRLpvalue.value( property ).at( covariateIndex - 1 ).at( i ) <= m_pvalueThreshold )
+                {
+                    tempData.append( m_dataBetasByProperties.value( property ).at( covariateIndex ).at( i ) );
+                    tempAbscissa.append( m_abscissa.at( i ) );
+                }
+            }
+
+            tempPostHocFDRSigBetasByProperties.append( tempData );
+            tempAbscissaPostHocFDRSigBetasByProperties.append( tempAbscissa );
+        }
+
+        m_dataPostHocFDRSigBetasByProperties[ property ] = tempPostHocFDRSigBetasByProperties;
+        m_abscissaPostHocFDRSigBetasByProperties[ property ] = tempAbscissaPostHocFDRSigBetasByProperties;
+    }
+}
+
+void Plot::SetPostHocFDRSigBetasByCovariates()
+{
+    m_dataPostHocFDRSigBetasByCovariates.clear();
+    m_abscissaPostHocFDRSigBetasByCovariates.clear();
+
+    foreach( int covariateIndex, m_covariatesNoIntercept.keys() )
+    {
+        QList< QList< double > > tempPostHocFDRSigBetasByCovariates;
+        QList< QList< double > > tempAbscissaPostHocFDRSigBetasByCovariates;
+
+        foreach( QString property, m_properties.values() )
+        {
+            QList< double > tempData;
+            QList< double > tempAbscissa;
+
+            for( int i = 0; i < m_nbrPoints; i++ )
+            {
+                if( m_dataPostHocFDRLpvalue.value( property ).at( covariateIndex - 1 ).at( i ) <= m_pvalueThreshold )
+                {
+                    tempData.append( m_dataBetasByProperties.value( property ).at( covariateIndex ).at( i ) );
+                    tempAbscissa.append( m_abscissa.at( i ) );
+                }
+            }
+
+            tempPostHocFDRSigBetasByCovariates.append( tempData );
+            tempAbscissaPostHocFDRSigBetasByCovariates.append( tempAbscissa );
+        }
+
+        m_dataPostHocFDRSigBetasByCovariates[ covariateIndex ] = tempPostHocFDRSigBetasByCovariates;
+        m_abscissaPostHocFDRSigBetasByCovariates[ covariateIndex ] = tempAbscissaPostHocFDRSigBetasByCovariates;
+    }
+}
+
+bool Plot::SetRawDataQCThreshold( const QList< QStringList >& rawData )
+{
+    QList< QStringList > faData = rawData;
+    faData.removeFirst();
+    faData = m_processing.Transpose( faData );
+    faData.removeFirst();
+
+    bool subjectsRemoved;
+    if( !m_matchedSubjects.isEmpty() )
+    {
+        QList< QStringList > tempData = m_processing.Transpose( rawData );
+
+        QStringList arcLength = tempData.first();
+        arcLength.removeFirst();
+        m_abscissa = m_processing.QStringListToDouble( arcLength );
+        m_nbrPoints = m_abscissa.size();
+
+        subjectsRemoved = m_processing.RemoveUnmatchedSubjects( tempData, m_subjects, m_matchedSubjects );
+        tempData = m_processing.Transpose( tempData );
+        tempData.removeFirst();
+        tempData = m_processing.Transpose( tempData );
+
+        QList< QList< double > > tempDoubleData = m_processing.DataToDouble( tempData );
+        m_processing.NANToZeros( tempDoubleData );
+        m_dataRawData.insert( m_propertySelected, tempDoubleData );
+    }
+
+    return !m_dataRawData.value( m_propertySelected ).isEmpty() && subjectsRemoved;
 }
 
 
-bool Plot::GetRawDataFiles()
+void Plot::GetRawDataFiles()
 {
     QStringList nameFilterRawData = QStringList() << "*_RawData_*.csv" << "*_RawData.csv";
     m_csvRawDataFiles = QDir( m_directory ).entryList( nameFilterRawData, QDir::Files );
     m_csvRawDataFiles.sort();
-    SetRawData();
+    SortFilesByProperties( m_directory, m_csvRawDataFiles, m_dataRawData, RawData );
 
-    return( !m_dataRawData.isEmpty() && !m_dataSubMatrix.isEmpty() );
+    if( !m_dataRawData.isEmpty() )
+    {
+        SetRawData();
+        SetRawSats();
+    }
 }
 
 void Plot::GetBetaFiles()
@@ -1071,7 +1600,12 @@ void Plot::GetBetaFiles()
     QStringList nameFilterBeta = QStringList() << "*_Betas_*.csv" << "*_Betas.csv";
     m_csvBetaFiles = QDir( m_matlabDirectory ).entryList( nameFilterBeta, QDir::Files );
     m_csvBetaFiles.sort();
-    SetBeta();
+    SortFilesByProperties( m_matlabDirectory, m_csvBetaFiles, m_dataBetasByProperties, Betas );
+
+    if( !m_dataBetasByProperties.isEmpty() )
+    {
+        SetBetasByCovariate();
+    }
 }
 
 void Plot::GetOmnibusLpvalueFiles()
@@ -1079,6 +1613,7 @@ void Plot::GetOmnibusLpvalueFiles()
     QStringList nameFilterOmnibusLpvalue( "*Omnibus_Local_pvalues.csv" );
     m_csvOmnibusLpvalueFiles = QDir( m_matlabDirectory ).entryList( nameFilterOmnibusLpvalue, QDir::Files );
     m_csvOmnibusLpvalueFiles.sort();
+
     if( !m_csvOmnibusLpvalueFiles.isEmpty() )
     {
         SetOmnibusLpvalue( m_csvOmnibusLpvalueFiles, m_dataOmnibusLpvalue );
@@ -1090,9 +1625,16 @@ void Plot::GetOmnibusFDRLpvalueFiles()
     QStringList nameFilterOmnibusFDRLpvalue( "*Omnibus_FDR_Local_pvalues.csv" );
     m_csvOmnibusFDRLpvalueFiles = QDir( m_matlabDirectory ).entryList( nameFilterOmnibusFDRLpvalue, QDir::Files );
     m_csvOmnibusFDRLpvalueFiles.sort();
+
     if( !m_csvOmnibusFDRLpvalueFiles.isEmpty() )
     {
         SetOmnibusLpvalue( m_csvOmnibusFDRLpvalueFiles, m_dataOmnibusFDRLpvalue );
+    }
+
+    if( !m_dataBetasByCovariates.isEmpty() && !m_dataOmnibusFDRLpvalue.isEmpty() )
+    {
+        SetOmnibusFDRSigBetasByProperties();
+        SetOmnibusFDRSigBetasByCovariates();
     }
 }
 
@@ -1101,7 +1643,7 @@ void Plot::GetConfidenceBandsFiles()
     QStringList nameFilterConfidenceBands( "*_Omnibus_ConfidenceBands_*.csv" );
     m_csvConfidenceBandsFiles = QDir( m_matlabDirectory ).entryList( nameFilterConfidenceBands, QDir::Files );
     m_csvConfidenceBandsFiles.sort();
-    SetConfidenceBands();
+    SortFilesByProperties( m_matlabDirectory, m_csvConfidenceBandsFiles, m_dataConfidenceBands, ConfidenceBands );
 }
 
 void Plot::GetPostHocFDRLpvalueFiles()
@@ -1109,57 +1651,95 @@ void Plot::GetPostHocFDRLpvalueFiles()
     QStringList nameFilterPostHocFDRLpvalue = QStringList() << "*_PostHoc_FDR_Local_pvalues_*.csv" << "*_PostHoc_FDR_Local_pvalues.csv";
     m_csvPostHocFDRLpvalueFiles = QDir( m_matlabDirectory ).entryList( nameFilterPostHocFDRLpvalue, QDir::Files );
     m_csvPostHocFDRLpvalueFiles.sort();
-    SetPostHocFDRLpvalue();
+    SortFilesByProperties( m_matlabDirectory, m_csvPostHocFDRLpvalueFiles, m_dataPostHocFDRLpvalue, PostHocFDRLpvalues );
+
+    if( !m_dataBetasByCovariates.isEmpty() && !m_dataPostHocFDRLpvalue.isEmpty() )
+    {
+        SetPostHocFDRLpvaluesByCovariates();
+        if( !m_dataRawData.isEmpty() )
+        {
+            SetPostHocFDRSigBetasOnAverageRawData();
+        }
+        SetPostHocFDRSigBetasByProperties();
+        SetPostHocFDRSigBetasByCovariates();
+    }
 }
 
 
-void Plot::SetPlots()
+bool Plot::SetPlots()
 {
-    m_plotsUsed.clear();
-    if( !m_dataRawData.isEmpty() )
+    m_plotsAvailable.clear();
+    if( !m_abscissa.isEmpty() )
     {
-        m_plotsUsed.append( QStringList() << "Raw Data" << "Raw Stats" );
+        if( !m_properties.isEmpty() && !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_binaryCovariates.isEmpty() )
+        {
+            if( !m_dataBinaryRawData.isEmpty() )
+            {
+                m_plotsAvailable.append( QStringList() << "Raw Data" );
+            }
+            if( !m_dataBinaryRawStats.isEmpty() )
+            {
+                m_plotsAvailable.append( QStringList() << "Raw Stats" );
+            }
+        }
+        if( !m_properties.isEmpty() && !m_dataBetasByProperties.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Raw Betas by Properties" );
+        }
+        if( !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_dataBetasByCovariates.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Raw Betas by Covariates" );
+        }
+        if( !m_dataOmnibusLpvalue.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Omnibus Local pvalues" );
+        }
+        if( !m_dataOmnibusFDRLpvalue.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Omnibus FDR Local pvalues" );
+        }
+        if( !m_properties.isEmpty() && !m_dataOmnibusFDRSigBetasByProperties.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Omnibus FDR Significant Betas by Properties" );
+        }
+        if( !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_dataOmnibusFDRSigBetasByCovariates.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Omnibus FDR Significant Betas by Covariates" );
+        }
+        if( !m_properties.isEmpty() && !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_dataBetasByProperties.isEmpty() && !m_dataConfidenceBands.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Omnibus Betas with Confidence Bands" );
+        }
+        if( !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_dataPostHocFDRLpvaluesByCovariates.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Post-Hoc FDR Local pvalues by Covariates" );
+        }
+        if( !m_properties.isEmpty() && !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_dataBinaryRawData.isEmpty() && !m_dataPostHocFDRSigBetasOnAverageRawData.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Post-Hoc FDR Significant Betas on Average Raw Data" );
+        }
+        if( !m_properties.isEmpty() && !m_dataPostHocFDRSigBetasByProperties.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Post-Hoc FDR Significant Betas by Properties" );
+        }
+        if( !m_allCovariates.isEmpty() && !m_covariatesNoIntercept.isEmpty() && !m_dataPostHocFDRSigBetasByCovariates.isEmpty() )
+        {
+            m_plotsAvailable.append( QStringList() << "Post-Hoc FDR Significant Betas by Covariates" );
+        }
     }
-    if( !m_dataBeta.isEmpty() )
+
+    bool plotsAvailable = !m_plotsAvailable.isEmpty();
+    if( plotsAvailable )
     {
-        m_plotsUsed.append( QStringList() << "Raw Betas by Properties" << "Raw Betas by Covariates" );
+        emit PlotsUsed( m_plotsAvailable );
     }
-    if( !m_dataOmnibusLpvalue.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Omnibus Local pvalues" );
-    }
-    if( !m_dataOmnibusFDRLpvalue.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Omnibus FDR Local pvalues" );
-    }
-    if( !m_dataBeta.isEmpty() && !m_dataOmnibusFDRLpvalue.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Omnibus FDR Significant Betas by Properties" <<
-                            "Omnibus FDR Significant Betas by Covariates" );
-    }
-    if( !m_dataBeta.isEmpty() && !m_dataConfidenceBands.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Betas with Omnibus Confidence Bands" );
-    }
-    if( !m_dataPostHocFDRLpvalue.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Post-Hoc FDR Local pvalues by Covariates" );
-    }
-    if( !m_dataRawData.isEmpty() && !m_dataPostHocFDRLpvalue.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Post-Hoc FDR Significant Betas on Average Raw Data" );
-    }
-    if( !m_dataBeta.isEmpty() && !m_dataPostHocFDRLpvalue.isEmpty() )
-    {
-        m_plotsUsed.append( QStringList() << "Post-Hoc FDR Significant Betas by Properties" <<
-                            "Post-Hoc FDR Significant Betas by Covariates" );
-    }
-    emit PlotsUsed( m_plotsUsed );
+
+    return plotsAvailable;
 }
 
-void Plot::SetProperties()
+void Plot::SetProperties( const QStringList& properties )
 {
-    foreach( QString property, m_dataRawData.keys() )
+    foreach( QString property, properties )
     {
         if( property.contains( "ad", Qt::CaseInsensitive ) )
         {
@@ -1182,65 +1762,75 @@ void Plot::SetProperties()
     emit AllPropertiesUsed( m_properties );
 }
 
-void Plot::SetSubjects()
+void Plot::SetSubjects( const QList< QStringList >& rawDataSubMatrix )
 {
-    for( int i = 1; i < m_dataSubMatrix.size(); i++ )
-    {
-        m_subjects.append( m_dataSubMatrix.at( i ).first() );
-    }
+    m_subjects.append( rawDataSubMatrix.first() );
 }
 
-void Plot::SetCovariates()
+bool Plot::IsCovariateBinary( const QList< QStringList >& data, int indexCovariate )
 {
-    QStringList firstRaw = m_dataSubMatrix.first();
-    QStringList firstDataRaw = m_dataSubMatrix.at( 1 );
+    bool isBinary = true;
+    int row = 1;
+    while( row < data.size() && isBinary )
+    {
+        if( ( data.at( row ).at( indexCovariate ).toDouble() != 0 ) && ( data.at( row ).at( indexCovariate ).toDouble() != 1 ) )
+        {
+            isBinary = false;
+        }
+        row++;
+    }
+
+    return isBinary;
+}
+
+void Plot::SetCovariates( const QList< QStringList >& data, int dataKind )
+{
+    QStringList firstRow = data.first();
+    int shift = 0;
+    if( dataKind == Betas )
+    {
+        shift++;
+    }
+    if( dataKind == ConfidenceBands )
+    {
+        shift+=2;
+    }
 
     m_allCovariates.insert( 0, "Intercept" );
-    for( int i = 1; i < firstRaw.size(); i++ )
+    for( int i = shift + 1; i < firstRow.size(); i++ )
     {
-        m_allCovariates.insert( i, firstRaw.at( i ) );
-        m_covariatesNoIntercept.insert( i, firstRaw.at( i ) );
-        if( ( firstDataRaw .at( i ).toDouble() == 0 ) || ( firstDataRaw.at( i ).toDouble() == 1 ) )
+        m_allCovariates.insert( i - shift, firstRow.at( i ).split( " " ).first() );
+        m_covariatesNoIntercept.insert( i - shift, firstRow.at( i ).split( " " ).first() );
+        if( dataKind == ConfidenceBands )
         {
-            m_binaryCovariates.insert( i, firstRaw.at( i ) );
+            i++;
+            shift++;
         }
     }
+
+    if( dataKind == RawData )
+    {
+        for( int i = 1; i < firstRow.size(); i++ )
+        {
+            if( IsCovariateBinary( data, i ) )
+            {
+                m_binaryCovariates.insert( i, firstRow.at( i ) );
+            }
+        }
+    }
+
     emit AllCovariatesUsed( m_allCovariates );
 }
 
-void Plot::SetAbscissa()
+void Plot::GetMeanAndStdDv( const QList< QList< double > >& binaryRawData, QList< double >& tempMean, QList< double >& tempStdDv )
 {
-    m_abscissa.clear();
-    m_abscissa.append( m_dataRawData.first().first() );
-    m_nbrPoints = m_abscissa.size();
-}
-
-
-void Plot::SeparateBinary( QList< QList< double > >& temp0Bin, QList< QList< double > >& temp1Bin )
-{
-    int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
-    for( int i = 0; i < m_ordinate.size(); i++ )
-    {
-        if( m_dataSubMatrix.at( i + 1 ).at( indexCovariate ).toDouble() == 0 )
-        {
-            temp0Bin.append( m_ordinate.at( i ) );
-        }
-        else
-        {
-            temp1Bin.append( m_ordinate.at( i ) );
-        }
-    }
-}
-
-void Plot::GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< double >& tempMean, QList< double >& tempStdDv )
-{
-    int nbrSubjects = tempBin.size();
+    int nbrSubjects = binaryRawData.size();
     for( int i = 0; i < m_nbrPoints; i++ )
     {
         double currentMean = 0;
         for( int j = 0; j < nbrSubjects; j++ )
         {
-            currentMean += tempBin.at( j ).at( i );
+            currentMean += binaryRawData.at( j ).at( i );
         }
         currentMean = currentMean / nbrSubjects;
         tempMean.append( currentMean );
@@ -1248,40 +1838,21 @@ void Plot::GetMeanAndStdDv( const QList< QList< double > >& tempBin, QList< doub
         double currentStdDv = 0;
         for( int j = 0; j < nbrSubjects; j++ )
         {
-            currentStdDv += std::pow( tempBin.at( j ).at( i ) - currentMean, 2 );
+            currentStdDv += std::pow( binaryRawData.at( j ).at( i ) - currentMean, 2 );
         }
         tempStdDv.append( std::sqrt( currentStdDv / ( nbrSubjects - 1 ) ) );
     }
 }
 
-QList< double > Plot::GetMean( const QList< QList< double > >& rawData )
-{
-    int nbrSubjects = rawData.size();
-    QList< double > mean;
 
+void Plot::ProcessRawStats( const QList< QList< double > >& binaryRawData, QList< double >& binaryRawDataMean, QList< double >& binaryRawDataUp, QList< double >& binaryRawDataDown )
+{
+    QList< double > binaryRawDataStdDv;
+    GetMeanAndStdDv( binaryRawData, binaryRawDataMean, binaryRawDataStdDv );
     for( int i = 0; i < m_nbrPoints; i++ )
     {
-        double currentMean = 0;
-        for( int j = 0; j < nbrSubjects; j++ )
-        {
-            currentMean += rawData.at( j ).at( i );
-        }
-        currentMean = currentMean / nbrSubjects;
-        mean.append( currentMean );
-    }
-
-    return mean;
-}
-
-
-void Plot::ProcessRawStats( const QList< QList< double > >& tempBin, QList< double >& tempBinMean, QList< double >& tempBinUp, QList< double >& tempBinDown )
-{
-    QList< double > tempBinStdDv;
-    GetMeanAndStdDv( tempBin, tempBinMean, tempBinStdDv );
-    for( int i = 0; i < m_nbrPoints; i++ )
-    {
-        tempBinUp.append( tempBinMean.at( i ) + tempBinStdDv.at( i ) );
-        tempBinDown.append( tempBinMean.at( i ) - tempBinStdDv.at( i ) );
+        binaryRawDataUp.append( binaryRawDataMean.at( i ) + binaryRawDataStdDv.at( i ) );
+        binaryRawDataDown.append( binaryRawDataMean.at( i ) - binaryRawDataStdDv.at( i ) );
     }
 }
 
@@ -1318,181 +1889,195 @@ QList< QList< double > > Plot::ToLog10( const QList< QList< double > >& data )
 
 QList< QList< double > > Plot::LoadRawData()
 {
-    QList< QList< double > > ordinate = m_dataRawData.value( m_propertySelected );
-    ordinate.removeFirst();
-    return ordinate;
+    QList< QList< double > > rawData;
+    if( !m_propertySelected.isEmpty() )
+    {
+        if( !m_covariateSelected.isEmpty() )
+        {
+            QList< QList< double > > rawData0 = m_dataBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 );
+            QList< QList< double > > rawData1 = m_dataBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 );
+            rawData.append( rawData0 );
+            rawData.append( rawData1 );
+        }
+        else
+        {
+            rawData = m_dataRawData.value( m_propertySelected );
+        }
+    }
+
+    return rawData;
 }
 
 QList< QList< double > > Plot::LoadRawStats()
 {
-    QList< QList< double > > temp0Bin;
-    QList< QList< double > > temp1Bin;
-    SeparateBinary( temp0Bin, temp1Bin );
-
-    QList< double > temp0BinUp;
-    QList< double > temp0BinMean;
-    QList< double > temp0BinDown;
-    ProcessRawStats( temp0Bin, temp0BinMean, temp0BinUp, temp0BinDown );
-
-    QList< double > temp1BinUp;
-    QList< double > temp1BinMean;
-    QList< double > temp1BinDown;
-    ProcessRawStats( temp1Bin, temp1BinMean, temp1BinUp, temp1BinDown );
-
-    QList< QList< double > > ordinate;
-    ordinate.append( temp0BinUp );
-    ordinate.append( temp0BinMean );
-    ordinate.append( temp0BinDown );
-    ordinate.append( temp1BinUp );
-    ordinate.append( temp1BinMean );
-    ordinate.append( temp1BinDown);
-
-    for( int i = ordinate.size() - 1; i >= 0; i-- )
+    QList< QList< double > > rawStats;
+    if( !m_propertySelected.isEmpty() )
     {
-        if( std::isnan( ordinate.at( i ).first() ) )
+        if( !m_covariateSelected.isEmpty() )
         {
-            ordinate.removeAt( i );
+            QList< QList< double > > rawStats0 = m_dataBinaryRawStats.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 );
+            QList< QList< double > > rawStats1 = m_dataBinaryRawStats.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 );
+            rawStats.append( rawStats0 );
+            rawStats.append( rawStats1 );
+        }
+        else
+        {
+            rawStats = m_dataBinaryRawStats.value( m_propertySelected ).value( -1 ).value( -1 );
         }
     }
 
-    m_ordinate.clear();
-
-    return ordinate;
+    return rawStats;
 }
 
-QList< QList< double > > Plot::LoadSigBetasOnAverageRawData()
+QList< QList< double > > Plot::LoadBetasByProperties()
 {
-    QList< QList< double > > meanOrdinate = QList< QList< double > >() << GetMean( LoadRawData() );
-
-    return meanOrdinate;
-}
-
-QList< QList< double > > Plot::LoadBetas()
-{
-    QList< QList< double > > ordinate;
-    ordinate = m_dataBeta.value( m_propertySelected );
-    SetSelectionToDisplayProperties();
-
-    return ordinate;
-}
-
-QList< QList< double > > Plot::LoadBetaByCovariate()
-{
-    QList< QList< double > > ordinate;
-    QMap< int, QString >::ConstIterator iterProperties = m_properties.cbegin();
-    while( iterProperties != m_properties.cend() )
+    QList< QList< double > > betasByProperties;
+    if( !m_propertySelected.isEmpty() )
     {
-        ordinate.append( m_dataBeta.value( iterProperties.value() ).at( m_allCovariates.key( m_covariateSelected ) ) );
-        ++iterProperties;
+        betasByProperties = m_dataBetasByProperties.value( m_propertySelected );
     }
+
     SetSelectionToDisplayProperties();
 
-    return ordinate;
+    return betasByProperties;
 }
 
-QList< QList< double > > Plot::LoadOmnibusLpvalues( QList< QList< double > > omnibusLpvalues )
+QList< QList< double > > Plot::LoadBetasByCovariates()
 {
-    QList< QList< double > > ordinate = omnibusLpvalues;
+    QList< QList< double > > betasByCovariates;
+    if( !m_covariateSelected.isEmpty() )
+    {
+        betasByCovariates = m_dataBetasByCovariates.value( m_allCovariates.key( m_covariateSelected ) );
+    }
+
+    SetSelectionToDisplayProperties();
+
+    return betasByCovariates;
+}
+
+QList< QList< double > > Plot::LoadOmnibusLpvalues()
+{
     m_selectionToDisplay.remove( m_selectionToDisplay.firstKey() );
     SetSelectionToDisplayProperties();
 
-    return ToLog10( ordinate );
+    if( m_plotSelected == "Omnibus Local pvalues" )
+    {
+        return ToLog10( m_dataOmnibusLpvalue );
+    }
+    if( m_plotSelected == "Omnibus FDR Local pvalues" )
+    {
+        return ToLog10( m_dataOmnibusFDRLpvalue );
+    }
 }
 
 QList< QList< double > > Plot::LoadConfidenceBand()
 {
-    QList< QList< double > > ordinate;
-    ordinate.append( m_dataConfidenceBands.value( m_propertySelected ).at( 2*m_allCovariates.key( m_covariateSelected ) + 1 ) );
-    ordinate.append( m_dataBeta.value( m_propertySelected ).at( m_allCovariates.key( m_covariateSelected ) ) );
-    ordinate.append( m_dataConfidenceBands.value( m_propertySelected ).at( 2*m_allCovariates.key( m_covariateSelected ) ) );
+    QList< QList< double > > confidenceBand;
+    if( !m_propertySelected.isEmpty() && !m_covariateSelected.isEmpty() )
+    {
+        confidenceBand.append( m_dataConfidenceBands.value( m_propertySelected ).at( 2*m_allCovariates.key( m_covariateSelected ) + 1 ) );
+        confidenceBand.append( m_dataBetasByProperties.value( m_propertySelected ).at( m_allCovariates.key( m_covariateSelected ) ) );
+        confidenceBand.append( m_dataConfidenceBands.value( m_propertySelected ).at( 2*m_allCovariates.key( m_covariateSelected ) ) );
+    }
 
-    return ordinate;
+    return confidenceBand;
 }
 
 QList< QList< double > > Plot::LoadPostHocFDRLpvalues()
 {
-    QList< QList< double > > ordinate;
-    QMap< int, QString >::ConstIterator iterProperties = m_properties.cbegin();
-    while( iterProperties != m_properties.cend() )
+    QList< QList< double > > postHocFDRLpvalues;
+    if( !m_covariateSelected.isEmpty() )
     {
-        ordinate.append( m_dataPostHocFDRLpvalue.value( iterProperties.value() ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 ) );
-        ++iterProperties;
+        postHocFDRLpvalues = m_dataPostHocFDRLpvaluesByCovariates.value( m_allCovariates.key( m_covariateSelected ) );
     }
+
     SetSelectionToDisplayProperties();
 
-    return ToLog10( ordinate );
+    return postHocFDRLpvalues;
 }
+
+QList< QList< double > > Plot::LoadSigBetasOnAverageRawData()
+{
+    QList< QList< double > > meanRawData;
+    if( !m_propertySelected.isEmpty() )
+    {
+        meanRawData.append( m_processing.GetMean( m_dataRawData.value( m_propertySelected ), 0 ) );
+    }
+
+    return meanRawData;
+}
+
 
 bool Plot::LoadData()
 {
     m_ordinate.clear();
-    if( ( m_plotSelected == "Raw Data" ) || ( m_plotSelected == "Raw Stats" ) )
-    {
-        if( !m_propertySelected.isEmpty() )
-        {
-            m_ordinate = LoadRawData();
 
-            if( m_plotSelected == "Raw Stats" )
-            {
-                m_ordinate = LoadRawStats();
-            }
-        }
-    }
-    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+    if( m_plotSelected == "Raw Data" )
     {
-        if( !m_propertySelected.isEmpty() )
-        {
-            m_ordinate = LoadSigBetasOnAverageRawData();
-        }
+        m_ordinate = LoadRawData();
+    }
+    if( m_plotSelected == "Raw Stats" )
+    {
+        m_ordinate = LoadRawStats();
     }
     if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
             m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
     {
-        if( !m_propertySelected.isEmpty() )
-        {
-            m_ordinate = LoadBetas();
-        }
+        m_ordinate = LoadBetasByProperties();
     }
     if( m_plotSelected == "Raw Betas by Covariates" || m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
             m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
     {
-        if( !m_covariateSelected.isEmpty() )
-        {
-            m_ordinate = LoadBetaByCovariate();
-        }
+        m_ordinate = LoadBetasByCovariates();
     }
     if( m_plotSelected == "Omnibus Local pvalues" )
     {
-        m_ordinate = LoadOmnibusLpvalues( m_dataOmnibusLpvalue );
+        m_ordinate = LoadOmnibusLpvalues();
     }
     if( m_plotSelected == "Omnibus FDR Local pvalues" )
     {
-        m_ordinate = LoadOmnibusLpvalues( m_dataOmnibusFDRLpvalue );
+        m_ordinate = LoadOmnibusLpvalues();
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
-        if( !m_propertySelected.isEmpty() && !m_covariateSelected.isEmpty() )
-        {
-            m_ordinate = LoadConfidenceBand();
-        }
+        m_ordinate = LoadConfidenceBand();
     }
     if( m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
-        if( !m_covariateSelected.isEmpty() )
-        {
-            m_ordinate = LoadPostHocFDRLpvalues();
-        }
+        m_ordinate = LoadPostHocFDRLpvalues();
     }
+    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+    {
+        m_ordinate = LoadSigBetasOnAverageRawData();
+    }
+
     return !( m_abscissa.isEmpty() | m_ordinate.isEmpty() );
 }
 
 
 void Plot::AddEntriesRawData( vtkSmartPointer< vtkTable >& table )
-{   
+{
+    QStringList subjects;
+    if( m_covariateSelected.isEmpty() )
+    {
+        subjects.append( m_subjects );
+    }
+    else
+    {
+        if( !m_subjectsBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 ).isEmpty() )
+        {
+            subjects.append( m_subjectsBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 ) );
+        }
+        if( !m_subjectsBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 ).isEmpty() )
+        {
+            subjects.append( m_subjectsBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 ) );
+        }
+    }
+
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkDoubleArray > currentEntry = vtkSmartPointer< vtkDoubleArray >::New();
-        currentEntry->SetName( m_subjects.at( i ).toStdString().c_str() );
+        currentEntry->SetName( subjects.at( i ).toStdString().c_str() );
         table->AddColumn( currentEntry );
     }
 }
@@ -1513,23 +2098,7 @@ void Plot::AddEntriesRawStats( vtkSmartPointer< vtkTable >& table )
     }
     else
     {
-        if( m_nbrPlots == 3 )
-        {
-            int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
-            QString name = m_dataSubMatrix.at( 1 ).at( indexCovariate ).toDouble() == 0 ?
-                        QString( m_covariateSelected + " = 0 " ) : QString(  m_covariateSelected + " = 1 " );
-
-            vtkSmartPointer< vtkDoubleArray > stdUp = vtkSmartPointer< vtkDoubleArray >::New();
-            stdUp->SetName( QString( name + "std+" ).toStdString().c_str() );
-            table->AddColumn( stdUp );
-            vtkSmartPointer< vtkDoubleArray > mean = vtkSmartPointer< vtkDoubleArray >::New();
-            mean->SetName( QString( name + "mean" ).toStdString().c_str() );
-            table->AddColumn( mean );
-            vtkSmartPointer< vtkDoubleArray > stdDown = vtkSmartPointer< vtkDoubleArray >::New();
-            stdDown->SetName( QString( name + "std-" ).toStdString().c_str() );
-            table->AddColumn( stdDown );
-        }
-        else
+        if( !m_dataBinaryRawStats.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 ).isEmpty() )
         {
             vtkSmartPointer< vtkDoubleArray > std0_Up = vtkSmartPointer< vtkDoubleArray >::New();
             std0_Up->SetName( QString( m_covariateSelected + " = 0 std+" ).toStdString().c_str() );
@@ -1540,6 +2109,9 @@ void Plot::AddEntriesRawStats( vtkSmartPointer< vtkTable >& table )
             vtkSmartPointer< vtkDoubleArray > std0_Down = vtkSmartPointer< vtkDoubleArray >::New();
             std0_Down->SetName( QString( m_covariateSelected + " = 0 std-" ).toStdString().c_str() );
             table->AddColumn( std0_Down );
+        }
+        if( !m_dataBinaryRawStats.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 ).isEmpty() )
+        {
             vtkSmartPointer< vtkDoubleArray > std1_Up = vtkSmartPointer< vtkDoubleArray >::New();
             std1_Up->SetName( QString( m_covariateSelected + " = 1 std+" ).toStdString().c_str() );
             table->AddColumn( std1_Up );
@@ -1551,13 +2123,6 @@ void Plot::AddEntriesRawStats( vtkSmartPointer< vtkTable >& table )
             table->AddColumn( std1_Down );
         }
     }
-}
-
-void Plot::AddEntriesSigBetasOnAverageRawData( vtkSmartPointer< vtkTable >& table )
-{
-    vtkSmartPointer< vtkDoubleArray > currentEntry = vtkSmartPointer< vtkDoubleArray >::New();
-    currentEntry->SetName( QString( "Average " + m_propertySelected ).toStdString().c_str() );
-    table->AddColumn( currentEntry );
 }
 
 void Plot::AddEntriesByPropertiesOrCovariates( vtkSmartPointer< vtkTable >& table )
@@ -1573,14 +2138,21 @@ void Plot::AddEntriesByPropertiesOrCovariates( vtkSmartPointer< vtkTable >& tabl
 void Plot::AddEntriesConfidenceBands( vtkSmartPointer< vtkTable >& table )
 {
     vtkSmartPointer< vtkDoubleArray > upperConfidenceBand = vtkSmartPointer< vtkDoubleArray >::New();
-    upperConfidenceBand->SetName( "Upper Confidence Band" );
+    upperConfidenceBand->SetName( QString( m_covariateSelected + " Upper Confidence Band" ).toStdString().c_str() );
     table->AddColumn( upperConfidenceBand );
     vtkSmartPointer< vtkDoubleArray > meanBetas = vtkSmartPointer< vtkDoubleArray >::New();
-    meanBetas->SetName( "Mean Betas" );
+    meanBetas->SetName( QString( m_covariateSelected + " Mean Betas" ).toStdString().c_str() );
     table->AddColumn( meanBetas );
     vtkSmartPointer< vtkDoubleArray > lowerConfidenceBand = vtkSmartPointer< vtkDoubleArray >::New();
-    lowerConfidenceBand->SetName( "Lower Confidence Band" );
+    lowerConfidenceBand->SetName( QString( m_covariateSelected + " Lower Confidence Band" ).toStdString().c_str() );
     table->AddColumn( lowerConfidenceBand );
+}
+
+void Plot::AddEntriesSigBetasOnAverageRawData( vtkSmartPointer< vtkTable >& table )
+{
+    vtkSmartPointer< vtkDoubleArray > currentEntry = vtkSmartPointer< vtkDoubleArray >::New();
+    currentEntry->SetName( QString( "Average " + m_propertySelected ).toStdString().c_str() );
+    table->AddColumn( currentEntry );
 }
 
 void Plot::AddEntries( vtkSmartPointer< vtkTable >& table )
@@ -1597,12 +2169,10 @@ void Plot::AddEntries( vtkSmartPointer< vtkTable >& table )
     {
         AddEntriesRawStats( table );
     }
-    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
-    {
-        AddEntriesSigBetasOnAverageRawData( table );
-    }
-    if( m_plotSelected == "Raw Betas by Properties" || m_plotSelected == "Raw Betas by Covariates" ||
-            m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" ||
+    if( m_plotSelected == "Raw Betas by Properties" ||
+            m_plotSelected == "Raw Betas by Covariates" ||
+            m_plotSelected == "Omnibus Local pvalues" ||
+            m_plotSelected == "Omnibus FDR Local pvalues" ||
             m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
             m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
             m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" ||
@@ -1611,7 +2181,12 @@ void Plot::AddEntries( vtkSmartPointer< vtkTable >& table )
     {
         AddEntriesByPropertiesOrCovariates( table );
     }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+
+    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+    {
+        AddEntriesSigBetasOnAverageRawData( table );
+    }
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         AddEntriesConfidenceBands( table );
     }
@@ -1635,59 +2210,21 @@ void Plot::SetData( vtkSmartPointer< vtkTable >& table )
 }
 
 
-double Plot::ApplyPearsonCorrelation( int indexLine, const QList< double >& meanRawData )
-{
-    double pearsonCorrelation = 1.0;
-
-    if( m_nbrPoints > 1)
-    {
-        QList< double > currentLine = m_dataRawData.value( m_propertySelected ).at( indexLine );
-
-        int indexMax = meanRawData.size();
-
-        double sumMean = 0;
-        for( int i = 0; i < indexMax; i++ )
-        {
-            sumMean += meanRawData.at( i );
-        }
-
-        double sumMeanSquare = 0;
-        for( int i = 0; i < indexMax; i++ )
-        {
-            sumMeanSquare += meanRawData.at( i ) * meanRawData.at( i );
-        }
-
-        double sumCurrentLine = 0;
-        for( int i = 0; i < indexMax; i++ )
-        {
-            sumCurrentLine += currentLine.at( i );
-        }
-
-        double sumCurrentLineSquare = 0;
-        for( int i = 0; i < indexMax; i++ )
-        {
-            sumCurrentLineSquare += currentLine.at( i ) * currentLine.at( i );
-        }
-
-        double meanXcurrentLine = 0;
-        for( int i = 0; i < indexMax; i++ )
-        {
-            meanXcurrentLine += meanRawData.at( i ) * currentLine.at( i );
-        }
-
-        pearsonCorrelation = ( meanXcurrentLine - ( sumMean * sumCurrentLine ) / m_nbrPoints ) /
-                std::sqrt( ( sumMeanSquare - std::pow( sumMean, 2 ) / m_nbrPoints ) * ( sumCurrentLineSquare - std::pow( sumCurrentLine, 2 ) / m_nbrPoints ) );
-    }
-
-    return pearsonCorrelation;
-}
-
 void Plot::InitLines()
 {
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         m_chart->AddPlot( vtkChart::LINE );
         m_chart->GetPlot( i )->SetSelectable( m_plotSelected == "Raw Data" ? true : false );
+    }
+}
+
+void Plot::InitQCThresholdLines()
+{
+    for( int i = 0; i < m_nbrPlots; i++ )
+    {
+        m_chart->AddPlot( vtkChart::LINE );
+        m_chart->GetPlot( i )->SetSelectable( false );
     }
 }
 
@@ -1743,65 +2280,86 @@ void Plot::AddMean( QList< double > meanRawData )
     sigLevelLine->SetWidth( m_lineWidth * 2 );
 }
 
-void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaDisplayedByProperties, bool isOmnibus, int i )
+void Plot::AddCrop( bool previousExist )
+{
+    if( previousExist )
+    {
+        m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+        m_chart->RemovePlot( m_chart->GetNumberOfPlots() - 1 );
+    }
+
+    GetyMinMax();
+
+    vtkSmartPointer< vtkDoubleArray > startCrop = vtkSmartPointer< vtkDoubleArray >::New();
+    startCrop->SetNumberOfComponents( 1 );
+    startCrop->SetName( "Abscissa Start Crop" );
+    vtkSmartPointer< vtkDoubleArray > endCrop = vtkSmartPointer< vtkDoubleArray >::New();
+    endCrop->SetNumberOfComponents( 1 );
+    endCrop->SetName( "Abscissa End Crop" );
+    vtkSmartPointer< vtkDoubleArray > yCropStart = vtkSmartPointer< vtkDoubleArray >::New();
+    yCropStart->SetNumberOfComponents( 1 );
+    yCropStart->SetName( "Y Crop Start" );
+    vtkSmartPointer< vtkDoubleArray > yCropEnd = vtkSmartPointer< vtkDoubleArray >::New();
+    yCropEnd->SetNumberOfComponents( 1 );
+    yCropEnd->SetName( "Y Crop End" );
+
+    startCrop->InsertNextValue( m_abscissa.at( m_arcLengthStartIndex ) );
+    startCrop->InsertNextValue( m_abscissa.at( m_arcLengthStartIndex ) );
+    endCrop->InsertNextValue( m_abscissa.at( m_arcLengthEndIndex ) );
+    endCrop->InsertNextValue( m_abscissa.at( m_arcLengthEndIndex ) );
+    yCropStart->InsertNextValue( m_yMinMax[ 0 ] );
+    yCropStart->InsertNextValue( m_yMinMax[ 1 ] );
+    yCropEnd->InsertNextValue( m_yMinMax[ 0 ] );
+    yCropEnd->InsertNextValue( m_yMinMax[ 1 ] );
+
+    vtkSmartPointer< vtkTable > tableCrop = vtkSmartPointer< vtkTable >::New();
+    tableCrop->SetNumberOfRows( 2 );
+    tableCrop->AddColumn( startCrop );
+    tableCrop->AddColumn( endCrop );
+    tableCrop->AddColumn( yCropStart );
+    tableCrop->AddColumn( yCropEnd );
+
+    vtkSmartPointer< vtkPlot > startCropLine = m_chart->AddPlot( vtkChart::LINE );
+    startCropLine->SetSelectable( false );
+    startCropLine->SetInputData( tableCrop, 0, 2 );
+    startCropLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
+    startCropLine->GetPen()->SetLineType( vtkPen::DASH_DOT_LINE );
+    startCropLine->SetWidth( m_lineWidth );
+    startCropLine->SetVisible( m_croppingEnabled );
+
+    vtkSmartPointer< vtkPlot > endCropLine = m_chart->AddPlot( vtkChart::LINE );
+    endCropLine->SetSelectable( false );
+    endCropLine->SetInputData( tableCrop, 1, 3 );
+    endCropLine->SetColor( m_allColors.value( "Black" ).first(), m_allColors.value( "Black" ).at( 1 ), m_allColors.value( "Black" ).at( 2 ), 255 );
+    endCropLine->GetPen()->SetLineType( vtkPen::DASH_DOT_LINE );
+    endCropLine->SetWidth( m_lineWidth );
+    endCropLine->SetVisible( m_croppingEnabled );
+}
+
+void Plot::AddSigBetas( const QList< double >& dataSigBetas, const QList< double >& abscissaSigBetas, int index )
 {
     vtkSmartPointer< vtkDoubleArray > abscissaSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
-    abscissaSigBetaTempo->SetNumberOfComponents( 1 );
-    abscissaSigBetaTempo->SetName( "Abscissa SigBeta" );
     vtkSmartPointer< vtkDoubleArray > dataSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
-    dataSigBetaTempo->SetNumberOfComponents( 1 );
-    dataSigBetaTempo->SetName( QString( m_lineNames.at( i ) + " SigBeta" ).toStdString().c_str() );
-    int index = 0;
-    for( int j = 0; j < m_nbrPoints; j++ )
+    int nbrPoints = dataSigBetas.size();
+
+    if( dataSigBetas.size() == abscissaSigBetas.size() )
     {
-        if( betaDisplayedByProperties )
+        abscissaSigBetaTempo->SetNumberOfComponents( 1 );
+        abscissaSigBetaTempo->SetName( "Abscissa SigBeta" );
+        dataSigBetaTempo->SetNumberOfComponents( 1 );
+        dataSigBetaTempo->SetName( QString( m_selectionToDisplay.value( index ).first + " SigBeta" ).toStdString().c_str() );
+
+        for( int j = 0; j < nbrPoints; j++ )
         {
-            if( isOmnibus )
-            {
-                if( m_dataOmnibusFDRLpvalue.at( m_allCovariates.key( m_lineNames.at( i ) ) - 1 ).at( j ) <= m_pvalueThreshold )
-                {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
-                    index++;
-                }
-            }
-            else
-            {
-                if( m_dataPostHocFDRLpvalue.value( m_propertySelected ).at( m_allCovariates.key( m_lineNames.at( i ) ) - 1 ).at( j ) <= m_pvalueThreshold )
-                {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
-                    index++;
-                }
-            }
-        }
-        else
-        {
-            if( isOmnibus )
-            {
-                if( m_dataOmnibusFDRLpvalue.at( m_allCovariates.key( m_covariateSelected ) - 1 ).at( j ) <= m_pvalueThreshold )
-                {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
-                    index++;
-                }
-            }
-            else
-            {
-                if( m_dataPostHocFDRLpvalue.value( m_lineNames.at( i ) ).at( m_allCovariates.key( m_covariateSelected ) - 1 ).at( j ) <= m_pvalueThreshold )
-                {
-                    abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
-                    dataSigBetaTempo->InsertNextValue( table->GetValue( j, i + 1 ).ToDouble() );
-                    index++;
-                }
-            }
+            abscissaSigBetaTempo->InsertNextValue( abscissaSigBetas.at( j ) );
+            dataSigBetaTempo->InsertNextValue( dataSigBetas.at( j ) );
         }
     }
 
     if( ( dataSigBetaTempo->GetSize() != 0 ) && ( abscissaSigBetaTempo->GetSize() != 0 ) )
     {
         vtkSmartPointer< vtkTable > tableSigBetas = vtkSmartPointer< vtkTable >::New();
-        tableSigBetas->SetNumberOfRows( index );
+        tableSigBetas->SetNumberOfRows( nbrPoints );
         tableSigBetas->AddColumn( abscissaSigBetaTempo );
         tableSigBetas->AddColumn( dataSigBetaTempo );
 
@@ -1810,39 +2368,74 @@ void Plot::AddLineSigBetas( const vtkSmartPointer< vtkTable >& table, bool betaD
         sigBetas->SetInputData( tableSigBetas, 0, 1 );
         vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerStyle( m_markerType );
         vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerSize( m_markerSize );
-        sigBetas->SetColor( m_lineColors.at( i ).first(), m_lineColors.at( i ).at( 1 ), m_lineColors.at( i ).at( 2 ), 255 );
-        sigBetas->SetVisible( m_selectionToDisplay.value( i ).second.first );
+        sigBetas->SetColor( m_lineColors.at( index ).first(), m_lineColors.at( index ).at( 1 ), m_lineColors.at( index ).at( 2 ), 255 );
+        sigBetas->SetVisible( m_selectionToDisplay.value( index ).second.first );
+    }
+}
+
+void Plot::AddSigBetasOnAverageRawData( const QList< double >& dataSigBetas, const QList< double >& abscissaSigBetas, const QList< int >& markerColor, QString IDLegend )
+{
+    vtkSmartPointer< vtkDoubleArray > abscissaSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
+    vtkSmartPointer< vtkDoubleArray > dataSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
+    int nbrPoints = dataSigBetas.size();
+
+    if( dataSigBetas.size() == abscissaSigBetas.size() )
+    {
+        abscissaSigBetaTempo->SetNumberOfComponents( 1 );
+        abscissaSigBetaTempo->SetName( "Abscissa SigBeta" );
+        dataSigBetaTempo->SetNumberOfComponents( 1 );
+        dataSigBetaTempo->SetName( IDLegend.toStdString().c_str() );
+
+        for( int j = 0; j < nbrPoints; j++ )
+        {
+            abscissaSigBetaTempo->InsertNextValue( abscissaSigBetas.at( j ) );
+            dataSigBetaTempo->InsertNextValue( dataSigBetas.at( j ) );
+        }
+    }
+
+    if( ( dataSigBetaTempo->GetSize() != 0 ) && ( abscissaSigBetaTempo->GetSize() != 0 ) )
+    {
+        vtkSmartPointer< vtkTable > tableSigBetas = vtkSmartPointer< vtkTable >::New();
+        tableSigBetas->SetNumberOfRows( nbrPoints );
+        tableSigBetas->AddColumn( abscissaSigBetaTempo );
+        tableSigBetas->AddColumn( dataSigBetaTempo );
+
+        vtkSmartPointer< vtkPlot > sigBetas = m_chart->AddPlot( vtkChart::POINTS );
+        sigBetas->SetSelectable( false );
+        sigBetas->SetInputData( tableSigBetas, 0, 1 );
+        vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerStyle( m_markerType );
+        vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerSize( m_markerSize );
+        sigBetas->SetColor( markerColor.first(), markerColor.at( 1 ), markerColor.at( 2 ), 255 );
     }
 }
 
 void Plot::AddLineRawData( const vtkSmartPointer< vtkTable >& table )
 {
+    QList< int > color = m_allColors.value( "Black" );
+    double currentLineWidth = m_lineWidth / 2;
+    int shift = -1;
+    bool foundBinaryRawData0 = !m_dataBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 ).isEmpty();
+    bool foundBinaryRawData1 = !m_dataBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 ).isEmpty();
+
+    if( !m_covariateSelected.isEmpty() && !foundBinaryRawData0 && foundBinaryRawData1 )
+    {
+        color = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
+        currentLineWidth = m_lineWidth;
+    }
+    if( !m_covariateSelected.isEmpty() && foundBinaryRawData0 && foundBinaryRawData1 )
+    {
+        shift = m_dataBinaryRawData.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 ).size();
+    }
+
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
 
-
-        QList< int > color;
-        double currentLineWidth = 0;
-        if( m_covariateSelected.isEmpty() )
+        if( shift != -1 && i >= shift )
         {
-            color = m_allColors.value( "Black" );
-            currentLineWidth = m_lineWidth / 2;
-        }
-        else
-        {
-            int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
-            if( m_dataSubMatrix.at( i + 1 ).at( indexCovariate ).toDouble() == 0 )
-            {
-                color = m_allColors.value( "Black" );
-                currentLineWidth = m_lineWidth / 2;
-            }
-            else
-            {
-                color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
-                currentLineWidth = m_lineWidth;
-            }
+            color = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
+            currentLineWidth = m_lineWidth;
         }
 
         currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
@@ -1852,44 +2445,36 @@ void Plot::AddLineRawData( const vtkSmartPointer< vtkTable >& table )
 
 void Plot::AddLineRawStats( const vtkSmartPointer< vtkTable >& table )
 {
+    QList< int > color = m_allColors.value( "Black" );
+    int shift = -1;
+    bool foundBinaryRawStats0 = !m_dataBinaryRawStats.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 0 ).isEmpty();
+    bool foundBinaryRawStats1 = !m_dataBinaryRawStats.value( m_propertySelected ).value( m_binaryCovariates.key( m_covariateSelected ) ).value( 1 ).isEmpty();
+
+    if( m_covariateSelected.isEmpty() )
+    {
+        color = m_allColors.value( "Black" );
+    }
+    if( !m_covariateSelected.isEmpty() && !foundBinaryRawStats0 && foundBinaryRawStats1 )
+    {
+        color = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
+    }
+    if( !m_covariateSelected.isEmpty() && foundBinaryRawStats0 && foundBinaryRawStats1 )
+    {
+        shift = 3;
+    }
+
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
 
-        QList< int > color;
-        if( m_covariateSelected.isEmpty() )
+        if( shift != -1 && i >= shift )
         {
-            color = m_allColors.value( "Black" );
+            color = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
         }
-        else
-        {
-            if( m_nbrPlots == 3 )
-            {
-                int indexCovariate = m_binaryCovariates.key( m_covariateSelected );
-                if( m_dataSubMatrix.at( 1 ).at( indexCovariate ).toDouble() == 0 )
-                {
-                    color = m_allColors.value( "Black" );
-                }
-                else
-                {
-                    color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
-                }
-            }
-            else
-            {
-                if( i < 3 )
-                {
-                    color = m_allColors.value( "Black" );
-                }
-                else
-                {
-                    color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
-                }
-            }
-        }
-        currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
 
+        currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
+        currentLine->SetWidth( m_lineWidth );
 
         if( ( i == 0 || i == 3 ) )
         {
@@ -1899,87 +2484,11 @@ void Plot::AddLineRawStats( const vtkSmartPointer< vtkTable >& table )
         {
             currentLine->GetPen()->SetLineType( vtkPen::DASH_DOT_DOT_LINE );
         }
-
-        currentLine->SetWidth( m_lineWidth );
     }
 }
 
-void Plot::AddLineSigBetasOnAverageRawData( const vtkSmartPointer< vtkTable >& table )
+void Plot::AddLineLPvalue( const vtkSmartPointer< vtkTable >& table, int shift )
 {
-    QList< int > lineColor = m_allColors.value( "Black" );
-    vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( 0 );
-    currentLine->SetInputData( table, 0, 1 );
-    currentLine->SetColor( lineColor.first(), lineColor.at( 1 ), lineColor.at( 2 ), 255 );
-    currentLine->SetWidth( m_lineWidth );
-
-    if( !m_covariateSelected.isEmpty() )
-    {
-        QList< int > markerColor = m_allColors.value( m_covariatesProperties.value( m_covariatesNoIntercept.key( m_covariateSelected ) ).second.second );
-
-        vtkSmartPointer< vtkDoubleArray > abscissaSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
-        abscissaSigBetaTempo->SetNumberOfComponents( 1 );
-        abscissaSigBetaTempo->SetName( "Abscissa SigBeta" );
-        vtkSmartPointer< vtkDoubleArray > dataSigBetaTempo = vtkSmartPointer< vtkDoubleArray >::New();
-        dataSigBetaTempo->SetNumberOfComponents( 1 );
-        dataSigBetaTempo->SetName( QString( m_covariateSelected + " SigBeta" ).toStdString().c_str() );
-        int index = 0;
-        for( int j = 0; j < m_nbrPoints; j++ )
-        {
-            if( m_dataPostHocFDRLpvalue.value( m_propertySelected ).at( m_allCovariates.key( m_covariateSelected ) - 1 ).at( j ) <= m_pvalueThreshold )
-            {
-                abscissaSigBetaTempo->InsertNextValue( table->GetValue( j, 0 ).ToDouble() );
-                dataSigBetaTempo->InsertNextValue( table->GetValue( j, 1 ).ToDouble() );
-                index++;
-            }
-        }
-
-        if( ( dataSigBetaTempo->GetSize() != 0 ) && ( abscissaSigBetaTempo->GetSize() != 0 ) )
-        {
-            vtkSmartPointer< vtkTable > tableSigBetas = vtkSmartPointer< vtkTable >::New();
-            tableSigBetas->SetNumberOfRows( index );
-            tableSigBetas->AddColumn( abscissaSigBetaTempo );
-            tableSigBetas->AddColumn( dataSigBetaTempo );
-
-            vtkSmartPointer< vtkPlot > sigBetas = m_chart->AddPlot( vtkChart::POINTS );
-            sigBetas->SetSelectable( false );
-            sigBetas->SetInputData( tableSigBetas, 0, 1 );
-            vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerStyle( m_markerType );
-            vtkPlotPoints::SafeDownCast( sigBetas )->SetMarkerSize( m_markerSize );
-            sigBetas->SetColor( markerColor.first(), markerColor.at( 1 ), markerColor.at( 2 ), 255 );
-        }
-    }
-}
-
-void Plot::AddLineBetas( const vtkSmartPointer< vtkTable >& table )
-{
-    for( int i = 0; i < m_nbrPlots; i++ )
-    {
-        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
-        currentLine->SetInputData( table, 0, i + 1 );
-        currentLine->SetColor( m_lineColors.at( i ).first(), m_lineColors.at( i ).at( 1 ), m_lineColors.at( i ).at( 2 ), 255 );
-        currentLine->SetWidth( m_lineWidth );
-
-        if( m_plotSelected.contains( "Significant Betas" ) )
-        {
-            bool betaDisplayedByProperties = m_plotSelected.contains( "by Properties" );
-            bool isOmnibus = m_plotSelected.contains( "Omnibus" );
-
-            if( ( betaDisplayedByProperties && ( m_lineNames.at( i ) != m_allCovariates.first() ) ) || !betaDisplayedByProperties )
-            {
-                AddLineSigBetas( table, betaDisplayedByProperties, isOmnibus, i );
-            }
-        }
-
-        currentLine->SetVisible( m_selectionToDisplay.value( i ).second.first );
-    }
-
-    AddSignificantLevel( 0 );
-}
-
-void Plot::AddLineLPvalue( const vtkSmartPointer< vtkTable >& table )
-{
-    int shift = ( m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" ) ? 0 : 1;
-
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
@@ -1992,26 +2501,97 @@ void Plot::AddLineLPvalue( const vtkSmartPointer< vtkTable >& table )
     AddSignificantLevel( -log10( m_pvalueThreshold ) );
 }
 
-void Plot::AddLineLConfidenceBands( const vtkSmartPointer< vtkTable >& table )
+void Plot::AddLineBetas( const vtkSmartPointer< vtkTable >& table )
 {
     for( int i = 0; i < m_nbrPlots; i++ )
     {
         vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
         currentLine->SetInputData( table, 0, i + 1 );
-        if( i%2 )
-        {
-            QList< int > color = m_allColors.value( m_covariatesProperties.value( m_binaryCovariates.key( m_covariateSelected ) ).second.second );
-            currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
-        }
-        else
-        {
-            currentLine->SetColor( 0, 0, 0, 255 );
-            currentLine->GetPen()->SetLineType( vtkPen::DASH_LINE );
-        }
+        currentLine->SetColor( m_lineColors.at( i ).first(), m_lineColors.at( i ).at( 1 ), m_lineColors.at( i ).at( 2 ), 255 );
         currentLine->SetWidth( m_lineWidth );
+        currentLine->SetVisible( m_selectionToDisplay.value( i ).second.first );
+
+//        QList< double > dataSigBetas = data.value( IDSelected ).at( index - shift );
+//        QList< double > abscissaSigBetas = abscissa.value( IDSelected ).at( index - shift );
+        if( i > 0 && m_plotSelected == "Omnibus FDR Significant Betas by Properties" )
+        {
+            AddSigBetas( m_dataOmnibusFDRSigBetasByProperties.value( m_propertySelected ).at( i - 1 ), m_abscissaOmnibusFDRSigBetasByProperties.value( m_propertySelected ).at( i - 1 ), i );
+        }
+        if( m_plotSelected == "Omnibus FDR Significant Betas by Covariates" )
+        {
+            AddSigBetas( m_dataOmnibusFDRSigBetasByCovariates.value( m_allCovariates.key( m_covariateSelected ) ).at( i ), m_abscissaOmnibusFDRSigBetasByCovariates.value( m_allCovariates.key( m_covariateSelected ) ).at( i ), i );
+        }
+        if( i > 0 && m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" )
+        {
+            AddSigBetas( m_dataPostHocFDRSigBetasByProperties.value( m_propertySelected ).at( i - 1 ), m_abscissaPostHocFDRSigBetasByProperties.value( m_propertySelected ).at( i - 1 ), i );
+        }
+        if( m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
+        {
+            AddSigBetas( m_dataPostHocFDRSigBetasByCovariates.value( m_allCovariates.key( m_covariateSelected ) ).at( i ), m_abscissaPostHocFDRSigBetasByCovariates.value( m_allCovariates.key( m_covariateSelected ) ).at( i ), i );
+        }
     }
 
     AddSignificantLevel( 0 );
+}
+
+void Plot::AddLineLConfidenceBands( const vtkSmartPointer< vtkTable >& table )
+{
+    for( int i = 0; i < m_nbrPlots; i++ )
+    {
+        vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( i );
+        QList< int > color = m_allColors.value( "Black" );
+        int lineType = vtkPen::SOLID_LINE;
+
+        if( i == 0 )
+        {
+            lineType = vtkPen::DASH_LINE;
+        }
+        if( i == 1)
+        {
+            color = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
+        }
+        if( i == 2 )
+        {
+            lineType = vtkPen::DASH_DOT_DOT_LINE;
+        }
+
+        currentLine->SetInputData( table, 0, i + 1 );
+        currentLine->SetColor( color.first(), color.at( 1 ), color.at( 2 ), 255 );
+        currentLine->SetWidth( m_lineWidth );
+        currentLine->GetPen()->SetLineType( lineType );
+    }
+
+    AddSignificantLevel( 0 );
+}
+
+void Plot::AddLineSigBetasOnAverageRawData( const vtkSmartPointer< vtkTable >& table )
+{
+    QList< int > lineColor = m_allColors.value( "Black" );
+    vtkSmartPointer< vtkPlot > currentLine = m_chart->GetPlot( 0 );
+    currentLine->SetInputData( table, 0, 1 );
+    currentLine->SetColor( lineColor.first(), lineColor.at( 1 ), lineColor.at( 2 ), 255 );
+    currentLine->SetWidth( m_lineWidth );
+
+    if( !m_covariateSelected.isEmpty() )
+    {
+        QList< double > negativeSigBetas = m_dataPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Negative" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+        QList< double > positiveSigBetas = m_dataPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Positive" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+        QList< double > sigBetas = QList< double >() << negativeSigBetas << positiveSigBetas;
+        QList< double > abscissaNegativeSigBetas = m_abscissaPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Negative" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+        QList< double > abscissaPositiveSigBetas = m_abscissaPostHocFDRSigBetasOnAverageRawData.value( m_propertySelected ).value( "Positive" ).at( m_covariatesNoIntercept.key( m_covariateSelected ) - 1 );
+        QList< double > abscissaSigBetas = QList< double >() << abscissaNegativeSigBetas << abscissaPositiveSigBetas;
+
+        if( m_isPosNeg )
+        {
+            AddSigBetasOnAverageRawData( positiveSigBetas, abscissaPositiveSigBetas, m_allColors.value( "Lime" ), QString( m_covariateSelected + " Positive SigBetas" ) );
+            AddSigBetasOnAverageRawData( negativeSigBetas, abscissaNegativeSigBetas, m_allColors.value( "Red" ), QString( m_covariateSelected + " Negative SigBetas" ) );
+        }
+        else
+        {
+            QList< int > markerColorSigBetas = m_allColors.value( m_covariatesProperties.value( m_allCovariates.key( m_covariateSelected ) ).second.second );
+            AddSigBetasOnAverageRawData( sigBetas, abscissaSigBetas, markerColorSigBetas, QString( m_covariateSelected + " SigBetas" ) );
+        }
+    }
 }
 
 void Plot::AddLines( const vtkSmartPointer< vtkTable >& table )
@@ -2026,32 +2606,40 @@ void Plot::AddLines( const vtkSmartPointer< vtkTable >& table )
     {
         AddLineRawStats( table );
     }
-    if( m_plotSelected.contains( "Average" ) )
+    if( m_plotSelected == "Omnibus Local pvalues" ||
+            m_plotSelected == "Omnibus FDR Local pvalues" ||
+            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
     {
-        AddLineSigBetasOnAverageRawData( table );
+        int shift = m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" ? 0 : 1;
+        AddLineLPvalue( table, shift );
     }
-    if( ( m_plotSelected.contains( "Raw Betas" ) || m_plotSelected.contains( "Significant Betas" ) ) && !m_plotSelected.contains( "Average" ) )
+    if( m_plotSelected == "Raw Betas by Properties" ||
+            m_plotSelected == "Raw Betas by Covariates" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Properties" ||
+            m_plotSelected == "Omnibus FDR Significant Betas by Covariates" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Properties" ||
+            m_plotSelected == "Post-Hoc FDR Significant Betas by Covariates" )
     {
         AddLineBetas( table );
     }
-    if( m_plotSelected == "Omnibus Local pvalues" || m_plotSelected == "Omnibus FDR Local pvalues" ||
-            m_plotSelected == "Post-Hoc FDR Local pvalues by Covariates" )
-    {
-        AddLineLPvalue( table );
-    }
-    if( m_plotSelected == "Betas with Omnibus Confidence Bands" )
+    if( m_plotSelected == "Omnibus Betas with Confidence Bands" )
     {
         AddLineLConfidenceBands( table );
     }
+
+    if( m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+    {
+        AddLineSigBetasOnAverageRawData( table );
+    }
 }
 
-void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table, const QList< double >& atlas )
+void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table )
 {
-    InitLines();
+    InitQCThresholdLines();
 
-    QList< QList< double > > tempoRawData = m_dataRawData.value( m_propertySelected );
-    tempoRawData.removeFirst();
-    QList< double > meanRawData = !atlas.isEmpty() ? atlas : GetMean( tempoRawData );
+    QList< double > atlas = m_processing.QStringListToDouble( m_atlasQCThreshold );
+
+    QList< double > refLine = !atlas.isEmpty() ? atlas : m_processing.GetMean( m_dataRawData.value( m_propertySelected ), 0 );
 
     QStringList subjectsCorrelated, subjectsNotCorrelated;
     for( int i = 0; i < m_nbrPlots; i++ )
@@ -2060,7 +2648,7 @@ void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table, const 
         currentLine->SetInputData( table, 0, i + 1 );
         QList< int > color;
 
-        double pearsonCorrelation = ApplyPearsonCorrelation( i + 1, meanRawData );
+        double pearsonCorrelation = m_processing.ApplyPearsonCorrelation( m_dataRawData.value( m_propertySelected ).at( i ), refLine, 0 );
 
         if( pearsonCorrelation < m_qcThreshold )
         {
@@ -2081,7 +2669,8 @@ void Plot::AddQCThresholdLines( const vtkSmartPointer< vtkTable >& table, const 
         currentLine->SetWidth( m_lineWidth );
     }
 
-    AddMean( meanRawData );
+    AddMean( refLine );
+    AddCrop( false );
 
     emit UpdateSubjectsCorrelated( subjectsCorrelated, subjectsNotCorrelated );
 }
@@ -2096,8 +2685,13 @@ void Plot::GetyMinMax()
     {
         QList< double > rowData = m_ordinate.at( i );
 
-        if( ( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" || m_plotSelected.contains( "Average" ) )
-                || ( !( m_plotSelected == "Raw Data" || m_plotSelected == "Raw Stats" || m_plotSelected.contains( "Average" ) ) && m_selectionToDisplay.value( i ).second.first ) )
+        if( ( m_plotSelected == "Raw Data" ||
+              m_plotSelected == "Raw Stats" ||
+              m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+                || ( !( m_plotSelected == "Raw Data" ||
+                        m_plotSelected == "Raw Stats" ||
+                        m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+                     && m_selectionToDisplay.value( i ).second.first ) )
         {
             foreach( double data, rowData )
             {
@@ -2120,8 +2714,15 @@ void Plot::GetyMinMax()
 
 void Plot::SetAbscissaProperties( double xMin, double xMax )
 {
-    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
-    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
+    double deltaX = ( xMax - xMin ) / m_nbrPoints;
+    xMin -= deltaX;
+    xMax += deltaX;
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin - deltaX );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax + deltaX );
+
+    //    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( SetMinMax( xMin ) );
+    //    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( SetMinMax( xMax ) );
+
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
 
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetWidth( 0.25 );
@@ -2131,8 +2732,15 @@ void Plot::SetAbscissaProperties( double xMin, double xMax )
 
 void Plot::SetOrdinateProperties( double yMin, double yMax )
 {
-    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax );
+    double deltaY = ( yMax - yMin ) / m_nbrPoints;
+    yMin -= deltaY;
+    yMax += deltaY;
+    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin - deltaY );
+    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax + deltaY );
+
+    //    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( SetMinMax( yMin ) );
+    //    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( SetMinMax( yMax ) );
+
     m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
     m_chart->GetAxis( vtkAxis::LEFT )->SetNotation( m_abscissaNotation );
 
@@ -2144,38 +2752,44 @@ void Plot::SetOrdinateProperties( double yMin, double yMax )
 
 void Plot::SetAxisProperties()
 {
-    if( !m_abscissa.isEmpty() )
-    {
-        SetAbscissaProperties( m_abscissa.first(), m_abscissa.last() );
-    }
-
     GetyMinMax();
+
+    SetAbscissaProperties( m_abscissa.first(), m_abscissa.last() );
     SetOrdinateProperties( m_yMinMax[ 0 ], m_yMinMax[ 1 ] );
 }
 
 void Plot::SetQCThresholdAxisProperties()
 {
-    if( !m_abscissa.isEmpty() )
-    {
-        double xMin = m_abscissa.first();
-        double xMax = m_abscissa.last();
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetLabelsVisible( false );
-        m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
-    }
+    double xMin = m_abscissa.first();
+    double xMax = m_abscissa.last();
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
+    m_chart->GetAxis( vtkAxis::BOTTOM )->SetTitle( "Arc Length" );
 
-    GetyMinMax();
-    double yMin = m_yMinMax[ 0 ];
-    double yMax = m_yMinMax[ 1 ];
-    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetLabelsVisible( false );
-    m_chart->GetAxis( vtkAxis::LEFT )->SetTitle( "" );
+
+    m_chart->SetSelectionMode( vtkContextScene::SELECTION_NONE );
+    m_chart->SetForceAxesToBounds( true );
 }
 
+double Plot::SetMinMax( double minMax )
+{
+    bool isNegatif = minMax < 0;
+    int count = 0;
+    double fractpart;
+    double intpart;
+
+    fractpart = modf ( fabs( minMax ) , &intpart );
+
+    while( double( intpart / 10 ) <= 1.0 )
+    {
+        count++;
+        fractpart = modf( fabs( minMax )*pow( 10, count ) , &intpart );
+    }
+
+    double res = isNegatif? -round( fabs( minMax )*pow( 10, count ) + 1 ) / pow( 10, count ) : round( fabs( minMax )*pow( 10, count ) + 1 ) / pow( 10, count );
+    return res;
+}
 
 int Plot::LineAlreadySelected( vtkSmartPointer< vtkPlot > line )
 {
@@ -2235,10 +2849,9 @@ void Plot::SavePlot( QString filePath )
     writer->SetRenderWindow( m_view->GetRenderWindow() );
     writer->SetFilePrefix( filePath.split( "." ).first().toStdString().c_str() );
     writer->SetFileFormat( vtkGL2PSExporter::EPS_FILE );
-    writer->SetSortToBSP();
+    writer->SetSortToOff();
     writer->SetLineWidthFactor( 1.0 );
     writer->CompressOff();
-    writer->LandscapeOff();
     writer->Write();
 }
 

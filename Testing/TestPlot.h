@@ -21,24 +21,14 @@ public:
     bool Test_SetQVTKWidget();
 
 
-    bool Test_QStringListToDouble();
-
-    bool Test_DataToDouble();
-
-    bool Test_SortFilesByProperties( QString rdRawData, QString faRawData, QString subMatrixRawData );
-
-    bool Test_TransposeData();
-
-    bool Test_TransposeDataInQMap();
-
-    bool Test_RemoveUnmatchedSubjects( QString faFilePath);
+    bool Test_SortFilesByProperties( QString rdRawData, QString subMatrixRawData );
 
     bool Test_SetRawData( QString rdFilePath, QString faFilePath, QString subMatrixFilePath,
                           QString rdTransposeFilePath, QString faTransposeFilePath, QString dataDir );
 
     bool Test_SetRawDataQCThreshold( QString faFilePath );
 
-    bool Test_SetBeta( QString rdBetaFilePath, QString faBetaFilePath, QString dataDir );
+    bool Test_SetBetaByPropertiesCovariates( QString rdBetaFilePath, QString faBetaFilePath, QString dataDir );
 
     bool Test_SetOmnibusLpvalue( QString omnibusLpvalueFilePath, QString omnibusLpvalueTransposedFilePath, QString dataDir );
 
@@ -69,8 +59,6 @@ public:
 
     bool Test_SetCovariates( QString dataDir, QString tempoDir );
 
-    bool Test_SetAbscissa( QString dataDir, QString tempoDir );
-
 
     bool Test_SetSelectedPlot( QString dataDir );
 
@@ -92,15 +80,11 @@ public:
     bool Test_UpdateCovariatesNames( QString dataDir , QString tempoDir );
 
 
-    bool Test_SeparateBinary( QString faFilePath, QString dataDir );
-
     bool Test_GetMeanAndStdDv();
-
-    bool Test_GetMean();
 
     bool Test_ProcessRawStats();
 
-    bool Test_SetSelectionToDisplayProperties( QString omnibusLpvalueFilePath );
+    bool Test_SetSelectionToDisplayProperties();
 
     bool Test_Tolog10();
 
@@ -133,8 +117,6 @@ public:
 
     bool Test_SetData();
 
-
-    bool Test_ApplyPearsonCorrelation();
 
     bool Test_InitLines();
 

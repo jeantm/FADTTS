@@ -44,9 +44,6 @@ public:
 
     void SetHeader(); // Tested
 
-
-    void SetNbrCompThreads( bool isRunOnSystem , int nbrComp ); // Tested
-
     void SetMVCMPath( QString mvcmPath ); // Tested
 
 

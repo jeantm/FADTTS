@@ -6,7 +6,7 @@ close all
 clear all
 clc
 
-disp('Running matlab script without plotting...')
+disp('Running matlab script with plotting...')
 
 % Path to access FADTTS functions
 addpath '$addMVCMPath$';
@@ -21,7 +21,12 @@ disp('Setting inputs...')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Loading Folder
 [ loadingFolder, loadingName, loadingExt ] = fileparts( mfilename( 'fullpath' ) );
-mkdir( loadingFolder, '/MatlabOutputs' );
+
+
+if( ~exist( fullfile( loadingFolder, 'MatlabOutputs' ), 'dir' ) )
+    mkdir( loadingFolder, '/MatlabOutputs' );
+end
+
 
 % Saving Folder
 savingFolder = strcat( loadingFolder, '/MatlabOutputs' );
@@ -101,6 +106,8 @@ designdata = [ ones( size( dataSubmatrix, 1 ), 1 ) dataSubmatrix ]; % intercept 
 
 Cnames = cell( nbrCovariates, 1 );
 $listCovariates$
+CnamesNoInt = Cnames;
+CnamesNoInt( 1, : ) = [];
 
 disp('Loading diffusion file...')
 $diffusionData$
@@ -122,9 +129,20 @@ nbrDiffusionProperties = NoSetup( 4 );	% No of diffusion properties = 1
 
 disp('Plotting raw data...')
 for pii=2:nbrCovariates
-    if (designdata(1,pii) == 0 || designdata(1,pii) == 1)
+    isBinary = 1;
+    row = 1;
+
+    while( isBinary && row <= size(designdata(:,pii), 1) )
+        if( designdata(row,pii) ~= 0 && designdata(row,pii) ~= 1 )
+            isBinary = 0;
+        end
+        row=row+1;
+    end
+
+    if (isBinary)
         for Dii=1:nbrDiffusionProperties
             figure(Dii)
+
             for nii=1:nbrSubjects
                 if (designdata(nii,pii) == 0)
                     h(1)=plot(arclength,Ydesign(nii,:,Dii),'-k','LineWidth', 1);
@@ -134,10 +152,19 @@ for pii=2:nbrCovariates
                 hold on
             end
             hold off
+
             xlabel('Arc Length','fontweight','bold');
             ylabel(Dnames{Dii},'fontweight','bold');
             xlim([min(arclength) max(arclength)]);
-            legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+
+            if( h(1) ~= 0 && h(2) ~= 0 )
+                legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( h(1) == 0 )
+                legend([h(2)],sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( h(2) == 0 )
+                legend([h(1)],sprintf('%s=0',Cnames{pii}),'Location','SouthEastOutside');
+            end
+
             title(sprintf('%s\nRaw Data %s (%s)',fiberName,Cnames{pii},Dnames{Dii}),'fontweight','bold');
             clear h;
             saveas(gcf,sprintf('%s/%s_Raw_Data_%s_%s.pdf',savingFolder,fiberName,Cnames{pii},Dnames{Dii}),'pdf');
@@ -149,25 +176,61 @@ end
 
 disp('Plotting raw data average and standard deviation...')
 for pii=2:nbrCovariates
-    if (designdata(1,pii) == 0 || designdata(1,pii) == 1)
-        [Mavg]= mean(Ydesign(designdata(:,pii)==0,:,:)); % TD average for each diffusion paramter
+    isBinary = 1;
+    row = 1;
+
+    while( isBinary && row <= size(designdata(:,pii), 1) )
+        if( designdata(row,pii) ~= 0 && designdata(row,pii) ~= 1 )
+            isBinary = 0;
+        end
+        row=row+1;
+    end
+
+    if (isBinary)
+        [Mavg]= Ydesign(designdata(:,pii)==0,:,:); % TD average for each diffusion paramter
+        if ( size( Mavg(:,:,1), 1 ) ~= 1 )
+            [Mavg]= mean(Mavg);
+        end
         [Mstddev]= std(Ydesign(designdata(:,pii)==0,:,:)); % TD standard deviation for each diffusion paramter
-        [Favg]= mean(Ydesign(designdata(:,pii)==1,:,:)); % SE average for each diffusion paramter
+        if ( size( Mstddev(:,:,1), 1 ) ~= 1 )
+            [Mstddev]= mean(Mstddev);
+        end
+        [Favg]= Ydesign(designdata(:,pii)==1,:,:); % SE average for each diffusion paramter
+        if ( size( Favg(:,:,1), 1 ) ~= 1 )
+            [Favg]= mean(Favg);
+        end
         [Fstddev]= std(Ydesign(designdata(:,pii)==1,:,:)); % SE standard deviation for each diffusion paramter
+        if ( size( Fstddev(:,:,1), 1 ) ~= 1 )
+            [Fstddev]= mean(Fstddev);
+        end
+
         for Dii=1:nbrDiffusionProperties
             figure(Dii)
             hold on
-            h(1)=plot(arclength, Mavg(:,:,Dii),'-k','LineWidth', 1.25);
-            plot(arclength, Mavg(:,:,Dii)+Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
-            plot(arclength, Mavg(:,:,Dii)-Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
-            h(2)=plot(arclength, Favg(:,:,Dii),'-','Color',color{pii},'LineWidth', 1.25);
-            plot(arclength, Favg(:,:,Dii)+Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
-            plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
+            if( mean( isnan( Mavg(:,:,Dii) ) ) == 0 )
+                h(1)=plot(arclength, Mavg(:,:,Dii),'-k','LineWidth', 1.25);
+                plot(arclength, Mavg(:,:,Dii)+Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
+                plot(arclength, Mavg(:,:,Dii)-Mstddev(:,:,Dii),'--k','LineWidth', 1.25);
+            end
+            if( mean( isnan( Favg(:,:,Dii) ) ) == 0 )
+                h(2)=plot(arclength, Favg(:,:,Dii),'-','Color',color{pii},'LineWidth', 1.25);
+                plot(arclength, Favg(:,:,Dii)+Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
+                plot(arclength, Favg(:,:,Dii)-Fstddev(:,:,Dii),'--','Color',color{pii},'LineWidth', 1.25);
+            end
             hold off
+
             xlabel('Arc Length','fontweight','bold');
             ylabel(Dnames{Dii},'fontweight','bold');
             xlim([min(arclength) max(arclength)]);
-            legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+
+            if( mean( isnan( Mavg(:,:,Dii) ) ) == 0 && mean( isnan( Favg(:,:,Dii) ) ) == 0 )
+                legend([h(1) h(2)],sprintf('%s=0',Cnames{pii}),sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( mean( isnan( Mavg(:,:,Dii) ) ) ~= 0 )
+                legend([h(2)],sprintf('%s=1',Cnames{pii}),'Location','SouthEastOutside');
+            elseif( mean( isnan( Favg(:,:,Dii) ) ) ~= 0 )
+                legend([h(1)],sprintf('%s=0',Cnames{pii}),'Location','SouthEastOutside');
+            end
+
             title(sprintf('%s\nAverage and Standard Deviation %s (%s)',fiberName,Cnames{pii},Dnames{Dii}),'fontweight','bold');
             clear h;
             saveas(gcf,sprintf('%s/%s_AverageStdDeviation_%s_%s.pdf',savingFolder,fiberName,Cnames{pii},Dnames{Dii}),'pdf');
@@ -206,7 +269,8 @@ for Dii=1:nbrDiffusionProperties
     clear h;
     saveas(gcf,sprintf('%s/%s_Betas_%s.pdf',savingFolder,fiberName,Dnames{Dii}),'pdf');
     disp(sprintf('Saving betas %s...',Dnames{Dii}))
-    csvwrite(sprintf('%s/%s_Betas_%s.csv', savingFolder, fiberName, Dnames{Dii}),efitBetas(:,:,Dii));
+    writetable( cell2table( num2cell( vertcat( arclength.', efitBetas( :,:,Dii ) ) ),'RowNames', [ 'Arclength', Cnames.' ] ),...
+                sprintf('%s/%s_Betas_%s.csv', savingFolder, fiberName, Dnames{ Dii } ), 'WriteRowNames', true, 'WriteVariableNames', false );
     close()
 end
 
@@ -247,12 +311,14 @@ if( omnibus == 1 )
     end
 
     disp('Saving omnibus global p-values...')
-    csvwrite( sprintf( '%s/%s_Omnibus_Global_pvalues.csv', savingFolder, fiberName), Gpvals );
+    writetable( cell2table( num2cell( Gpvals ),'VariableNames', CnamesNoInt ),...
+                sprintf( '%s/%s_Omnibus_Global_pvalues.csv', savingFolder, fiberName ) );
     Gpvals
 
     Lpvals = 1-chi2cdf( Lstats, nbrDiffusionProperties );
     disp('Saving omnibus local p-values...')
-    csvwrite(sprintf('%s/%s_Omnibus_Local_pvalues.csv',savingFolder,fiberName),Lpvals);  % column for each covariate; local p-values are computed at each arclength
+    writetable( cell2table( num2cell( horzcat( arclength, Lpvals ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                sprintf( '%s/%s_Omnibus_Local_pvalues.csv',savingFolder,fiberName ) ); % column for each covariate; local p-values are computed at each arclength
     
     
     disp('Plotting omnibus local p-values...')
@@ -282,7 +348,8 @@ if( omnibus == 1 )
     end
     
     disp('Saving omnibus FDR local p-values...')
-    csvwrite( sprintf( '%s/%s_Omnibus_FDR_Local_pvalues.csv', savingFolder, fiberName), Lpvals_FDR );
+    writetable( cell2table( num2cell( horzcat( arclength, Lpvals_FDR ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                sprintf( '%s/%s_Omnibus_FDR_Local_pvalues.csv', savingFolder, fiberName) );
     
     
     disp('Plotting omnibus FDR local p-values for all covariates...')
@@ -398,8 +465,13 @@ if( omnibus == 1 )
     [CBands] = MVCM_CBands( nbrSubjects, confidenceBandsThreshold, Gvalue, efitBetas, zeros( size( ebiasBetas ) ) );
 
     disp('Saving omnibus covariate confidence bands...')
+    confidenceBandRowNames = cell(1,2*nbrCovariates+1);
+    confidenceBandRowNames{1} = 'Arclength';
+    confidenceBandRowNames(2:2:end) = strcat( Cnames(:), ' Lower Conf Band' );
+    confidenceBandRowNames(3:2:end) = strcat( Cnames(:), ' Upper Conf Band' );
     for Dii=1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_Omnibus_ConfidenceBands_%s.csv', savingFolder, fiberName, Dnames{Dii} ), CBands(:,:,Dii) );
+        writetable( cell2table( num2cell( vertcat( arclength.', CBands( :,:,Dii ) ) ),'RowNames', confidenceBandRowNames ),...
+                    sprintf( '%s/%s_Omnibus_ConfidenceBands_%s.csv', savingFolder, fiberName, Dnames{Dii} ), 'WriteRowNames', true, 'WriteVariableNames', false );
     end
     
     
@@ -459,12 +531,14 @@ if( postHoc == 1 )
     end
 
     disp('Saving post-hoc global p-values...')
-    csvwrite( sprintf( '%s/%s_PostHoc_Global_pvalues.csv', savingFolder, fiberName ), posthoc_Gpvals );
+    writetable( cell2table( num2cell( posthoc_Gpvals ),'VariableNames', CnamesNoInt ),...
+                sprintf( '%s/%s_PostHoc_Global_pvalues.csv', savingFolder, fiberName ));
     posthoc_Gpvals % for FA, RD, AD, MD for each covariate
 
     disp('Saving post-hoc local p-values...')
     for Dii = 1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_PostHoc_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ), posthoc_Lpvals( :, Dii, : ) );
+        writetable( cell2table( num2cell( horzcat( arclength, squeeze( posthoc_Lpvals( :, Dii, : ) ) ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                    sprintf( '%s/%s_PostHoc_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ) );
     end
 
     disp('Correcting post-hoc local p-values...')
@@ -478,7 +552,8 @@ if( postHoc == 1 )
 
     disp('Saving post-hoc FDR local p-values...')
     for Dii = 1:nbrDiffusionProperties
-        csvwrite( sprintf( '%s/%s_PostHoc_FDR_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ), posthoc_Lpvals_FDR( :, Dii, : ) );
+        writetable( cell2table( num2cell( horzcat( arclength, squeeze( posthoc_Lpvals_FDR( :, Dii, : ) ) ) ),'VariableNames', [ 'Arclength', CnamesNoInt.' ] ),...
+                    sprintf( '%s/%s_PostHoc_FDR_Local_pvalues_%s.csv', savingFolder, fiberName, Dnames{Dii} ) );
     end
 
     disp('Plotting post-hoc FDR local p-values by property...')
@@ -486,7 +561,7 @@ if( postHoc == 1 )
         figure()
         hold on
         for Dii=1:nbrDiffusionProperties
-            plot(arclength, -log10(posthoc_Lpvals_FDR(:,Dii,pii-1)), '-', 'Color', color{Dii}, 'LineWidth', 1.25);
+            plot(arclength, -log10( posthoc_Lpvals_FDR(:,Dii,pii-1) ), '-', 'Color', color{Dii}, 'LineWidth', 1.25);
         end
         hold off
         xlabel('Arc Length','fontweight','bold');

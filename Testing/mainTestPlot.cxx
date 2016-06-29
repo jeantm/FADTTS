@@ -54,42 +54,7 @@ int main( int argc, char *argv[] )
     /***************** Set Data ****************/
     std::cerr << std::endl << "/***************** Set Data ****************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_QStringListToDouble() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_DataToDouble() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SortFilesByProperties( argv[1], argv[2], argv[3] ) )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_TransposeData() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_TransposeDataInQMap() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_RemoveUnmatchedSubjects( argv[5] ) )
+    if( testPlot.Test_SortFilesByProperties( argv[1], argv[3] ) )
     {
         nbrTestsPassed++;
     }
@@ -111,7 +76,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetBeta( argv[7], argv[8], argv[21] ) )
+    if( testPlot.Test_SetBetaByPropertiesCovariates( argv[7], argv[8], argv[21] ) )
     {
         nbrTestsPassed++;
     }
@@ -216,13 +181,6 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetAbscissa( argv[21], argv[22] ) )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_SetSelectedPlot( argv[21] ) )
@@ -288,21 +246,7 @@ int main( int argc, char *argv[] )
     /************** Loading Data ***************/
     std::cerr << std::endl << "/************** Loading Data ***************/";
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SeparateBinary( argv[2], argv[21] ) )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_GetMeanAndStdDv() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_GetMean() )
     {
         nbrTestsPassed++;
     }
@@ -316,7 +260,7 @@ int main( int argc, char *argv[] )
     nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_SetSelectionToDisplayProperties( argv[9] ) )
+    if( testPlot.Test_SetSelectionToDisplayProperties() )
     {
         nbrTestsPassed++;
     }
@@ -419,13 +363,6 @@ int main( int argc, char *argv[] )
     }
     nbrTests++;
 
-
-    std::cerr << std::endl << nbrTests + 1 << "- ";
-    if( testPlot.Test_ApplyPearsonCorrelation() )
-    {
-        nbrTestsPassed++;
-    }
-    nbrTests++;
 
     std::cerr << std::endl << nbrTests + 1 << "- ";
     if( testPlot.Test_InitLines() )
