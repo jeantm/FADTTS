@@ -29,7 +29,14 @@ void Log::SetMatlabScript( MatlabThread *matlabThread )
 
 void Log::SetLogFile( QString outputDir, QString fibername )
 {
-    m_logFile = new::QFile( outputDir + "/" + fibername + ".log" );
+    QString filemane = outputDir + "/" + fibername + ".log";
+
+    if( QFile( filemane ).exists() )
+    {
+        QFile( filemane ).remove();
+    }
+
+    m_logFile = new::QFile( filemane );
     m_logFile->open( QIODevice::ReadWrite );
     m_matlabThread->SetLogFile( m_logFile );
     m_textStreamLog = new QTextStream( m_logFile );

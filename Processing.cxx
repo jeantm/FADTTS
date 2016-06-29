@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-#include <QDebug>
+//#include <QDebug>
 
 
 const QString Processing::m_csvSeparator = QLocale().groupSeparator();
