@@ -94,8 +94,9 @@ void FADTTSWindow::LoadParaConfiguration( QString filename )
                     para_subjectTab_endArcLength_value_label->setText( endProfile );
                 }
             }
-        }
 
+            OnCroppedProfileUpdated();
+        }
 
         para_subjectTab_qcThresoldOnAtlas_radioButton->setChecked( subjectTab.value( "useAtlas" ).toBool() );
         para_subjectTab_qcThreshold_doubleSpinBox->setValue( subjectTab.value( "qcThreshold" ).toDouble( 0.85 ) );

@@ -1,0 +1,80 @@
+{
+    "noGUIConfiguration": {
+        "inputFiles": {
+            "AD": {
+                "index": 0,
+                "path": "path/to/adFile.csv"
+            },
+            "RD": {
+                "index": 1,
+                "path": ""
+            },
+            "MD": {
+                "index": 2,
+                "path": ""
+            },
+            "FA": {
+                "index": 3,
+                "path": "path/to/faFile.csv"
+            },
+            "SUBMATRIX": {
+                "index": 4,
+                "path": "path/to/subMatrixFile.csv",
+                "subjectColumnID": 0
+            }
+        },
+        "covariates": {
+            "Intercept": {
+                "index": -1,
+                "selected": true
+            },
+            "Covariate1": {
+                "index": 1,
+                "selected": false
+            },
+            "Covariate2": {
+                "index": 2,
+                "selected": true
+            },
+            "Covariate3": {
+                "index": 3,
+                "selected": false
+            },
+            "Covariate4": {
+                "index": 4,
+                "selected": false
+            },
+            "Covariate5": {
+                "index": 5,
+                "selected": true
+            }
+        },
+        "profile": {
+            "endProfile": "35.9486",
+            "startProfile": "-40.0514"
+        },
+        "subjects": {
+            "qcThreshold": {
+                "apply": false,
+                "value": 0.77999999999999992,
+                "useAtlas": false
+            },
+            "subjectListPath": ""
+        },
+        "settings": {
+            "fiberName": "fiberName",
+            "nbrPermutations": 1100,
+            "pvalueThreshold": 0.080000000000000002,
+            "confidenceBandThreshold": 0.040000000000000001,
+            "omnibus": true,
+            "posthoc": false
+
+        },
+        "outputDir": "path/to/outputDir",
+        "matlabSpecifications": {
+            "runMatlab": true,
+            "fadttsDir": "path/to/fadttsDir",
+            "matlabExe": "path/to/matlabExe"
+        }
+    }
+}
