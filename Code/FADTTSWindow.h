@@ -12,6 +12,7 @@
 #include "Log.h"
 
 #include <QMainWindow>
+#include <QDesktopServices>
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
 #include <QScrollBar>

@@ -211,22 +211,9 @@ void FADTTSWindow::OnSaveNoGUIConfiguration()
 
 void FADTTSWindow::OnDisplayUserGuide()
 {
-    QResource resource( ":/UserGuide/Resources/UserGuide/UserGuide.txt" );
-    QFile UserGuideFile( resource.absoluteFilePath() );
-    QString UserGuideText;
-    if( UserGuideFile.open( QIODevice::ReadOnly | QIODevice::Text ) )
-    {
-        UserGuideText = UserGuideFile.readAll();
-    }
-    else
-    {
-        UserGuideText = "No Description found";
-    }
-
-    QString messageBoxTitle = QString( FADTTS_TITLE ) + ": User Guide";
-    QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( UserGuideText ) ), QMessageBox::Ok );
+    QUrl FADTTSterUserGuideURL( "https://github.com/jeantm/FADTTSter/UserGuide" );
+    QDesktopServices::openUrl( FADTTSterUserGuideURL );
 }
-
 
 void FADTTSWindow::OnDisplayAbout()
 {
@@ -234,7 +221,9 @@ void FADTTSWindow::OnDisplayAbout()
     QString aboutFADTTS;
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Contributor(s):</b> " + QString( FADTTS_CONTRIBUTORS ) + "<br>"
-            "<b>Web Site:</b> www.addWebSite.com";
+            "<b>License:</b> Apache 2.0<br>" +
+            "<b>Documentation</b> <a href=""https://github.com/jeantm/FADTTSter/Documentation"">click here</a><br>" +
+            "<b>Github</b> <a href=""https://github.com/jeantm/FADTTSter"">click here</a><br>";
     QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( aboutFADTTS ) ), QMessageBox::Ok );
 }
 

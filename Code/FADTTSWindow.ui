@@ -3350,6 +3350,7 @@
     <addaction name="separator"/>
     <addaction name="actionSave_Para_Configuration"/>
     <addaction name="actionSave_Soft_Configuration"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_noGUI_Configuration"/>
    </widget>
    <addaction name="menuFile"/>
@@ -3399,6 +3400,16 @@
   <action name="actionUser_Guide">
    <property name="text">
     <string>User Guide</string>
+   </property>
+  </action>
+  <action name="actionGithub">
+   <property name="text">
+    <string>Github</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
    </property>
   </action>
  </widget>
