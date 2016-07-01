@@ -1,0 +1,10 @@
+{
+    "softConfiguration": {
+        "executionTab": {
+            "matlabSpecifications": {
+                "runMatlab": true,
+                "matlabExe": "path/to/matlabExe"
+            }
+        }
+    }
+}
