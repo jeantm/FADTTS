@@ -2,7 +2,7 @@
 <executable>
   <category>PROJECT</category>
   <title>FADTTSter</title>
-  <version>3.3.0</version>
+  <version>3.3.1</version>
   <contributor>Jean Noel, Juan Carlos Prieto</contributor>
   <parameters>
     <boolean>
