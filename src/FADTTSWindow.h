@@ -150,6 +150,8 @@ private slots:
 
     void OnMatlabThreadFinished(); /// Not tested
 
+    void OnUsingWrongMatlabVersion();
+
 
     /************** Plotting  Tab **************/
     void OnBrowsingPlotDir(); /// Not tested

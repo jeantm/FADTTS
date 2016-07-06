@@ -3253,7 +3253,7 @@
             <item>
              <widget class="QGroupBox" name="plottingTab_editionTab_propertiesEdition_groupBox">
               <property name="title">
-               <string>Properties Edition</string>
+               <string>Properties</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_PropertiesColors">
                <property name="leftMargin">
@@ -3281,7 +3281,7 @@
             <item>
              <widget class="QGroupBox" name="plottingTab_editionTab_covariatesEdition_groupBox">
               <property name="title">
-               <string>Covariates Edition</string>
+               <string>Covariates</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_CovariatesEdition">
                <property name="leftMargin">
@@ -3443,22 +3443,44 @@
   <tabstop>para_inputTab_covariates_listWidget</tabstop>
   <tabstop>inputTab_covariatesCheckAll_pushButton</tabstop>
   <tabstop>inputTab_covariatesUncheckAll_pushButton</tabstop>
+  <tabstop>inputTab_close_pushButton</tabstop>
+  <tabstop>para_subjectTab_adFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_rdFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_mdFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_faFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_subMatrixFile_checkBox</tabstop>
+  <tabstop>para_subjectTab_subjectFile_lineEdit</tabstop>
+  <tabstop>subjectTab_loadSubjectFile_PushButton</tabstop>
+  <tabstop>subjectTab_resetSubjectFile_pushButton</tabstop>
   <tabstop>subjectTab_matchedSubjectsInformation_listWidget</tabstop>
-  <tabstop>subjectTab_unmatchedSubjectsInformation_listWidget</tabstop>
   <tabstop>subjectTab_checkAllVisible_pushButton</tabstop>
   <tabstop>subjectTab_unCheckAllVisible_pushButton</tabstop>
   <tabstop>subjectTab_saveCheckedSubjects_pushButton</tabstop>
+  <tabstop>subjectTab_unmatchedSubjectsInformation_listWidget</tabstop>
   <tabstop>subjectTab_search_lineEdit</tabstop>
   <tabstop>subjectTab_caseSensitive_checkBox</tabstop>
+  <tabstop>para_subjectTab_qcThreshold_doubleSpinBox</tabstop>
+  <tabstop>para_subjectTab_qcThresoldOnPopulation_radioButton</tabstop>
+  <tabstop>para_subjectTab_qcThresoldOnAtlas_radioButton</tabstop>
+  <tabstop>subjectTab_applyQCThreshold_pushButton</tabstop>
+  <tabstop>subjectTab_resetProfileCropping_pushButton</tabstop>
   <tabstop>para_executionTab_fiberName_lineEdit</tabstop>
   <tabstop>para_executionTab_nbrPermutations_spinBox</tabstop>
   <tabstop>para_executionTab_confidenceBandsThreshold_doubleSpinBox</tabstop>
   <tabstop>para_executionTab_pvalueThreshold_doubleSpinBox</tabstop>
   <tabstop>para_executionTab_omnibus_checkBox</tabstop>
   <tabstop>para_executionTab_postHoc_checkBox</tabstop>
+  <tabstop>executionTab_outputDir_pushButton</tabstop>
+  <tabstop>para_executionTab_outputDir_lineEdit</tabstop>
   <tabstop>soft_executionTab_runMatlab_checkBox</tabstop>
   <tabstop>executionTab_matlabExe_pushButton</tabstop>
   <tabstop>soft_executionTab_matlabExe_lineEdit</tabstop>
+  <tabstop>executionTab_mvcm_pushButton</tabstop>
+  <tabstop>para_executionTab_mvcm_lineEdit</tabstop>
+  <tabstop>executionTab_run_pushButton</tabstop>
+  <tabstop>executionTab_stop_pushButton</tabstop>
+  <tabstop>executionTab_log_textEdit</tabstop>
+  <tabstop>executionTab_clearLog_pushButton</tabstop>
   <tabstop>plottingTab_tabWidget</tabstop>
   <tabstop>plottingTab_loadSetDataTab_browsePlotDirectory_pushButton</tabstop>
   <tabstop>para_plottingTab_loadSetDataTab_browsePlotDirectory_lineEdit</tabstop>
@@ -3498,6 +3520,9 @@
   <tabstop>plottingTab_editionTab_pvalueThreshold_doubleSpinBox</tabstop>
   <tabstop>plottingTab_editionTab_lineWidth_doubleSpinBox</tabstop>
   <tabstop>plottingTab_editionTab_selectedLineColor_comboBox</tabstop>
+  <tabstop>plottingTab_editionTab_markerType_comboBox</tabstop>
+  <tabstop>plottingTab_editionTab_markerSize_doubleSpinBox</tabstop>
+  <tabstop>plottingTab_editionTab_binaryBetas_checkBox</tabstop>
  </tabstops>
  <resources>
   <include location="FADTTS_Resources.qrc"/>

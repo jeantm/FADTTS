@@ -212,7 +212,7 @@ void FADTTSWindow::OnSaveNoGUIConfiguration()
 
 void FADTTSWindow::OnDisplayUserGuide()
 {
-    QUrl FADTTSterUserGuideURL( "https://github.com/jeantm/FADTTSter/UserGuide" );
+    QUrl FADTTSterUserGuideURL( "https://github.com/jeantm/FADTTSter/blob/master/doc/UserGuide/UserGuide.txt" );
     QDesktopServices::openUrl( FADTTSterUserGuideURL );
 }
 
@@ -223,7 +223,7 @@ void FADTTSWindow::OnDisplayAbout()
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Contributor(s):</b> " + QString( FADTTS_CONTRIBUTORS ) + "<br>"
             "<b>License:</b> Apache 2.0<br>" +
-            "<b>Documentation</b> <a href=""https://github.com/jeantm/FADTTSter/Documentation"">click here</a><br>" +
+            "<b>Documentation</b> <a href=""https://github.com/jeantm/FADTTSter/tree/master/doc"">click here</a><br>" +
             "<b>Github</b> <a href=""https://github.com/jeantm/FADTTSter"">click here</a><br>";
     QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( aboutFADTTS ) ), QMessageBox::Ok );
 }
@@ -635,6 +635,7 @@ void FADTTSWindow::InitExecutionTab()
 
     m_matlabThread = new MatlabThread();
     connect( m_matlabThread, SIGNAL( finished() ), this, SLOT( OnMatlabThreadFinished() ) );
+    connect( m_matlabThread, SIGNAL( WrongMatlabVersion() ), this, SLOT( OnUsingWrongMatlabVersion() ) );
 
     connect( executionTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( OnRun() ) );
     connect( executionTab_stop_pushButton, SIGNAL( clicked() ), this, SLOT( OnStop() ) );
@@ -1889,6 +1890,8 @@ void FADTTSWindow::OnSettingMatlabExe( const QString& executable )
 
 void FADTTSWindow::OnRunMatlabToggled( bool isChecked )
 {
+
+
     executionTab_matlabExe_pushButton->setEnabled( isChecked );
     soft_executionTab_matlabExe_lineEdit->setEnabled( isChecked );
     executionTab_iconMatlabExe_label->setEnabled( isChecked );
@@ -1960,6 +1963,15 @@ void FADTTSWindow::OnMatlabThreadFinished()
     executionTab_stop_pushButton->setEnabled( false );
     m_log->CloseLogFile();
     m_progressBar->hide();
+}
+
+void FADTTSWindow::OnUsingWrongMatlabVersion()
+{
+    QString warningMessage;
+
+    warningMessage = "Maltab script will not be run.<br>"
+            "Due to compatibility issue, <b>Matlab R2013b or more recent version is required<\b>.<br>";
+    WarningPopUp( warningMessage );
 }
 
 
