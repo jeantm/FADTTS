@@ -7,13 +7,9 @@ FADTTS is Matlab (MathWorks Inc, MA, USA) based and to use this software, coding
 FADTTSter was created to overcome this issue and make the statistical analysis accessible to any non-technical researcher.
 FADTTSter is a command line based module as well as an GUI based tool.
 It is part of [DTI Fiber Tract Statistics], a software which allows the user to study the behavior of water diffusion along the length of white matter fiber-tracts.
-
 Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.
 
-> For complete information on how to how FADTTSter please refere to the [User Guide].
-
 This tool can be divided in two main parts, each one working independently.
-
 
 ### Matlab script generation
 The .m script, as well as its inputs, is automatically generated based on the information provided (diffusion profiles, subjects, qc threshold, nbr of permutations, p-value threshold, ...).
@@ -40,6 +36,9 @@ Used for the visualization of the data obtained after running the .m script, the
 * Change line colors
 * Change covariates name
 * ...
+
+
+> For complete information on how to how FADTTSter please refere to the [User Guide].
 
 
 # Build instructions
