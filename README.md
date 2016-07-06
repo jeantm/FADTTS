@@ -38,7 +38,7 @@ Used for the visualization of the data obtained after running the .m script, the
 * ...
 
 
-> For complete information on how to how FADTTSter please refere to the [User Guide].
+> For complete information on how to use FADTTSter please refer to the [User Guide].
 
 
 # Build instructions
