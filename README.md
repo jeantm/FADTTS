@@ -1,6 +1,6 @@
-<p align="center"><img src="doc/Logo/logoFADTTSter_small.jpg" alt="LogoFADTTSer_small"/></p>
-
 # What is FADTTSter
+
+<p align="center"><img src="doc/Logo/logoFADTTSter_small.jpg" alt="LogoFADTTSer_small"/></p>
 
 FADTTSter is a user-friendly version of FADTTS directed to users without advanced coding skills.
 FADTTS is Matlab (MathWorks Inc, MA, USA) based and to use this software, coding knowledge is necessary to operate it.
@@ -42,7 +42,7 @@ Used for the visualization of the data obtained after running the .m script, the
 > For complete information on how to how FADTTSter please refere to the [User Guide].
 
 
-### Build instructions
+# Build instructions
 
 * Get files from Github
 ```sh
@@ -67,13 +67,13 @@ $  [path-to-where-FADTTSter-is-built]/bin
 ```
 
 
-### Version
+# Version
 3.3.1
 
-### License
+# License
 Apache 2.0
 
-### More
+# More
 The tool can also be found on NITRC
 
 [//]: #
