@@ -6,7 +6,6 @@ FADTTSter is a user-friendly version of FADTTS directed to users without advance
 FADTTS is Matlab (MathWorks Inc, MA, USA) based and to use this software, coding knowledge is necessary to operate it.
 FADTTSter was created to overcome this issue and make the statistical analysis accessible to any non-technical researcher.
 FADTTSter is a command line based module as well as an GUI based tool.
-It is part of [DTI Fiber Tract Statistics], a software which allows the user to study the behavior of water diffusion along the length of white matter fiber-tracts.
 Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.
 
 This tool can be divided in two main parts, each one working independently.
@@ -43,27 +42,37 @@ Used for the visualization of the data obtained after running the .m script, the
 
 # Build instructions
 
+### Requirements
+* Qt5
+* SlicerExecutionModel
+* VTK
+
+
+### Build
 * Get files from Github
 ```sh
-$ git clone [git@github.com:NIRALUser/FADTTSter.git] [path-to-where-install-FADTTSter]
+$ git clone git@github.com:NIRALUser/FADTTSter.git
 ```
 
 * Make an out-of-source build directory
 ```sh
-$ mkdir [path-to-where-build-FADTTSter]/FADTTSter-build
-$ cd [path-to-where-build-FADTTSter]/FADTTSter-build
+$ mkdir ./FADTTSter-build
+$ cd FADTTSter-build
 ```
 
 * Configure the build
 ```sh
-$ ccmake [path-to-where-FADTTSter-is-installed]/src
+$ ccmake ../FADTTSter/src
 $ make
 ```
 
 * Get the executable
 ```sh
-$  [path-to-where-FADTTSter-is-built]/bin
+$ ./bin/FADTTSter
 ```
+
+> To intall FADTTSter and all its dependencies with a superBuild refer to [DTI Fiber Tract Statistics].
+
 
 
 # Version
