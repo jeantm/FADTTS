@@ -6,7 +6,6 @@ FADTTSter is a user-friendly version of FADTTS directed to users without advance
 FADTTS is Matlab (MathWorks Inc, MA, USA) based and to use this software, coding knowledge is necessary to operate it.
 FADTTSter was created to overcome this issue and make the statistical analysis accessible to any non-technical researcher.
 FADTTSter is a command line based module as well as an GUI based tool.
-
 Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.
 
 This tool can be divided in two main parts, each one working independently.
@@ -19,7 +18,6 @@ The .m script, as well as its inputs, is automatically generated based on the in
     - Covariate file
     - Subject list (optional)
     - FADTTS matlab toolbox
-
 
 * Important Outputs
     - .m script
@@ -71,7 +69,8 @@ $ make
 $ ./bin/FADTTSter
 ```
 
-> To intall FADTTSter and all its dependencies with a superBuild refer to [DTI Fiber Tract Statistics].
+### SuperBuild
+To intall FADTTSter and all its dependencies with a superBuild refer to [DTI Fiber Tract Statistics].
 
 
 
