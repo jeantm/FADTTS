@@ -38,7 +38,7 @@ Used for the visualization of the data obtained after running the .m script, the
 * ...
 
 
-> Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.
+> Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.<br>
 > For complete information on how to how FADTTSter please refere to the [User Guide].
 
 
@@ -74,10 +74,11 @@ $  [path-to-where-FADTTSter-is-built]/bin
 Apache 2.0
 
 # More
-The tool can also be found on NITRC
+The tool can also be found on [NITRC]
 
 [//]: #
 
    [DTI Fiber Tract Statistics]: <https://github.com/NIRALUser/DTIFiberTractStatistics>
    [User Guide]: <https://github.com/jeantm/FADTTSter/blob/master/doc/UserGuide/UserGuide.txt>
+   [NITRC]: <http://www.nitrc.org>
 
