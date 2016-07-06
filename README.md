@@ -1,4 +1,4 @@
-#->![Logo_small](doc/Logo/logoFADTTSter_small.jpg "Logo FADTTSter small")<-
+#<p align="center"><img src="doc/Logo/logoFADTTSter_small.jpg" alt="LogoFADTTSer_small"/></p>
 
 
 Functional Analysis of Diffusion Tensor Tract Statistics (FADTTS) is used in the Diffusion Tensor Imaging (DTI) fiber tract analysis [NAMIC framework] implemented by UNC/Utah.
@@ -32,7 +32,7 @@ Used for the visualization of the data obtained after running the .m script, the
 * ...
 
 
-Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.
+> Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.
 > For complete information on how to how FADTTSter please refere to the [User Guide].
 
 
