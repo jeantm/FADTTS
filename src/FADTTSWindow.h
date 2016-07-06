@@ -248,7 +248,7 @@ private:
     static const QColor m_yellow;
     static const QColor m_lightBlack;
 
-    static const QString m_csvSeparator;
+    static const QString m_csvSeparator, m_userGuide_url, m_documentation_url, m_github_url;
 
     static const int m_iconSize;
 
