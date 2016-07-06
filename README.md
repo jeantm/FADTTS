@@ -1,4 +1,4 @@
-# What is FADTTSter
+# What is FADTTSter?
 
 <p align="center"><img src="doc/Logo/logoFADTTSter_small.jpg" alt="LogoFADTTSer_small"/></p>
 
@@ -36,7 +36,7 @@ Used for the visualization of the data obtained after running the .m script, the
 * Change line colors
 * Change covariates name
 * ...
-
+<br>
 
 > Not only is FADTTSter practical but it enables any investigator to perform DTI analysis efficiently.<br>
 > For complete information on how to how FADTTSter please refere to the [User Guide].
