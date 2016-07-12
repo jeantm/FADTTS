@@ -2570,7 +2570,7 @@
                  <number>1</number>
                 </property>
                 <property name="minimum">
-                 <double>0.500000000000000</double>
+                 <double>10.000000000000000</double>
                 </property>
                 <property name="maximum">
                  <double>40.000000000000000</double>
@@ -2662,7 +2662,7 @@
                    <number>1</number>
                   </property>
                   <property name="minimum">
-                   <double>0.500000000000000</double>
+                   <double>10.000000000000000</double>
                   </property>
                   <property name="maximum">
                    <double>80.000000000000000</double>
@@ -2947,7 +2947,7 @@
                  <number>1</number>
                 </property>
                 <property name="minimum">
-                 <double>0.500000000000000</double>
+                 <double>10.000000000000000</double>
                 </property>
                 <property name="maximum">
                  <double>80.000000000000000</double>

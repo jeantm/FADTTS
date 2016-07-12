@@ -70,7 +70,7 @@ void EditInputDialog::OnDeleteRows()
     }
     m_rowDeleted = true;
 
-    if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+    if( m_diffusionPropertyIndex == m_data->GetFractionalAnisotropyIndex() )
     {
         UpdateNAN();
     }
@@ -100,7 +100,7 @@ void EditInputDialog::OnDeleteColumns()
     m_columnDeleted = true;
     m_subjectColumnIDSpinBox->setMaximum( m_dataTableWidget->columnCount() );
 
-    if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+    if( m_diffusionPropertyIndex == m_data->GetFractionalAnisotropyIndex() )
     {
         UpdateNAN();
     }
@@ -130,11 +130,12 @@ void EditInputDialog::OnRemoveDuplicates()
 
         indexSecondeOccurrences.clear();
 
-        if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+        if( m_diffusionPropertyIndex == m_data->GetFractionalAnisotropyIndex() )
         {
             UpdateNAN();
         }
 
+        m_ui->EditInputDialog_removeDuplicates_info_label->clear();
         m_ui->EditInputDialog_removeDuplicates_info_label->setEnabled( false );
         m_ui->EditInputDialog_removeDuplicates_pushButton->setEnabled( false );
         m_ui->EditInputDialog_removeDuplicates_label->setEnabled( false );
@@ -301,13 +302,12 @@ void EditInputDialog::LoadData()
         }
         nbrRows++; nbrColumns=0;
     }
-    if( m_diffusionPropertyIndex = m_data->GetFractionalAnisotropyIndex() )
+    if( m_diffusionPropertyIndex == m_data->GetFractionalAnisotropyIndex() )
     {
         UpdateNAN();
     }
 
     m_dataTableWidget->setUpdatesEnabled( true );
-
     if( m_diffusionPropertyIndex == m_data->GetSubMatrixIndex() )
     {
         m_ui->EditInputDialog_subjectColumn_label->setEnabled( true );
@@ -324,6 +324,7 @@ void EditInputDialog::GetDuplicates()
 {
     firstOccurrences.clear();
     indexSecondeOccurrences.clear();
+    m_ui->EditInputDialog_removeDuplicates_info_label->clear();
 
     bool isSubMatrix  = m_diffusionPropertyIndex == m_data->GetSubMatrixIndex() ? true : false;
     int nbrSubjects = isSubMatrix ? m_dataTableWidget->rowCount() : m_dataTableWidget->columnCount();

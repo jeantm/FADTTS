@@ -269,22 +269,13 @@ bool MatlabThread::TestVersion()
 
 void MatlabThread::RunScript()
 {
-    bool isVersionOK = TestVersion();
+    QStringList arguments;
+    QString mScript = "run('" + m_matlabScriptPath + "')";
 
-    if( isVersionOK )
-    {
-        QStringList arguments;
-        QString mScript = "run('" + m_matlabScriptPath + "')";
+    arguments << "-nosplash" << "-nodesktop" << "-noFigureWindows" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" ) << "-logfile matlabLog.out";
 
-        arguments << "-nosplash" << "-nodesktop" << "-noFigureWindows" << QString( "-r \"try, " + mScript + "; catch, disp('failed'), end, quit\"" ) << "-logfile matlabLog.out";
-
-        m_process->start( m_matlabExe, arguments );
-        m_process->waitForFinished( -1 );
-    }
-    else
-    {
-        emit WrongMatlabVersion();
-    }
+    m_process->start( m_matlabExe, arguments );
+    m_process->waitForFinished( -1 );
 }
 
 
@@ -296,6 +287,15 @@ void MatlabThread::run()
     if( m_runMatlab )
     {
         RedirectOutput();
-        RunScript();
+
+        bool isVersionOK = TestVersion();
+        if( isVersionOK )
+        {
+            RunScript();
+        }
+        else
+        {
+            emit WrongMatlabVersion();
+        }
     }
 }

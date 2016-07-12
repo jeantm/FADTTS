@@ -27,6 +27,8 @@ int RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI ); // Not Directly T
 
 private slots:
 
+void OnUsingWrongMatlabVersion(); /// Not Tested
+
 void OnMatlabThreadFinished(); /// Not Tested
 
 void OnKillFADTTSter(); /// Not Tested

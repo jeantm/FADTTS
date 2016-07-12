@@ -1539,7 +1539,7 @@ void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, co
         {
             if( index == -1 )
             {
-                sortedText.append( "loaded subjects" );
+                sortedText.append( "External List" );
             }
             else
             {
@@ -1970,9 +1970,7 @@ void FADTTSWindow::OnMatlabThreadFinished()
 
 void FADTTSWindow::OnUsingWrongMatlabVersion()
 {
-    QString warningMessage;
-
-    warningMessage = "Maltab script will not be run.<br>"
+    QString warningMessage = "Maltab script will not be run.<br>"
             "Due to compatibility issue, <b>Matlab R2013b or more recent version is required<\b>.<br>";
     WarningPopUp( warningMessage );
 }
