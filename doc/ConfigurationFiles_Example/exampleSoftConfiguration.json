@@ -2,8 +2,8 @@
     "softConfiguration": {
         "executionTab": {
             "matlabSpecifications": {
-                "runMatlab": false,
-                "matlabExe": ""
+                "runMatlab": true,
+                "matlabExe": "path/to/matlabExe"
             }
         }
     }

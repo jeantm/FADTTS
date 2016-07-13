@@ -12,6 +12,7 @@
 #include "Log.h"
 
 #include <QMainWindow>
+#include <QDesktopServices>
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
 #include <QScrollBar>
@@ -149,6 +150,8 @@ private slots:
 
     void OnMatlabThreadFinished(); /// Not tested
 
+    void OnUsingWrongMatlabVersion();
+
 
     /************** Plotting  Tab **************/
     void OnBrowsingPlotDir(); /// Not tested
@@ -245,7 +248,7 @@ private:
     static const QColor m_yellow;
     static const QColor m_lightBlack;
 
-    static const QString m_csvSeparator;
+    static const QString m_csvSeparator, m_userGuide_url, m_documentation_url, m_github_url;
 
     static const int m_iconSize;
 

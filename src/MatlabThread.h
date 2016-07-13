@@ -78,6 +78,10 @@ public:
     void terminate(); /// Not tested
 
 
+signals:
+    void WrongMatlabVersion();
+
+
 private:
     static const QString m_csvSeparator;
 
@@ -99,6 +103,8 @@ private:
 
     /*************** Thread ***************/
     void RedirectOutput(); /// Not tested
+
+    bool TestVersion();
 
     void RunScript(); /// Not tested
 

@@ -450,8 +450,6 @@ private:
     void SetQCThresholdAxisProperties(); /// Not tested*
 
 
-    double SetMinMax( double minMax );
-
     int LineAlreadySelected( vtkSmartPointer< vtkPlot > line ); /// Not tested*
 
     double* GetSelectedLineColor(); // Tested

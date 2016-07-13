@@ -22,7 +22,6 @@ disp('Setting inputs...')
 % Loading Folder
 [ loadingFolder, loadingName, loadingExt ] = fileparts( mfilename( 'fullpath' ) );
 
-
 if( ~exist( fullfile( loadingFolder, 'MatlabOutputs' ), 'dir' ) )
     mkdir( loadingFolder, '/MatlabOutputs' );
 end

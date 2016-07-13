@@ -10,6 +10,7 @@ FADTTS_noGUI::FADTTS_noGUI( QObject *parent ) :
     QObject( parent )
 {
     m_matlabThread = new MatlabThread();
+    connect( m_matlabThread, SIGNAL( WrongMatlabVersion() ), this, SLOT( OnUsingWrongMatlabVersion() ) );
     connect( m_matlabThread, SIGNAL( finished() ), this, SLOT( OnMatlabThreadFinished() ) );
 
     m_log = new Log();
@@ -67,6 +68,14 @@ int FADTTS_noGUI::RunFADTTSter_noGUI( const QJsonObject& jsonObject_noGUI )
 /****************************************************************/
 /**********************   Private slots   ***********************/
 /****************************************************************/
+void FADTTS_noGUI::OnUsingWrongMatlabVersion()
+{
+    QString warningMessage = "\nMaltab script will not be run.\n"
+            "Due to compatibility issue, Matlab R2013b or more recent version is required.\n";
+    m_log->AddText( tr( qPrintable( warningMessage ) ) );
+    std::cout << warningMessage.toStdString().c_str() << std::endl;
+}
+
 void FADTTS_noGUI::OnMatlabThreadFinished()
 {
     m_log->CloseLogFile();

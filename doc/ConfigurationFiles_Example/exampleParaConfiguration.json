@@ -1,0 +1,54 @@
+{
+  "paraConfiguration": {
+      "inputTab": {
+            "covariates": {
+                "Intercept": true,
+                "Covariate1": false,
+                "Covariate2": true,
+                "Covariate3": false,
+                "Covariate4": false,
+                "Covariate5": true
+            },
+            "inputFiles": {
+                "AD": "",
+                "RD": "",
+                "MD": "path/to/mdFile.csv",
+                "FA": "path/to/faFile.csv",
+                "SUBMATRIX": "path/to/subMatrixFile.csv",
+                "subjectColumnID": 0
+            }
+        },
+        "subjectTab": {
+            "filesUsed": {
+                "AD": true,
+                "FA": true,
+                "MD": false,
+                "RD": true,
+                "SUBMATRIX": true
+            },
+            "subjectListPath": "",
+            "qcThreshold": 0.77999999999999992,
+            "useAtlas": false,
+            "startProfile": "-40.0514",
+            "endProfile": "35.9486"
+        },
+        "executionTab": {
+            "matlabSpecifications": {
+                "fadttsDir": "path/to/fadttsDir"
+            },
+            "outputDir": "path/to/outputDir",
+            "settings": {
+                "fiberName": "fiberName",
+                "nbrPermutations": 1100,
+                "pvalueThreshold": 0.080000000000000002,
+                "confidenceBandThreshold": 0.040000000000000001,
+                "omnibus": true,
+                "posthoc": false
+            }
+        },
+        "plottingTab": {
+            "fiberName": "fiberName",
+            "plotdir": "path/to/directory"
+        }
+    }
+}

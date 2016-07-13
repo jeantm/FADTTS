@@ -13,6 +13,9 @@ const QColor FADTTSWindow::m_yellow = QColor( 255,255,0,127 );
 const QColor FADTTSWindow::m_lightBlack = QColor( 0,0,0,191 );
 
 const QString FADTTSWindow::m_csvSeparator = QLocale().groupSeparator();
+const QString FADTTSWindow::m_userGuide_url = "https://github.com/jeantm/FADTTSter/blob/master/doc/UserGuide/UserGuide.txt";
+const QString FADTTSWindow::m_documentation_url = "https://github.com/jeantm/FADTTSter/tree/master/doc";
+const QString FADTTSWindow::m_github_url = "https://github.com/jeantm/FADTTSter";
 
 const int FADTTSWindow::m_iconSize = 12;
 
@@ -94,8 +97,9 @@ void FADTTSWindow::LoadParaConfiguration( QString filename )
                     para_subjectTab_endArcLength_value_label->setText( endProfile );
                 }
             }
-        }
 
+            OnCroppedProfileUpdated();
+        }
 
         para_subjectTab_qcThresoldOnAtlas_radioButton->setChecked( subjectTab.value( "useAtlas" ).toBool() );
         para_subjectTab_qcThreshold_doubleSpinBox->setValue( subjectTab.value( "qcThreshold" ).toDouble( 0.85 ) );
@@ -211,22 +215,9 @@ void FADTTSWindow::OnSaveNoGUIConfiguration()
 
 void FADTTSWindow::OnDisplayUserGuide()
 {
-    QResource resource( ":/UserGuide/Resources/UserGuide/UserGuide.txt" );
-    QFile UserGuideFile( resource.absoluteFilePath() );
-    QString UserGuideText;
-    if( UserGuideFile.open( QIODevice::ReadOnly | QIODevice::Text ) )
-    {
-        UserGuideText = UserGuideFile.readAll();
-    }
-    else
-    {
-        UserGuideText = "No Description found";
-    }
-
-    QString messageBoxTitle = QString( FADTTS_TITLE ) + ": User Guide";
-    QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( UserGuideText ) ), QMessageBox::Ok );
+    QUrl FADTTSterUserGuideURL( m_userGuide_url );
+    QDesktopServices::openUrl( FADTTSterUserGuideURL );
 }
-
 
 void FADTTSWindow::OnDisplayAbout()
 {
@@ -234,7 +225,9 @@ void FADTTSWindow::OnDisplayAbout()
     QString aboutFADTTS;
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Contributor(s):</b> " + QString( FADTTS_CONTRIBUTORS ) + "<br>"
-            "<b>Web Site:</b> www.addWebSite.com";
+            "<b>License:</b> Apache 2.0<br>" +
+            "<b>Documentation</b> <a href=" + m_documentation_url + ">click here</a><br>" +
+            "<b>Github</b> <a href=" + m_github_url + ">click here</a><br>";
     QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( aboutFADTTS ) ), QMessageBox::Ok );
 }
 
@@ -645,6 +638,7 @@ void FADTTSWindow::InitExecutionTab()
 
     m_matlabThread = new MatlabThread();
     connect( m_matlabThread, SIGNAL( finished() ), this, SLOT( OnMatlabThreadFinished() ) );
+    connect( m_matlabThread, SIGNAL( WrongMatlabVersion() ), this, SLOT( OnUsingWrongMatlabVersion() ) );
 
     connect( executionTab_run_pushButton, SIGNAL( clicked() ), this, SLOT( OnRun() ) );
     connect( executionTab_stop_pushButton, SIGNAL( clicked() ), this, SLOT( OnStop() ) );
@@ -1545,7 +1539,7 @@ void FADTTSWindow::DisplaySortedSubjects( const QStringList& matchedSubjects, co
         {
             if( index == -1 )
             {
-                sortedText.append( "loaded subjects" );
+                sortedText.append( "External List" );
             }
             else
             {
@@ -1899,6 +1893,8 @@ void FADTTSWindow::OnSettingMatlabExe( const QString& executable )
 
 void FADTTSWindow::OnRunMatlabToggled( bool isChecked )
 {
+
+
     executionTab_matlabExe_pushButton->setEnabled( isChecked );
     soft_executionTab_matlabExe_lineEdit->setEnabled( isChecked );
     executionTab_iconMatlabExe_label->setEnabled( isChecked );
@@ -1970,6 +1966,13 @@ void FADTTSWindow::OnMatlabThreadFinished()
     executionTab_stop_pushButton->setEnabled( false );
     m_log->CloseLogFile();
     m_progressBar->hide();
+}
+
+void FADTTSWindow::OnUsingWrongMatlabVersion()
+{
+    QString warningMessage = "Maltab script will not be run.<br>"
+            "Due to compatibility issue, <b>Matlab R2013b or more recent version is required<\b>.<br>";
+    WarningPopUp( warningMessage );
 }
 
 

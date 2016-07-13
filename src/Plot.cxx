@@ -2687,10 +2687,12 @@ void Plot::GetyMinMax()
 
         if( ( m_plotSelected == "Raw Data" ||
               m_plotSelected == "Raw Stats" ||
-              m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+              m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" ||
+              m_plotSelected == "Omnibus Betas with Confidence Bands" )
                 || ( !( m_plotSelected == "Raw Data" ||
                         m_plotSelected == "Raw Stats" ||
-                        m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" )
+                        m_plotSelected == "Post-Hoc FDR Significant Betas on Average Raw Data" ||
+                        m_plotSelected == "Omnibus Betas with Confidence Bands" )
                      && m_selectionToDisplay.value( i ).second.first ) )
         {
             foreach( double data, rowData )
@@ -2717,14 +2719,10 @@ void Plot::SetAbscissaProperties( double xMin, double xMax )
     double deltaX = ( xMax - xMin ) / m_nbrPoints;
     xMin -= deltaX;
     xMax += deltaX;
+
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( xMin - deltaX );
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( xMax + deltaX );
-
-    //    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMinimumLimit( SetMinMax( xMin ) );
-    //    m_chart->GetAxis( vtkAxis::BOTTOM )->SetMaximumLimit( SetMinMax( xMax ) );
-
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetRange( xMin, xMax );
-
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetWidth( 0.25 );
     m_chart->GetAxis( vtkAxis::BOTTOM )->GetGridPen()->SetColor( 128, 128, 128, 255 );
     m_chart->GetAxis( vtkAxis::BOTTOM )->SetGridVisible( m_gridOn );
@@ -2735,15 +2733,11 @@ void Plot::SetOrdinateProperties( double yMin, double yMax )
     double deltaY = ( yMax - yMin ) / m_nbrPoints;
     yMin -= deltaY;
     yMax += deltaY;
+
     m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( yMin - deltaY );
     m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( yMax + deltaY );
-
-    //    m_chart->GetAxis( vtkAxis::LEFT )->SetMinimumLimit( SetMinMax( yMin ) );
-    //    m_chart->GetAxis( vtkAxis::LEFT )->SetMaximumLimit( SetMinMax( yMax ) );
-
     m_chart->GetAxis( vtkAxis::LEFT )->SetRange( yMin, yMax );
     m_chart->GetAxis( vtkAxis::LEFT )->SetNotation( m_abscissaNotation );
-
     m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetWidth( 0.25 );
     m_chart->GetAxis( vtkAxis::LEFT )->GetGridPen()->SetColor( 128, 128, 128, 255 );
     m_chart->GetAxis( vtkAxis::LEFT )->SetGridVisible( m_gridOn );
@@ -2772,24 +2766,6 @@ void Plot::SetQCThresholdAxisProperties()
     m_chart->SetForceAxesToBounds( true );
 }
 
-double Plot::SetMinMax( double minMax )
-{
-    bool isNegatif = minMax < 0;
-    int count = 0;
-    double fractpart;
-    double intpart;
-
-    fractpart = modf ( fabs( minMax ) , &intpart );
-
-    while( double( intpart / 10 ) <= 1.0 )
-    {
-        count++;
-        fractpart = modf( fabs( minMax )*pow( 10, count ) , &intpart );
-    }
-
-    double res = isNegatif? -round( fabs( minMax )*pow( 10, count ) + 1 ) / pow( 10, count ) : round( fabs( minMax )*pow( 10, count ) + 1 ) / pow( 10, count );
-    return res;
-}
 
 int Plot::LineAlreadySelected( vtkSmartPointer< vtkPlot > line )
 {

@@ -236,6 +236,37 @@ void MatlabThread::RedirectOutput()
     m_process->setStandardOutputFile( m_logFile->fileName(), QProcess::Append );
 }
 
+bool MatlabThread::TestVersion()
+{
+    QProcess *processTest;
+    processTest = new QProcess();
+    QStringList arguments;
+    QString getVersion = "['Release=R' version('-release')], quit";
+    QString version;
+    QString extension;
+    int v;
+
+    arguments << "-nosplash" << "-nodesktop" << QString( "-r \"try, " + getVersion + "; catch, disp('failed'), end, quit\"" );
+
+    processTest->start( m_matlabExe, arguments );
+    processTest->waitForFinished( -1 );
+
+    version = processTest->readAllStandardOutput();
+    version.chop( 2 );
+    extension = version.at( version.length() - 1 ).toLower();
+    version.indexOf( "Release=", 0 );
+    v = version.mid( version.lastIndexOf( "R" ) + 1, 4 ).toInt();
+
+    if( v > 2013 || ( v == 2013 && extension == "b" ) )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void MatlabThread::RunScript()
 {
     QStringList arguments;
@@ -256,6 +287,15 @@ void MatlabThread::run()
     if( m_runMatlab )
     {
         RedirectOutput();
-        RunScript();
+
+        bool isVersionOK = TestVersion();
+        if( isVersionOK )
+        {
+            RunScript();
+        }
+        else
+        {
+            emit WrongMatlabVersion();
+        }
     }
 }
