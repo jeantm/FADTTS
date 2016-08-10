@@ -25,6 +25,12 @@ set(QT_LIBRARIES ${Qt5Widgets_LIBRARIES})
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
+string(FIND "${VTK_MODULES_ENABLED}" "GL2PS" index)
+
+if( NOT ${index} EQUAL -1)
+  add_definitions("-DGL2PSENABLED")
+endif()
+
 # find SlicerExecutionModel headers
 find_package(SlicerExecutionModel REQUIRED)
 include(${SlicerExecutionModel_USE_FILE})

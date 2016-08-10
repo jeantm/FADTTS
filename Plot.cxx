@@ -2231,6 +2231,7 @@ void Plot::SetObservers()
 
 void Plot::SavePlot( QString filePath )
 {
+#ifdef GL2PSENABLED
     vtkSmartPointer< vtkGL2PSExporter > writer = vtkSmartPointer< vtkGL2PSExporter >::New();
     writer->SetRenderWindow( m_view->GetRenderWindow() );
     writer->SetFilePrefix( filePath.split( "." ).first().toStdString().c_str() );
@@ -2240,6 +2241,9 @@ void Plot::SavePlot( QString filePath )
     writer->CompressOff();
     writer->LandscapeOff();
     writer->Write();
+#else
+    cout<<"The module vtkGL2PSExporter is not enable. You will need to use screen captures."<<endl;
+#endif
 }
 
 
