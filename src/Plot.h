@@ -20,7 +20,9 @@
 #include <vtkPlotPoints.h>
 #include <vtkAxis.h>
 #include <vtkChartLegend.h>
-#include <vtkGL2PSExporter.h>
+#ifdef GL2PSENABLED
+    #include <vtkGL2PSExporter.h>
+#endif
 #include <vtkTextProperty.h>
 #include <vtkBrush.h>
 #include <vtkPen.h>
