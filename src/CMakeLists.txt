@@ -98,17 +98,27 @@ string(REPLACE "<contributor>" "" contributors ${ext})
 string(REPLACE "</contributor>" "" contributors ${contributors})
 add_definitions(-DFADTTS_CONTRIBUTORS="${contributors}")
 
+configure_file(CMake/FADTTSConfig.cmake.in
+  "${PROJECT_BINARY_DIR}/FADTTSConfig.cmake" @ONLY)
+
+if(WIN32 AND NOT CYGWIN)
+  set(INSTALL_CMAKE_DIR cmake)
+else()
+  set(INSTALL_CMAKE_DIR lib/cmake/FADTTS-${version})
+endif()
+
+install(FILES
+  "${PROJECT_BINARY_DIR}/FADTTSConfig.cmake"  
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+
+file(GLOB FADTTS_HEADERS "*.h")
+install(FILES ${FADTTS_HEADERS} 
+  DESTINATION include)
+
 # Tests
 if(BUILD_TESTING)
   include(CTest)
   include(ExternalData)
   add_SUBDIRECTORY(Testing)
 endif()
-
-if(WIN32 AND NOT CYGWIN)
-  set(DEF_INSTALL_CMAKE_DIR CMake)
-else()
-  set(DEF_INSTALL_CMAKE_DIR lib/CMake/FADTTS)
-endif()
-set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
-  "Installation directory for CMake files")
