@@ -104,7 +104,7 @@ configure_file(CMake/FADTTSConfig.cmake.in
 if(WIN32 AND NOT CYGWIN)
   set(INSTALL_CMAKE_DIR cmake)
 else()
-  set(INSTALL_CMAKE_DIR lib/cmake/FADTTS-${version})
+  set(INSTALL_CMAKE_DIR lib/cmake/FADTTS)
 endif()
 
 install(FILES
