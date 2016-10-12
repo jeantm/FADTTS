@@ -570,16 +570,49 @@
 	\newpage
 	
 	\paragraph{Generated files}
-	Every time FADTTSter is launched, you generate the following files:
+	Every time FADTTSter is launched, a folder is created in the output directory provided. Its name is FADTTSter\_\textit{fibername}. All FADTTSter files are generated in this folder. After running FADTTSter, the following files are created:
 	\begin{itemize}
-		\item[--] file1
-		\item[--] file2
-		\item[--] etc.
-	\end{itemize}	
-	However, if you have decided to run the script once it has been generated, you have the following files in addition:
+		\item[--] FADTTSterAnalysis\_textit{fibername}\_\textit{nbrPermutations}perm.m\\
+		Matlab script for the FADTTS computation.
+		\item[--] myFDR.m\\
+		Matlab function used in the Matlab script.
+		\item[--] \textit{fibername}\_RawData\_\textit{property}.csv\\
+		One for each property used for the study (\textit{AD}, \textit{RD}, \textit{MD}, \textit{FA}).\\
+		Updated and cleaned version of the input property.
+		\item[--] textit{fibername}\_RawData\_SUBMATRIX.csv\\
+		Updated and cleaned version of the input property.
+		\item[--] \textit{fibername}\_subjectList.txt\\
+		List of all the subjects kept for the study.
+		\item[--] \textit{fibername}\_subjectList\_NAN.txt\\
+		List of all the subjects removed for the study because they contained at least one \textit{nan} value.
+		\item[--] \textit{fibername}\_subjectList\_FAILED\_QCThreshold.txt\\
+		List of all the subjects removed for the study because they failed the QC threshold.
+		\item[--] configuration\_noGUI\_\textit{fibername}.json\\
+		noGUI configuration file.
+		\item[--] configuration\_softI\_\textit{fibername}.json\\
+		Soft configuration file.
+		\item[--] configuration\_para\_\textit{fibername}.json\\
+		Parameters configuration file.
+		\item[--] \textit{fibername}.log\\
+		Log file containing all the information concerning the study.
+	\end{itemize}
+	\vfill
+	\newpage
+	
+	In addition, if you have decided to run the script once it has been generated, a folder named MatlabOutputs is created. And, in this folder, you have the following files:
 	\begin{itemize}
-		\item[--] file1
-		\item[--] file2
-		\item[--] etc.
+		\item[--] \textit{fibername}\_Betas\_\textit{property}.csv\\
+		One for each property used for the study (\textit{AD}, \textit{RD}, \textit{MD}, \textit{FA}).
+		\item[--] \textit{fibername}\_Omnibus\_Local\_pvalues.csv
+		\item[--] \textit{fibername}\_Omnibus\_Global\_pvalues.csv
+		\item[--] \textit{fibername}\_Omnibus\_FDR\_Local\_pvalues.csv
+		\item[--] \textit{fibername}\_Omnibus\_ConfidenceBands\_\textit{property}.csv\\
+		One for each property used for the study (\textit{AD}, \textit{RD}, \textit{MD}, \textit{FA}).
+		\item[--] \textit{fibername}\_PostHoc\_Local\_pvalues\_\textit{property}.csv\\
+		One for each property used for the study (\textit{AD}, \textit{RD}, \textit{MD}, \textit{FA}).
+		\item[--] \textit{fibername}\_PostHoc\_Global\_pvalues.csv
+		\item[--] \textit{fibername}\_PostHoc\_FDR\_Local\_pvalues\_\textit{property}.csv\\
+		One for each property used for the study (\textit{AD}, \textit{RD}, \textit{MD}, \textit{FA}).
+		\item[--] All Matlab figures
 	\end{itemize}
 \end{document}
