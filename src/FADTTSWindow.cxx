@@ -13,8 +13,7 @@ const QColor FADTTSWindow::m_yellow = QColor( 255,255,0,127 );
 const QColor FADTTSWindow::m_lightBlack = QColor( 0,0,0,191 );
 
 const QString FADTTSWindow::m_csvSeparator = QLocale().groupSeparator();
-const QString FADTTSWindow::m_userGuide_url = "https://github.com/jeantm/FADTTSter/blob/master/doc/UserGuide/UserGuide.txt";
-const QString FADTTSWindow::m_documentation_url = "https://github.com/jeantm/FADTTSter/tree/master/doc";
+const QString FADTTSWindow::m_userGuide_url = "https://github.com/jeantm/FADTTSter/blob/master/doc/UserGuide/fadttsterUserGuide_master.pdf";
 const QString FADTTSWindow::m_github_url = "https://github.com/jeantm/FADTTSter";
 
 const int FADTTSWindow::m_iconSize = 12;
@@ -226,7 +225,6 @@ void FADTTSWindow::OnDisplayAbout()
     aboutFADTTS = "<b>Version:</b> " + QString( FADTTS_VERSION ) + "<br>"
             "<b>Contributor(s):</b> " + QString( FADTTS_CONTRIBUTORS ) + "<br>"
             "<b>License:</b> Apache 2.0<br>" +
-            "<b>Documentation</b> <a href=" + m_documentation_url + ">click here</a><br>" +
             "<b>Github</b> <a href=" + m_github_url + ">click here</a><br>";
     QMessageBox::information( this, tr( qPrintable( messageBoxTitle ) ), tr( qPrintable( aboutFADTTS ) ), QMessageBox::Ok );
 }
