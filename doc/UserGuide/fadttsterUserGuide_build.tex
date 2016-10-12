@@ -1,0 +1,40 @@
+\documentclass[fadttsterUserGuide_master]{subfiles}
+
+\newpage
+\begin{document}
+	\part{Build instructions}
+	
+	\section{Requirements}
+	\begin{itemize}
+		\item Qt5
+		\item SlicerExecutionModel
+		\item VTK
+	\end{itemize}		
+	
+	\section{Build}
+	\begin{enumerate}
+		\item Get files from Github:
+		\begin{lstlisting}[language=bash]
+$ git clone git@github.com:NIRALUser/FADTTSter.git
+		\end{lstlisting}
+		\item Make an out-of-source build directory:
+		\begin{lstlisting}[language=bash]
+$ mkdir ./FADTTSter-build
+$ cd FADTTSter-build
+		\end{lstlisting}
+		\item Configure the build:
+		\begin{lstlisting}[language=bash]
+$ ccmake ../FADTTSter/src
+$ make
+		\end{lstlisting}
+		\item Get the executable:
+		\begin{lstlisting}[language=bash]
+$ ./bin/FADTTSter
+		\end{lstlisting}
+	\end{enumerate}
+	
+	\section{SuperBuild}
+	To install FADTTSter and all its dependencies with a superBuild, refer to \href{https://www.nitrc.org/projects/namicdtifiber/}{\textit{UNC/Utah NAMIC DTI Fiber Analysis Framework}}.
+	\vfill
+\end{document}
+
