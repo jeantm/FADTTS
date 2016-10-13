@@ -27,7 +27,7 @@
                 "SUBMATRIX": true
             },
             "subjectListPath": "",
-            "qcThreshold": 0.77999999999999992,
+            "qcThreshold": 0.79,
             "useAtlas": false,
             "startProfile": "-40.0514",
             "endProfile": "35.9486"
@@ -40,8 +40,8 @@
             "settings": {
                 "fiberName": "fiberName",
                 "nbrPermutations": 1100,
-                "pvalueThreshold": 0.080000000000000002,
-                "confidenceBandThreshold": 0.040000000000000001,
+                "pvalueThreshold": 0.08,
+                "confidenceBandThreshold": 0.04,
                 "omnibus": true,
                 "posthoc": false
             }
