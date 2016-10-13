@@ -86,6 +86,6 @@ The tool can also be found on [NITRC]
 [//]: #
 
    [DTI Fiber Tract Statistics]: <https://github.com/NIRALUser/DTIFiberTractStatistics>
-   [User Guide]: <https://github.com/NIRALUser/FADTTSter/blob/master/doc/UserGuide/UserGuide.txt>
+   [User Guide]: <https://github.com/NIRALUser/FADTTSter/blob/master/doc/UserGuide/fadttsterUserGuide_master.pdf>
    [NITRC]: <http://www.nitrc.org>
 
