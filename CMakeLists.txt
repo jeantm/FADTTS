@@ -34,7 +34,6 @@ endif()
 find_package(SlicerExecutionModel REQUIRED)
 include(${SlicerExecutionModel_USE_FILE})
 
-add_subdirectory(src)
 
 # Generate a bundle
 if(CREATE_BUNDLE)
@@ -123,10 +122,46 @@ if(CREATE_BUNDLE)
    "
     COMPONENT Runtime)
  
-# To Create a package, one can run "cpack -G DragNDrop CPackConfig.cmake" on Mac OS X
-# where CPackConfig.cmake is created by including CPack
-# And then there's ways to customize this as well
-set(CPACK_BINARY_DRAGNDROP ON)
-include(CPack)
+  # To Create a package, one can run "cpack -G DragNDrop CPackConfig.cmake" on Mac OS X
+  # where CPackConfig.cmake is created by including CPack
+  # And then there's ways to customize this as well
+  set(CPACK_BINARY_DRAGNDROP ON)
 
 endif()
+
+
+if(UNIX)
+
+
+   # when building, don't use the install RPATH already
+   # (but later on when installing)
+   SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+   # the RPATH to be used when installing
+   SET(CMAKE_INSTALL_RPATH "../lib")
+    
+    get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
+    get_target_property(QtOpenGL_location Qt5::OpenGL LOCATION)
+    
+    get_target_property(QtWidgets_SOFT Qt5::Widgets IMPORTED_SONAME_RELEASE)
+    get_target_property(QtOpenGL_SOFT Qt5::OpenGL IMPORTED_SONAME_RELEASE)
+
+    get_target_property(Qt5_location Qt5::Widgets LOCATION)  
+    string(FIND ${Qt5_location} "libQt5Widgets" length)
+    string(SUBSTRING ${Qt5_location} 0 ${length} Qt5_location)
+    
+    install(FILES ${QtWidgets_location} ${QtOpenGL_location} ${Qt5_location}/${QtWidgets_SOFT} ${Qt5_location}/${QtOpenGL_SOFT}
+        DESTINATION lib
+        COMPONENT Runtime)
+
+  endif()
+
+  # To Create a package, one can run "cpack -G DragNDrop CPackConfig.cmake" on Mac OS X
+  # where CPackConfig.cmake is created by including CPack
+  # And then there's ways to customize this as well  
+  include(InstallRequiredSystemLibraries)
+  include(CPack)  
+
+
+
+
+add_subdirectory(src)
