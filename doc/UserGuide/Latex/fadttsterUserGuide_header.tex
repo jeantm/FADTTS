@@ -1,0 +1,47 @@
+%>>> use for US letter paper WARNING hypertext option unabled when draft == true
+\documentclass{article}
+%>>> use this instead for A4 paper
+%\documentclass[a4paper,draft]{article} 
+
+%>>> add packages
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{subfiles}
+\usepackage{chngcntr}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[export]{adjustbox}[2011/08/13]
+\usepackage{amsmath}
+\usepackage[round]{natbib}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{textcomp}
+\usepackage{rotating}
+\usepackage{pdflscape}
+
+%>>> reset counter at each part
+\counterwithin{section}{part}
+
+%>>> redefine how sectionning is displayed
+\renewcommand\thesection{\Alph{section}}
+\renewcommand\thesubsection{\arabic{subsection}\_}
+\renewcommand\thesubsubsection{\alph{subsubsection})}
+\renewcommand\theparagraph{\roman{paragraph}.}
+
+\titleformat{\paragraph} [hang] {\normalfont\normalsize\bfseries} {\theparagraph} {1em} {}
+\titleformat{\subparagraph} [runin] {\normalfont\normalsize\bfseries} {\thesubparagraph} {1em} {}
+
+%>>> show all sections in table of contents
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}	
+
+%>>> set path to figures
+\graphicspath{{/Users/jeannoel/Desktop/FADTTSter/UserGuide/Figures/}}
+
+%>>> set how bibliography is displayed
+\bibliographystyle{unsrtnat}

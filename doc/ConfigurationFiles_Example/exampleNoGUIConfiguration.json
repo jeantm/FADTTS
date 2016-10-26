@@ -56,7 +56,7 @@
         "subjects": {
             "qcThreshold": {
                 "apply": false,
-                "value": 0.77999999999999992,
+                "value": 0.79,
                 "useAtlas": false
             },
             "subjectListPath": ""
@@ -64,8 +64,8 @@
         "settings": {
             "fiberName": "fiberName",
             "nbrPermutations": 1100,
-            "pvalueThreshold": 0.080000000000000002,
-            "confidenceBandThreshold": 0.040000000000000001,
+            "pvalueThreshold": 0.08,
+            "confidenceBandThreshold": 0.04,
             "omnibus": true,
             "posthoc": false
 
