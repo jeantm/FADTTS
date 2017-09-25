@@ -13,7 +13,7 @@ ${CMAKE_MODULE_PATH}
 )
 
 # find Qt5 headers
-find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
+find_package(Qt5 COMPONENTS Widgets OpenGL X11Extras REQUIRED)
 
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
