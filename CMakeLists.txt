@@ -101,6 +101,7 @@ if(CREATE_BUNDLE)
       message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
     endif()
   endmacro()
+  
   install_qt5_plugin("Qt5::QCocoaIntegrationPlugin" QT_PLUGINS)
 
   #--------------------------------------------------------------------------------

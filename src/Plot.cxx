@@ -1,5 +1,6 @@
 #include "Plot.h"
 
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <QVTKOpenGLWidget.h>
 
 //#include <QDebug>
@@ -35,11 +36,15 @@ Plot::Plot( QObject *parent ) :
 void Plot::SetQVTKWidget( QSharedPointer< QVTKOpenGLWidget > qvtkWidget, bool isQCThreshold )
 {
     m_qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( qvtkWidget );
-    m_view = vtkSmartPointer< vtkContextView >::New();
-    m_chart = vtkSmartPointer< vtkChartXY >::New();
+    
+    m_view = vtkSmartPointer<vtkContextView>::New();
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow>  renWin = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    m_chart = vtkSmartPointer<vtkChartXY>::New();
 
-    m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
-    m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
+    m_qvtkWidget->SetRenderWindow( renWin );
+
+    m_view->SetRenderWindow(renWin);
+    m_view->SetInteractor( renWin->GetInteractor() );
 
     if( !isQCThreshold )
     {
