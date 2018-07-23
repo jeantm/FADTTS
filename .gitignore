@@ -32,3 +32,12 @@ Makefile*
 
 # Tempory Files
 *~
+CMakeLists.txt.user
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.out
+*.ps
+Resources/article/images/temp/

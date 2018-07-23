@@ -1,6 +1,6 @@
 #include "Plot.h"
 
-#include <QVTKWidget.h>
+#include <QVTKOpenGLWidget.h>
 
 //#include <QDebug>
 
@@ -32,9 +32,9 @@ Plot::Plot( QObject *parent ) :
 }
 
 
-void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget, bool isQCThreshold )
+void Plot::SetQVTKWidget( QSharedPointer< QVTKOpenGLWidget > qvtkWidget, bool isQCThreshold )
 {
-    m_qvtkWidget = QSharedPointer< QVTKWidget >( qvtkWidget );
+    m_qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( qvtkWidget );
     m_view = vtkSmartPointer< vtkContextView >::New();
     m_chart = vtkSmartPointer< vtkChartXY >::New();
 

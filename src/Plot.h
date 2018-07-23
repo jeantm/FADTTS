@@ -8,7 +8,7 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 
-#include <QVTKWidget.h>
+#include <QVTKOpenGLWidget.h>
 
 #include <vtkVersion.h>
 #include <vtkContextView.h>
@@ -50,7 +50,7 @@ public:
     explicit Plot( QObject *parent = 0 );
 
 
-    void SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget, bool isQCThreshold ); // Tested
+    void SetQVTKWidget( QSharedPointer< QVTKOpenGLWidget > qvtkWidget, bool isQCThreshold ); // Tested
 
     bool InitPlot( QString directory, QString fibername, double pvalueThreshold ); // Not Directly Tested
 
@@ -175,7 +175,7 @@ private:
     /**** INITIALIZATION ****/
     /************************/
     Processing m_processing;
-    QSharedPointer< QVTKWidget > m_qvtkWidget;
+    QSharedPointer< QVTKOpenGLWidget > m_qvtkWidget;
     vtkSmartPointer< vtkContextView > m_view;
     vtkSmartPointer< vtkChartXY > m_chart;
     QMap< int, vtkSmartPointer< vtkPlot > > m_line;

@@ -659,7 +659,7 @@ void FADTTSWindow::InitExecutionTab()
 
 void FADTTSWindow::InitPlottingTab()
 {
-    m_qvtkWidget = QSharedPointer< QVTKWidget >( plottingTab_plot_qvtkWidget );
+    m_qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( plottingTab_plot_qvtkWidget );
 
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget, false );

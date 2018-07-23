@@ -175,7 +175,7 @@ void QCThresholdDialog::closeEvent( QCloseEvent *event )
 /***************************************************************/
 void QCThresholdDialog::InitQCThresholdDialog()
 {
-    m_qvtkWidget = QSharedPointer< QVTKWidget >( ui->QCThresholdDialog_plot_qvtkWidget );
+    m_qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( ui->QCThresholdDialog_plot_qvtkWidget );
 
     m_qcThresholdPlot = new Plot();
     m_qcThresholdPlot->SetQVTKWidget( m_qvtkWidget, true );
