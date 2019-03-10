@@ -94,6 +94,11 @@ int main( int argc, char *argv[] )
     }
     else
     {
+
+        auto format = QVTKOpenGLWidget::defaultFormat();
+        format.setSamples(0);
+        QSurfaceFormat::setDefaultFormat(format);
+
         QApplication app( argc , argv );
 
         FADTTSWindow fadttsWindow;

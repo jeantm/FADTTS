@@ -430,7 +430,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QVTKWidget" name="QCThresholdDialog_plot_qvtkWidget" native="true">
+    <widget class="QVTKOpenGLWidget" name="QCThresholdDialog_plot_qvtkWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -618,9 +618,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
+   <class>QVTKOpenGLWidget</class>
    <extends>QWidget</extends>
-   <header location="global">QVTKWidget.h</header>
+   <header location="global">QVTKOpenGLWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,6 +1,7 @@
 #include "Plot.h"
 
-#include <QVTKWidget.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <QVTKOpenGLWidget.h>
 
 //#include <QDebug>
 
@@ -32,14 +33,18 @@ Plot::Plot( QObject *parent ) :
 }
 
 
-void Plot::SetQVTKWidget( QSharedPointer< QVTKWidget > qvtkWidget, bool isQCThreshold )
+void Plot::SetQVTKWidget( QSharedPointer< QVTKOpenGLWidget > qvtkWidget, bool isQCThreshold )
 {
-    m_qvtkWidget = QSharedPointer< QVTKWidget >( qvtkWidget );
-    m_view = vtkSmartPointer< vtkContextView >::New();
-    m_chart = vtkSmartPointer< vtkChartXY >::New();
+    m_qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( qvtkWidget );
+    
+    m_view = vtkSmartPointer<vtkContextView>::New();
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow>  renWin = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    m_chart = vtkSmartPointer<vtkChartXY>::New();
 
-    m_view->SetInteractor( m_qvtkWidget->GetInteractor() );
-    m_qvtkWidget->SetRenderWindow( m_view->GetRenderWindow() );
+    m_qvtkWidget->SetRenderWindow( renWin );
+
+    m_view->SetRenderWindow(renWin);
+    m_view->SetInteractor( renWin->GetInteractor() );
 
     if( !isQCThreshold )
     {
@@ -2821,6 +2826,7 @@ void Plot::SetObservers()
 
 void Plot::SavePlot( QString filePath )
 {
+#ifdef GL2PSENABLED
     vtkSmartPointer< vtkGL2PSExporter > writer = vtkSmartPointer< vtkGL2PSExporter >::New();
     writer->SetRenderWindow( m_view->GetRenderWindow() );
     writer->SetFilePrefix( filePath.split( "." ).first().toStdString().c_str() );
@@ -2829,6 +2835,9 @@ void Plot::SavePlot( QString filePath )
     writer->SetLineWidthFactor( 1.0 );
     writer->CompressOff();
     writer->Write();
+#else
+    cout<<"The module vtkGL2PSExporter is not enable. You will need to use screen captures."<<endl;
+#endif
 }
 
 

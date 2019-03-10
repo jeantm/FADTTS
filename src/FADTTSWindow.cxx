@@ -13,8 +13,8 @@ const QColor FADTTSWindow::m_yellow = QColor( 255,255,0,127 );
 const QColor FADTTSWindow::m_lightBlack = QColor( 0,0,0,191 );
 
 const QString FADTTSWindow::m_csvSeparator = QLocale().groupSeparator();
-const QString FADTTSWindow::m_userGuide_url = "https://github.com/jeantm/FADTTSter/blob/master/doc/UserGuide/fadttsterUserGuide_master.pdf";
-const QString FADTTSWindow::m_github_url = "https://github.com/jeantm/FADTTSter";
+const QString FADTTSWindow::m_userGuide_url = "https://github.com/NIRALUser/FADTTSter/blob/master/doc/UserGuide/fadttsterUserGuide_master.pdf";
+const QString FADTTSWindow::m_github_url = "https://github.com/NIRALUser/FADTTSter";
 
 const int FADTTSWindow::m_iconSize = 12;
 
@@ -659,7 +659,7 @@ void FADTTSWindow::InitExecutionTab()
 
 void FADTTSWindow::InitPlottingTab()
 {
-    m_qvtkWidget = QSharedPointer< QVTKWidget >( plottingTab_plot_qvtkWidget );
+    m_qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( plottingTab_plot_qvtkWidget );
 
     m_plot = new Plot();
     m_plot->SetQVTKWidget( m_qvtkWidget, false );

@@ -13,7 +13,7 @@ TestPlot::TestPlot()
 bool TestPlot::Test_SetQVTKWidget()
 {
     Plot plot;
-    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
 
 
     bool testSetQVTKWidget_Passed = plot.m_qvtkWidget.isNull();
@@ -878,7 +878,7 @@ bool TestPlot::Test_SetSelectedPlot( QString dataDir )
 bool TestPlot::Test_SetCustomizedTitle()
 {
     Plot plot;
-    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
     QString title = "Test Title";
     bool bold = true;
     bool italic = false;
@@ -927,7 +927,7 @@ bool TestPlot::Test_SetCustomizedTitle()
 bool TestPlot::Test_SetDefaultTitle()
 {
     Plot plot;
-    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
 
 
     plot.SetQVTKWidget( qvtkWidget, false );
@@ -1008,7 +1008,7 @@ bool TestPlot::Test_SetDefaultTitle()
 bool TestPlot::Test_SetCustomizedAxis()
 {
     Plot plot;
-    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
     QString xName = "Title Abscissa";
     QString yName = "Title Ordinate";
     bool bold = true;
@@ -1086,7 +1086,7 @@ bool TestPlot::Test_SetCustomizedAxis()
 bool TestPlot::Test_SetDefaultAxis()
 {
     Plot plot;
-    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
 
 
     plot.SetQVTKWidget( qvtkWidget, false );
@@ -1157,7 +1157,7 @@ bool TestPlot::Test_SetDefaultAxis()
 bool TestPlot::Test_SetLegend()
 {
     Plot plot;
-    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
 
 
     plot.SetQVTKWidget( qvtkWidget, false );
@@ -2142,7 +2142,7 @@ bool TestPlot::Test_GetyMinMax()
 bool TestPlot::Test_SavePlot( QString plotPath, QString dataDir, QString tempoDir )
 {
 //    Plot plot;
-//    QSharedPointer< QVTKWidget > qvtkWidget = QSharedPointer< QVTKWidget >( new QVTKWidget() );
+//    QSharedPointer< QVTKOpenGLWidget > qvtkWidget = QSharedPointer< QVTKOpenGLWidget >( new QVTKOpenGLWidget() );
 //    QString dirTest = tempoDir + "/TestPlot/Test_SavePlot/FADTTSter_test";
 //    QString matlabDir = dirTest + "/MatlabOutputs";
 //    QDir().mkpath( dirTest );

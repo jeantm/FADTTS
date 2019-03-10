@@ -320,7 +320,7 @@ private:
 
 
     /************** Plotting  Tab **************/
-    QSharedPointer< QVTKWidget > m_qvtkWidget;
+    QSharedPointer< QVTKOpenGLWidget > m_qvtkWidget;
 
     Plot *m_plot;
 

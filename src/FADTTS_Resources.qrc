@@ -8,8 +8,5 @@
         <file>Resources/MatlabFiles/matlabScript.m</file>
         <file>Resources/MatlabFiles/matlabScriptWithPlotting.m</file>
         <file>Resources/MatlabFiles/myFDR.m</file>
-    </qresource>
-    <qresource prefix="/UserGuide">
-        <file>Resources/UserGuide/UserGuide.txt</file>
-    </qresource>
+    </qresource>    
 </RCC>

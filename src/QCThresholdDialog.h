@@ -69,7 +69,7 @@ private:
 
     Processing m_processing;
 
-    QSharedPointer< QVTKWidget > m_qvtkWidget;
+    QSharedPointer< QVTKOpenGLWidget > m_qvtkWidget;
 
     Plot *m_qcThresholdPlot;
 
