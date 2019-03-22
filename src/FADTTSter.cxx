@@ -2,6 +2,7 @@
 #include "FADTTS_noGUI.h"
 #include "FADTTSterCLP.h"
 
+#include <QSurfaceFormat>
 #include <QApplication>
 
 //#include <QDebug>
