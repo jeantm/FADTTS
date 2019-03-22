@@ -11,6 +11,9 @@ Not only is FADTTSter practical but it enables any investigator to perform DTI a
 This tool can be divided in two main parts, each one working independently.
 
 ### Matlab script generation
+
+**Matlab R2013b or later version is required to run the .m script.**
+
 The .m script, as well as its inputs, is automatically generated based on the information provided (diffusion profiles, subjects, qc threshold, nbr of permutations, p-value threshold, ...).
 
 * Inputs
@@ -24,9 +27,6 @@ The .m script, as well as its inputs, is automatically generated based on the in
     - .csv inputs (profile fiber(s) and covariate file) for the script
     - statistical data .csv file (only if the script has been run)
     - matlab plots (only if the script has been run)
-
-> Matlab R2013b or later version is required to run the .m script.
-
 
 ### Statistical data plotting
 Used for the visualization of the data obtained after running the .m script, the statistical data plotting enables the user to customized her/his results.
