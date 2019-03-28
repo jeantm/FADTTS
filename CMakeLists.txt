@@ -14,7 +14,7 @@ ${CMAKE_MODULE_PATH}
 
 # find Qt5 headers
 if(UNIX AND NOT APPLE)
-  find_package(Qt5 COMPONENTS Widgets OpenGL X11Extras REQUIRED)
+  find_package(Qt5 COMPONENTS Widgets OpenGL X11Extras DBus REQUIRED)
 else()
   find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
 endif()

@@ -61,10 +61,10 @@ if(APPLE)
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
-if(UNIX AND NOT APPLE AND CREATE_BUNDLE)
-  # the RPATH to be used when installing
-  SET(CMAKE_INSTALL_RPATH "$ORIGIN/../lib;../lib")
-endif()
+# if(UNIX AND NOT APPLE AND CREATE_BUNDLE)
+#   # the RPATH to be used when installing
+#   # SET(CMAKE_INSTALL_RPATH "$ORIGIN")
+# endif()
 
 # generate FADTTSter executable
 SEMMacroBuildCLI(
@@ -199,40 +199,57 @@ if(CREATE_BUNDLE)
       COMPONENT Runtime)
   ENDIF(APPLE)
 
-  get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
-  get_target_property(QtOpenGL_location Qt5::OpenGL LOCATION)
-  
-  get_target_property(QtWidgets_SOFT Qt5::Widgets IMPORTED_SONAME_RELEASE)
-  get_target_property(QtOpenGL_SOFT Qt5::OpenGL IMPORTED_SONAME_RELEASE)
-
-  get_target_property(Qt5_location Qt5::Widgets LOCATION)  
-  string(FIND ${Qt5_location} "libQt5Widgets" length)
-  string(SUBSTRING ${Qt5_location} 0 ${length} Qt5_location)
-  
-  #install(FILES ${QtWidgets_location} ${QtOpenGL_location} ${Qt5_location}/${QtWidgets_SOFT} ${Qt5_location}/${QtOpenGL_SOFT}
-  #    DESTINATION lib
-  #    COMPONENT Runtime)
-
-  install(FILES ${QtWidgets_location} ${QtOpenGL_location}
-      DESTINATION lib
-      COMPONENT Runtime)
-
   if(UNIX AND NOT APPLE)
-
-    get_target_property(QtSql_location Qt5::Sql LOCATION)
-    get_target_property(QtX11Extras_location Qt5::X11Extras LOCATION)
-    get_target_property(QCore_location Qt5::Core LOCATION)
-    get_target_property(QGui_location Qt5::Gui LOCATION)
     
-    get_target_property(QtSql_SOFT Qt5::Sql IMPORTED_SONAME_RELEASE)
-    get_target_property(QtX11Extras_SOFT Qt5::X11Extras IMPORTED_SONAME_RELEASE)
-    get_target_property(QCore_SOFT Qt5::Core IMPORTED_SONAME_RELEASE)
-    get_target_property(QGui_SOFT Qt5::Gui IMPORTED_SONAME_RELEASE)
-    
+    set(QT_PLUGINS "")
+    set(qt_plugins Qt5::QXcbIntegrationPlugin Qt5::QXcbGlxIntegrationPlugin)
+    foreach(qt_plugin ${qt_plugins})
 
-    install(FILES ${QtSql_location} ${QtX11Extras_location} ${QCore_location} ${QGui_location} ${Qt5_location}/${QtWidgets_SOFT} ${Qt5_location}/${QtSql_SOFT} ${Qt5_location}/${QtX11Extras_SOFT} ${Qt5_location}/${QCore_SOFT} ${Qt5_location}/${QGui_SOFT} 
-      DESTINATION lib
+      get_target_property(_qt_plugin_path "${qt_plugin}" LOCATION)
+      get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
+      get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
+      get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
+
+      install(PROGRAMS "${_qt_plugin_path}"
+            DESTINATION "lib/QtPlugins/${_qt_plugin_type}"
+            COMPONENT RuntimePlugins)
+      
+      list(APPEND
+        QT_PLUGINS 
+        \${CMAKE_INSTALL_PREFIX}/lib/QtPlugins/${_qt_plugin_type}/${_qt_plugin_file}
+        )
+    endforeach()
+
+    INSTALL(CODE "
+        file(WRITE \"\${CMAKE_INSTALL_PREFIX}/bin/qt.conf\" \"[Paths]\nPrefix=..\nPlugins=lib/QtPlugins\n\")
+        " COMPONENT Runtime)
+
+    get_target_property(Qt5_location Qt5::Widgets LOCATION)  
+    string(FIND ${Qt5_location} "libQt5Widgets" length)
+    string(SUBSTRING ${Qt5_location} 0 ${length} Qt5_location)
+
+    install(CODE "
+      include(BundleUtilities)
+      fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/bin/FADTTSter\" \"${QT_PLUGINS};\" \"${Qt5_location};\")
+      file(GLOB qt_libs \${CMAKE_INSTALL_PREFIX}/bin/*.so*)
+      foreach(qt_lib \${qt_libs})
+        get_filename_component(qt_file \"\${qt_lib}\" NAME)
+        file(RENAME \${qt_lib} \${CMAKE_INSTALL_PREFIX}/lib/\${qt_file})
+      endforeach()
+     "
       COMPONENT Runtime)
+
+    
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/FADTTSter "\#!/bin/bash\nSCRIPT=$(realpath -s $0)\nSCRIPTPATH=$(dirname $SCRIPT)\nexport LD_LIBRARY_PATH=$SCRIPTPATH/lib\n$SCRIPTPATH/bin/FADTTSter\n")
+
+    install(CODE "
+      file(
+        COPY ${CMAKE_CURRENT_BINARY_DIR}/FADTTSter
+        DESTINATION \${CMAKE_INSTALL_PREFIX}
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+      )
+      " COMPONENT Runtime)
+    
   endif()
 endif()
 
